@@ -12,15 +12,43 @@ namespace Eto.Mac
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern bool class_addMethod(IntPtr cls, IntPtr sel, Delegate method, string argTypes);
 
-		public static bool AddMethod(this Class cls, IntPtr selector, Delegate method, string arguments)
-		{
-			return class_addMethod(cls.Handle, selector, method, arguments);
-		}
+		[DllImport("/usr/lib/libobjc.dylib")]
+		static extern IntPtr class_getName(IntPtr cls);
+
+		[DllImport("/usr/lib/libobjc.dylib")]
+		static extern IntPtr sel_getName(IntPtr sel);
+
+		// methods can only be added to a class once, so keep track of what has been added (which also keeps the
+		// delegates alive) so subsequent calls for other instances of the same class can tell that it succeeded.
+		static readonly Dictionary<(IntPtr cls, IntPtr sel), Delegate> s_addedMethods = new Dictionary<(IntPtr cls, IntPtr sel), Delegate>();
+
+		public static bool AddMethod(this Class cls, IntPtr selector, Delegate method, string arguments) => AddMethod(cls.Handle, selector, method, arguments);
 
 		public static bool AddMethod(IntPtr classHandle, IntPtr selector, Delegate method, string arguments)
 		{
-			return class_addMethod(classHandle, selector, method, arguments);
+			var key = (classHandle, selector);
+			if (s_addedMethods.TryGetValue(key, out var existingMethod))
+			{
+				if (!Equals(existingMethod, method))
+				{
+					Debugger.Log(0, "ObjCExtensions", $"Method '{GetName(sel_getName(selector))}' was already added to class '{GetName(class_getName(classHandle))}' with a different implementation");
+#if DEBUG
+					Debugger.Break(); // should never get here
+#endif
+					return false;
+				}
+				return true;
+			}
+
+			// note this fails when the class itself already implements the selector
+			if (!class_addMethod(classHandle, selector, method, arguments))
+				return false;
+
+			s_addedMethods.Add(key, method);
+			return true;
 		}
+
+		static string GetName(IntPtr namePtr) => Marshal.PtrToStringAnsi(namePtr) ?? "(unknown)";
 
 		[DllImport("/usr/lib/libobjc.dylib")]
 		static extern bool method_exchangeImplementations(IntPtr method1, IntPtr method2);

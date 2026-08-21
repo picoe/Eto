@@ -280,6 +280,9 @@ namespace Eto.Android.Forms
 		// TODO: Implement TabIndex
 		public int TabIndex { get; set; }
 
+		// TODO: Implement TabStop
+		public bool TabStop { get; set; } = true;
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		// TODO: Implement AllowDrop

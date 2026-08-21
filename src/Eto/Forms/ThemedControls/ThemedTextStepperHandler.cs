@@ -21,7 +21,7 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	public ThemedTextStepperHandler()
 	{
 		TextBox = new TextBox();
-		Stepper = new Stepper();
+		Stepper = new Stepper { TabStop = false };
 		Control = TableLayout.Horizontal(
 			new TableCell(TextBox, true),
 			Stepper

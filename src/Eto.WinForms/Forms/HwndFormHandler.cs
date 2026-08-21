@@ -725,6 +725,9 @@ namespace Eto.WinForms.Forms
 
 		public int TabIndex { get; set; }
 
+		// TODO: Implement TabStop
+		public bool TabStop { get; set; } = true;
+
 		public IEnumerable<Control> VisualControls => Widget.Controls;
 
 		public bool AllowDrop

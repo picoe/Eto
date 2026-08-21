@@ -1345,6 +1345,12 @@ namespace Eto.GtkSharp.Forms
 			set { Widget.Properties.Set(GtkControl.TabIndex_Key, value, int.MaxValue); }
 		}
 
+		public virtual bool TabStop
+		{
+			get { return Control.CanFocus; }
+			set { Control.CanFocus = value; }
+		}
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 

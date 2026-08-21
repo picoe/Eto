@@ -1177,6 +1177,12 @@ namespace Eto.Wpf.Forms
 			set { swi.KeyboardNavigation.SetTabIndex(TabControl, value); }
 		}
 
+		public virtual bool TabStop
+		{
+			get { return swi.KeyboardNavigation.GetIsTabStop(TabControl); }
+			set { swi.KeyboardNavigation.SetIsTabStop(TabControl, value); }
+		}
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)

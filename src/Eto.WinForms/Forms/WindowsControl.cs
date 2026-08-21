@@ -1057,6 +1057,12 @@ namespace Eto.WinForms.Forms
 			set { Control.TabIndex = value == int.MaxValue ? 0 : value + 1; }
 		}
 
+		public virtual bool TabStop
+		{
+			get { return Control.TabStop; }
+			set { Control.TabStop = value; }
+		}
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		/// <summary>
