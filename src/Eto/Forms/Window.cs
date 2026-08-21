@@ -276,6 +276,20 @@ public abstract class Window : Panel
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether the user can get to this control using the tab key. Not used for a window.
+	/// </summary>
+	/// <remarks>
+	/// The tab key only cycles through the controls within a window, so this has no effect for the window itself.
+	/// Set <see cref="Control.TabStop"/> on the controls within the window instead.
+	/// </remarks>
+	/// <value>Always <c>true</c> for a window.</value>
+	public override bool TabStop
+	{
+		get { return true; }
+		set { }
+	}
+
+	/// <summary>
 	/// Gets or sets the tool bar for the window.
 	/// </summary>
 	/// <remarks>

@@ -370,6 +370,16 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether the user can get to this control using the tab key.
+	/// </summary>
+	/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+	public virtual bool TabStop
+	{
+		get { return FocusControl.TabStop; }
+		set { FocusControl.TabStop = value; }
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether this control can serve as drop target.
 	/// </summary>
 	public virtual bool AllowDrop

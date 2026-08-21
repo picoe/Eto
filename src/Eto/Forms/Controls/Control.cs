@@ -1405,6 +1405,29 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether the user can get to this control using the tab key.
+	/// </summary>
+	/// <remarks>
+	/// When <c>false</c>, the control is skipped when cycling through controls with the tab key, but can still be
+	/// focused by clicking on it or by calling <see cref="Focus"/>.
+	/// This is useful for composite controls where only part of the control should be in the tab order, such as
+	/// the spinner of a <see cref="TextStepper"/> or <see cref="NumericStepper"/>.
+	/// 
+	/// The tab key only cycles through the controls within a window, so this has no effect for a <see cref="Window"/>.
+	/// 
+	/// Note that on Gtk this maps directly to whether the underlying widget can be focused, so it also prevents the
+	/// control from being focused by clicking on it, and controls that never accept focus (such as a <see cref="Label"/>)
+	/// will report <c>false</c>. On iOS and Android this has no effect.
+	/// </remarks>
+	/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+	[sc.DefaultValue(true)]
+	public virtual bool TabStop
+	{
+		get { return Handler.TabStop; }
+		set { Handler.TabStop = value; }
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether this control can serve as drop target.
 	/// </summary>
 	public virtual bool AllowDrop
@@ -2085,6 +2108,19 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// </remarks>
 		/// <value>The index of the control in the tab order.</value>
 		int TabIndex { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can get to this control using the tab key.
+		/// </summary>
+		/// <remarks>
+		/// When <c>false</c>, the control is skipped when cycling through controls with the tab key, but can still be
+		/// focused by clicking on it or by calling <see cref="Control.Focus"/>.
+		/// 
+		/// Note that on Gtk this also prevents the control from being focused by clicking on it, and on iOS and Android
+		/// this has no effect.
+		/// </remarks>
+		/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+		bool TabStop { get; set; }
 
 		/// <summary>
 		/// Gets an enumeration of controls that are in the visual tree.

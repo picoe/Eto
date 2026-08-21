@@ -91,6 +91,13 @@ public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback
 	public string ToolTip { get; set; }
 	public Cursor Cursor { get; set; }
 	public int TabIndex { get; set; }
+
+	public virtual bool TabStop
+	{
+		get => ContainerControl.IsTabStop;
+		set => ContainerControl.IsTabStop = value;
+	}
+
 	public virtual IEnumerable<Control> VisualControls { get; }
 	public virtual bool AllowDrop
 	{

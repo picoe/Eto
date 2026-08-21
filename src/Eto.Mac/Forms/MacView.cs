@@ -192,6 +192,7 @@ namespace Eto.Mac.Forms
 		public static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
 		public static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
 		public static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
+		public static readonly IntPtr selCanBecomeKeyView = Selector.GetHandle("canBecomeKeyView");
 		public static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
 		public static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
 		public static readonly IntPtr selInsertTextReplacementRange = Selector.GetHandle("insertText:replacementRange:");
@@ -238,6 +239,7 @@ namespace Eto.Mac.Forms
 			{ "performMiniaturize", selPerformMiniaturize }
 		};
 		public static readonly object TabIndex_Key = new object();
+		public static readonly object TabStop_Key = new object();
 		public static readonly object AllowDrop_Key = new object();
 		public static readonly Selector selSetCanDrawSubviewsIntoLayer = new Selector("setCanDrawSubviewsIntoLayer:");
 		public static readonly bool supportsCanDrawSubviewsIntoLayer = ObjCExtensions.InstancesRespondToSelector<NSView>("setCanDrawSubviewsIntoLayer:");
@@ -257,6 +259,36 @@ namespace Eto.Mac.Forms
 		// however, that causes (temporary) glitches when resizing especially with Scrollable >= 10.12
 		public static readonly bool NewLayout = MacVersion.IsAtLeast(10, 12);
 		
+		/// <summary>
+		/// Overrides canBecomeKeyView on the class of the specified view so it is skipped in the key view loop when
+		/// its control has <see cref="Eto.Forms.Control.TabStop"/> set to false.
+		/// </summary>
+		/// <returns><c>true</c> if the view will consult TabStop, <c>false</c> if it could not be overridden.</returns>
+		internal static bool AddCanBecomeKeyView(NSView view)
+		{
+			// needs a handler so the added method can find the control to check TabStop
+			if (!(view is IMacControl macControl) || macControl.WeakHandler?.Target == null)
+				return false;
+
+			var classHandle = Class.GetHandle(view.GetType());
+			if (classHandle == IntPtr.Zero)
+				return false;
+
+			// the added method checks TabStop when called, so it only needs to be added once per class
+			return ObjCExtensions.AddMethod(classHandle, selCanBecomeKeyView, CanBecomeKeyView_Delegate, "B@:");
+		}
+
+		internal static MarshalDelegates.Func_IntPtr_IntPtr_bool CanBecomeKeyView_Delegate = CanBecomeKeyView;
+		static bool CanBecomeKeyView(IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject(sender);
+
+			if (MacBase.GetHandler(obj) is IMacViewHandler handler && !handler.Widget.TabStop)
+				return false;
+
+			return Messaging.bool_objc_msgSendSuper(obj.SuperHandle, sel);
+		}
+
 		internal static MarshalDelegates.Action_IntPtr_IntPtr TriggerUpdateTrackingAreas_Delegate = TriggerUpdateTrackingAreas;
 		static void TriggerUpdateTrackingAreas(IntPtr sender, IntPtr sel)
 		{
@@ -1378,6 +1410,29 @@ namespace Eto.Mac.Forms
 			set { Widget.Properties.Set(MacView.TabIndex_Key, value, int.MaxValue); }
 		}
 
+		public virtual bool TabStop
+		{
+			get { return Widget.Properties.Get<bool>(MacView.TabStop_Key, true); }
+			set
+			{
+				if (!Widget.Properties.TrySet(MacView.TabStop_Key, value, true))
+					return;
+
+				// RecalculateKeyViewLoop() keeps it out of the loop we set up, but AppKit can also get to it via its
+				// own auto-recalculated loop, so tell AppKit directly that it can't be part of the key view loop.
+				var focusControl = FocusControl;
+				var overrodeCanBecomeKeyView = !value && MacView.AddCanBecomeKeyView(focusControl);
+				if (!overrodeCanBecomeKeyView && focusControl is NSControl control)
+				{
+					// couldn't override canBecomeKeyView, so refuse first responder status altogether.
+					// note this also stops the control from getting focus when it is clicked on.
+					control.RefusesFirstResponder = !value;
+				}
+
+				focusControl.Window?.RecalculateKeyViewLoop();
+			}
+		}
+
 		public void MapPlatformCommand(string systemAction, Command command)
 		{
 			InnerMapPlatformCommand(systemAction, command, null);
@@ -1406,6 +1461,8 @@ namespace Eto.Mac.Forms
 				if (handler != null)
 				{
 					handler.RecalculateKeyViewLoop(ref last);
+					if (!child.TabStop)
+						continue;
 					if (last != null)
 						last.NextKeyView = handler.FocusControl;
 					last = handler.FocusControl;
