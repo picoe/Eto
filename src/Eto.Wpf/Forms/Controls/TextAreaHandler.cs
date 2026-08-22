@@ -21,9 +21,19 @@ namespace Eto.Wpf.Forms.Controls
 			// Measure at the real displayed height as well (not infinity): measuring at infinite height makes
 			// the internal ScrollViewer report its viewport as the full content height, so it thinks nothing
 			// needs scrolling and vertical scrolling stops working.
+			// Never measure the template taller than the space being offered. ActualHeight is the height from
+			// the *previous* layout, so while the control is shrinking it is too large, and the template - the
+			// inner ScrollViewer and its ScrollContentPresenter - keeps the old, larger size. WPF arranges those
+			// at that unclipped desired size, so the text spills out below the control, and the ScrollViewer's
+			// ViewportHeight stays too large so ScrollToEnd() stops short of the end and leaves the last line
+			// hanging outside. Growing needs no such handling: arranging the template larger than it measured
+			// updates the scroll info by itself.
 			if (TextWrapping == sw.TextWrapping.Wrap && ActualWidth > 0)
 			{
-				base.MeasureOverride(new sw.Size(ActualWidth, ActualHeight));
+				var height = ActualHeight;
+				if (!double.IsPositiveInfinity(constraint.Height) && constraint.Height < height)
+					height = constraint.Height;
+				base.MeasureOverride(new sw.Size(ActualWidth, height));
 				_formattedWidth = ActualWidth;
 			}
 			return size;
