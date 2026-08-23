@@ -11,6 +11,9 @@ namespace Eto.Wpf.Drawing
 		Brush _foregroundBrush;
 		bool _hasNewLines;
 		bool _shouldClip;
+		double? _pixelsPerDip;
+		double _controlPixelsPerDip;
+		swm.TextFormattingMode _controlFormattingMode;
 		public FormattedTextWrapMode Wrap
 		{
 			get => _wrap;
@@ -57,6 +60,7 @@ namespace Eto.Wpf.Drawing
 			set
 			{
 				_font = value;
+				ValidateTextFormatting();
 				if (HasControl)
 				{
 					SetFont(Control);
@@ -103,6 +107,20 @@ namespace Eto.Wpf.Drawing
 			Control = null;
 		}
 
+		/// <summary>
+		/// The formatting mode and dpi of a FormattedText can only be specified when it is created, so it has
+		/// to be recreated whenever either of them changes.
+		/// </summary>
+		void ValidateTextFormatting()
+		{
+			if (!HasControl || !(Font?.Handler is FontHandler fontHandler))
+				return;
+
+			if ((fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal) != _controlFormattingMode
+				|| (_pixelsPerDip ?? fontHandler.PixelsPerDip) != _controlPixelsPerDip)
+				Invalidate();
+		}
+
 		protected override swm.FormattedText CreateControl()
 		{
 			var font = Font;
@@ -110,15 +128,12 @@ namespace Eto.Wpf.Drawing
 			text = SetWrap(text);
 			_hasNewLines = text.IndexOf('\n') != -1;
 
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-			var formattedText = new swm.FormattedText(
-				text,
-				CultureInfo.CurrentUICulture,
-				sw.FlowDirection.LeftToRight,
-				font.ToWpfTypeface(),
-				font.Size,
-				ForegroundBrush.ToWpf());
-#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
+			var fontHandler = (FontHandler)font.Handler;
+			_controlFormattingMode = fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal;
+			_controlPixelsPerDip = _pixelsPerDip ?? fontHandler.PixelsPerDip;
+
+			// decorations are applied to the entire text by SetFont below
+			var formattedText = fontHandler.CreateFormattedText(text, ForegroundBrush.ToWpf(), setDecorations: false, pixelsPerDip: _controlPixelsPerDip);
 
 			// support correctly showing ellipsis when there's a single line
 			if (Wrap == FormattedTextWrapMode.None)
@@ -211,6 +226,10 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(GraphicsHandler handler, PointF location)
 		{
+			// lay the text out for the dpi of what we're drawing on now that we know it
+			_pixelsPerDip = handler.TargetPixelsPerDip;
+			ValidateTextFormatting();
+
 			/**
 			//Doesn't do font fallbacks, so it isn't very useful at this point.
 			//Only other way appears to re-write the FormattedText class which comes along with a TON of code.

@@ -16,6 +16,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = WpfSize;
+			ApplyTextFormattingMode(control);
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -29,6 +30,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = WpfSize;
+			ApplyTextFormattingMode(control);
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -42,6 +44,7 @@ namespace Eto.Wpf.Drawing
 			control.FontStretch = WpfFontStretch;
 			control.FontWeight = WpfFontWeight;
 			control.FontSize = WpfSize;
+			ApplyTextFormattingMode(control);
 			if (setDecorations != null && WpfTextDecorationsFrozen != null)
 			{
 				setDecorations(WpfTextDecorationsFrozen);
@@ -56,6 +59,8 @@ namespace Eto.Wpf.Drawing
 			control.ApplyPropertyValue(swd.TextElement.FontWeightProperty, WpfFontWeight);
 			control.ApplyPropertyValue(swd.TextElement.FontSizeProperty, WpfSize);
 			control.ApplyPropertyValue(swd.Inline.TextDecorationsProperty, WpfTextDecorationsFrozen);
+			// note: TextFormattingMode can't be applied to a range, WPF doesn't consider it a text formatting
+			// property.  Set it on the document or element that contains the range instead.
 		}
 
 		public void Apply(swm.FormattedText control)
@@ -66,6 +71,14 @@ namespace Eto.Wpf.Drawing
 			control.SetFontWeight(WpfFontWeight);
 			control.SetFontSize(WpfSize);
 			control.SetTextDecorations(WpfTextDecorationsFrozen);
+			// note: the formatting mode of a FormattedText is set when it is created, see CreateFormattedText
+		}
+
+		void ApplyTextFormattingMode(sw.DependencyObject element)
+		{
+			// only set it when specified, otherwise let it keep inheriting from its container as usual
+			if (TextFormattingMode != null)
+				swm.TextOptions.SetTextFormattingMode(element, TextFormattingMode.Value);
 		}
 
 		sd.Font SDFont
@@ -353,13 +366,90 @@ namespace Eto.Wpf.Drawing
 
 		static swm.SolidColorBrush measureBrush;
 
+		/// <summary>
+		/// Gets or sets the text formatting mode used to lay out text with this font, or null (the default)
+		/// to use the mode of the element the text is rendered in.
+		/// </summary>
+		/// <remarks>
+		/// WPF lays out text using the <see cref="swm.TextOptions.TextFormattingModeProperty"/> of the element
+		/// it is rendered in, which for <see cref="swm.TextFormattingMode.Display"/> snaps each glyph to whole
+		/// pixels and can be noticeably wider than the default <see cref="swm.TextFormattingMode.Ideal"/> layout.
+		/// Since text Eto measures and draws itself is not part of any element, set this to the mode your text is
+		/// rendered with so that measuring and drawing match, e.g. using a style:
+		/// <code>Style.Add&lt;FontHandler&gt;(null, h => h.TextFormattingMode = TextFormattingMode.Display);</code>
+		/// When specified, this mode is also set on the controls the font is applied to so they render the same
+		/// way, otherwise they keep inheriting the mode from their container.
+		/// </remarks>
+		public swm.TextFormattingMode? TextFormattingMode { get; set; }
+
+		/// <summary>
+		/// Gets or sets the pixels per device independent pixel (dip) used to lay out text with this font when
+		/// there is nothing to get it from, which defaults to the scale of the system dpi.
+		/// </summary>
+		/// <remarks>
+		/// This does not scale the text or the size it measures, which are always in dips.  It is the device pixel
+		/// grid that <see cref="swm.TextFormattingMode.Display"/> snaps the glyphs to, so it only has an effect with
+		/// that mode, where measuring for the wrong dpi reports a width the text isn't rendered with.
+		///
+		/// Drawing and measuring text on a <see cref="Graphics"/> uses the dpi of what is being drawn on instead of
+		/// this value, which is only used when there is no target to get it from, such as <see cref="MeasureString(string)"/>.
+		/// </remarks>
+		public double PixelsPerDip { get; set; } = SystemPixelsPerDip;
+
+		static double? systemPixelsPerDip;
+
+		static double SystemPixelsPerDip
+		{
+			get
+			{
+				if (systemPixelsPerDip == null)
+				{
+					try
+					{
+						systemPixelsPerDip = swm.VisualTreeHelper.GetDpi(new swm.DrawingVisual()).PixelsPerDip;
+					}
+					catch
+					{
+						systemPixelsPerDip = 1.0;
+					}
+				}
+				return systemPixelsPerDip.Value;
+			}
+		}
+
+		/// <summary>
+		/// Creates a WPF FormattedText for the specified text using this font, honoring its
+		/// <see cref="TextFormattingMode"/> and <see cref="PixelsPerDip"/>.
+		/// </summary>
+		/// <param name="text">Text to lay out</param>
+		/// <param name="brush">Brush to draw the text with</param>
+		/// <param name="setDecorations">True to apply the decorations of the font, false to leave them out</param>
+		/// <param name="pixelsPerDip">Pixels per dip of what the text is drawn on, or null to use <see cref="PixelsPerDip"/></param>
+		public swm.FormattedText CreateFormattedText(string text, swm.Brush brush, bool setDecorations = true, double? pixelsPerDip = null)
+		{
+			text = text ?? string.Empty;
+			var formattedText = new swm.FormattedText(
+				text,
+				CultureInfo.CurrentUICulture,
+				sw.FlowDirection.LeftToRight,
+				WpfTypeface,
+				WpfSize,
+				brush,
+				null,
+				TextFormattingMode ?? swm.TextFormattingMode.Ideal,
+				pixelsPerDip ?? PixelsPerDip);
+
+			if (setDecorations && WpfTextDecorationsFrozen != null)
+				formattedText.SetTextDecorations(WpfTextDecorationsFrozen, 0, text.Length);
+
+			return formattedText;
+		}
+
 		public SizeF MeasureString(string text)
 		{
 			if (measureBrush == null)
 				measureBrush = new swm.SolidColorBrush(swm.Colors.White);
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, WpfTypeface, WpfSize, measureBrush);
-#pragma warning restore CS0618 // Type or member is obsolete
+			var formattedText = CreateFormattedText(text, measureBrush, setDecorations: false);
 			return new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 	}
