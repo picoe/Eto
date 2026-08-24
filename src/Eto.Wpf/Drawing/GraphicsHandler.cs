@@ -113,6 +113,12 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Gets the pixels per dip of what is being drawn on to lay out text for, or null when it can't be
+		/// determined and the font should decide.
+		/// </summary>
+		internal double? TargetPixelsPerDip => visual != null && Widget != null ? DPI : (double?)null;
+
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
@@ -311,11 +317,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
-#pragma warning restore CS0618 // Type or member is obsolete
-				if (fontHandler.WpfTextDecorationsFrozen != null)
-					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
+				var formattedText = fontHandler.CreateFormattedText(text, brush, pixelsPerDip: TargetPixelsPerDip);
 				Control.DrawText(formattedText, new sw.Point(x, y));
 			}
 		}
@@ -328,9 +330,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
-#pragma warning restore CS0618 // Type or member is obsolete
+				var formattedText = fontHandler.CreateFormattedText(text, brush, setDecorations: false, pixelsPerDip: TargetPixelsPerDip);
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 
