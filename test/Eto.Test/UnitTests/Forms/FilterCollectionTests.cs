@@ -365,6 +365,125 @@ namespace Eto.Test.UnitTests.Forms
 
 			Assert.That(filterCollection.Count, Is.EqualTo(20), "FilterCollection.Count should be equal to 20 after adding more items in bulk");
 		}
+
+		[Test]
+		public void SortWithNoItemsShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([1,2,3,4]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4]));
+		}
+
+		[Test]
+		public void SortWithItemsShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [1,2,3];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([4,5]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4,5]));
+		}
+
+		[Test]
+		public void SortWithItemShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [1];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([2,3,4]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4]));
+		}
+
+		[Test]
+		public void AddRangeWithSingleItemWhenSortedShouldNotDuplicate()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Sort = (a, b) => a.CompareTo(b);
+			filterCollection.AddRange([1]);
+			Assert.That(filterCollection, Is.EqualTo([1]), "#1 Item should appear exactly once");
+			Assert.That(filterCollection.TotalCount, Is.EqualTo(1), "#2 Item should be in the underlying list exactly once");
+		}
+
+		[Test]
+		public void AddRangeWithSingleItemWhenSortedAndFilteredShouldNotDuplicate()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Filter = item => true;
+			filterCollection.Sort = (a, b) => a.CompareTo(b);
+			filterCollection.AddRange([1]);
+			Assert.That(filterCollection, Is.EqualTo([1]), "#1 Item should appear exactly once");
+
+			filterCollection.Filter = null;
+			filterCollection.Sort = null;
+			Assert.That(filterCollection, Is.EqualTo([1]), "#2 Item should be in the underlying list exactly once");
+		}
+
+		[Test]
+		public void AddRangeWithSingleItemShouldTriggerCorrectChange()
+		{
+			ObservableCollection<DataItem> model = GridViewUtils.CreateModel();
+			FilterCollection<DataItem> filtered = new FilterCollection<DataItem>(model);
+			filtered.Sort = GridViewUtils.SortEvenItemsBeforeOdd;
+
+			NotifyCollectionChangedEventArgs changeArgs = null;
+			filtered.CollectionChanged += (sender, e) => changeArgs = e;
+
+			DataItem item = new DataItem(1000);
+			filtered.AddRange(new[] { item });
+
+			Assert.That(filtered.Count(r => r.Id == 1000), Is.EqualTo(1), "#1 Item should appear once in the filtered view");
+			Assert.That(model.Count(r => r.Id == 1000), Is.EqualTo(1), "#2 Item should appear once in the model");
+			Assert.That(changeArgs, Is.Not.Null, "#3 Change should have been triggered");
+			Assert.That(changeArgs.Action, Is.EqualTo(NotifyCollectionChangedAction.Add), "#4 Should trigger an add notification");
+			Assert.That(changeArgs.NewItems[0], Is.SameAs(item), "#5 Added item should be the notification's new item");
+			Assert.That(changeArgs.NewStartingIndex, Is.EqualTo(filtered.IndexOf(item)), "#6 Notification index should match the item's view index");
+		}
+
+		[Test]
+		public void AddRangeWithSingleItemNotMatchingFilterShouldAddToUnderlyingList()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Filter = item => item % 2 == 1;
+
+			NotifyCollectionChangedEventArgs changeArgs = null;
+			filterCollection.CollectionChanged += (sender, e) => changeArgs = e;
+
+			filterCollection.AddRange([2]);
+
+			Assert.That(filterCollection, Is.Empty, "#1 Item not matching the filter should not be visible");
+			Assert.That(filterCollection.TotalCount, Is.EqualTo(1), "#2 Item should be added to the underlying list");
+			Assert.That(changeArgs, Is.Null, "#3 Adding an item that doesn't match the filter shouldn't raise a change notification");
+
+			filterCollection.Filter = null;
+			Assert.That(filterCollection, Is.EqualTo([2]), "#4 Item should appear once the filter is removed");
+		}
+
+		[Test]
+		public void AddRangeWithFilteredItemsShouldAddAllToUnderlyingList()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Filter = item => item % 2 == 1;
+			filterCollection.AddRange([1, 2, 3]);
+
+			Assert.That(filterCollection, Is.EqualTo([1, 3]), "#1 Only items matching the filter should be visible");
+			Assert.That(filterCollection.TotalCount, Is.EqualTo(3), "#2 All items should be added to the underlying list");
+
+			filterCollection.Filter = null;
+			Assert.That(filterCollection, Is.EqualTo([1, 2, 3]), "#3 All items should appear exactly once when the filter is removed");
+		}
+
+		[Test]
+		public void InsertRangeWhenFilteredShouldInsertAtViewIndex()
+		{
+			FilterCollection<int> filterCollection = [1, 2, 3, 4, 5];
+			filterCollection.Filter = item => item % 2 == 1;
+			filterCollection.InsertRange(1, [7, 8]);
+
+			Assert.That(filterCollection, Is.EqualTo([1, 7, 3, 5]), "#1 Matching items should appear at the view index");
+
+			filterCollection.Filter = null;
+			Assert.That(filterCollection, Is.EqualTo([1, 2, 7, 8, 3, 4, 5]), "#2 Items should be inserted before the item shown at the view index");
+		}
+
 	}
 }
 
