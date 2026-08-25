@@ -565,6 +565,8 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 
 	void InsertItemRange(int index, IEnumerable<T> collection)
 	{
+		if (index < 0)
+			index = this.items.Count;
 		var collectionList = collection.ToList();
 		items.InsertRange(index, collectionList);
 		if (externalList != null)
@@ -809,11 +811,7 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 				else if (enumerable.Count > 0)
 				{
 					if (sort != null)
-					{
 						index = filtered.IndexOf((T)enumerable[0]);
-						if (index < 0)
-							index = this.items.Count;
-					}
 
 					InsertItemRange(index, items);
 					Refresh();
