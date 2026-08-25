@@ -1011,13 +1011,20 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 	}
 
 	/// <summary>
-	/// Gets the count of items in the collection.
+	/// Gets the count of items in the collection
 	/// </summary>
 	/// <value>The count of items.</value>
+	/// <remarks>If a filter exists, only items that pass it are counted</remarks>
 	public int Count
 	{
 		get { return filtered != null ? filtered.Count : items.Count; }
 	}
+
+	/// <summary>
+	/// Gets the count of all items in the collection.
+	/// </summary>
+	/// <value>The total count of all items.</value>
+	public int TotalCount => items.Count;
 
 	/// <summary>
 	/// Gets a value indicating whether this collection is read only.
