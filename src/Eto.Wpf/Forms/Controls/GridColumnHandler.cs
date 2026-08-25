@@ -1,10 +1,10 @@
 using Eto.Wpf.Forms.Cells;
 namespace Eto.Wpf.Forms.Controls
 {
-	public interface IGridHandler
+	public interface IGridHandler : Grid.IHandler
 	{
 		EtoDataGrid Control { get; }
-		Grid Widget { get; }
+		new Grid Widget { get; }
 		bool Loaded { get; }
 		bool DisableAutoScrollToSelection { get; }
 		sw.FrameworkElement SetupCell(IGridColumnHandler column, sw.FrameworkElement defaultContent, swc.DataGridCell cell);
