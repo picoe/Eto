@@ -365,6 +365,34 @@ namespace Eto.Test.UnitTests.Forms
 
 			Assert.That(filterCollection.Count, Is.EqualTo(20), "FilterCollection.Count should be equal to 20 after adding more items in bulk");
 		}
+
+		[Test]
+		public void SortWithNoItemsShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([1,2,3,4]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4]));
+		}
+
+		[Test]
+		public void SortWithItemsShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [1,2,3];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([4,5]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4,5]));
+		}
+
+		[Test]
+		public void SortWithItemShouldNotCauseException()
+		{
+			FilterCollection<int> filterCollection = [1];
+			filterCollection.Sort = (a, b) => 0;
+			filterCollection.AddRange([2,3,4]);
+			Assert.That(filterCollection, Is.EqualTo([1,2,3,4]));
+		}
+
 	}
 }
 

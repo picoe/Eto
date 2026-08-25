@@ -809,7 +809,12 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 				else if (enumerable.Count > 0)
 				{
 					if (sort != null)
+					{
 						index = filtered.IndexOf((T)enumerable[0]);
+						if (index < 0)
+							index = this.items.Count;
+					}
+
 					InsertItemRange(index, items);
 					Refresh();
 				}
