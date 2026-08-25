@@ -565,8 +565,6 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 
 	void InsertItemRange(int index, IEnumerable<T> collection)
 	{
-		if (index < 0)
-			index = this.items.Count;
 		var collectionList = collection.ToList();
 		items.InsertRange(index, collectionList);
 		if (externalList != null)
@@ -773,47 +771,29 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 		{
 			if (filtered != null)
 			{
-				var enumerable = items as IList<T> ?? items.ToList();
+				IList<T> enumerable = items as IList<T> ?? items.ToList();
+				if (enumerable.Count == 0)
+					return;
 
-				if (sort == null || enumerable.Count == 1)
+				// index addresses the filtered view; map it to the backing list, out of range means append
+				bool viewIndexInRange = index >= 0 && index < filtered.Count;
+				int itemsIndex = viewIndexInRange ? this.items.IndexOf(filtered[index]) : this.items.Count;
+				InsertItemRange(itemsIndex, enumerable);
+
+				if (enumerable.Count == 1)
 				{
-					T firstItem;
-					if (filter != null)
-					{
-						var newItems = enumerable.Where(filter).ToArray();
-						if (newItems.Length == 0)
-							return; // filtered list did not change!
-
-						firstItem = newItems[0];
-						items = newItems;
-					}
-					else
-						firstItem = (T)enumerable[0];
-
-					if (index > 0)
-					{
-						var beforeItem = filtered[index - 1];
-						var itemsIndex = this.items.IndexOf(beforeItem);
-						InsertItemRange(itemsIndex, items);
-					}
-					else
-					{
-						InsertItemRange(0, items);
-					}
-
-					if (sort != null)
-						index = filtered.IndexOf((T)enumerable[0]);
-					InsertItemRange(index, items);
+					T item = enumerable[0];
+					bool visible = filter == null || filter(item);
+					if (!visible)
+						return;
 					Rebuild();
-					var insertIndex = filtered.IndexOf(firstItem);
-					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, items, insertIndex));
+					OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, filtered.IndexOf(item)));
 				}
-				else if (enumerable.Count > 0)
+				else
 				{
-					if (sort != null)
-						index = filtered.IndexOf((T)enumerable[0]);
-
-					InsertItemRange(index, items);
+					bool anyVisible = filter == null || enumerable.Any(filter);
+					if (!anyVisible)
+						return;
 					Refresh();
 				}
 			}
