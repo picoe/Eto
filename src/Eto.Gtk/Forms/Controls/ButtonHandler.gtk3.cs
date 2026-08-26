@@ -102,27 +102,30 @@ namespace Eto.GtkSharp.Forms.Controls
 			var showLabel = !string.IsNullOrEmpty(label.Text);
 			if (showImage && showLabel)
 			{
+				// when hugging the text, nothing in the box expands so the box gets only its natural size,
+				// which is then centered in the button.
+				var expand = !ImageNextToText;
 				Gtk.Box box;
 				switch (ImagePosition)
 				{
 					case ButtonImagePosition.Above:
 						child = box = new Gtk.Box(Gtk.Orientation.Vertical, 2);
-						box.PackStart(gtkimage, true, true, 0);
+						box.PackStart(gtkimage, expand, true, 0);
 						box.PackEnd(label, false, true, 0);
 						break;
 					case ButtonImagePosition.Below:
 						child = box = new Gtk.Box(Gtk.Orientation.Vertical, 2);
 						box.PackStart(label, false, true, 0);
-						box.PackEnd(gtkimage, true, true, 0);
+						box.PackEnd(gtkimage, expand, true, 0);
 						break;
 					case ButtonImagePosition.Left:
 						child = box = new Gtk.Box(Gtk.Orientation.Horizontal, 2);
 						box.PackStart(gtkimage, false, true, 0);
-						box.PackStart(label, true, true, 0);
+						box.PackStart(label, expand, true, 0);
 						break;
 					case ButtonImagePosition.Right:
 						child = box = new Gtk.Box(Gtk.Orientation.Horizontal, 2);
-						box.PackStart(label, true, true, 0);
+						box.PackStart(label, expand, true, 0);
 						box.PackEnd(gtkimage, false, true, 0);
 						break;
 					case ButtonImagePosition.Overlay:
@@ -142,6 +145,11 @@ namespace Eto.GtkSharp.Forms.Controls
 						break;
 					default:
 						throw new NotSupportedException();
+				}
+				if (ImageNextToText)
+				{
+					child.Halign = Gtk.Align.Center;
+					child.Valign = Gtk.Align.Center;
 				}
 			}
 			else if (showLabel)
@@ -168,6 +176,16 @@ namespace Eto.GtkSharp.Forms.Controls
 			set
 			{
 				if (Widget.Properties.TrySet(ButtonHandler.ImagePosition_Key, value))
+					SetImagePosition();
+			}
+		}
+
+		public bool ImageNextToText
+		{
+			get { return Widget.Properties.Get<bool>(ButtonHandler.ImageNextToText_Key); }
+			set
+			{
+				if (Widget.Properties.TrySet(ButtonHandler.ImageNextToText_Key, value))
 					SetImagePosition();
 			}
 		}

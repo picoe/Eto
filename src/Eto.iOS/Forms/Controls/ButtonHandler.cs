@@ -66,5 +66,11 @@ namespace Eto.iOS.Forms.Controls
 			get;
 			set;
 		}
+
+		public bool ImageNextToText
+		{
+			get;
+			set;
+		}
 	}
 }

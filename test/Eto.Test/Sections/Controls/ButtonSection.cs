@@ -7,6 +7,7 @@
 		Bitmap largeImage = TestIcons.TestImage;
 		ButtonImagePosition imagePosition;
 		bool clearMinimumSize;
+		bool imageNextToText;
 
 		public ButtonImagePosition ImagePosition
 		{
@@ -15,6 +16,16 @@
 			{
 				imagePosition = value;
 				OnPropertyChanged(new PropertyChangedEventArgs("ImagePosition"));
+			}
+		}
+
+		public bool ImageNextToText
+		{
+			get { return imageNextToText; }
+			set
+			{
+				imageNextToText = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("ImageNextToText"));
 			}
 		}
 
@@ -38,9 +49,10 @@
 			layout.AddAutoSized(ColourButton(), centered: true);
 			layout.AddAutoSized(DisabledButton(), centered: true);
 			layout.Add(StretchedButton());
-			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlignment = VerticalAlignment.Center }, ImagePositionControl(), ClearMinimumSizeControl(), null);
-			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(smallImage)), TableLayout.AutoSized(ImageTextButton(smallImage)), null);
-			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(largeImage)), TableLayout.AutoSized(ImageTextButton(largeImage)), null);
+			layout.AddSeparateRow(null, new Label { Text = "Image Position:", VerticalAlignment = VerticalAlignment.Center }, ImagePositionControl(), ClearMinimumSizeControl(), ImageNextToTextControl(), null);
+			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(smallImage)), TableLayout.AutoSized(ImageButton(smallImage, "Image && Text")), null);
+			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(largeImage)), TableLayout.AutoSized(ImageButton(largeImage, "Image && Text")), null);
+			layout.Add(ImageButton(smallImage, "Stretched Image && Text"));
 
 			layout.Add(null);
 
@@ -94,20 +106,13 @@
 			return control;
 		}
 
-		Control ImageButton(Image image)
+		Control ImageButton(Image image, string text = null)
 		{
-			var control = new Button { Image = image };
+			var control = new Button { Image = image, Text = text };
 			control.Bind(r => r.ImagePosition, this, r => r.ImagePosition);
+			control.Bind(r => r.ImageNextToText, this, r => r.ImageNextToText);
 			var defaultMinimiumSize = control.MinimumSize;
             control.Bind(r => r.MinimumSize, Binding.Property(this, r => r.ClearMinimumSize).Convert(r => r ? Size.Empty : defaultMinimiumSize));
-			LogEvents(control);
-			return control;
-		}
-
-		Control ImageTextButton(Image image)
-		{
-			var control = new Button { Text = "Image && Text Button", Image = image };
-			control.Bind(r => r.ImagePosition, this, r => r.ImagePosition);
 			LogEvents(control);
 			return control;
 		}
@@ -123,6 +128,13 @@
 		{
 			var control = new CheckBox { Text = "Clear MinimumSize" };
 			control.CheckedBinding.Bind(this, r => r.ClearMinimumSize);
+			return control;
+		}
+
+		Control ImageNextToTextControl()
+		{
+			var control = new CheckBox { Text = "ImageNextToText" };
+			control.CheckedBinding.Bind(this, r => r.ImageNextToText);
 			return control;
 		}
 

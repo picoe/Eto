@@ -108,6 +108,15 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		static readonly object ImageNextToText_Key = new object();
+
+		public bool ImageNextToText
+		{
+			// WinForms always splits the button into an image region at the edge and centers the text in what's left
+			get { return Widget.Properties.Get<bool>(ImageNextToText_Key); }
+			set { Widget.Properties.Set(ImageNextToText_Key, value); }
+		}
+
 		static readonly object MinimumSize_Key = new object();
 
 		public Size MinimumSize
