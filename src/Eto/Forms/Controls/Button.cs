@@ -117,6 +117,27 @@ public class Button : TextControl, IMnemonicControl
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating that the <see cref="Image"/> should be placed directly next to the
+	/// <see cref="TextControl.Text"/>, instead of being aligned to the edge of the button.
+	/// </summary>
+	/// <remarks>
+	/// By default the image is aligned to the edge of the button given by <see cref="ImagePosition"/>, and the text is
+	/// centered in the space that is left over. When this is <c>true</c> the image and text are kept together as a
+	/// single group, which is then centered in the button.
+	/// <br/>
+	/// This only has a visible effect when the button is larger than its content, so it makes no difference for an
+	/// auto sized button.
+	/// <br/>
+	/// Not supported on all platforms, in which case the image stays aligned to the edge of the button.
+	/// </remarks>
+	/// <value><c>true</c> to keep the image next to the text; <c>false</c> to align the image to the edge of the button. Default is <c>false</c>.</value>
+	public bool ImageNextToText
+	{
+		get { return Handler.ImageNextToText; }
+		set { Handler.ImageNextToText = value; }
+	}
+
+	/// <summary>
 	/// Gets or sets the minimum size for the button.
 	/// </summary>
 	/// <remarks>
@@ -285,6 +306,9 @@ public class Button : TextControl, IMnemonicControl
 
 		/// <inheritdoc cref="Button.ImagePosition"/>
 		ButtonImagePosition ImagePosition { get; set; }
+
+		/// <inheritdoc cref="Button.ImageNextToText"/>
+		bool ImageNextToText { get; set; }
 
 		/// <inheritdoc cref="Button.MinimumSize"/>
 		Size MinimumSize { get; set;}

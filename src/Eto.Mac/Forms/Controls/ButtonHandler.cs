@@ -310,6 +310,19 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public bool ImageNextToText
+		{
+			get => Control.ImageHugsTitle;
+			set
+			{
+				if (Control.ImageHugsTitle != value)
+				{
+					Control.ImageHugsTitle = value;
+					InvalidateMeasure();
+				}
+			}
+		}
+
 		public NSBezelStyle? BezelStyle
 		{
 			get { return Widget.Properties.Get<NSBezelStyle?>(ButtonHandler.CustomBezelStyle_Key); }

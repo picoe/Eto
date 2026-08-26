@@ -7,6 +7,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <e:AssemblyAbsoluteResourceDictionary Path="themes/generic.xaml" />
+        <e:AssemblyAbsoluteResourceDictionary Path="themes/none/Button.xaml" />
         <e:AssemblyAbsoluteResourceDictionary Path="themes/none/Window.xaml" />
     </ResourceDictionary.MergedDictionaries>
 

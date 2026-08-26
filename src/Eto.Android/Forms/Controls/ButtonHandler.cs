@@ -60,6 +60,9 @@ namespace Eto.Android.Forms.Controls
 			}
 		}
 
+		// Android compound drawables are always drawn next to the text
+		public bool ImageNextToText { get; set; }
+
 		protected override void ApplyBackgroundColor(Color? value)
 		{
 			// Try to preserve Android button styling whilst still changing the color

@@ -203,32 +203,36 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			if (ImagePart == null || LabelPart == null)
 				return;
+			// when hugging the text, only give the grid its desired size so the image ends up beside the label
+			// instead of the label taking up all the leftover space.
+			var fill = ImageNextToText ? sw.HorizontalAlignment.Center : sw.HorizontalAlignment.Stretch;
+			var fillVertical = ImageNextToText ? sw.VerticalAlignment.Center : sw.VerticalAlignment.Stretch;
 			int col, row;
 			sw.Thickness imageSpacing;
 			switch (ImagePosition)
 			{
 				case ButtonImagePosition.Left:
 					col = 0; row = 1;
-					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
+					Control.HorizontalContentAlignment = fill;
 					Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
 					imageSpacing = new sw.Thickness(ImageLabelSpacing, 0, 0, 0);
 					break;
 				case ButtonImagePosition.Right:
 					col = 2; row = 1;
-					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Stretch;
+					Control.HorizontalContentAlignment = fill;
 					Control.VerticalContentAlignment = sw.VerticalAlignment.Center;
 					imageSpacing = new sw.Thickness(0, 0, ImageLabelSpacing, 0);
 					break;
 				case ButtonImagePosition.Above:
 					col = 1; row = 0;
 					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
-					Control.VerticalContentAlignment = sw.VerticalAlignment.Stretch;
+					Control.VerticalContentAlignment = fillVertical;
 					imageSpacing = new sw.Thickness(0, ImageLabelSpacing, 0, 0);
 					break;
 				case ButtonImagePosition.Below:
 					col = 1; row = 2;
 					Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
-					Control.VerticalContentAlignment = sw.VerticalAlignment.Stretch;
+					Control.VerticalContentAlignment = fillVertical;
 					imageSpacing = new sw.Thickness(0, 0, 0, ImageLabelSpacing);
 					break;
 				case ButtonImagePosition.Overlay:
@@ -252,6 +256,14 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get { return Widget.Properties.Get<ButtonImagePosition>(ImagePosition_Key); }
 			set { Widget.Properties.Set(ImagePosition_Key, value, SetImagePosition); }
+		}
+
+		static readonly object ImageNextToText_Key = new object();
+
+		public bool ImageNextToText
+		{
+			get { return Widget.Properties.Get<bool>(ImageNextToText_Key); }
+			set { Widget.Properties.Set(ImageNextToText_Key, value, SetImagePosition); }
 		}
 
 		public override void AttachEvent(string id)
