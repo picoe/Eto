@@ -518,6 +518,9 @@ namespace Eto.Wpf.Forms.Controls
 		public SizeF Delta => _delta;
 		public PointF Velocity => _velocity;
 
+		// Windows applies a reversed scrolling direction to the deltas without saying that it did, so there is no way to tell
+		public bool IsDirectionInverted => false;
+
 		public void AttachTo(sw.UIElement element)
 		{
 			Detach();

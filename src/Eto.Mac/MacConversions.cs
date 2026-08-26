@@ -215,6 +215,7 @@ namespace Eto.Mac
 			PointF point;
 			Keys modifiers;
 			MouseButtons buttons;
+			bool isDirectionInverted = false;
 			if (theEvent != null)
 			{
 				NSView view = handler.ContainerControl;
@@ -240,7 +241,11 @@ namespace Eto.Mac
 				}
 					
 				if (includeWheel)
+				{
 					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+					// only valid for scroll wheel and flick events, which is all includeWheel is used for
+					isDirectionInverted = theEvent.IsDirectionInvertedFromDevice;
+				}
 				modifiers = theEvent.ModifierFlags.ToEto();
 				buttons = theEvent.GetMouseButtons();
 			}
@@ -250,7 +255,7 @@ namespace Eto.Mac
 				modifiers = Keyboard.Modifiers;
 				buttons = Mouse.Buttons;
 			}
-			return new MouseEventArgs(buttons, modifiers, point, delta);
+			return new MouseEventArgs(buttons, modifiers, point, delta, 1.0f, isDirectionInverted);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)

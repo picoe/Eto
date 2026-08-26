@@ -214,6 +214,7 @@ namespace Eto.Mac.Forms.Controls
 		bool enabled = true;
 		SizeF delta;
 		PointF velocity;
+		bool isDirectionInverted;
 		double lastScrollTimestamp;
 
 		protected new Gesture.ICallback Callback => (Gesture.ICallback)((ICallbackSource)Widget).Callback;
@@ -230,6 +231,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public PointF Velocity => velocity;
 
+		public bool IsDirectionInverted => isDirectionInverted;
+
 		Gesture IMacScrollWheelGestureHandler.Gesture => Widget;
 
 		public bool OnScrollWheel(NSEvent theEvent)
@@ -243,6 +246,8 @@ namespace Eto.Mac.Forms.Controls
 			delta = theEvent.HasPreciseScrollingDeltas
 				? new SizeF((float)theEvent.ScrollingDeltaX, (float)theEvent.ScrollingDeltaY)
 				: new SizeF((float)theEvent.DeltaX * ScrollGesture.DefaultWheelScrollAmount / Widget.WheelScrollAmount, (float)theEvent.DeltaY * ScrollGesture.DefaultWheelScrollAmount / Widget.WheelScrollAmount);
+
+			isDirectionInverted = theEvent.IsDirectionInvertedFromDevice;
 
 			var timestamp = theEvent.Timestamp;
 			var phase = theEvent.Phase;

@@ -187,6 +187,9 @@ namespace Eto.GtkSharp.Forms.Controls
 		public SizeF Delta => _delta;
 		public PointF Velocity => _velocity;
 
+		// GDK applies natural scrolling to the deltas without saying that it did, so there is no way to tell
+		public bool IsDirectionInverted => false;
+
 		public void AttachTo(Gtk.Widget widget)
 		{
 			Detach();

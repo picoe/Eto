@@ -1,4 +1,5 @@
 using Eto.Mac;
+using Eto.Mac.Forms;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 
@@ -145,6 +146,66 @@ public class MacConversionsTests : TestBase
 
 		Assert.That(args.Key, Is.EqualTo(Keys.F13));
 	}
+
+	/// <summary>
+	/// Issue: RH-97914 - MouseEventArgs.IsDirectionInverted tells you whether the user has natural scrolling
+	/// turned on for the device that generated the event, which is what AppKit reports per scroll wheel event.
+	/// </summary>
+	[TestCase(false)]
+	[TestCase(true)]
+	public void GetMouseEventShouldReportInvertedScrollDirection(bool isDirectionInverted)
+	{
+		Shown(form =>
+		{
+			var panel = new Panel { Size = new Size(100, 100) };
+			form.Content = panel;
+			return panel;
+		},
+		panel =>
+		{
+			using var scrollEvent = ScrollEvents.CreateScrollWheelEvent(3, 5, isDirectionInverted);
+			// synthesizing an inverted scroll relies on a CGEventField that isn't public API, so treat it as a
+			// precondition (inconclusive) rather than a failure if macOS ever stops honouring it.
+			Assume.That(scrollEvent.IsDirectionInvertedFromDevice, Is.EqualTo(isDirectionInverted), "Could not synthesize a scroll wheel event with an inverted direction");
+
+			var args = MacConversions.GetMouseEvent(GetViewHandler(panel), scrollEvent, true);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(args.IsDirectionInverted, Is.EqualTo(isDirectionInverted));
+				Assert.That(args.Delta, Is.EqualTo(new SizeF(3, 5)));
+			});
+		});
+	}
+
+	/// <summary>
+	/// -[NSEvent isDirectionInvertedFromDevice] is only defined for scroll wheel and flick events, so the
+	/// conversion must not go near it unless it is reading the wheel.
+	/// </summary>
+	[Test]
+	public void GetMouseEventShouldNotReportInvertedScrollDirectionForOtherEvents()
+	{
+		Shown(form =>
+		{
+			var panel = new Panel { Size = new Size(100, 100) };
+			form.Content = panel;
+			return panel;
+		},
+		panel =>
+		{
+			using var mouseEvent = NSEvent.MouseEvent(NSEventType.LeftMouseDown, CGPoint.Empty, 0, 0, 0, null, 0, 1, 0);
+
+			var args = MacConversions.GetMouseEvent(GetViewHandler(panel), mouseEvent, false);
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(args.IsDirectionInverted, Is.False);
+				Assert.That(args.Delta, Is.EqualTo(SizeF.Empty));
+			});
+		});
+	}
+
+	static IMacViewHandler GetViewHandler(Control control) => (IMacViewHandler)((IHandlerSource)control).Handler;
 
 	static NSEvent CreateKeyEvent(
 		string characters,

@@ -12,6 +12,7 @@ namespace Eto.Test.Sections.Behaviors
 		readonly Label velocityLabel;
 		readonly Label scrollDeltaLabel;
 		readonly Label scrollVelocityLabel;
+		readonly Label scrollInvertedLabel;
 		readonly CheckBox allowSimultaneousGesturesCheckBox;
 		readonly MagnificationGesture magnificationGesture;
 		readonly RotationGesture rotateGesture;
@@ -26,6 +27,7 @@ namespace Eto.Test.Sections.Behaviors
 		PointF lastVelocity;
 		SizeF lastScrollDelta;
 		PointF lastScrollVelocity;
+		bool lastScrollInverted;
 
 		public GesturesSection()
 		{
@@ -37,6 +39,7 @@ namespace Eto.Test.Sections.Behaviors
 			velocityLabel = new Label();
 			scrollDeltaLabel = new Label();
 			scrollVelocityLabel = new Label();
+			scrollInvertedLabel = new Label();
 			allowSimultaneousGesturesCheckBox = new CheckBox { Text = "Allow Simultaneous Gestures", Checked = true };
 			allowSimultaneousGesturesCheckBox.CheckedChanged += (sender, e) => SetSimultaneousGestures(allowSimultaneousGesturesCheckBox.Checked == true);
 
@@ -50,7 +53,7 @@ namespace Eto.Test.Sections.Behaviors
 			drawable.MouseDown += (sender, e) => Log.Write(this, $"MouseDown: {e.Buttons} at {e.Location}");
 			// drawable.MouseMove += (sender, e) => Log.Write(this, $"MouseMove: {e.Buttons} at {e.Location}");
 			drawable.MouseUp += (sender, e) => Log.Write(this, $"MouseUp: {e.Buttons} at {e.Location}");
-			drawable.MouseWheel += (sender, e) => Log.Write(this, $"MouseWheel: {e.Delta} at {e.Location}");
+			drawable.MouseWheel += (sender, e) => Log.Write(this, $"MouseWheel: {e.Delta} at {e.Location}, Inverted: {e.IsDirectionInverted}");
 
 			if (Platform.Supports<MagnificationGesture>())
 			{
@@ -96,6 +99,7 @@ namespace Eto.Test.Sections.Behaviors
 				lastVelocity = PointF.Empty;
 				lastScrollDelta = SizeF.Empty;
 				lastScrollVelocity = PointF.Empty;
+				lastScrollInverted = false;
 				UpdateLabels();
 				drawable.Invalidate();
 			};
@@ -113,7 +117,7 @@ namespace Eto.Test.Sections.Behaviors
 						TableLayout.Horizontal(10, scaleLabel, magnificationLabel, resetButton, allowSimultaneousGesturesCheckBox, panMouseButtonsSelector, null),
 						TableLayout.Horizontal(10, angleLabel, rotationLabel, null),
 						TableLayout.Horizontal(10, translationLabel, velocityLabel, null),
-						TableLayout.Horizontal(10, scrollDeltaLabel, scrollVelocityLabel, wheelScrollAmountControl, null),
+						TableLayout.Horizontal(10, scrollDeltaLabel, scrollVelocityLabel, scrollInvertedLabel, wheelScrollAmountControl, null),
 						drawable
 					),
 					null
@@ -226,6 +230,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			lastScrollDelta = scrollGesture.Delta;
 			lastScrollVelocity = scrollGesture.Velocity;
+			lastScrollInverted = scrollGesture.IsDirectionInverted;
 			offset += new PointF(lastScrollDelta.Width, lastScrollDelta.Height);
 			UpdateLabels();
 			drawable.Invalidate();
@@ -241,6 +246,7 @@ namespace Eto.Test.Sections.Behaviors
 			velocityLabel.Text = string.Format("Velocity: {0:+0.0;-0.0;0.0}, {1:+0.0;-0.0;0.0}", lastVelocity.X, lastVelocity.Y);
 			scrollDeltaLabel.Text = string.Format("Scroll Delta: {0:+0.0;-0.0;0.0}, {1:+0.0;-0.0;0.0}", lastScrollDelta.Width, lastScrollDelta.Height);
 			scrollVelocityLabel.Text = string.Format("Scroll Velocity: {0:+0.0;-0.0;0.0}, {1:+0.0;-0.0;0.0}", lastScrollVelocity.X, lastScrollVelocity.Y);
+			scrollInvertedLabel.Text = string.Format("Scroll Inverted: {0}", lastScrollInverted);
 		}
 
 		void Drawable_Paint(object sender, PaintEventArgs e)
