@@ -98,6 +98,18 @@ internal static class Program
 
 		using var app = new Application(platform);
 
+#if !WINDOWS && !NETFRAMEWORK
+		// Focusing a control needs the app to be active, and macOS hands activation over only when no
+		// other app is holding it - so with anything else frontmost (Finder, on a CI runner) the test
+		// windows never become key and no control in them can get focus. An automated test run is
+		// exactly the case where taking activation from whatever is frontmost is the right thing to do.
+		if (app.Handler is Eto.Mac.Forms.ApplicationHandler macApplication)
+		{
+			macApplication.ActivateOnStartup = true;
+			macApplication.ActivateIgnoringOtherApps = true;
+		}
+#endif
+
 		var exitCodeSource = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
 
 		app.Initialized += (sender, e) =>
