@@ -11,6 +11,8 @@ namespace Eto.Mac.Forms
 		public MessageBoxButtons Buttons { get; set; }
 
 		public MessageBoxDefaultButton DefaultButton { get; set; }
+		
+		public Image Image { get; set; }
 
 		public DialogResult ShowDialog(Control parent)
 		{
@@ -22,6 +24,7 @@ namespace Eto.Mac.Forms
 			alert.AlertStyle = Convert(Type);
 			alert.MessageText = Caption ?? string.Empty;
 			alert.InformativeText = Text ?? string.Empty;
+			alert.Icon = Image?.ToNS() ?? NSApplication.SharedApplication.ApplicationIconImage;
 			var ret = MacModal.Run(alert, parent);
 			switch (Buttons)
 			{
