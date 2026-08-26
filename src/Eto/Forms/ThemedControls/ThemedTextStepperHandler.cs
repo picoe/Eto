@@ -336,7 +336,7 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	{
 		var ctl = (Control)sender;
 		var location = Widget.PointFromScreen(ctl.PointToScreen(e.Location));
-		var args = new MouseEventArgs(e.Buttons, e.Modifiers, location, e.Delta, e.Pressure);
+		var args = new MouseEventArgs(e.Buttons, e.Modifiers, location, e.Delta, e.Pressure, e.IsDirectionInverted);
 
 		callback(Widget, args);
 		e.Handled = args.Handled;

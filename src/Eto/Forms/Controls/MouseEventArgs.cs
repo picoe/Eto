@@ -38,12 +38,27 @@ public class MouseEventArgs : EventArgs
 	/// <param name="delta">Delta of the scroll wheel.</param>
 	/// <param name="pressure">Pressure of a stylus or touch, if applicable. 1.0f for full pressure or not supported</param>
 	public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta = null, float pressure = 1.0f)
+		: this(buttons, modifiers, location, delta, pressure, false)
+	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.MouseEventArgs"/> class.
+	/// </summary>
+	/// <param name="buttons">Buttons involved in the event.</param>
+	/// <param name="modifiers">Key modifiers such as Control, Alt, or Shift.</param>
+	/// <param name="location">Location of the mouse cursor for the event.</param>
+	/// <param name="delta">Delta of the scroll wheel.</param>
+	/// <param name="pressure">Pressure of a stylus or touch, if applicable. 1.0f for full pressure or not supported</param>
+	/// <param name="isDirectionInverted">Whether the <paramref name="delta"/> is inverted from the direction of the physical device.</param>
+	public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta, float pressure, bool isDirectionInverted)
 	{
 		this.Modifiers = modifiers;
 		this.Buttons = buttons;
 		this.Location = location;
 		this.Pressure = pressure;
 		this.Delta = delta ?? SizeF.Empty;
+		this.IsDirectionInverted = isDirectionInverted;
 	}
 
 	/// <summary>
@@ -85,4 +100,23 @@ public class MouseEventArgs : EventArgs
 	/// </summary>
 	/// <value>The scroll wheel delta.</value>
 	public SizeF Delta { get; private set; }
+
+	/// <summary>
+	/// Gets a value indicating that the <see cref="Delta"/> is inverted from the direction of the physical device.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This is <c>true</c> when the user has turned on natural (or reverse) scrolling for the device that generated the
+	/// event, in which case the platform has already flipped the <see cref="Delta"/> so that the content follows the
+	/// user's fingers. Use this when you need to move something with the device instead of with the content, such as
+	/// panning a canvas with a two finger scroll.
+	/// </para>
+	/// <para>
+	/// Only wheel events report this, and only on platforms that expose the setting per event (currently macOS via
+	/// <c>NSEvent.isDirectionInvertedFromDevice</c>). Elsewhere this is always <c>false</c>, as the platform gives no
+	/// way to tell an inverted delta from a regular one.
+	/// </para>
+	/// </remarks>
+	/// <value><c>true</c> if the delta is inverted from the device; otherwise, <c>false</c>.</value>
+	public bool IsDirectionInverted { get; private set; }
 }
