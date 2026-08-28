@@ -169,6 +169,18 @@ jobs:
       shell: pwsh
       run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -ResultsRoot artifacts/log -FileName mac.trx
 
+    # The same tests again, against the modern .NET macOS backend (Eto.macOS) rather than MonoMac
+    # (Eto.Mac64) above. Runs even when that one failed, so both backends always get reported.
+    - name: Run unit tests (macOS)
+      if: ${{ !cancelled() }}
+      timeout-minutes: 30
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-macos -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename macos.trx
+
+    - name: Test summary (macOS)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (macOS)" -FileName macos.trx
+
     - name: Upload log files
       if: ${{ failure() }}
       uses: actions/upload-artifact@v6

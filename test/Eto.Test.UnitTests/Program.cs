@@ -9,8 +9,11 @@ using System.Runtime.Loader;
 using System.Threading.Tasks;
 using Microsoft.Testing.Extensions;
 using Microsoft.Testing.Platform.Builder;
+using Microsoft.Testing.Platform.Capabilities.TestFramework;
 using NUnit.Framework;
+#if !MACOS
 using NUnit.VisualStudio.TestAdapter.TestingPlatformAdapter;
+#endif
 
 namespace Eto.Test.UnitTests;
 
@@ -34,6 +37,13 @@ internal static class Program
 		{
 			// WinForms-specific fixtures from test/Eto.Test.WinForms/UnitTests
 			yield return typeof(Eto.Test.WinForms.UnitTests.NativeTests).Assembly;
+		}
+#elif MACOS
+		// the net*-macos build only has the Mac backend (Eto.macOS/Eto.Test.macOS)
+		if (Platform.Instance.IsMac)
+		{
+			// Mac-specific fixtures from test/Eto.Test.Mac/UnitTests
+			yield return typeof(Eto.Test.Mac.UnitTests.BitmapTests).Assembly;
 		}
 #elif NET
 		if (Platform.Instance.IsGtk)
@@ -61,6 +71,9 @@ internal static class Program
 			platform.Add<ITestInput>(() => new Eto.Test.Wpf.TestInput());
 		else if (platform.IsWinForms)
 			platform.Add<ITestInput>(() => new Eto.Test.WinForms.TestInput());
+#elif MACOS
+		if (platform.IsMac)
+			platform.Add<ITestInput>(() => new Eto.Test.Mac.TestInput());
 #elif NET
 		if (platform.IsMac)
 			platform.Add<ITestInput>(() => new Eto.Test.Mac.TestInput());
@@ -93,6 +106,10 @@ internal static class Program
 							break;
 						case "winforms":
 							platform = new Eto.WinForms.Platform();
+							break;
+#elif MACOS
+						case "mac":
+							platform = new Eto.Mac.Platform();
 							break;
 #elif NET
 						case "gtk":
@@ -178,7 +195,16 @@ internal static class Program
 		{
 			var options = new TestApplicationOptions();
 			ITestApplicationBuilder builder = await Microsoft.Testing.Platform.Builder.TestApplication.CreateBuilderAsync(args);
+#if MACOS
+			// NUnit3TestAdapter's bridge can't load test assemblies under the macOS app bundle's host, so run
+			// NUnit in-process instead - see NUnitTestFramework.
+			builder.CommandLine.AddProvider(() => new FilterCommandLineOptionsProvider());
+			builder.RegisterTestFramework(
+				serviceProvider => new TestFrameworkCapabilities(new TrxReportCapability()),
+				(capabilities, serviceProvider) => new NUnitTestFramework(GetTestAssemblies, serviceProvider));
+#else
 			builder.AddNUnit(GetTestAssemblies);
+#endif
 			// registered explicitly (adds the trx report options) as we don't use the generated entry point
 			builder.AddTrxReportProvider();
 

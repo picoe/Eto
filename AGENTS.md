@@ -23,13 +23,32 @@ dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10
   `TestCategory!=ManualTest` (combine with `&`), e.g.
   `--filter "FullyQualifiedName~Grid&TestCategory!=ManualTest"` or, to run everything else,
   `--filter "TestCategory!=ManualTest"`.
-- **Always pass `-f`** — the project multi-targets `net48;net10.0;net10.0-windows`.
-  On Linux/macOS use `-f net10.0`; the Windows-only TFMs won't build there.
+- **Always pass `-f`** — the project multi-targets `net48;net10.0;net10.0-windows` (plus
+  `net10.0-macos` on a Mac). On Linux use `-f net10.0`; the Windows-only TFMs won't build there.
 - Test runner is Microsoft.Testing.Platform (set in `global.json`), NUnit 4.
 - **The modern Mac-specific tests are in `test/Eto.Test.Mac/Eto.Test.macOS.csproj` and require
   the matching .NET macOS workload.** The presence of `Microsoft.macOS.Ref` packs alone is not
   sufficient. If the workload rejects a newer Xcode patch version, set
   `<ValidateXcodeVersion>false</ValidateXcodeVersion>` (already set in `build/Common.Build.props`).
+- **On a Mac, `-f net10.0-macos` runs the tests against the modern .NET macOS backend**
+  (`Eto.macOS`/`Eto.Test.macOS`), `-f net10.0` against MonoMac (`Eto.Mac64`). The macos TFM builds the
+  runner as a real `.app` and has to: the bundle's native launcher is what initializes ObjCRuntime, so a
+  bundle-less build (`_CanOutputAppBundle=false`) produces an executable that dies in
+  `Runtime.EnsureInitialized` before reaching `Main`. `RunWithOpen=false` makes `dotnet test` run the
+  executable inside the bundle rather than `open`ing the app, which would detach it from the test host.
+- **NUnit3TestAdapter's testing-platform bridge can't run tests from an app bundle**, so the macos TFM
+  doesn't use it: the NUnit engine's driver builds an `AssemblyDependencyResolver` per test assembly,
+  which needs hostpolicy to have been initialized by `corehost_main`. The bundle's launcher starts the
+  runtime itself, so every assembly fails to load with "Hostpolicy must be initialized ...".
+  `Eto.Test.UnitTests/NUnitTestFramework.cs` runs NUnit in-process there instead (sharing
+  `UnitTestRunner` with the GUI app's Unit Tests section) and implements `--filter` itself — a subset:
+  `FullyQualifiedName`/`Name`/`TestCategory` with `=` `!=` `~` `!~`, combined with `&` and `|`, no
+  parentheses.
+- **A macos-TFM app killed at launch with no output at all** (exit 137, "Code Signature Invalid" in
+  `~/Library/Logs/DiagnosticReports`) means its bundled runtime dylibs weren't re-signed: the SDK rewrites
+  their install names, invalidating Microsoft's signature, and keeps the codesign stamps in `artifacts/obj`
+  — so deleting the `.app` without the obj dir makes it re-copy them and skip signing. Delete
+  `artifacts/obj/Mac/<project>` and rebuild.
 - **Reflection gotcha (net48 vs net):** `Type.GetType("Ns.Type, PresentationCore")` (partial assembly
   name) resolves on .NET but returns **null** on .NET Framework, so tests that reflect over WPF types
   (e.g. finding the native `ScrollViewer`) silently no-op on net48. Search loaded assemblies instead:
