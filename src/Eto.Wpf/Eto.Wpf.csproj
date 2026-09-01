@@ -108,6 +108,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Eto.WinForms\Win32.cs">
       <Link>Win32.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.WinForms\Win32.keymonitor.cs">
+      <Link>Win32.keymonitor.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.WinForms\Win32.dpi.cs">
       <Link>Win32.dpi.cs</Link>
     </Compile>

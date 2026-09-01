@@ -217,4 +217,99 @@ public class FormTests : WindowTests<Form>
 			await CloseAsync(parent);
 		}
 	});
+
+	// Whether an event is attached to the platform is tracked by this marker in the widget's property
+	// store. There is no public way to ask, and the whole point of RemoveHandlerEvent is that the
+	// answer changes, so the tests below look at it directly.
+	static bool IsAttached(Window window, string id) => window.Properties.ContainsKey(id + ".Instance");
+
+	[Test]
+	public void PreviewKeyDownShouldDetachWhenLastSubscriberRemoved()
+	{
+		Invoke(() =>
+		{
+			var form = new Form();
+			try
+			{
+				void First(object sender, KeyMonitorEventArgs e) { }
+				void Second(object sender, KeyMonitorEventArgs e) { }
+
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.False, "Should not be attached before anything subscribes");
+
+				form.PreviewKeyDown += First;
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.True, "Should attach for the first subscriber");
+
+				form.PreviewKeyDown += Second;
+				form.PreviewKeyDown -= Second;
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.True, "Should stay attached while a subscriber remains");
+
+				form.PreviewKeyDown -= First;
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.False, "Should detach when the last subscriber goes away");
+
+				// and it should come back, not be stuck detached
+				form.PreviewKeyDown += First;
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.True, "Should attach again on a later subscription");
+				form.PreviewKeyDown -= First;
+			}
+			finally
+			{
+				form.Dispose();
+			}
+		});
+	}
+
+	[Test]
+	public void PreviewKeyDownAndUpShouldDetachIndependently()
+	{
+		Invoke(() =>
+		{
+			var form = new Form();
+			try
+			{
+				void OnKey(object sender, KeyMonitorEventArgs e) { }
+
+				form.PreviewKeyDown += OnKey;
+				form.PreviewKeyUp += OnKey;
+				Assert.That(IsAttached(form, Window.PreviewKeyUpEvent), Is.True, "Key up should attach");
+
+				// the backends share one registration between the two, so dropping one must not
+				// stop the other from being reported
+				form.PreviewKeyDown -= OnKey;
+				Assert.That(IsAttached(form, Window.PreviewKeyDownEvent), Is.False, "Key down should detach");
+				Assert.That(IsAttached(form, Window.PreviewKeyUpEvent), Is.True, "Key up should still be attached");
+
+				form.PreviewKeyUp -= OnKey;
+				Assert.That(IsAttached(form, Window.PreviewKeyUpEvent), Is.False, "Key up should detach once it is dropped too");
+			}
+			finally
+			{
+				form.Dispose();
+			}
+		});
+	}
+
+	[Test]
+	public void PreviewKeyDownShouldBeReleasedWhenClosed()
+	{
+		// Backends keep their key monitor in process wide state - a thread wide hook on Windows, an
+		// AppKit event monitor on macOS - and let go of it in OnUnLoad. Closing has to be enough,
+		// since Dispose isn't guaranteed to run, so pin down that closing really does unload.
+		Invoke(() =>
+		{
+			var form = new Form { ClientSize = new Size(100, 100) };
+			form.PreviewKeyDown += (sender, e) => { };
+			try
+			{
+				form.Show();
+				Assert.That(form.Loaded, Is.True, "Form should be loaded once shown");
+
+				form.Close();
+				Assert.That(form.Loaded, Is.False, "Closing should unload the form so the key monitor is released");
+			}
+			finally
+			{
+				form.Dispose();
+			}
+		});
+	}
 }

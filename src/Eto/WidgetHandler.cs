@@ -110,6 +110,50 @@ public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
 	}
 
 	/// <summary>
+	/// Called when the last subscriber to an event has been removed, giving
+	/// <see cref="DetachEvent"/> the chance to stop listening for it.
+	/// </summary>
+	/// <remarks>
+	/// Override <see cref="DetachEvent"/> rather than this, the same way <see cref="AttachEvent"/> is
+	/// overridden rather than <see cref="HandleEvent"/>.
+	/// </remarks>
+	/// <param name="id">ID of the event to stop handling</param>
+	public void UnhandleEvent(string id)
+	{
+		var instanceId = id + InstanceEventSuffix;
+		if (!Widget.Properties.ContainsKey(instanceId))
+			return;
+
+		// clear it first so DetachEvent sees an accurate answer from IsEventHandled
+		Widget.Properties.Remove(instanceId);
+		if (!DetachEvent(id))
+		{
+			// the platform can't take this one back, so remember it is still attached and don't
+			// attach it a second time if something subscribes again
+			Widget.Properties.Add(instanceId, true);
+		}
+	}
+
+	/// <summary>
+	/// Detaches an event from the platform-specific control, undoing <see cref="AttachEvent"/>.
+	/// </summary>
+	/// <remarks>
+	/// Implementors can override this for events that hold onto something worth giving back while
+	/// they are attached, such as a system wide hook. Most events cost nothing to leave attached for
+	/// the life of the widget, which is why the default is to refuse.
+	///
+	/// Only reached for events whose remove accessor uses
+	/// <see cref="PropertyStore.RemoveHandlerEvent"/>, and never for an event that is attached
+	/// because the widget overrides its On[Event] method.
+	/// </remarks>
+	/// <param name="id">Identifier of the event</param>
+	/// <returns>
+	/// True if the event was detached, false if this platform can't detach it, in which case it
+	/// stays attached and won't be attached again on a later subscription.
+	/// </returns>
+	public virtual bool DetachEvent(string id) => false;
+
+	/// <summary>
 	/// Called to initialize this widget after it has been constructed
 	/// </summary>
 	/// <remarks>
