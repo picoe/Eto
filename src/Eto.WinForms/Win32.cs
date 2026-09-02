@@ -570,6 +570,10 @@ namespace Eto
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool UnhookWindowsHookEx(IntPtr hookId);
 
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
+
 		[DllImportAttribute("user32.dll")]
 		public static extern bool ReleaseCapture();
 

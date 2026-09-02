@@ -167,6 +167,29 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 		/// <param name="id">ID of the event to handle</param>
 		/// <param name = "defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
 		void HandleEvent(string id, bool defaultEvent = false);
+
+		/// <summary>
+		/// Called when the last subscriber to an event has been removed, so the platform can stop
+		/// listening for it.
+		/// </summary>
+		/// <remarks>
+		/// Only reached for events whose remove accessor uses
+		/// <see cref="PropertyStore.RemoveHandlerEvent"/>, and only for events that were attached
+		/// because something subscribed to them. An event attached because the widget overrides its
+		/// On[Event] method is never detached, since it has to keep firing regardless.
+		///
+		/// Most events stay attached for the life of the widget, which costs nothing. Detaching is
+		/// worth wiring up for the few that hold onto something expensive or process wide while they
+		/// are attached, such as a system wide hook. Handlers deriving from
+		/// <see cref="Eto.WidgetHandler{TWidget}"/> get an implementation of this that dispatches to
+		/// <see cref="Eto.WidgetHandler{TWidget}.DetachEvent"/>, which is what to override.
+		/// </remarks>
+		/// <param name="id">ID of the event to stop handling</param>
+#if NET
+		void UnhandleEvent(string id) { }
+#else
+		void UnhandleEvent(string id);
+#endif
 	}
 
 	/// <summary>
@@ -521,6 +544,12 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 	/// </example>
 	/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
 	internal void HandleEvent(string id) => WidgetHandler?.HandleEvent(id);
+
+	/// <summary>
+	/// Tells the handler that the last subscriber to the specified event has gone away.
+	/// </summary>
+	/// <param name="id">ID of the event to stop handling.</param>
+	internal void UnhandleEvent(string id) => WidgetHandler?.UnhandleEvent(id);
 
 	/// <summary>
 	/// Disposes of this widget, supressing the finalizer

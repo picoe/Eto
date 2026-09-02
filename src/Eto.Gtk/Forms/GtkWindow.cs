@@ -478,9 +478,35 @@ namespace Eto.GtkSharp.Forms
 				case Window.LogicalPixelSizeChangedEvent:
 					// not supported on GTK, yet.
 					break;
+				// The toplevel gets key events before it propagates them to the focused widget, so
+				// hooking it here is the capture phase. Note this won't see keys delivered straight to
+				// an embedded foreign window such as a GtkSocket.
+				case Window.PreviewKeyDownEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
+					EventControl.KeyPressEvent += Connector.HandleWindowPreviewKeyPressEvent;
+					break;
+				case Window.PreviewKeyUpEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
+					EventControl.KeyReleaseEvent += Connector.HandleWindowPreviewKeyReleaseEvent;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+					EventControl.KeyPressEvent -= Connector.HandleWindowPreviewKeyPressEvent;
+					return true;
+				case Window.PreviewKeyUpEvent:
+					EventControl.KeyReleaseEvent -= Connector.HandleWindowPreviewKeyReleaseEvent;
+					return true;
+				default:
+					return base.DetachEvent(id);
 			}
 		}
 
@@ -561,6 +587,30 @@ namespace Eto.GtkSharp.Forms
 					handler.Callback.OnKeyDown(handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleWindowPreviewKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var e = args.Event.ToEto();
+				if (e != null)
+					handler.Callback.OnPreviewKeyDown(handler.Widget, new KeyMonitorEventArgs(e.KeyData, KeyEventType.KeyDown));
+				// deliberately leaves args.RetVal alone, monitoring never consumes the key
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleWindowPreviewKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var e = args.Event.ToEto();
+				if (e != null)
+					handler.Callback.OnPreviewKeyUp(handler.Widget, new KeyMonitorEventArgs(e.KeyData, KeyEventType.KeyUp));
+				// deliberately leaves args.RetVal alone, monitoring never consumes the key
 			}
 
 			public void HandleWindowSizeAllocated(object o, Gtk.SizeAllocatedArgs args)

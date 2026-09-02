@@ -203,6 +203,8 @@ namespace Eto.Mac.Forms
 	{
 		internal static readonly object InitialLocation_Key = new object();
 		internal static readonly object PreferredClientSize_Key = new object();
+		internal static readonly object MonitorKeys_Key = new object();
+		internal static readonly object KeyMonitor_Key = new object();
 		internal static readonly Selector selSetStyleMask = new Selector("setStyleMask:");
 		internal static IntPtr selMainMenu = Selector.GetHandle("mainMenu");
 		internal static IntPtr selSetMainMenu = Selector.GetHandle("setMainMenu:");
@@ -425,6 +427,10 @@ namespace Eto.Mac.Forms
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					Control.DidResignKey += HandleLostFocus;
+					break;
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					AttachKeyMonitor();
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					{
@@ -1158,6 +1164,8 @@ namespace Eto.Mac.Forms
 				PositionWindow();
 			}
 			base.OnLoad(e);
+			if (MonitorKeys)
+				RegisterKeyMonitor();
 		}
 
 		Size GetBorderSize()
@@ -1418,8 +1426,93 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		bool MonitorKeys
+		{
+			get => Widget.Properties.Get<bool>(MacWindow.MonitorKeys_Key);
+			set => Widget.Properties.Set(MacWindow.MonitorKeys_Key, value);
+		}
+
+		NSObject KeyMonitor
+		{
+			get => Widget.Properties.Get<NSObject>(MacWindow.KeyMonitor_Key);
+			set => Widget.Properties.Set(MacWindow.KeyMonitor_Key, value);
+		}
+
+		/// <summary>
+		/// Key events go to the first responder and never bubble anywhere Eto can see them, so a local
+		/// event monitor is the only way to notice keys going to content hosted in the window. Both
+		/// preview key events share one monitor; raising a callback nobody subscribed to is harmless.
+		/// </summary>
+		/// <remarks>
+		/// AppKit holds the monitor block, and with it this handler, so it is deferred until the window
+		/// is loaded and removed again when it unloads. A window that is never shown never installs a
+		/// monitor, and one that is closed lets go without waiting for a Dispose that may never come.
+		/// </remarks>
+		void AttachKeyMonitor()
+		{
+			MonitorKeys = true;
+			if (Widget.Loaded)
+				RegisterKeyMonitor();
+		}
+
+		void RegisterKeyMonitor()
+		{
+			if (KeyMonitor != null)
+				return;
+			KeyMonitor = NSEvent.AddLocalMonitorForEventsMatchingMask(NSEventMask.KeyDown | NSEventMask.KeyUp, theEvent =>
+			{
+				// only keys headed for this window, and always hand the event back untouched so the
+				// responder chain still gets it
+				if (theEvent != null && theEvent.Window == Control)
+				{
+					var key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
+					if (theEvent.Type == NSEventType.KeyDown)
+						Callback.OnPreviewKeyDown(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyDown));
+					else
+						Callback.OnPreviewKeyUp(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyUp));
+				}
+				return theEvent;
+			});
+		}
+
+		void DetachKeyMonitor()
+		{
+			var monitor = KeyMonitor;
+			if (monitor == null)
+				return;
+			NSEvent.RemoveMonitor(monitor);
+			KeyMonitor = null;
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					// one monitor serves both, so only give it up when neither is still wanted
+					var other = id == Window.PreviewKeyDownEvent ? Window.PreviewKeyUpEvent : Window.PreviewKeyDownEvent;
+					if (!IsEventHandled(other))
+					{
+						MonitorKeys = false;
+						DetachKeyMonitor();
+					}
+					return true;
+				default:
+					return base.DetachEvent(id);
+			}
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			DetachKeyMonitor();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
+			DetachKeyMonitor();
+
 			if (disposing && Widget.Loaded)
 			{
 				// we can't cancel closing in this case, so don't bother firing the closing event

@@ -14,6 +14,8 @@ namespace Eto.WinForms.Forms
 	{
 		internal static readonly object MovableByWindowBackground_Key = new object();
 		internal static readonly object IsClosing_Key = new object();
+		internal static readonly object MonitorKeys_Key = new object();
+		internal static readonly object KeyMonitor_Key = new object();
 		internal static readonly object Closeable_Key = new object();
 
 		public Window FromPoint(PointF point)
@@ -35,7 +37,7 @@ namespace Eto.WinForms.Forms
 		}
 	}
 
-	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, Window.IHandler, IWindowHandler
+	public abstract class WindowHandler<TControl, TWidget, TCallback> : WindowsPanel<TControl, TWidget, TCallback>, Window.IHandler, IWindowHandler, Win32.KeyMonitor.ITarget
 		where TControl : swf.Form
 		where TWidget : Window
 		where TCallback : Window.ICallback
@@ -277,10 +279,106 @@ namespace Eto.WinForms.Forms
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					AttachKeyMonitor();
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		bool MonitorKeys
+		{
+			get => Widget.Properties.Get<bool>(WindowHandler.MonitorKeys_Key);
+			set => Widget.Properties.Set(WindowHandler.MonitorKeys_Key, value);
+		}
+
+		IDisposable KeyMonitor
+		{
+			get => Widget.Properties.Get<IDisposable>(WindowHandler.KeyMonitor_Key);
+			set => Widget.Properties.Set(WindowHandler.KeyMonitor_Key, value);
+		}
+
+		/// <summary>
+		/// Both preview key events share a single registration, since the underlying hook reports key
+		/// down and key up together. Raising a callback nobody subscribed to is harmless.
+		/// </summary>
+		/// <remarks>
+		/// The registration goes in a process wide list, so it is deferred until the window is loaded
+		/// and dropped again when it unloads. A window that is never shown never registers, and one
+		/// that is closed lets go without waiting for a Dispose that may never come.
+		/// </remarks>
+		void AttachKeyMonitor()
+		{
+			MonitorKeys = true;
+			if (Widget.Loaded)
+				RegisterKeyMonitor();
+		}
+
+		void RegisterKeyMonitor()
+		{
+			if (KeyMonitor == null)
+				KeyMonitor = Win32.KeyMonitor.Register(this);
+		}
+
+		IntPtr Win32.KeyMonitor.ITarget.KeyMonitorHandle => Control.IsHandleCreated ? Control.Handle : IntPtr.Zero;
+
+		void Win32.KeyMonitor.ITarget.OnKeyMonitorKey(int virtualKey, bool isKeyDown)
+		{
+			var key = ((swf.Keys)virtualKey).ToEto();
+			if (isKeyDown)
+				Callback.OnPreviewKeyDown(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyDown));
+			else
+				Callback.OnPreviewKeyUp(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyUp));
+		}
+
+		void DetachKeyMonitor()
+		{
+			var monitor = KeyMonitor;
+			if (monitor == null)
+				return;
+			monitor.Dispose();
+			KeyMonitor = null;
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					// one registration serves both, so only give it up when neither is still wanted
+					var other = id == Window.PreviewKeyDownEvent ? Window.PreviewKeyUpEvent : Window.PreviewKeyDownEvent;
+					if (!IsEventHandled(other))
+					{
+						MonitorKeys = false;
+						DetachKeyMonitor();
+					}
+					return true;
+				default:
+					return base.DetachEvent(id);
+			}
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			if (MonitorKeys)
+				RegisterKeyMonitor();
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			DetachKeyMonitor();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			DetachKeyMonitor();
+			base.Dispose(disposing);
 		}
 
 		bool IsClosing

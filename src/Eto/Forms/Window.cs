@@ -190,6 +190,76 @@ public abstract class Window : Panel
 		Properties.TriggerEvent(LogicalPixelSizeChangedEvent, this, e);
 	}
 
+	/// <summary>
+	/// Identifier for handlers when attaching the <see cref="PreviewKeyDown"/> event.
+	/// </summary>
+	public const string PreviewKeyDownEvent = "Window.PreviewKeyDown";
+
+	/// <summary>
+	/// Occurs when a key is pressed anywhere in this window, before the focused control handles it.
+	/// </summary>
+	/// <remarks>
+	/// <see cref="Control.KeyDown"/> is raised by the control that has the keyboard focus and bubbles
+	/// up the widget tree, so it only ever sees keys that Eto itself is routing. This is raised for
+	/// every key going to the window no matter what owns the focus, including content that is not part
+	/// of the widget tree at all such as a control hosted by <see cref="NativeControlHost"/> or a
+	/// <see cref="WebView"/>, whose keys are handled entirely by the platform and never surface as Eto
+	/// events. Use it to notice that the user is typing somewhere in a window; use
+	/// <see cref="Control.KeyDown"/> to handle or suppress a key.
+	///
+	/// This only observes, it never consumes: the focused control always goes on to receive the key,
+	/// which is why <see cref="KeyMonitorEventArgs"/> has no way to mark the event as handled.
+	///
+	/// Keys are reported as pressed, ahead of any input method, so a key that only contributes to an
+	/// IME composition is still reported even though it produces no text on its own. This reports
+	/// keys, not text, and the character a key produces is deliberately not included.
+	///
+	/// Working out which window a key is destined for is best effort on some platforms. On Windows it
+	/// is inferred from the focused window at the time the key is dispatched, which can be wrong while
+	/// a platform modal or menu tracking loop is running.
+	/// </remarks>
+	public event EventHandler<KeyMonitorEventArgs> PreviewKeyDown
+	{
+		add { Properties.AddHandlerEvent(PreviewKeyDownEvent, value); }
+		remove { Properties.RemoveHandlerEvent(PreviewKeyDownEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="PreviewKeyDown"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	protected virtual void OnPreviewKeyDown(KeyMonitorEventArgs e)
+	{
+		Properties.TriggerEvent(PreviewKeyDownEvent, this, e);
+	}
+
+	/// <summary>
+	/// Identifier for handlers when attaching the <see cref="PreviewKeyUp"/> event.
+	/// </summary>
+	public const string PreviewKeyUpEvent = "Window.PreviewKeyUp";
+
+	/// <summary>
+	/// Occurs when a key is released anywhere in this window, before the focused control handles it.
+	/// </summary>
+	/// <remarks>
+	/// See <see cref="PreviewKeyDown"/> for how this differs from <see cref="Control.KeyUp"/>, and for
+	/// the caveats that apply to both.
+	/// </remarks>
+	public event EventHandler<KeyMonitorEventArgs> PreviewKeyUp
+	{
+		add { Properties.AddHandlerEvent(PreviewKeyUpEvent, value); }
+		remove { Properties.RemoveHandlerEvent(PreviewKeyUpEvent, value); }
+	}
+
+	/// <summary>
+	/// Raises the <see cref="PreviewKeyUp"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	protected virtual void OnPreviewKeyUp(KeyMonitorEventArgs e)
+	{
+		Properties.TriggerEvent(PreviewKeyUpEvent, this, e);
+	}
+
 	#endregion
 
 	static Window()
@@ -199,6 +269,8 @@ public abstract class Window : Panel
 		EventLookup.Register<Window>(c => c.OnLocationChanged(null), LocationChangedEvent);
 		EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
 		EventLookup.Register<Window>(c => c.OnLogicalPixelSizeChanged(null), LogicalPixelSizeChangedEvent);
+		EventLookup.Register<Window>(c => c.OnPreviewKeyDown(null), PreviewKeyDownEvent);
+		EventLookup.Register<Window>(c => c.OnPreviewKeyUp(null), PreviewKeyUpEvent);
 	}
 		
 	/// <summary>
@@ -651,6 +723,14 @@ public abstract class Window : Panel
 		/// Raises the load complete event.
 		/// </summary>
 		void OnLoadComplete(Window widget, EventArgs e);
+		/// <summary>
+		/// Raises the preview key down event.
+		/// </summary>
+		void OnPreviewKeyDown(Window widget, KeyMonitorEventArgs e);
+		/// <summary>
+		/// Raises the preview key up event.
+		/// </summary>
+		void OnPreviewKeyUp(Window widget, KeyMonitorEventArgs e);
 	}
 
 	/// <summary>
@@ -705,6 +785,22 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnLoadComplete(e);
+		}
+		/// <summary>
+		/// Raises the preview key down event.
+		/// </summary>
+		public void OnPreviewKeyDown(Window widget, KeyMonitorEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnPreviewKeyDown(e);
+		}
+		/// <summary>
+		/// Raises the preview key up event.
+		/// </summary>
+		public void OnPreviewKeyUp(Window widget, KeyMonitorEventArgs e)
+		{
+			using (widget.Platform.Context)
+				widget.OnPreviewKeyUp(e);
 		}
 	}
 

@@ -203,6 +203,43 @@ public class PropertyStore : Dictionary<object, object>
 	}
 
 	/// <summary>
+	/// Removes a handler-based event delegate with the specified <paramref name="key"/>, telling the
+	/// handler to stop listening once the last subscriber is gone.
+	/// </summary>
+	/// <remarks>
+	/// Use this in the remove accessor of an event added with <see cref="AddHandlerEvent"/> when the
+	/// platform holds onto something worth giving back while the event is attached, such as a system
+	/// wide hook. <see cref="RemoveEvent"/> leaves the event attached for the life of the widget,
+	/// which is fine and cheaper for the vast majority of events.
+	///
+	/// The handler is only told once nothing is subscribed any more, and never for an event that is
+	/// attached because the widget overrides its On[Event] method, since that has to keep firing.
+	/// A handler that can't detach the event says so, and it stays attached.
+	/// </remarks>
+	/// <param name="key">Key of the event to remove</param>
+	/// <param name="value">Delegate to remove from the event</param>
+	public void RemoveHandlerEvent(string key, Delegate value)
+	{
+		var parentWidget = Parent as Widget;
+		if (parentWidget == null)
+			throw new InvalidOperationException("Parent must subclass Widget");
+
+		if (!TryGetValue(key, out var existingDelegate))
+			return;
+
+		var remaining = Delegate.Remove((Delegate)existingDelegate, value);
+		if (remaining != null)
+		{
+			this[key] = remaining;
+			return;
+		}
+
+		Remove(key);
+		if (!EventLookup.IsDefault(parentWidget, key))
+			parentWidget.UnhandleEvent(key);
+	}
+
+	/// <summary>
 	/// Triggers an event with the specified key
 	/// </summary>
 	/// <remarks>
