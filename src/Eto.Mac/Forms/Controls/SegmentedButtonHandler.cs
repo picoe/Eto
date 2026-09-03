@@ -117,6 +117,7 @@ namespace Eto.Mac.Forms.Controls
 			switch (id)
 			{
 				case SegmentedItem.ClickEvent:
+				case SegmentedItem.SelectedChangedEvent:
 					// handled intrinsically
 					break;
 				default:
