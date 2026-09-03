@@ -139,6 +139,15 @@ Gtk.Main.DoEvent(ev);
 - Anything reading the *real* pointer (`Mouse.Position`, `Mouse.Buttons`, and so the location and
   buttons of events Eto synthesizes itself) still reports the physical mouse, not your fake events.
 
+**Use `Gtk.Global.PropagateEvent`, not `Gtk.Main.DoEvent`, for synthesized *key* events.** `DoEvent`
+silently drops them once any earlier test in the process has shown and closed a window containing a
+`ComboBox` (bisected to `ComboBoxTests.SettingDataStoreToNullAfterPopulatedShouldNotCrash`): the
+toplevel's `key-press-event` never fires, while `Gtk.Grab.Current`, the window-group grab and the
+device grab are all null and the window is active with toplevel focus — so it is not a leftover grab,
+and it is invisible when the fixture runs alone. `Gtk.Global.PropagateEvent(toplevel, ev)` is immune
+and is what GTK itself uses for keys (accelerators → focus widget → window bindings). `DoEvent`
+remains correct for the mouse case above.
+
 ## Test project layout (non-obvious)
 
 - Unit-test **source `.cs` files live in `test/Eto.Test/UnitTests/`** (compiled as part of
@@ -167,6 +176,12 @@ does not — e.g. hooking `TextInput` on one `Drawable` used to make every `EtoD
 `NSTextInputClient`, so the OS treated them all as text input (AutoFill in their context menus).
 `MacViewTextInput` handles this by also overriding `inputContext`/`conformsToProtocol:` to answer per
 instance from `IMacViewHandler.HandlesTextInput`. Apply the same pattern for any new class-level state.
+
+For the same reason a handler's control must never be an instance of a *shared base* view class: the
+methods added for its events are inherited by every view deriving from that base. `NativeControlHandler`
+used a bare `MacPanelView`, so handling `KeyDown` on a `NativeControlHost` gave the window's
+`EtoContentView` a `keyDown:` too and every `Form.KeyDown` fired twice. Give each handler its own
+subclass, however empty.
 
 **`e.Handled = true` in `MouseDown` silently kills the control's `ContextMenu` on Mac.**
 `MacView.TriggerMouseDown` only forwards to `objc_msgSendSuper` when `!args.Handled`, and it's that super

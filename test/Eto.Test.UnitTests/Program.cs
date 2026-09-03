@@ -49,6 +49,26 @@ internal static class Program
 #endif
 	}
 
+	/// <summary>
+	/// Registers the platform's <see cref="ITestInput"/> implementation, which lives in the
+	/// Eto.Test.&lt;Platform&gt; app assembly alongside its other platform-specific test code. The apps
+	/// do this in their own Startup, so it has to be done here as well for `dotnet test`.
+	/// </summary>
+	static void RegisterTestInput(Platform platform)
+	{
+#if WINDOWS || NETFRAMEWORK
+		if (platform.IsWpf)
+			platform.Add<ITestInput>(() => new Eto.Test.Wpf.TestInput());
+		else if (platform.IsWinForms)
+			platform.Add<ITestInput>(() => new Eto.Test.WinForms.TestInput());
+#elif NET
+		if (platform.IsMac)
+			platform.Add<ITestInput>(() => new Eto.Test.Mac.TestInput());
+		else if (platform.IsGtk)
+			platform.Add<ITestInput>(() => new Eto.Test.Gtk.TestInput());
+#endif
+	}
+
 	[STAThread]
 	public static int Main(string[] args)
 	{
@@ -95,6 +115,8 @@ internal static class Program
 		
 		if (platform == null)
 			platform = Platform.Detect;
+
+		RegisterTestInput(platform);
 
 		using var app = new Application(platform);
 

@@ -17,6 +17,7 @@ namespace Eto.Test.Mac
 			stopwatch.Start();
 			var platform = new Eto.Mac.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
+			platform.Add<Eto.Test.UnitTests.ITestInput>(() => new TestInput());
 			stopwatch.Stop();
 			
 			var app = new TestApplication(platform);

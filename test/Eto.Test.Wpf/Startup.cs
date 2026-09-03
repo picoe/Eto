@@ -13,6 +13,7 @@ namespace Eto.Test.Wpf
 #endif
 			var platform = new Eto.Wpf.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
+			platform.Add<Eto.Test.UnitTests.ITestInput>(() => new TestInput());
 
 			// optional - enables GDI text display mode
 			/**

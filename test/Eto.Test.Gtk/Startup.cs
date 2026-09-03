@@ -12,6 +12,7 @@ namespace Eto.Test.Gtk
 #endif
 			var platform = new Eto.GtkSharp.Platform();
 			platform.Add<INativeHostControls>(() => new NativeHostControls());
+			platform.Add<Eto.Test.UnitTests.ITestInput>(() => new TestInput());
 			
 			var app = new TestApplication(platform);
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
