@@ -401,6 +401,19 @@ namespace Eto.Wpf.Forms
 
 		protected virtual sw.FrameworkElement KeyEventControl => Control;
 
+		/// <summary>
+		/// An additional element to hook the key events on, for when the routed event does not pass
+		/// through <see cref="KeyEventControl"/> at all.
+		/// </summary>
+		/// <remarks>
+		/// Windows hook their key events on an inner element so they are seen before the window's own
+		/// input bindings (menu shortcuts) can mark them as handled. That element is only in the route
+		/// when something inside the content has keyboard focus, so when focus is on the window itself
+		/// the key events would otherwise never be raised. Events from this element are ignored when
+		/// they already went through <see cref="KeyEventControl"/>.
+		/// </remarks>
+		protected virtual sw.FrameworkElement FallbackKeyEventControl => null;
+
 		public virtual void Focus()
 		{
 			if (FocusControl.IsLoaded)
@@ -504,12 +517,19 @@ namespace Eto.Wpf.Forms
 						KeyEventControl.KeyDown += HandleKeyDown;
 						KeyEventControl.TextInput += HandleTextInput;
 					}
+					if (FallbackKeyEventControl is sw.FrameworkElement fallbackKeyDown)
+					{
+						fallbackKeyDown.KeyDown += HandleFallbackKeyDown;
+						fallbackKeyDown.TextInput += HandleFallbackTextInput;
+					}
 					break;
 				case Eto.Forms.Control.TextInputEvent:
 					HandleEvent(Eto.Forms.Control.KeyDownEvent);
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					KeyEventControl.KeyUp += HandleKeyUp;
+					if (FallbackKeyEventControl is sw.FrameworkElement fallbackKeyUp)
+						fallbackKeyUp.KeyUp += HandleFallbackKeyUp;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					ContainerControl.IsVisibleChanged += HandleIsVisibleChanged;
@@ -854,8 +874,37 @@ namespace Eto.Wpf.Forms
 			return new WpfDragEventArgs(source, dragData, data.AllowedEffects.ToEto(), location, modifiers, buttons, controlObject);
 		}
 
+		/// <summary>
+		/// The routed args last seen by the primary key handlers, so the fallback handlers can tell
+		/// whether the event already went through <see cref="KeyEventControl"/>.
+		/// </summary>
+		/// <remarks>
+		/// <see cref="KeyEventControl"/> is always hit before <see cref="FallbackKeyEventControl"/>,
+		/// either as a descendant of it in the bubbling route, or via the tunneling preview event.
+		/// </remarks>
+		object _lastKeyEventArgs;
+
+		void HandleFallbackKeyDown(object sender, swi.KeyEventArgs e)
+		{
+			if (!ReferenceEquals(_lastKeyEventArgs, e))
+				HandleKeyDown(sender, e);
+		}
+
+		void HandleFallbackKeyUp(object sender, swi.KeyEventArgs e)
+		{
+			if (!ReferenceEquals(_lastKeyEventArgs, e))
+				HandleKeyUp(sender, e);
+		}
+
+		void HandleFallbackTextInput(object sender, swi.TextCompositionEventArgs e)
+		{
+			if (!ReferenceEquals(_lastKeyEventArgs, e))
+				HandleTextInput(sender, e);
+		}
+
 		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
 		{
+			_lastKeyEventArgs = e;
 			var tiargs = new TextInputEventArgs(e.Text);
 			Callback.OnTextInput(Widget, tiargs);
 			if (tiargs.Cancel)
@@ -875,6 +924,7 @@ namespace Eto.Wpf.Forms
 
 		void HandleKeyDown(object sender, swi.KeyEventArgs e)
 		{
+			_lastKeyEventArgs = e;
 			if (SuppressKeyEvents)
 				return;
 
@@ -888,9 +938,10 @@ namespace Eto.Wpf.Forms
 
 		void HandleKeyUp(object sender, swi.KeyEventArgs e)
 		{
+			_lastKeyEventArgs = e;
 			if (SuppressKeyEvents)
 				return;
-			
+
 			var args = e.ToEto(KeyEventType.KeyUp);
 			if (args.KeyData != Keys.None)
 			{

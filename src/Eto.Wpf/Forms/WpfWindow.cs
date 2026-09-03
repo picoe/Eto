@@ -84,6 +84,10 @@ namespace Eto.Wpf.Forms
 
 		protected override sw.FrameworkElement KeyEventControl => main;
 
+		// main is only in the route when something inside the window has keyboard focus, so hook the
+		// window itself as well to get the keys when focus is on the window.
+		protected override sw.FrameworkElement FallbackKeyEventControl => Control;
+
 		public bool MovableByWindowBackground
 		{
 			get => Widget.Properties.Get<bool>(WpfWindow.MovableByWindowBackground_Key);
