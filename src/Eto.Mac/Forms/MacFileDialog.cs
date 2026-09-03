@@ -110,14 +110,22 @@ namespace Eto.Mac.Forms
 				return;
 			macfilters = filters;
 
-#if MACOS_NET
-			Control.AllowedContentTypes = macfilters?.Distinct().Select(UniformTypeIdentifiers.UTType.CreateFromExtension).ToArray()
-				?? Array.Empty<UniformTypeIdentifiers.UTType>();
-#else			
+			var allowedTypes = GetNativeFileTypes(macfilters);
 
-			Control.AllowedFileTypes = macfilters?.Distinct().ToArray();
+#if MACOS_NET
+			Control.AllowedContentTypes = allowedTypes?.Distinct().Select(UniformTypeIdentifiers.UTType.CreateFromExtension).ToArray()
+				?? Array.Empty<UniformTypeIdentifiers.UTType>();
+#else
+
+			Control.AllowedFileTypes = allowedTypes?.Distinct().ToArray();
 #endif
 		}
+
+		/// <summary>
+		/// Gets the extensions to restrict the native panel to, which can differ from <see cref="MacFilters"/>
+		/// used by <see cref="SavePanelDelegate"/> to enable/disable files in the list.
+		/// </summary>
+		internal virtual List<string> GetNativeFileTypes(List<string> filters) => filters;
 
 		public int CurrentFilterIndex
 		{

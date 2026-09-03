@@ -23,6 +23,19 @@ namespace Eto.Test.UnitTests.Forms
 			fd.Filters.Add(new FileFilter("Text Files", ".txt"));
 			fd.ShowDialog(null);
 		}
+
+		[Test, ManualTest, InvokeOnUI]
+		public void DotFileNameShouldNotHaveDoubleExtension()
+		{
+			// macOS doesn't consider a leading period to be an extension, so it would append the
+			// filter's extension and show ".gitignore.gitignore"
+			var fd = new SaveFileDialog();
+			fd.Title = "Press OK to continue";
+			fd.Filters.Add(new FileFilter("Git Ignore", ".gitignore"));
+			fd.FileName = ".gitignore";
+			fd.ShowDialog(null);
+			Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo(".gitignore"), "#1");
+		}
 	}
 
 	public class FileDialogTests<T> : TestBase
