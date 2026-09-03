@@ -413,9 +413,27 @@ namespace Eto.Mac
 			}
 		}
 
+		/// <summary>
+		/// Gets the character input for the key event, or null if the key does not correspond to a character.
+		/// </summary>
+		/// <remarks>
+		/// macOS reports non-character keys such as the arrow keys, function keys, page up/down, home/end, etc.
+		/// using the unicode private use area reserved for function keys, so exclude those.
+		/// </remarks>
+		static char? GetKeyChar(NSEvent theEvent)
+		{
+			var characters = theEvent.Characters;
+			if (string.IsNullOrEmpty(characters))
+				return null;
+			var keyChar = characters[0];
+			if (keyChar >= 0xF700 && keyChar <= 0xF8FF)
+				return null;
+			return keyChar;
+		}
+
 		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
-			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
+			char? keyChar = GetKeyChar(theEvent);
 			var charactersIgnoringModifiers = theEvent.CharactersIgnoringModifiers;
 			Keys key = Keys.None;
 			if (!string.IsNullOrEmpty(charactersIgnoringModifiers)
