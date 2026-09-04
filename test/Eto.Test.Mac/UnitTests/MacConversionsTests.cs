@@ -118,7 +118,7 @@ public class MacConversionsTests : TestBase
 		int keyCode,
 		Keys expectedKey)
 	{
-		using var keyEvent = CreatePhysicalKeyEvent(keyCode, numericPad: true);
+		using var keyEvent = KeyEvents.CreatePhysicalKeyEvent(keyCode, modifiers: NSEventModifierMask.NumericPadKeyMask);
 
 		var args = keyEvent.ToEtoKeyEventArgs();
 
@@ -129,7 +129,7 @@ public class MacConversionsTests : TestBase
 	[InvokeOnUI]
 	public void ToEtoKeyEventArgsShouldUseKeyCodeForControlCharacters()
 	{
-		using var keyEvent = CreatePhysicalKeyEvent(51); // Backspace.
+		using var keyEvent = KeyEvents.CreatePhysicalKeyEvent(51); // Backspace.
 
 		var args = keyEvent.ToEtoKeyEventArgs();
 
@@ -140,7 +140,7 @@ public class MacConversionsTests : TestBase
 	[InvokeOnUI]
 	public void ToEtoKeyEventArgsShouldFallBackToKeyCodeWhenCharacterHasNoMapping()
 	{
-		using var keyEvent = CreatePhysicalKeyEvent(105); // F13.
+		using var keyEvent = KeyEvents.CreatePhysicalKeyEvent(105); // F13.
 
 		var args = keyEvent.ToEtoKeyEventArgs();
 
@@ -225,43 +225,4 @@ public class MacConversionsTests : TestBase
 			false,
 			checked((ushort)keyCode));
 	}
-
-	static NSEvent CreatePhysicalKeyEvent(int keyCode, bool numericPad = false)
-	{
-#if MONOMAC
-		var cgEvent = CGEventCreateKeyboardEvent(IntPtr.Zero, checked((ushort)keyCode), true);
-		if (cgEvent == IntPtr.Zero)
-			throw new InvalidOperationException("Could not create keyboard event");
-		try
-		{
-			if (numericPad)
-				CGEventSetFlags(cgEvent, (ulong)NSEventModifierFlags.NumericPad);
-			return NSEvent.EventWithCGEvent(cgEvent);
-		}
-		finally
-		{
-			CFRelease(cgEvent);
-		}
-#else
-		using var cgEvent = new CGEvent(null, checked((ushort)keyCode), true)
-		{
-			Flags = numericPad ? CGEventFlags.NumericPad : 0
-		};
-		return NSEvent.Create(cgEvent);
-#endif
-	}
-
-#if MONOMAC
-	[DllImport(Constants.CoreGraphicsLibrary)]
-	static extern IntPtr CGEventCreateKeyboardEvent(
-		IntPtr source,
-		ushort virtualKey,
-		[MarshalAs(UnmanagedType.I1)] bool keyDown);
-
-	[DllImport(Constants.CoreGraphicsLibrary)]
-	static extern void CGEventSetFlags(IntPtr cgEvent, ulong flags);
-
-	[DllImport(Constants.CoreFoundationLibrary)]
-	static extern void CFRelease(IntPtr value);
-#endif
 }

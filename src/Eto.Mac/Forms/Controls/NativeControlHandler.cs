@@ -5,6 +5,13 @@
 		NSViewController controller;
 		bool createdOwnView;
 
+		// MacBase.AddMethod adds to the native CLASS, so hosting our own view must not use MacPanelView
+		// itself - every other view deriving from it (notably the window's content view) would inherit
+		// the methods added for this control's events.
+		class EtoNativeControlView : MacPanelView
+		{
+		}
+
 		// there's nothing to measure when we host our own (empty) view, so use a default size
 		// so the control still reports a sane preferred size like other Eto controls.
 		static readonly SizeF DefaultSize = new SizeF(100, 100);
@@ -69,7 +76,7 @@
 			if (nativeControl == null)
 			{
 				createdOwnView = true;
-				return new MacPanelView();
+				return new EtoNativeControlView();
 			}
 			else if (nativeControl is NSView view)
 			{

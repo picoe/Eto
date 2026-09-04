@@ -136,6 +136,7 @@ namespace Eto.Wpf.Forms
 			Control.Content = main;
 			Control.SourceInitialized += (sender, e) => OnSourceInitialized();
 			Control.Loaded += Control_Loaded;
+			Control.IsEnabledChanged += Control_IsEnabledChanged;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
 				// need to call validate on the input bindings before trying to execute them
@@ -236,12 +237,36 @@ namespace Eto.Wpf.Forms
 			// which we do not want.
 			SetSizeToContent();
 			if (Control.ShowActivated)
-				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+				MoveFocusToContent();
 
 			HwndSource?.AddHook(HookProc);
 
 			if (FireOnLoadComplete)
 				Callback.OnLoadComplete(Widget, EventArgs.Empty);
+		}
+
+		void MoveFocusToContent() => Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+
+		private void Control_IsEnabledChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			// WPF clears the keyboard focus when a window gets disabled, but does not restore it when
+			// the window is enabled again. A window with nothing focused inside it gets no keyboard
+			// input at all (not even at the window itself), so focus has to be moved back into it.
+			// Which control ends up with it is not preserved, same as the other platforms.
+			if (Control.IsEnabled && Control.ShowActivated)
+			{
+				// the children are not enabled again yet, which would make focusing them fail, so
+				// wait until the enabled state has settled.
+				Control.Dispatcher.BeginInvoke(new Action(RestoreFocus), sw.Threading.DispatcherPriority.Input);
+			}
+		}
+
+		void RestoreFocus()
+		{
+			if (!Control.IsEnabled || !Control.IsActive || Control.IsKeyboardFocusWithin)
+				return;
+
+			MoveFocusToContent();
 		}
 
 		protected bool FireOnLoadComplete { get; set; }
