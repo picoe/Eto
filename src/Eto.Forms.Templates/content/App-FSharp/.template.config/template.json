@@ -127,7 +127,7 @@
 		},
 		"IsNetCore": {
 			"type": "computed",
-			"value": "(Framework >= \"net5\")"
+			"value": "(Framework != \"net48\" && Framework != \"net472\" && Framework != \"net462\")"
 		},
 		"IsWindow": {
 			"type": "computed",
