@@ -253,21 +253,16 @@ namespace Eto.Wpf.Forms
 			// the window is enabled again. A window with nothing focused inside it gets no keyboard
 			// input at all (not even at the window itself), so focus has to be moved back into it.
 			// Which control ends up with it is not preserved, same as the other platforms.
-			if (Control.IsEnabled && Control.ShowActivated)
+			if (Control.IsEnabled && Control.IsActive && !Control.IsKeyboardFocusWithin)
 			{
-				// the children are not enabled again yet, which would make focusing them fail, so
-				// wait until the enabled state has settled.
-				Control.Dispatcher.BeginInvoke(new Action(RestoreFocus), sw.Threading.DispatcherPriority.Input);
+				// The window itself is focused rather than a control in it, as focusing a control would
+				// look to the user as if they had tabbed to it, showing its tooltip and focus visual.
+				// Clearing the focus scope's element is what keeps Focus() from delegating to whatever
+				// was focused before.
+				swi.FocusManager.SetFocusedElement(Control, null);
+				Control.Focus();
 			}
-		}
-
-		void RestoreFocus()
-		{
-			if (!Control.IsEnabled || !Control.IsActive || Control.IsKeyboardFocusWithin)
-				return;
-
-			MoveFocusToContent();
-		}
+		}	
 
 		protected bool FireOnLoadComplete { get; set; }
 
