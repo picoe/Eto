@@ -43,6 +43,8 @@ namespace Eto.Wpf.Forms.Controls
 				headerPadding = header.Padding;
 			var noHeader = string.IsNullOrEmpty(Text);
 			header.Padding = noHeader ? new sw.Thickness(0) : headerPadding.Value;
+			Control.Header = noHeader ? null : Header;
+			Control.Padding = noHeader ? new sw.Thickness(0, 6, 0, 0) : new sw.Thickness(0, 0, 0, 0);
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
