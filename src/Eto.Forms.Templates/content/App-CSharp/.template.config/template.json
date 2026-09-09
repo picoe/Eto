@@ -125,9 +125,22 @@
 			"type": "computed",
 			"value": "(Mode == \"json\")"
 		},
+		"TargetFramework": {
+			"type": "generated",
+			"generator": "coalesce",
+			"parameters": {
+				"sourceVariableName": "TargetFrameworkOverride",
+				"fallbackVariableName": "Framework"
+			}
+		},
 		"IsNetCore": {
-			"type": "computed",
-			"value": "(Framework >= \"net5\")"
+			"type": "generated",
+			"generator": "regexMatch",
+			"dataType": "bool",
+			"parameters": {
+				"source": "TargetFramework",
+				"pattern": "^net([5-9]|[1-9][0-9]+)\\."
+			}
 		},
 		"IsWindow": {
 			"type": "computed",
