@@ -141,6 +141,16 @@
 			}
 		},
 		{
+			"label": "run-unittests",
+			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj /p:Configuration=${config:var.configuration} --filter \"TestCategory!=ManualTest\"",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-sdk-test",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/samples/SdkTest/SdkTest.csproj",
 			"type": "shell",

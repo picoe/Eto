@@ -62,12 +62,12 @@ jobs:
     # assemblies would be recompiled with a different version stamp than the uploaded artifacts.
     - name: Run unit tests (Wpf)
       timeout-minutes: 30
-      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=wpf --report-trx --report-trx-filename wpf.trx
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=wpf --report-trx --report-trx-filename wpf.trx
 
     - name: Test summary (Wpf)
       if: ${{ always() }}
       shell: pwsh
-      run: ./build/TestSummary.ps1 -Title "Unit tests (Wpf)" -FileName wpf.trx
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Wpf)" -ResultsRoot artifacts/log -FileName wpf.trx
 
     - name: Upload log files
       if: ${{ failure() }}
@@ -159,12 +159,12 @@ jobs:
     # job for its full 6 hours. See the Wpf step above for why --no-build is used.
     - name: Run unit tests (Mac)
       timeout-minutes: 30
-      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename mac.trx
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=mac --report-trx --report-trx-filename mac.trx
 
     - name: Test summary (Mac)
       if: ${{ always() }}
       shell: pwsh
-      run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -FileName mac.trx
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -ResultsRoot artifacts/log -FileName mac.trx
 
     - name: Upload log files
       if: ${{ failure() }}
@@ -230,12 +230,12 @@ jobs:
     - name: Run unit tests (Gtk)
       timeout-minutes: 30
       continue-on-error: true
-      run: xvfb-run -a dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=gtk --report-trx --report-trx-filename gtk.trx
+      run: xvfb-run -a dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=gtk --report-trx --report-trx-filename gtk.trx
 
     - name: Test summary (Gtk)
       if: ${{ always() }}
       shell: pwsh
-      run: ./build/TestSummary.ps1 -Title "Unit tests (Gtk)" -FileName gtk.trx
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Gtk)" -ResultsRoot artifacts/log -FileName gtk.trx
 
     - name: Upload log files
       if: ${{ failure() }}
