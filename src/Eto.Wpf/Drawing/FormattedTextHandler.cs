@@ -12,8 +12,34 @@ namespace Eto.Wpf.Drawing
 		bool _hasNewLines;
 		bool _shouldClip;
 		double? _pixelsPerDip;
+		swm.TextFormattingMode? _formattingMode;
+		swm.TextFormattingMode? _targetFormattingMode;
 		double _controlPixelsPerDip;
 		swm.TextFormattingMode _controlFormattingMode;
+
+		/// <summary>
+		/// Gets or sets the mode to lay this text out with, or null (the default) to use the mode of what it
+		/// is drawn on, falling back to the mode of its <see cref="Font"/>.
+		/// </summary>
+		/// <remarks>
+		/// <see cref="Measure"/> has to lay the text out before there is anything to draw it on, so a font
+		/// using <see cref="swm.TextFormattingMode.Display"/> measures with display metrics and is then laid
+		/// out again when it turns out to be drawn on something scaled.  Set this to measure and draw the
+		/// text the same way regardless - <see cref="swm.TextFormattingMode.Ideal"/> to be independent of
+		/// both the scale and the dpi.  It can be set from a style so drawing code doesn't have to reach for
+		/// the handler itself:
+		/// <code>Style.Add&lt;FormattedTextHandler&gt;("canvas", h => h.TextFormattingMode = TextFormattingMode.Ideal);</code>
+		/// </remarks>
+		public swm.TextFormattingMode? TextFormattingMode
+		{
+			get => _formattingMode;
+			set
+			{
+				_formattingMode = value;
+				ValidateTextFormatting();
+			}
+		}
+
 		public FormattedTextWrapMode Wrap
 		{
 			get => _wrap;
@@ -108,6 +134,13 @@ namespace Eto.Wpf.Drawing
 		}
 
 		/// <summary>
+		/// The mode to lay the text out with: what was asked for explicitly, otherwise the mode of what it is
+		/// drawn on, otherwise the mode of the font.
+		/// </summary>
+		swm.TextFormattingMode FormattingModeFor(FontHandler fontHandler)
+			=> _formattingMode ?? _targetFormattingMode ?? fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal;
+
+		/// <summary>
 		/// The formatting mode and dpi of a FormattedText can only be specified when it is created, so it has
 		/// to be recreated whenever either of them changes.
 		/// </summary>
@@ -116,7 +149,7 @@ namespace Eto.Wpf.Drawing
 			if (!HasControl || !(Font?.Handler is FontHandler fontHandler))
 				return;
 
-			if ((fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal) != _controlFormattingMode
+			if (FormattingModeFor(fontHandler) != _controlFormattingMode
 				|| (_pixelsPerDip ?? fontHandler.PixelsPerDip) != _controlPixelsPerDip)
 				Invalidate();
 		}
@@ -129,11 +162,11 @@ namespace Eto.Wpf.Drawing
 			_hasNewLines = text.IndexOf('\n') != -1;
 
 			var fontHandler = (FontHandler)font.Handler;
-			_controlFormattingMode = fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal;
+			_controlFormattingMode = FormattingModeFor(fontHandler);
 			_controlPixelsPerDip = _pixelsPerDip ?? fontHandler.PixelsPerDip;
 
 			// decorations are applied to the entire text by SetFont below
-			var formattedText = fontHandler.CreateFormattedText(text, ForegroundBrush.ToWpf(), setDecorations: false, pixelsPerDip: _controlPixelsPerDip);
+			var formattedText = fontHandler.CreateFormattedText(text, ForegroundBrush.ToWpf(), setDecorations: false, pixelsPerDip: _controlPixelsPerDip, formattingMode: _controlFormattingMode);
 
 			// support correctly showing ellipsis when there's a single line
 			if (Wrap == FormattedTextWrapMode.None)
@@ -226,8 +259,10 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(GraphicsHandler handler, PointF location)
 		{
-			// lay the text out for the dpi of what we're drawing on now that we know it
+			// lay the text out for the dpi and formatting mode of what we're drawing on now that we know them,
+			// unless a mode was asked for explicitly - measuring has to agree with what is drawn
 			_pixelsPerDip = handler.TargetPixelsPerDip;
+			_targetFormattingMode = handler.TargetTextFormattingMode;
 			ValidateTextFormatting();
 
 			/**
