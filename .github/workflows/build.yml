@@ -13,6 +13,9 @@ env:
   BuildConfiguration: "Release"
   BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ github.ref }}"'
 
+permissions:
+  contents: read
+
 jobs:
   build-windows:
 
@@ -248,6 +251,8 @@ jobs:
     needs: [ build-windows, build-mac, build-linux ]
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
+    permissions:
+      contents: write
     steps:
       - name: Download nuget artifacts
         uses: actions/download-artifact@v4
