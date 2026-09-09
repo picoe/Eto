@@ -47,6 +47,22 @@ namespace Eto.Test.UnitTests.Drawing
 			});
 		}
 
+		[TestCase(1f)]
+		[TestCase(0.5f)]
+		[TestCase(0f)]
+		public void TextureBrushShouldKeepOpacityFromConstructor(float opacity)
+		{
+			var brush = new TextureBrush(TestIcons.Logo, opacity);
+			Assert.That(brush.Opacity, Is.EqualTo(opacity));
+		}
+
+		[Test]
+		public void TextureBrushShouldDefaultToOpaque()
+		{
+			var brush = new TextureBrush(TestIcons.Logo);
+			Assert.That(brush.Opacity, Is.EqualTo(1f));
+		}
+
 		[Test]
 		public void LinearGradientBrushShouldFillWithRectangleAndAngle()
 		{
