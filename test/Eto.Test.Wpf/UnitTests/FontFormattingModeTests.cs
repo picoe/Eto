@@ -274,5 +274,230 @@ namespace Eto.Test.Wpf.UnitTests
 				Assert.That(formattedText.Measure().Width, Is.EqualTo(expectedDisplay).Within(0.01), "#2 should use the mode of the new font");
 			});
 		}
+
+		[Test]
+		public void ScaledGraphicsShouldLayTextOutIdeally()
+		{
+			Invoke(() =>
+			{
+				var font = CreateFont();
+				var handler = GetHandler(font);
+				handler.TextFormattingMode = swm.TextFormattingMode.Display;
+
+				var display = ReferenceWidth(font, swm.TextFormattingMode.Display, 1);
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(display, Is.Not.EqualTo(ideal), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+				using (var graphics = new Graphics(bitmap))
+				{
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(display).Within(0.01), "#1 unscaled should keep the mode of the font");
+
+					graphics.ScaleTransform(4);
+					// display layout rasterizes the glyphs for the pixel grid it is told about and the result is
+					// then scaled, so text on a scaled context has to be laid out ideally to stay sharp
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(ideal).Within(0.01), "#2 scaled should lay out ideally");
+					Assert.DoesNotThrow(() => graphics.DrawText(font, Colors.Black, 0, 0, LongText), "#3");
+
+					graphics.ScaleTransform(0.25f);
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(display).Within(0.01), "#4 back to unscaled should use the mode of the font again");
+				}
+			});
+		}
+
+		[Test]
+		public void TranslatedGraphicsShouldKeepFontFormattingMode()
+		{
+			Invoke(() =>
+			{
+				var font = CreateFont();
+				var handler = GetHandler(font);
+				handler.TextFormattingMode = swm.TextFormattingMode.Display;
+
+				var display = ReferenceWidth(font, swm.TextFormattingMode.Display, 1);
+				Assume.That(display, Is.Not.EqualTo(ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1)), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+				using (var graphics = new Graphics(bitmap))
+				{
+					// a translation doesn't change the size the glyphs are rendered at, so there's no reason to
+					// lay the text out any differently than it is measured elsewhere
+					graphics.TranslateTransform(10, 20);
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(display).Within(0.01));
+				}
+			});
+		}
+
+		[Test]
+		public void FormattedTextOnScaledGraphicsShouldBeLaidOutIdeally()
+		{
+			Invoke(() =>
+			{
+				var font = CreateFont();
+				var handler = GetHandler(font);
+				handler.TextFormattingMode = swm.TextFormattingMode.Display;
+				handler.PixelsPerDip = 1;
+
+				var display = ReferenceWidth(font, swm.TextFormattingMode.Display, 1);
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(display, Is.Not.EqualTo(ideal), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				var formattedText = new FormattedText { Font = font, Text = LongText, Wrap = FormattedTextWrapMode.None };
+				Assert.That(formattedText.Measure().Width, Is.EqualTo(display).Within(0.01), "#1 should use the mode of the font until we know what it is drawn on");
+
+				using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+				using (var graphics = new Graphics(bitmap))
+				{
+					graphics.ScaleTransform(4);
+					graphics.DrawText(formattedText, PointF.Empty);
+				}
+
+				Assert.That(formattedText.Measure().Width, Is.EqualTo(ideal).Within(0.01), "#2 should be laid out ideally for the scaled context it was drawn on");
+			});
+		}
+
+		[Test]
+		public void ForcedFormattingModeShouldOverrideTransform()
+		{
+			Invoke(() =>
+			{
+				var font = CreateFont();
+				GetHandler(font).TextFormattingMode = swm.TextFormattingMode.Display;
+
+				var display = ReferenceWidth(font, swm.TextFormattingMode.Display, 1);
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(display, Is.Not.EqualTo(ideal), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+				using (var graphics = new Graphics(bitmap))
+				{
+					var handler = (GraphicsHandler)graphics.Handler;
+					Assume.That(handler.TextFormattingMode, Is.Null, "the transform should decide by default");
+
+					// forcing a mode keeps text laid out the same way at every zoom, rather than changing the
+					// moment the transform starts scaling
+					handler.TextFormattingMode = swm.TextFormattingMode.Ideal;
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(ideal).Within(0.01), "#1 unscaled should use the forced mode");
+					graphics.ScaleTransform(4);
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(ideal).Within(0.01), "#2 scaled should use the forced mode");
+
+					handler.TextFormattingMode = swm.TextFormattingMode.Display;
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(display).Within(0.01), "#3 should force display layout even though it is scaled");
+					Assert.DoesNotThrow(() => graphics.DrawText(font, Colors.Black, 0, 0, LongText), "#4");
+
+					handler.TextFormattingMode = null;
+					Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(ideal).Within(0.01), "#5 clearing it should go back to deciding from the transform");
+				}
+			});
+		}
+
+		[Test]
+		public void ForcedFormattingModeShouldBeSettableFromStyle()
+		{
+			Invoke(() =>
+			{
+				var provider = new DefaultStyleProvider();
+				provider.Add<GraphicsHandler>("ideal-text", h => h.TextFormattingMode = swm.TextFormattingMode.Ideal);
+
+				var font = CreateFont();
+				GetHandler(font).TextFormattingMode = swm.TextFormattingMode.Display;
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(ideal, Is.Not.EqualTo(ReferenceWidth(font, swm.TextFormattingMode.Display, 1)), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				var oldProvider = Style.Provider;
+				Style.Provider = provider;
+				try
+				{
+					using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+					using (var graphics = new Graphics(bitmap))
+					{
+						// drawing code that can't reference the platform can still ask for a mode by style
+						graphics.Style = "ideal-text";
+						Assert.That(((GraphicsHandler)graphics.Handler).TextFormattingMode, Is.EqualTo(swm.TextFormattingMode.Ideal), "#1");
+						Assert.That(graphics.MeasureString(font, LongText).Width, Is.EqualTo(ideal).Within(0.01), "#2");
+					}
+				}
+				finally
+				{
+					Style.Provider = oldProvider;
+				}
+			});
+		}
+
+		[Test]
+		public void FormattedTextForcedModeShouldOverrideFontAndTarget()
+		{
+			Invoke(() =>
+			{
+				var font = CreateFont();
+				var fontHandler = GetHandler(font);
+				fontHandler.TextFormattingMode = swm.TextFormattingMode.Display;
+				fontHandler.PixelsPerDip = 1;
+
+				var display = ReferenceWidth(font, swm.TextFormattingMode.Display, 1);
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(display, Is.Not.EqualTo(ideal), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				var formattedText = new FormattedText { Font = font, Text = LongText, Wrap = FormattedTextWrapMode.None };
+				var handler = (FormattedTextHandler)formattedText.Handler;
+				Assume.That(handler.TextFormattingMode, Is.Null, "the font and what it is drawn on should decide by default");
+				Assert.That(formattedText.Measure().Width, Is.EqualTo(display).Within(0.01), "#1 should use the mode of the font to begin with");
+
+				// asking for a mode means Measure() agrees with what is drawn, instead of being laid out again
+				// for whatever it turns out to be drawn on
+				handler.TextFormattingMode = swm.TextFormattingMode.Ideal;
+				Assert.That(formattedText.Measure().Width, Is.EqualTo(ideal).Within(0.01), "#2 should re-lay out with the mode asked for");
+
+				using (var bitmap = new Bitmap(400, 50, PixelFormat.Format32bppRgba))
+				using (var graphics = new Graphics(bitmap))
+				{
+					// neither an unscaled target, which would fall back to the display font..
+					graphics.DrawText(formattedText, PointF.Empty);
+					Assert.That(formattedText.Measure().Width, Is.EqualTo(ideal).Within(0.01), "#3 an unscaled target should not override it");
+
+					// ..nor one that forces display itself, should change what was asked for
+					((GraphicsHandler)graphics.Handler).TextFormattingMode = swm.TextFormattingMode.Display;
+					graphics.ScaleTransform(4);
+					graphics.DrawText(formattedText, PointF.Empty);
+					Assert.That(formattedText.Measure().Width, Is.EqualTo(ideal).Within(0.01), "#4 a target forcing display should not override it either");
+				}
+
+				handler.TextFormattingMode = null;
+				Assert.That(formattedText.Measure().Width, Is.EqualTo(display).Within(0.01), "#5 clearing it should go back to the mode of the font");
+			});
+		}
+
+		[Test]
+		public void FormattedTextForcedModeShouldBeSettableFromStyle()
+		{
+			Invoke(() =>
+			{
+				var provider = new DefaultStyleProvider();
+				provider.Add<FormattedTextHandler>("ideal-text", h => h.TextFormattingMode = swm.TextFormattingMode.Ideal);
+
+				var font = CreateFont();
+				var fontHandler = GetHandler(font);
+				fontHandler.TextFormattingMode = swm.TextFormattingMode.Display;
+				fontHandler.PixelsPerDip = 1;
+
+				var ideal = ReferenceWidth(font, swm.TextFormattingMode.Ideal, 1);
+				Assume.That(ideal, Is.Not.EqualTo(ReferenceWidth(font, swm.TextFormattingMode.Display, 1)), "the two modes should lay this text out differently, otherwise this proves nothing");
+
+				var oldProvider = Style.Provider;
+				Style.Provider = provider;
+				try
+				{
+					// SystemFonts.Label() and friends can't be styled at the point they're created, but the
+					// text laid out with them can
+					var formattedText = new FormattedText { Font = font, Text = LongText, Wrap = FormattedTextWrapMode.None, Style = "ideal-text" };
+					Assert.That(((FormattedTextHandler)formattedText.Handler).TextFormattingMode, Is.EqualTo(swm.TextFormattingMode.Ideal), "#1");
+					Assert.That(formattedText.Measure().Width, Is.EqualTo(ideal).Within(0.01), "#2");
+				}
+				finally
+				{
+					Style.Provider = oldProvider;
+				}
+			});
+		}
 	}
 }

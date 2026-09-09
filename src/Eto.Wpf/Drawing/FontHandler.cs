@@ -377,6 +377,10 @@ namespace Eto.Wpf.Drawing
 		/// Since text Eto measures and draws itself is not part of any element, set this to the mode your text is
 		/// rendered with so that measuring and drawing match, e.g. using a style:
 		/// <code>Style.Add&lt;FontHandler&gt;(null, h => h.TextFormattingMode = TextFormattingMode.Display);</code>
+		/// Note this is what a <see cref="Graphics"/> falls back to: it lays text out with its own
+		/// <see cref="GraphicsHandler.TextFormattingMode"/> when one is set, and overrides display layout with
+		/// ideal layout when its transform scales or rotates what it draws, since display layout would be
+		/// rasterized for the wrong size and scaled up.
 		/// When specified, this mode is also set on the controls the font is applied to so they render the same
 		/// way, otherwise they keep inheriting the mode from their container.
 		/// </remarks>
@@ -425,7 +429,8 @@ namespace Eto.Wpf.Drawing
 		/// <param name="brush">Brush to draw the text with</param>
 		/// <param name="setDecorations">True to apply the decorations of the font, false to leave them out</param>
 		/// <param name="pixelsPerDip">Pixels per dip of what the text is drawn on, or null to use <see cref="PixelsPerDip"/></param>
-		public swm.FormattedText CreateFormattedText(string text, swm.Brush brush, bool setDecorations = true, double? pixelsPerDip = null)
+		/// <param name="formattingMode">Mode to lay the text out with, or null to use <see cref="TextFormattingMode"/></param>
+		public swm.FormattedText CreateFormattedText(string text, swm.Brush brush, bool setDecorations = true, double? pixelsPerDip = null, swm.TextFormattingMode? formattingMode = null)
 		{
 			text = text ?? string.Empty;
 			var formattedText = new swm.FormattedText(
@@ -436,7 +441,7 @@ namespace Eto.Wpf.Drawing
 				WpfSize,
 				brush,
 				null,
-				TextFormattingMode ?? swm.TextFormattingMode.Ideal,
+				formattingMode ?? TextFormattingMode ?? swm.TextFormattingMode.Ideal,
 				pixelsPerDip ?? PixelsPerDip);
 
 			if (setDecorations && WpfTextDecorationsFrozen != null)
