@@ -333,6 +333,14 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	private void ApplyTheme(Theme value, Theme previousTheme = null)
 	{
+		// A theme applies to the process-wide WPF Application, which has thread affinity. A
+		// secondary UI thread that creates its own Eto Application (Application.Attach) gets its
+		// own handler, and that handler must leave the theme alone: the thread that owns the WPF
+		// Application has already applied it, and touching Application.ThemeMode or .Resources
+		// from here throws a cross-thread InvalidOperationException.
+		if (Control == null || Control.Dispatcher != Dispatcher.CurrentDispatcher)
+			return;
+
 		// Every merge/remove below invalidates the DynamicResource references of the visual tree
 		// that is already on screen, which is noisy by nature - see
 		// SuppressThemeChangeResourceWarnings. All of it happens synchronously here, so the trace
