@@ -1030,6 +1030,23 @@ namespace Eto
 				return SHIL_LARGE;    // 32x32
 			return SHIL_SMALL;       // 16x16
 		}
-		
+
+		public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+		// Title bar / frame tinting. Windows 11 (build 22000) and later only; on earlier
+		// versions DwmSetWindowAttribute simply fails with E_INVALIDARG and the frame keeps
+		// its system appearance. Values are COLORREF (0x00BBGGRR), see MakeColorRef.
+		public const int DWMWA_BORDER_COLOR = 34;
+		public const int DWMWA_CAPTION_COLOR = 35;
+		public const int DWMWA_TEXT_COLOR = 36;
+
+		/// <summary>Sentinel that restores the system default for the color attributes above.</summary>
+		public const int DWMWA_COLOR_DEFAULT = unchecked((int)0xFFFFFFFF);
+
+		/// <summary>Packs RGB components into a COLORREF (0x00BBGGRR) for the DWMWA_*_COLOR attributes.</summary>
+		public static int MakeColorRef(byte r, byte g, byte b) => r | (g << 8) | (b << 16);
+
+		[DllImport("dwmapi.dll")]
+		public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 	}
 }

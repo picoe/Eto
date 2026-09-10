@@ -1,0 +1,160 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:e="clr-namespace:Eto.Wpf"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoToggleButton - custom ControlTemplate for the custom theme
+    =========================================================================
+    Mirrors the EtoButton chrome (flat, DynamicResource palette brushes) and
+    adds a "checked" (toggled-on) state using the palette's Checked* brushes so
+    the pressed-in state reads clearly. The WPF default ToggleButton otherwise
+    uses hard-coded Aero gradient chrome that ignores the palette.
+
+    SegmentedButton support: when the ToggleButton is a segment of a
+    SegmentedButton, WpfProperties.EtoStyle is "SegmentedButton" and
+    WpfProperties.EtoModifier is "first" / "last" / "only" (or cleared for a
+    middle segment). Matching the generic ToggleButton theme, only the outer
+    edge is rounded (first = left corners, last = right corners, only = all,
+    middle = square) and adjacent segments overlap by 1px so they share a
+    border. The corner radius tracks the palette scalar via
+    TabCornerRadiusConverter (Left/Right = the two corners on that side).
+    =========================================================================
+    -->
+
+    <efc:TabCornerRadiusConverter x:Key="EtoSegmentCornerRadiusConverter" />
+
+    <Style TargetType="{x:Type efc:EtoToggleButton}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding"         Value="{DynamicResource Eto.Palette.ButtonPadding}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment"   Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoToggleButton}">
+                    <!-- Tag carries the palette scalar corner radius so the converter can
+                         produce a side-specific (outer-only) CornerRadius for segments. -->
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Tag="{DynamicResource Eto.Palette.CornerRadius}"
+                            CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- ═ Toggled-on / interactive states ═ -->
+                        <!-- Checked (toggled on) -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.CheckedBackgroundBrush}" />
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.CheckedBorderBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="900" />
+                        </Trigger>
+                        <!-- Hover (unchecked) -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsChecked" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.HoverBorderBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="999" />
+                        </MultiTrigger>
+                        <!-- Hover (checked): keep the accent border, lift the fill slightly -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsChecked" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.CheckedBorderBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="999" />
+                        </MultiTrigger>
+                        <!-- Pressed -->
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.PressedBorderBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="999" />
+                        </Trigger>
+                        <!-- Keyboard focused -->
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter Property="Panel.ZIndex" Value="999" />
+                        </Trigger>
+                        <!-- Disabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="ButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+
+                        <!-- ═ SegmentedButton: outer-only rounding + shared (overlapping) borders ═ -->
+                        <!-- Base: a middle segment is square and overlaps its left neighbor. -->
+                        <Trigger Property="e:WpfProperties.EtoStyle" Value="SegmentedButton">
+                            <Setter TargetName="ButtonBorder" Property="CornerRadius" Value="0" />
+                            <Setter TargetName="ButtonBorder" Property="Margin" Value="-1,0,0,0" />
+                        </Trigger>
+                        <!-- First segment: round the left corners, no overlap on the left edge. -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="e:WpfProperties.EtoStyle" Value="SegmentedButton" />
+                                <Condition Property="e:WpfProperties.EtoModifier" Value="first" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBorder" Property="Margin" Value="0" />
+                            <Setter TargetName="ButtonBorder" Property="CornerRadius"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource Self},
+                                            Converter={StaticResource EtoSegmentCornerRadiusConverter},
+                                            ConverterParameter=Left}" />
+                        </MultiTrigger>
+                        <!-- Last segment: round the right corners, overlap the left neighbor. -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="e:WpfProperties.EtoStyle" Value="SegmentedButton" />
+                                <Condition Property="e:WpfProperties.EtoModifier" Value="last" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBorder" Property="Margin" Value="-1,0,0,0" />
+                            <Setter TargetName="ButtonBorder" Property="CornerRadius"
+                                    Value="{Binding Tag, RelativeSource={RelativeSource Self},
+                                            Converter={StaticResource EtoSegmentCornerRadiusConverter},
+                                            ConverterParameter=Right}" />
+                        </MultiTrigger>
+                        <!-- Only segment: round all corners like a normal button. -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="e:WpfProperties.EtoStyle" Value="SegmentedButton" />
+                                <Condition Property="e:WpfProperties.EtoModifier" Value="only" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="ButtonBorder" Property="Margin" Value="0" />
+                            <Setter TargetName="ButtonBorder" Property="CornerRadius"
+                                    Value="{DynamicResource Eto.Palette.CornerRadius}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

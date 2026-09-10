@@ -1,3 +1,5 @@
+using Eto.Forms;
+using Eto.Wpf.Forms;
 using Eto.Wpf.Forms.Controls;
 using System.Windows.Media;
 
@@ -23,6 +25,27 @@ namespace Eto.Test.Wpf
 
 			var app = new TestApplication(platform);
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
+
+			// Register the custom themes so they appear in the ThemeSection picker.
+			// The control styles come from Eto.Wpf's reusable palette theme (themes/palette.xaml);
+			// this app only supplies the palette colors — one xaml file per theme.
+			ThemesHandler.Instance.Themes.Add(new PaletteTheme(
+				"Custom (Mocha Dark)",
+				ThemeStyle.Dark,
+				new Uri("pack://application:,,,/Eto.Test.Wpf;component/themes/custom/MochaPalette.xaml")
+			));
+			ThemesHandler.Instance.Themes.Add(new PaletteTheme(
+				"Custom (Midnight Blue)",
+				ThemeStyle.Dark,
+				new Uri("pack://application:,,,/Eto.Test.Wpf;component/themes/custom/MidnightPalette.xaml")
+			));
+
+			ThemesHandler.Instance.Themes.Add(new PaletteTheme(
+				"Custom (Latte Light)",
+				ThemeStyle.Light,
+				new Uri("pack://application:,,,/Eto.Test.Wpf;component/themes/custom/LattePalette.xaml")
+			));
+
 			app.Run();
 		}
 

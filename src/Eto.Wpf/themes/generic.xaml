@@ -2,7 +2,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:r="clr-namespace:Eto.Wpf.CustomControls.TreeGridView"
     xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls"
+    xmlns:efm="clr-namespace:Eto.Wpf.Forms.Menu"
+    xmlns:eft="clr-namespace:Eto.Wpf.Forms.ToolBar"
     xmlns:e="clr-namespace:Eto.Wpf"
+    xmlns:ef="clr-namespace:Eto.Wpf.Forms"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
     <ResourceDictionary.MergedDictionaries>
@@ -80,6 +83,24 @@
 	<Style TargetType="PasswordBox" BasedOn="{StaticResource {x:Type PasswordBox}}">
 		<Setter Property="Padding" Value="4,2" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+	
+	<Style TargetType="efm:EtoMenu" BasedOn="{StaticResource {x:Type Menu}}">
+	</Style>
+	
+	<Style TargetType="eft:EtoToolBar" BasedOn="{StaticResource {x:Type ToolBar}}">
+	</Style>
+	
+	<Style TargetType="efc:EtoCheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+	</Style>
+
+	<Style TargetType="efc:EtoRadioButton" BasedOn="{StaticResource {x:Type RadioButton}}">
+	</Style>
+
+	<Style TargetType="ef:EtoWindow" BasedOn="{StaticResource {x:Type Window}}">
+	</Style>
+
+	<Style TargetType="ef:EtoFormWindow" BasedOn="{StaticResource {x:Type Window}}">
 	</Style>
 
 </ResourceDictionary>

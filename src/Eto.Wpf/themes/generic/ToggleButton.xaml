@@ -5,24 +5,16 @@
     xmlns:e="clr-namespace:Eto.Wpf"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
-    <SolidColorBrush x:Key="ToggleButton.Checked.Background" Color="#FFBBDDEE"/>
-    <SolidColorBrush x:Key="ToggleButton.Checked.Border" Color="#FF255A83"/>
-    <SolidColorBrush x:Key="ToggleButton.Static.Background" Color="#FFDDDDDD"/>
-    <SolidColorBrush x:Key="ToggleButton.Static.Border" Color="#FF707070"/>
-    <SolidColorBrush x:Key="ToggleButton.MouseOver.Background" Color="#FFBEE6FD"/>
-    <SolidColorBrush x:Key="ToggleButton.MouseOver.Border" Color="#FF3C7FB1"/>
-    <SolidColorBrush x:Key="ToggleButton.Pressed.Background" Color="#FFC4E5F6"/>
-    <SolidColorBrush x:Key="ToggleButton.Pressed.Border" Color="#FF2C628B"/>
-    <SolidColorBrush x:Key="ToggleButton.Disabled.Background" Color="#FFF4F4F4"/>
-    <SolidColorBrush x:Key="ToggleButton.Disabled.Border" Color="#FFADB2B5"/>
-    <SolidColorBrush x:Key="ToggleButton.Disabled.Foreground" Color="#FF838383"/>
+    <!-- Default colors derived from system colors so they adapt to the current Windows theme.
+         Override any of these keys in your application resources for custom theming. -->
 
     <Style TargetType="efc:EtoToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
         <Setter Property="Padding" Value="2" />
         <Style.Triggers>
             <Trigger Property="e:WpfProperties.EtoStyle" Value="SegmentedButton">
                 <Setter Property="Padding" Value="4,2" />
-
+                <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ToggleButton">
@@ -43,8 +35,8 @@
                                 </Trigger>
 
                                 <Trigger Property="IsChecked" Value="True">
-                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource ToggleButton.Checked.Background}"/>
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ToggleButton.Checked.Border}"/>
+                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
                                     <Setter Property="Panel.ZIndex" Value="900" />
                                 </Trigger>
 
@@ -54,19 +46,19 @@
                                     <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.MouseOver.Background}"/>
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.MouseOver.Border}"/>
+                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"/>
                                     <Setter Property="Panel.ZIndex" Value="999" />
                                 </Trigger>
                                 <Trigger Property="IsPressed" Value="true">
-                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.Pressed.Background}"/>
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.Pressed.Border}"/>
+                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource {x:Static SystemColors.GradientActiveCaptionBrushKey}}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
                                     <Setter Property="Panel.ZIndex" Value="999" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="false">
-                                    <Setter Property="Background" TargetName="border" Value="{StaticResource ToggleButton.Disabled.Background}"/>
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource ToggleButton.Disabled.Border}"/>
-                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource ToggleButton.Disabled.Foreground}"/>
+                                    <Setter Property="Background" TargetName="border" Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"/>
+                                    <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.InactiveBorderBrushKey}}"/>
+                                    <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                                 </Trigger>
 
                             </ControlTemplate.Triggers>

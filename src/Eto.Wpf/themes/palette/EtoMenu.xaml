@@ -1,0 +1,37 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Menu">
+
+    <!--
+    =========================================================================
+    EtoMenu - custom style for the custom theme
+    =========================================================================
+    The WPF default Menu template uses hard-coded chrome and background
+    brushes. This style replaces them with DynamicResource palette references.
+
+    The bar itself defaults to the window background with no border so it blends
+    into the window; a palette gives it a look of its own via the
+    Eto.Palette.MenuBar* keys (defaults + docs in themes/palette.xaml).
+    =========================================================================
+    -->
+
+    <Style TargetType="{x:Type efc:EtoMenu}" BasedOn="{StaticResource {x:Type Menu}}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.MenuBarBackgroundBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.MenuBarBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource Eto.Palette.MenuBarBorderThickness}" />
+        <Setter Property="Padding"         Value="2,2,2,2" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+		
+    </Style>
+
+</ResourceDictionary>

@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms.Controls
 				return;
 			}
 
-			_calendar = new swc.Calendar { SelectionMode = swc.CalendarSelectionMode.SingleDate };
+			_calendar = new EtoCalendar { SelectionMode = swc.CalendarSelectionMode.SingleDate };
 			_calendar.SelectedDatesChanged += Calendar_SelectedDatesChanged;
 
 			_comboEditHost = new swc.Decorator { Child = _stepper.ToNative(true) };

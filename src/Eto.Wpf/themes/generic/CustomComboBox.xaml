@@ -12,7 +12,13 @@
 	<SolidColorBrush x:Key="EtoCustomComboBoxGlyphBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
 	<SolidColorBrush x:Key="EtoCustomComboBoxFocusBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
 	<SolidColorBrush x:Key="EtoCustomComboBoxButtonHoverBrush" Color="#22000000" />
-	<CornerRadius x:Key="EtoCustomComboBoxCornerRadius">0</CornerRadius>
+	<!--
+		Corner radius comes from the shared Eto.Palette.CornerRadius key so every theme drives it
+		from one place: it is undefined here (and in the "none" theme) so the DynamicResource falls
+		back to 0 (square); themes/fluent.xaml sets it to 4; and the palette theme
+		(themes/palette.xaml) defaults it to 0 but lets a palette opt into rounded corners.
+	-->
+
 
 	<Style x:Key="EtoCustomComboBoxStyle" TargetType="{x:Type efc:EtoCustomComboBox}">
 		<Setter Property="Background" Value="{DynamicResource EtoCustomComboBoxBackground}" />
@@ -38,7 +44,7 @@
 							Background="{TemplateBinding Background}"
 							BorderBrush="{TemplateBinding BorderBrush}"
 							BorderThickness="{TemplateBinding BorderThickness}"
-							CornerRadius="{DynamicResource EtoCustomComboBoxCornerRadius}"
+							CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
 							SnapsToDevicePixels="True" />
 
 						<ContentPresenter
@@ -70,7 +76,7 @@
 										x:Name="ToggleBackground"
 										Padding="7,0"
 										Background="Transparent"
-										CornerRadius="{DynamicResource EtoCustomComboBoxCornerRadius}"
+										CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
 										SnapsToDevicePixels="True">
 										<Path
 											x:Name="Chevron"

@@ -1,0 +1,134 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoDataGrid (GridView / TreeGridView) - palette-driven column headers
+    =========================================================================
+    The WPF default DataGridColumnHeader template renders a themed (Aero)
+    gradient chrome that ignores the palette entirely, so headers looked
+    unstyled next to the rest of the theme. This file re-templates the
+    column header (and points the DataGrid at that style) using
+    DynamicResource palette references so headers match the theme.
+
+    Only column headers are themed: Eto's GridHandler sets
+    HeadersVisibility=Column and RowHeaderWidth=0, so row headers and the
+    top-left select-all corner are never shown.
+
+    Cell / row selection already follows the palette via the SystemColors
+    brush redirects in themes/palette.xaml (DataGridCell's default template
+    uses the Highlight* system brushes), so it is not re-templated here.
+    =========================================================================
+    -->
+
+    <!-- Thin transparent grab handles at each header edge for column resizing. -->
+    <Style x:Key="Eto.ColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeWE" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="Eto.DataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="Background"                 Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"                 Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"                Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness"           Value="0,0,1,1" />
+        <Setter Property="Padding"                    Value="8,4" />
+        <Setter Property="FontWeight"                 Value="SemiBold" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment"   Value="Center" />
+        <Setter Property="SnapsToDevicePixels"        Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type DataGridColumnHeader}">
+                    <Grid>
+                        <Border x:Name="HeaderBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Grid.Column="0"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <Path x:Name="SortArrow"
+                                      Grid.Column="1"
+                                      Width="9" Height="5"
+                                      Margin="0,0,8,0"
+                                      VerticalAlignment="Center"
+                                      Stretch="Fill"
+                                      Visibility="Collapsed"
+                                      Fill="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                      Data="M0,0 L1,0 0.5,1 z" />
+                            </Grid>
+                        </Border>
+                        <Thumb x:Name="PART_LeftHeaderGripper"
+                               HorizontalAlignment="Left"
+                               Style="{StaticResource Eto.ColumnHeaderGripperStyle}" />
+                        <Thumb x:Name="PART_RightHeaderGripper"
+                               HorizontalAlignment="Right"
+                               Style="{StaticResource Eto.ColumnHeaderGripperStyle}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="SortDirection" Value="Ascending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="Data" Value="M0,1 L1,1 0.5,0 z" />
+                        </Trigger>
+                        <Trigger Property="SortDirection" Value="Descending">
+                            <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SortArrow" Property="Data" Value="M0,0 L1,0 0.5,1 z" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="HeaderBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="HeaderBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Implicit style so any DataGridColumnHeader (including the empty filler
+         to the right of the last column) picks up the theme. -->
+    <Style TargetType="{x:Type DataGridColumnHeader}"
+           BasedOn="{StaticResource Eto.DataGridColumnHeaderStyle}" />
+
+    <!-- Point the GridView / TreeGridView at the header style. Setting it on the
+         DataGrid also lets GridColumnHandler.SetHeaderStyle() derive per-column
+         header styles (custom alignment / tooltip) BasedOn this one, so those
+         headers stay themed too. -->
+    <Style TargetType="{x:Type efc:EtoDataGrid}"
+           BasedOn="{StaticResource {x:Type DataGrid}}">
+        <Setter Property="Background"             Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="RowBackground"         Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"            Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"           Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="VerticalGridLinesBrush"   Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="ColumnHeaderStyle"     Value="{StaticResource Eto.DataGridColumnHeaderStyle}" />
+    </Style>
+
+</ResourceDictionary>

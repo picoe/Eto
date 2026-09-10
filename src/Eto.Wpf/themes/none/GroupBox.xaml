@@ -1,0 +1,104 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoGroupBox (None theme)
+    =========================================================================
+    This is a copy of the stock WPF (Aero2) GroupBox template so the None theme
+    keeps its native appearance, with two fixes for the header-less case:
+
+      1. The stock template carves a gap into the top border sized to the header
+         element's width (via BorderGapMaskConverter). Even with no title the
+         internal header border has padding, so a small notch remained. The
+         HasHeader=False trigger collapses the header so its ActualWidth is 0 and
+         the border closes up completely.
+      2. The stock layout only insets the top when a header is present, leaving
+         header-less content tighter at the top than the ~6px side/bottom gutters.
+         WPF's GroupBox.Padding is unused by Eto (its own Padding is applied by an
+         inner ContentBorder, see WpfPanel), so the same trigger repurposes it to
+         add matching top padding, keeping the content evenly inset on all sides.
+
+    This style lives under themes/none so it only affects the None theme; it is not
+    placed in generic.xaml, which is also consumed by the Fluent theme.
+    =========================================================================
+    -->
+    <BorderGapMaskConverter x:Key="EtoGroupBoxBorderGapMaskConverter" />
+
+    <Style TargetType="efc:EtoGroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="efc:EtoGroupBox">
+                    <Grid SnapsToDevicePixels="true">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="6" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="6" />
+                        </Grid.RowDefinitions>
+                        <Border CornerRadius="4"
+                                Grid.Row="1"
+                                Grid.RowSpan="3"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="4"
+                                BorderBrush="Transparent"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}" />
+                        <Border x:Name="Header"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Grid.Column="1"
+                                Padding="3,1,3,0">
+                            <ContentPresenter ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <ContentPresenter Grid.Row="2"
+                                          Grid.Column="1"
+                                          Grid.ColumnSpan="2"
+                                          Margin="{TemplateBinding Padding}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <Border Grid.Row="1"
+                                Grid.RowSpan="3"
+                                Grid.ColumnSpan="4"
+                                BorderBrush="White"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <Border.OpacityMask>
+                                <MultiBinding ConverterParameter="7"
+                                              Converter="{StaticResource EtoGroupBoxBorderGapMaskConverter}">
+                                    <Binding ElementName="Header" Path="ActualWidth" />
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                                    <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                                </MultiBinding>
+                            </Border.OpacityMask>
+                            <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="3">
+                                <Border BorderBrush="White"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        CornerRadius="2" />
+                            </Border>
+                        </Border>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasHeader" Value="False">
+                            <!-- Collapse the header so the gap mask closes the border,
+                                 and add top padding to match the side/bottom gutters. -->
+                            <Setter TargetName="Header" Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Padding" Value="0,6,0,0" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

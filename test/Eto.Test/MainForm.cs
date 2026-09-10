@@ -325,6 +325,11 @@ namespace Eto.Test
 				ToolBar = new ToolBar();
 
 				ToolBar.Items.Add(about);
+
+				// theme switcher, so themes can be tested against any section without
+				// navigating to the Themes section and back.
+				AddThemeToolItem(ToolBar);
+
 				if (Platform.Supports<CheckToolItem>())
 				{
 					ToolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
@@ -365,6 +370,59 @@ namespace Eto.Test
 					ToolBar.Items.Add(LogEvents(dropItem));
 				}
 			}
+		}
+
+		void AddThemeToolItem(ToolBar toolBar)
+		{
+			// requires a drop-down with radio items to show/select the active theme
+			if (!Platform.Supports<DropDownToolItem>() || !Platform.Supports<RadioMenuItem>())
+				return;
+
+			List<Theme> themes;
+			try
+			{
+				themes = Themes.AllThemes.ToList();
+			}
+			catch (Exception ex)
+			{
+				// themes aren't available on every platform
+				Log.Write(this, $"Themes not available: {ex.Message}");
+				return;
+			}
+			if (themes.Count == 0)
+				return;
+
+			var themeDropDown = new DropDownToolItem { Text = "Theme" };
+			var itemsByTheme = new Dictionary<Theme, RadioMenuItem>();
+			RadioMenuItem controller = null;
+			foreach (var theme in themes)
+			{
+				var item = new RadioMenuItem(controller) { Text = $"Theme: {theme.Name}" };
+				controller ??= item;
+				var themeToApply = theme;
+				item.Click += (sender, e) => Application.Instance.Theme = themeToApply;
+				itemsByTheme[theme] = item;
+				themeDropDown.Items.Add(item);
+			}
+
+			void UpdateChecked()
+			{
+				var current = Application.Instance.Theme;
+				foreach (var pair in itemsByTheme)
+				{
+					// setting the matching radio unchecks its siblings via the controller
+					if (pair.Key == current && !pair.Value.Checked)
+						pair.Value.Checked = true;
+				}
+				themeDropDown.Text = current != null ? $"Theme: {current.Name}" : "Theme";
+			}
+
+			UpdateChecked();
+			// keep the toolbar in sync when the theme is changed elsewhere (e.g. Themes section)
+			Application.Instance.ThemeChanged += (sender, e) => UpdateChecked();
+
+			toolBar.Items.Add(new SeparatorToolItem { Type = SeparatorToolItemType.Divider });
+			toolBar.Items.Add(themeDropDown);
 		}
 
 		RadioToolItem LogEvents(RadioToolItem item)

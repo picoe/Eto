@@ -1,0 +1,141 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoExpander - custom ControlTemplate for the custom theme
+    =========================================================================
+    The WPF default Expander template draws the Aero circular chevron toggle
+    and hard-codes its chrome, so it ignores the palette. This flat template
+    replaces it with palette brushes: a clickable header row with a rotating
+    triangle glyph, and a bordered content area shown while expanded.
+
+    Eto's Expander always expands downward, so only that direction is
+    templated. The header comes from the Expander's Header property (set by
+    ExpanderHandler.Header) and the body from Content.
+    =========================================================================
+    -->
+
+    <efc:RoundedClipConverter x:Key="EtoRoundedClipConverter" />
+
+    <Style TargetType="{x:Type efc:EtoExpander}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding"         Value="10" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoExpander}">
+                    <Border x:Name="OuterBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
+                            SnapsToDevicePixels="True">
+                        <!-- WPF's Border does not clip children to its CornerRadius, so the header
+                             hover highlight and the expanded content background would poke past the
+                             rounded corners. Clip the inner content (not the OuterBorder itself, so
+                             its rounded stroke is drawn cleanly) to a rounded rectangle covering the
+                             content area so the children follow the rounded shape.
+                             (A zero CornerRadius yields a plain rectangle, i.e. no-op.) -->
+                        <DockPanel x:Name="ContentPanel">
+                            <DockPanel.Clip>
+                                <MultiBinding Converter="{StaticResource EtoRoundedClipConverter}">
+                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                                    <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                                    <Binding Path="CornerRadius" ElementName="OuterBorder" />
+                                </MultiBinding>
+                            </DockPanel.Clip>
+                            <!-- Clickable header row: toggles IsExpanded -->
+                            <ToggleButton x:Name="HeaderToggle"
+                                          DockPanel.Dock="Top"
+                                          OverridesDefaultStyle="True"
+                                          Focusable="True"
+                                          FocusVisualStyle="{x:Null}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          Content="{TemplateBinding Header}"
+                                          ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                                          IsChecked="{Binding IsExpanded, Mode=TwoWay,
+                                                      RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Border x:Name="HeaderBorder"
+                                                Background="Transparent"
+                                                Padding="8,6"
+                                                SnapsToDevicePixels="True">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+                                                <!-- Collapsed: points right; expanded: points down -->
+                                                <Path x:Name="Arrow"
+                                                      Grid.Column="0"
+                                                      VerticalAlignment="Center"
+                                                      Margin="2,0,8,0"
+                                                      Width="8" Height="8"
+                                                      Stretch="Uniform"
+                                                      Fill="{DynamicResource Eto.Palette.ForegroundBrush}"
+                                                      Data="M 0 0 L 4 4 L 0 8 Z" />
+                                                <ContentPresenter Grid.Column="1"
+                                                                  RecognizesAccessKey="True"
+                                                                  VerticalAlignment="Center"
+                                                                  SnapsToDevicePixels="True" />
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Arrow" Property="Data" Value="M 0 0 L 8 0 L 4 4 Z" />
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="HeaderBorder" Property="Background"
+                                                        Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <!-- Body content, only shown while expanded -->
+                            <Border x:Name="ContentBorder"
+                                    Visibility="Collapsed"
+                                    Background="{DynamicResource Eto.Palette.BackgroundBrush}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="0,1,0,0"
+                                    SnapsToDevicePixels="True">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                                  SnapsToDevicePixels="True" />
+                            </Border>
+                        </DockPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter TargetName="ContentBorder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="OuterBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="OuterBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="OuterBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

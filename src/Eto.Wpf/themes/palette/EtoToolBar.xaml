@@ -1,0 +1,148 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:swc="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.ToolBar">
+
+    <!--
+    =========================================================================
+    EtoToolBar - custom style for the custom theme
+    =========================================================================
+    The WPF default ToolBar template uses hard-coded chrome and background
+    brushes. This style replaces them with DynamicResource palette references.
+
+    A ToolBar also forces its OWN styles onto the controls placed inside it
+    (buttons, toggle buttons, drop-down menus, …) via the special ToolBar.*StyleKey
+    resource keys - those default to the Aero chrome and ignore the palette, which
+    is why an un-keyed toolbar shows unthemed hover/checked highlights and an
+    unthemed drop-down. The styles below re-key those to palette-driven templates:
+
+        ToolBar.ButtonStyleKey        -> ButtonToolItem      (swc:Button)
+        ToolBar.ToggleButtonStyleKey  -> Check/RadioToolItem (swc:ToggleButton)
+        ToolBar.MenuStyleKey          -> DropDownToolItem    (swc:Menu; its MenuItems
+                                         pick up the themed implicit MenuItem style
+                                         from EtoMenuItem.xaml)
+
+    The bar itself defaults to the window background with no border so it blends
+    into the window; a palette gives it a look of its own via the
+    Eto.Palette.ToolBar* keys (defaults + docs in themes/palette.xaml).
+    =========================================================================
+    -->
+
+    <Style TargetType="{x:Type efc:EtoToolBar}">
+        <Setter Property="Background"      Value="{DynamicResource Eto.Palette.ToolBarBackgroundBrush}" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"     Value="{DynamicResource Eto.Palette.ToolBarBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource Eto.Palette.ToolBarBorderThickness}" />
+        <Setter Property="Padding"         Value="2,2,2,2" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoToolBar}">
+                    <Border x:Name="ToolBarBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ToolBarPanel x:Name="PART_ToolBarPanel"
+                                      IsItemsHost="True"
+                                      SnapsToDevicePixels="True" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═ Shared chrome for toolbar buttons / toggle buttons ═══════════════════
+         TargetType is ButtonBase so both Button and ToggleButton can use it.
+         The checked trigger is harmless for a plain Button (IsChecked stays false). -->
+    <ControlTemplate x:Key="EtoToolBarItemTemplate" TargetType="{x:Type ButtonBase}">
+        <Border x:Name="ToolBarItemBorder"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{DynamicResource Eto.Palette.CornerRadius}"
+                SnapsToDevicePixels="True">
+            <ContentPresenter Margin="{TemplateBinding Padding}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              RecognizesAccessKey="True"
+                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+        </Border>
+        <ControlTemplate.Triggers>
+            <!-- Checked (toggle / radio tool items) -->
+            <Trigger Property="ToggleButton.IsChecked" Value="True">
+                <Setter TargetName="ToolBarItemBorder" Property="Background"
+                        Value="{DynamicResource Eto.Palette.CheckedBackgroundBrush}" />
+                <Setter TargetName="ToolBarItemBorder" Property="BorderBrush"
+                        Value="{DynamicResource Eto.Palette.CheckedBorderBrush}" />
+            </Trigger>
+            <!-- Hover -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="ToolBarItemBorder" Property="Background"
+                        Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                <Setter TargetName="ToolBarItemBorder" Property="BorderBrush"
+                        Value="{DynamicResource Eto.Palette.HoverBorderBrush}" />
+            </Trigger>
+            <!-- Pressed -->
+            <Trigger Property="ButtonBase.IsPressed" Value="True">
+                <Setter TargetName="ToolBarItemBorder" Property="Background"
+                        Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                <Setter TargetName="ToolBarItemBorder" Property="BorderBrush"
+                        Value="{DynamicResource Eto.Palette.PressedBorderBrush}" />
+            </Trigger>
+            <!-- Disabled -->
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="EtoToolBarButtonBaseStyle" TargetType="{x:Type ButtonBase}">
+        <Setter Property="Background"                 Value="Transparent" />
+        <Setter Property="Foreground"                 Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"                Value="Transparent" />
+        <Setter Property="BorderThickness"            Value="1" />
+        <Setter Property="Padding"                    Value="4,2" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment"   Value="Center" />
+        <Setter Property="SnapsToDevicePixels"        Value="True" />
+        <Setter Property="FocusVisualStyle"           Value="{x:Null}" />
+        <Setter Property="Template"                   Value="{StaticResource EtoToolBarItemTemplate}" />
+    </Style>
+
+    <!-- ButtonToolItem -->
+    <Style x:Key="{x:Static swc:ToolBar.ButtonStyleKey}"
+           TargetType="{x:Type Button}"
+           BasedOn="{StaticResource EtoToolBarButtonBaseStyle}" />
+
+    <!-- CheckToolItem / RadioToolItem -->
+    <Style x:Key="{x:Static swc:ToolBar.ToggleButtonStyleKey}"
+           TargetType="{x:Type ToggleButton}"
+           BasedOn="{StaticResource EtoToolBarButtonBaseStyle}" />
+
+    <!-- DropDownToolItem: a transparent Menu. A ToolBar shadows the implicit MenuItem
+         style, so its items are given the palette style explicitly via ItemContainerStyle
+         (EtoToolBarMenuItemStyle, EtoMenuItem.xaml), which propagates down the submenu. -->
+    <Style x:Key="{x:Static swc:ToolBar.MenuStyleKey}" TargetType="{x:Type Menu}">
+        <Setter Property="Background"          Value="Transparent" />
+        <Setter Property="Foreground"          Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderThickness"     Value="0" />
+        <Setter Property="Padding"             Value="0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="FocusVisualStyle"    Value="{x:Null}" />
+        <Setter Property="ItemContainerStyle"  Value="{DynamicResource EtoToolBarMenuItemStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Border Background="{TemplateBinding Background}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

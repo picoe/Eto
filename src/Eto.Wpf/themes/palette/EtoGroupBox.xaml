@@ -1,0 +1,100 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoGroupBox - custom ControlTemplate for the custom theme
+    =========================================================================
+    Uses a framed panel with a floating header capsule so grouped content feels
+    more deliberate while still matching the rest of the dark custom theme.
+    When there is a title, GroupBox.HasHeader is true (the handler attaches the
+    Header) and the HasHeader=True trigger below insets the outer border's top
+    edge so the header capsule can straddle it. With no title the border keeps
+    its default 0 margin — so the content padding stays symmetric on all sides —
+    and the (empty) capsule is collapsed.
+    =========================================================================
+    -->
+
+    <Style TargetType="{x:Type efc:EtoGroupBox}">
+        <Setter Property="Background" Value="{DynamicResource Eto.Palette.BackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="Margin" Value="0,6,0,0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoGroupBox}">
+                    <Grid SnapsToDevicePixels="True">
+                        <!-- No Margin here on purpose: the top inset that lets the
+                             header capsule straddle the border is applied by the
+                             HasHeader=True trigger below. A literal Margin here would be
+                             a local value and would outrank the trigger, so the no-header
+                             case could never collapse it. -->
+                        <Border x:Name="OuterBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <!-- Fill the interior with the panel background (not the
+                                 inset SurfaceBrush): a GroupBox is a grouping frame, and
+                                 the floating Header capsule below is painted with the same
+                                 background so it blends seamlessly into both the border gap
+                                 and the content instead of showing a band over the content. -->
+                            <Border x:Name="ContentFill"
+                                    Margin="1"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="7">
+                                <ContentPresenter Margin="{TemplateBinding Padding}"
+                                                  ContentSource="Content"
+                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Border>
+                        </Border>
+
+                        <Border x:Name="Header"
+                                Margin="14,0,14,0"
+                                Padding="4,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="{DynamicResource Eto.Palette.BackgroundBrush}"
+                                BorderThickness="0">
+                            <ContentPresenter ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <!-- With a title, inset the frame's top edge so the floating
+                             header capsule can straddle the border line. With no title
+                             the border keeps its default 0 margin, so all four content
+                             margins match, and the (empty) capsule is collapsed. -->
+                        <Trigger Property="HasHeader" Value="True">
+                            <Setter TargetName="OuterBorder" Property="Margin" Value="0,10,0,0" />
+                        </Trigger>
+                        <Trigger Property="HasHeader" Value="False">
+                            <Setter TargetName="Header" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="OuterBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="OuterBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="ContentFill" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="Header" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

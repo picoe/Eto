@@ -1,0 +1,103 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+    =========================================================================
+    CUSTOM THEME - COLOR PALETTE
+    =========================================================================
+    This file is the single source of truth for every color in the custom theme.
+    Edit the Color values here to re-skin the entire application; all brushes
+    and control overrides are derived from these named keys.
+
+    To change a color at runtime, replace the entire brush in Application.Resources
+    (the main dict, not a merged dict, so it wins over this one):
+
+        Application.Current.Resources["Eto.Palette.AccentBrush"] = new SolidColorBrush(newColor);
+
+    =========================================================================
+    -->
+
+    <!-- == Backgrounds =================================================== -->
+    <!-- Main window / panel background -->
+    <Color x:Key="Eto.Palette.Background.Color">#1E1E2E</Color>
+    <!-- Inset surfaces: group boxes, list backgrounds, etc. -->
+    <Color x:Key="Eto.Palette.Surface.Color">#181825</Color>
+
+    <!-- == Foregrounds ==================================================== -->
+    <!-- Primary text and icon color -->
+    <Color x:Key="Eto.Palette.Foreground.Color">#CDD6F4</Color>
+    <!-- Placeholder / watermark / secondary text -->
+    <Color x:Key="Eto.Palette.SubtleForeground.Color">#6C7086</Color>
+    <!-- Text shown on disabled controls -->
+    <Color x:Key="Eto.Palette.DisabledForeground.Color">#45475A</Color>
+
+    <!-- == Borders ========================================================= -->
+    <!-- Default control border -->
+    <Color x:Key="Eto.Palette.Border.Color">#313244</Color>
+    <!-- Border on hover -->
+    <Color x:Key="Eto.Palette.BorderHover.Color">#585B70</Color>
+
+    <!-- == Accent / Focus ================================================== -->
+    <!-- Primary action / focus ring / selection highlight (Catppuccin Mocha Mauve) -->
+    <Color x:Key="Eto.Palette.Accent.Color">#CBA6F7</Color>
+    <!-- Hovered accent element -->
+    <Color x:Key="Eto.Palette.AccentHover.Color">#D5BCFE</Color>
+    <!-- Pressed accent element -->
+    <Color x:Key="Eto.Palette.AccentPressed.Color">#B48EF5</Color>
+    <!-- Foreground drawn on top of an accent-colored surface (e.g. selected item text) -->
+    <Color x:Key="Eto.Palette.AccentForeground.Color">#1E1E2E</Color>
+
+    <!-- == Interactive States =============================================== -->
+    <!-- ToggleButton checked / ListBox selected background -->
+    <Color x:Key="Eto.Palette.CheckedBackground.Color">#45475A</Color>
+    <Color x:Key="Eto.Palette.CheckedBorder.Color">#CBA6F7</Color>
+    <!-- Generic hover background for buttons, menu items, etc. -->
+    <Color x:Key="Eto.Palette.HoverBackground.Color">#313244</Color>
+    <Color x:Key="Eto.Palette.HoverBorder.Color">#585B70</Color>
+    <!-- Pressed / active state -->
+    <Color x:Key="Eto.Palette.PressedBackground.Color">#45475A</Color>
+    <Color x:Key="Eto.Palette.PressedBorder.Color">#CBA6F7</Color>
+    <!-- Disabled control fill + border -->
+    <Color x:Key="Eto.Palette.DisabledBackground.Color">#181825</Color>
+    <Color x:Key="Eto.Palette.DisabledBorder.Color">#313244</Color>
+
+    <!-- =========================================================================
+         BRUSHES  -  derived from the Color resources above.
+         All control styles reference these keys via DynamicResource so that
+         replacing a brush in Application.Current.Resources propagates instantly.
+         ========================================================================= -->
+
+    <SolidColorBrush x:Key="Eto.Palette.BackgroundBrush"         Color="{StaticResource Eto.Palette.Background.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.SurfaceBrush"            Color="{StaticResource Eto.Palette.Surface.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.ForegroundBrush"         Color="{StaticResource Eto.Palette.Foreground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.SubtleForegroundBrush"   Color="{StaticResource Eto.Palette.SubtleForeground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.DisabledForegroundBrush" Color="{StaticResource Eto.Palette.DisabledForeground.Color}" />
+
+    <SolidColorBrush x:Key="Eto.Palette.BorderBrush"             Color="{StaticResource Eto.Palette.Border.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.BorderHoverBrush"        Color="{StaticResource Eto.Palette.BorderHover.Color}" />
+
+    <SolidColorBrush x:Key="Eto.Palette.AccentBrush"             Color="{StaticResource Eto.Palette.Accent.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.AccentHoverBrush"        Color="{StaticResource Eto.Palette.AccentHover.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.AccentPressedBrush"      Color="{StaticResource Eto.Palette.AccentPressed.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.AccentForegroundBrush"   Color="{StaticResource Eto.Palette.AccentForeground.Color}" />
+
+    <SolidColorBrush x:Key="Eto.Palette.CheckedBackgroundBrush"  Color="{StaticResource Eto.Palette.CheckedBackground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.CheckedBorderBrush"      Color="{StaticResource Eto.Palette.CheckedBorder.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.HoverBackgroundBrush"    Color="{StaticResource Eto.Palette.HoverBackground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.HoverBorderBrush"        Color="{StaticResource Eto.Palette.HoverBorder.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.PressedBackgroundBrush"  Color="{StaticResource Eto.Palette.PressedBackground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.PressedBorderBrush"      Color="{StaticResource Eto.Palette.PressedBorder.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.DisabledBackgroundBrush" Color="{StaticResource Eto.Palette.DisabledBackground.Color}" />
+    <SolidColorBrush x:Key="Eto.Palette.DisabledBorderBrush"     Color="{StaticResource Eto.Palette.DisabledBorder.Color}" />
+
+    <!-- == Shape / spacing (optional) ====================================== -->
+    <!-- Opt into rounded corners on TextBox / ComboBox (DropDown) / Button and
+         the combo drop-down popup. These keys are optional: omit them to keep the
+         default square, tightly-padded look (see themes/palette.xaml for the
+         defaults). The padding is widened so text/content stays clear of the
+         rounded corners. -->
+    <CornerRadius x:Key="Eto.Palette.CornerRadius">6</CornerRadius>
+    <Thickness x:Key="Eto.Palette.ControlPadding">8,4</Thickness>
+    <Thickness x:Key="Eto.Palette.ButtonPadding">12,5</Thickness>
+
+</ResourceDictionary>
