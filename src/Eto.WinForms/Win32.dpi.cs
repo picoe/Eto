@@ -237,14 +237,21 @@ namespace Eto
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool IsProcessDPIAware();
 
-		[DllImport("User32.dll")]
-		static extern DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext);
+		// A DPI_AWARENESS_CONTEXT is a handle and has to be marshalled pointer-sized. Passing the
+		// negative pseudo-handles through a 4-byte type leaves the top half of the register zeroed on
+		// 64-bit, so PER_MONITOR_AWARE_v2 arrived as 0x00000000FFFFFFFC and the call failed with
+		// ERROR_INVALID_PARAMETER - silently, since a failure returns NONE and the callers below then
+		// skip restoring it. Whether that happened came down to how the argument was widened, so the
+		// same code switched to per-monitor mode in one process and quietly stayed in the virtualized
+		// system-DPI space in another, reporting the system DPI for every screen.
+		[DllImport("User32.dll", EntryPoint = "SetThreadDpiAwarenessContext")]
+		static extern IntPtr SetThreadDpiAwarenessContextNative(IntPtr dpiContext);
 
 		public static DPI_AWARENESS_CONTEXT SetThreadDpiAwarenessContextSafe(DPI_AWARENESS_CONTEXT dpiContext)
 		{
 			if (!PerMontiorThreadDpiSupported)
 				return DPI_AWARENESS_CONTEXT.NONE;
-			return SetThreadDpiAwarenessContext(dpiContext);
+			return (DPI_AWARENESS_CONTEXT)(long)SetThreadDpiAwarenessContextNative((IntPtr)(long)dpiContext);
 		}
 		
 		public static swf.Screen GetScreenFromWindow(IntPtr nativeHandle)
@@ -281,8 +288,34 @@ namespace Eto
 			}
 		}
 
-		[DllImport("User32.dll")]
-		public static extern DPI_AWARENESS_CONTEXT GetThreadDpiAwarenessContext();
+		[DllImport("User32.dll", EntryPoint = "GetThreadDpiAwarenessContext")]
+		static extern IntPtr GetThreadDpiAwarenessContextNative();
+
+		public static DPI_AWARENESS_CONTEXT GetThreadDpiAwarenessContext() => (DPI_AWARENESS_CONTEXT)(long)GetThreadDpiAwarenessContextNative();
+
+		/// <summary>
+		/// The awareness a context stands for, as <see cref="DPI_AWARENESS"/>.
+		/// </summary>
+		/// <remarks>
+		/// The contexts the system hands back are opaque handles rather than the pseudo-handles in
+		/// <see cref="DPI_AWARENESS_CONTEXT"/>, so this is the only way to tell what one means.
+		/// </remarks>
+		[DllImport("User32.dll", EntryPoint = "GetAwarenessFromDpiAwarenessContext")]
+		static extern DPI_AWARENESS GetAwarenessFromDpiAwarenessContextNative(IntPtr dpiContext);
+
+		public static DPI_AWARENESS GetAwarenessFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT dpiContext) =>
+			GetAwarenessFromDpiAwarenessContextNative((IntPtr)(long)dpiContext);
+
+		public static DPI_AWARENESS GetThreadDpiAwareness() =>
+			GetAwarenessFromDpiAwarenessContextNative(GetThreadDpiAwarenessContextNative());
+
+		public enum DPI_AWARENESS
+		{
+			INVALID = -1,
+			UNAWARE = 0,
+			SYSTEM_AWARE = 1,
+			PER_MONITOR_AWARE = 2
+		}
 
 		[DllImport("User32.dll")]
 		public static extern bool EnableNonClientDpiScaling(IntPtr hwnd);
@@ -306,7 +339,9 @@ namespace Eto
 			public char[] szDevice = new char[32];
 		}
 
-		public enum DPI_AWARENESS_CONTEXT
+		// long-backed so that a real context handle survives a round trip through it - the handles the
+		// system returns are pointer-sized, and truncating one would restore the wrong context.
+		public enum DPI_AWARENESS_CONTEXT : long
 		{
 			NONE = 0,
 			UNAWARE = -1,
