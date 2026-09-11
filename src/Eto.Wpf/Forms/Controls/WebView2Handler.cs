@@ -502,9 +502,25 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		if (Widget.IsDisposed)
 			return;
 
-		Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
-		Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-		Control.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
+		// This runs a dispatcher turn after initialization completed, and the browser
+		// process can die in between - CoreWebView2 then throws InvalidOperationException
+		// from VerifyBrowserNotCrashed. There is nothing left to hook up when that has
+		// happened, and letting it escape this dispatcher callback crashes the application.
+		CoreWebView2 coreWebView2;
+		try
+		{
+			coreWebView2 = Control.CoreWebView2;
+		}
+		catch (InvalidOperationException)
+		{
+			return;
+		}
+		if (coreWebView2 == null)
+			return;
+
+		coreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+		coreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+		coreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
 		webView2Ready = true;
 
 		if (delayedActions != null)
