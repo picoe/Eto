@@ -169,7 +169,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					controller.ExpandToItem(value);
 					Control.SelectedItem = value;
-					Control.ScrollIntoView(value);
+					Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(value));
 				}
 				else
 					Control.UnselectAll();
