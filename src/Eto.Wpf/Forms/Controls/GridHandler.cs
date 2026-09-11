@@ -752,7 +752,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			CommitEdit();
 			//sometimes couldn't focus to cell, so use ScrollIntoView
-			Control.ScrollIntoView(Control.Items[row]);
+			Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(Control.Items[row]));
 			//set current cell and select its row.
 			if (!SelectedRows.Contains(row))
 			{
@@ -942,7 +942,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void ScrollToRow(int row)
 		{
-			Control.ScrollIntoView(Control.Items[row]);
+			Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(Control.Items[row]));
 		}
 
 		public GridLines GridLines

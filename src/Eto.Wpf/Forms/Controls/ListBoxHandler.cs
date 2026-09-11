@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (value >= 0 && store != null)
 				{
 					var item = store.AsEnumerable().Skip(value).FirstOrDefault();
-					Control.ScrollIntoView(item);
+					Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(item));
 				}
 			}
 		}
