@@ -33,7 +33,7 @@ namespace Eto.Test.Mac.UnitTests
 				Assert.That(originalSize.Height, Is.EqualTo((nfloat)defaultButtonHeight), "#2.1");
 
 				var preferred = handler.GetPreferredSize(SizeF.PositiveInfinity);
-				Assert.That(preferred.Height, Is.EqualTo(originalSize.Height), "#2.1");
+				Assert.That(preferred.Height, Is.EqualTo((float)originalSize.Height), "#2.1");
 				Assert.That(handler.Control.BezelStyle, Is.EqualTo(NSBezelStyle.Rounded), "#2.2");
 
 				form.Shown += async (sender, e) =>

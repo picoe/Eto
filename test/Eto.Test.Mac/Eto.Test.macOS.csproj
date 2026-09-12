@@ -47,6 +47,7 @@
   <ItemGroup>
     <None Include="Assets\TestCopyToOutput.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PublishFolderType>Assembly</PublishFolderType>
     </None>
   </ItemGroup>
   <ItemGroup>
