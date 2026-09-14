@@ -960,19 +960,24 @@ namespace Eto.Mac.Forms.Controls
 			else
 				contentView.ScrollToPoint(new CGPoint(loc.X, Control.Frame.Height - contentView.Frame.Height - loc.Y));
 
+			Control.EndUpdates();
+
+			// EndUpdates() applies the pending reload, which clears the selection - so restore it after.
 			bool isSelectionChanged = false;
 			foreach (var sel in selection)
 			{
 				var cachedItem = GetCachedItem(sel as ITreeGridItem);
 				if (cachedItem == null)
+				{
+					isSelectionChanged = true;
 					continue;
+				}
 				var row = Control.RowForItem(cachedItem);
 				if (row >= 0)
 					Control.SelectRow((nint)row, true);
 				else
 					isSelectionChanged = true;
 			}
-			Control.EndUpdates();
 
 			ScrollView.ReflectScrolledClipView(contentView);
 			suppressExpandCollapseEvents--;
