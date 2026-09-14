@@ -49,7 +49,17 @@ namespace Eto.Wpf.Forms.Controls
 			if (popup == null)
 				return null;
 
-			popup.Child.Measure(WpfConversions.PositiveInfinitySize); // force generating containers
+			try
+			{
+				popup.Child.Measure(WpfConversions.PositiveInfinitySize); // force generating containers
+			}
+			catch (Exception ex)
+			{
+				// SafeLayout already keeps an item that can't be laid out from being fatal, so this is
+				// only reached when something else in the popup fails. Carry on with whatever containers
+				// were generated - sizing to the items that do work beats giving up on a width entirely.
+				Trace.WriteLine($"Could not measure drop down items: {ex}");
+			}
 
 			if (ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
 				return null;
@@ -57,7 +67,7 @@ namespace Eto.Wpf.Forms.Controls
 			var count = Items.Count;
 			if (count == 0)
 				return null;
-				
+
 			double maxWidth = 0;
 			for (int i = 0; i < count; i++)
 			{
@@ -65,7 +75,16 @@ namespace Eto.Wpf.Forms.Controls
 				var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
 				if (comboBoxItem == null)
 					continue;
-				comboBoxItem.Measure(WpfConversions.PositiveInfinitySize);
+				try
+				{
+					comboBoxItem.Measure(WpfConversions.PositiveInfinitySize);
+				}
+				catch (Exception ex)
+				{
+					// as above - skip this item, but keep sizing to the ones that do work
+					Trace.WriteLine($"Could not measure drop down item '{item}': {ex}");
+					continue;
+				}
 				maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 			}
 
@@ -291,23 +310,27 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override sw.Size MeasureOverride(sw.Size constraint, Func<sw.Size, sw.Size> measure)
 		{
-			// don't calculate max width if we have a specified width.
+			// Don't calculate the max width if we have a specified width - it isn't going to be used.
+			// This matters a lot with many items (e.g. a font list): finding the max width has to realize
+			// and measure every item, which is both slow and at the mercy of anything that can go wrong
+			// measuring an item, such as a font WPF is unable to load. Specifying a width means all of
+			// that is deferred until the user actually opens the drop down.
 			if (!double.IsNaN(UserPreferredSize.Width))
 				return base.MeasureOverride(constraint, measure);
-				
+
 			sw.Size MeasureMaxWidth(sw.Size constraint2)
 			{
 				var desired = measure(constraint2);
-				
+
 				if (maxWidthCache == null)
 					maxWidthCache = Control.FindMaxWidth();
 
 				if (maxWidthCache != null)
 					desired.Width = Math.Max(desired.Width, maxWidthCache.Value);
-					
+
 				if (!double.IsNaN(constraint2.Width))
 					desired.Width = Math.Min(constraint2.Width, desired.Width);
-					
+
 				return desired;
 			}
 
