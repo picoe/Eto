@@ -18,11 +18,19 @@ dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10
 
 - `--filter` uses NUnit / Microsoft.Testing.Platform syntax; a bare class name (`"BrushTests"`)
   or `FullyQualifiedName~Brush` both work. Omit `--filter` to run everything.
-- **Always exclude the `ManualTest` category** when running broader/unscoped test sets — those
-  tests require user interaction and will otherwise stall waiting for input. Append
-  `TestCategory!=ManualTest` (combine with `&`), e.g.
-  `--filter "FullyQualifiedName~Grid&TestCategory!=ManualTest"` or, to run everything else,
-  `--filter "TestCategory!=ManualTest"`.
+- **Always exclude the `ManualTest` category — on every run, not just unscoped ones.** They put a
+  window on the user's screen and block indefinitely (`ManualForm` waits with `timeout: -1`) until a
+  human performs the interaction and clicks Pass/Fail — several are slow and fiddly to do by hand.
+  Running them unasked hijacks the user's machine, and whatever they report is about whether the
+  person carried out the steps, *not* whether the code works: they surface as **failures**, not
+  skips, so they masquerade as real breakage and poison a before/after comparison.
+  `--filter "FullyQualifiedName~Grid&TestCategory!=ManualTest"`, or `--filter "TestCategory!=ManualTest"`
+  to run everything else.
+- **Repeat the exclusion in every `|` alternative.** `&` binds tighter than `|`, so
+  `FullyQualifiedName~CheckBox|FullyQualifiedName~RadioButton&TestCategory!=ManualTest` still runs every
+  manual `CheckBox` test. Parentheses would group it, but the macos TFM parses its own filter and treats
+  them as literal characters — silently matching nothing — so repeat the term instead:
+  `"FullyQualifiedName~CheckBox&TestCategory!=ManualTest|FullyQualifiedName~RadioButton&TestCategory!=ManualTest"`.
 - **Always pass `-f`** — the project multi-targets `net48;net10.0;net10.0-windows` (plus
   `net10.0-macos` on a Mac). On Linux use `-f net10.0`; the Windows-only TFMs won't build there.
 - Test runner is Microsoft.Testing.Platform (set in `global.json`), NUnit 4.
@@ -213,6 +221,15 @@ must exclude `MouseButtons.Alternate` (see `DrawableSection.InputMethodDrawable`
 un-overridden answer and the fix looks broken. Use `Eto.Mac.Messaging.*_objc_msgSend*` on `view.Handle`
 instead (see `Eto.Test.Mac/UnitTests/DrawableTests.IsTextInputClient`). AppKit itself calls through
 normal dispatch, so it does see the override.
+
+## Mac: which appearance a build gets depends on its linked SDK, not on the backend
+
+Whether AppKit renders a build with Liquid Glass or the compatibility appearance depends on the SDK the
+**main executable** was linked against, which is not a stable property of a backend: for `Eto.macOS` that
+is the Xcode used to compile it, but for `Eto.Mac64` it is the .NET SDK's prebuilt apphost, whose SDK
+changes whenever Microsoft rebuilds it. So "Mac64 is pre-Tahoe" has a shelf life — prefer measuring real
+values over branching on the appearance, and note that `MacVersion.IsUsingGlass` (SDK-derived) and
+`MacVersion.IsAtLeast(26, 0)` (OS-derived) answer genuinely different questions.
 
 ## Adding a member to a widget's `IHandler`
 
