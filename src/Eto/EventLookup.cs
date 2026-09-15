@@ -7,9 +7,8 @@ static class EventLookup
 	static readonly Dictionary<Type, string[]> externalEvents = new Dictionary<Type, string[]>();
 
 	/// <summary>
-	/// Controlss are not always built on a single thread. Rhino's greet window
-	/// builds on its own thread while the main thread is building as well. The
-	/// above dictionaries need a lock
+	/// Controls are not always built on a single thread. 
+	/// WPF and Windows Forms can have UI running on multiple threads so add a lock when accessing them.
 	/// </summary>
 	static readonly object cacheLock = new object();
 
