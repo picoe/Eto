@@ -6,6 +6,13 @@ static class EventLookup
 	static readonly Assembly etoAssembly = typeof(EventLookup).Assembly;
 	static readonly Dictionary<Type, string[]> externalEvents = new Dictionary<Type, string[]>();
 
+	/// <summary>
+	/// Controlss are not always built on a single thread. Rhino's greet window
+	/// builds on its own thread while the main thread is building as well. The
+	/// above dictionaries need a lock
+	/// </summary>
+	static readonly object cacheLock = new object();
+
 	struct EventDeclaration
 	{
 		public readonly string Identifier;
@@ -21,8 +28,11 @@ static class EventLookup
 	public static void Register<T>(Expression<Action<T>> expression, string identifier)
 	{
 		var method = ((MethodCallExpression)expression.Body).Method;
-		var declarations = GetDeclarations(typeof(T));
-		declarations.Add(new EventDeclaration(method, identifier));
+		lock (cacheLock)
+		{
+			var declarations = GetDeclarations(typeof(T));
+			declarations.Add(new EventDeclaration(method, identifier));
+		}
 	}
 
 	public static void HookupEvents(Widget widget)
@@ -54,12 +64,15 @@ static class EventLookup
 
 	static string[] GetEvents(Type type)
 	{
-		if (externalEvents.TryGetValue(type, out var events))
-			return events;
+		lock (cacheLock)
+		{
+			if (externalEvents.TryGetValue(type, out var events))
+				return events;
 
-		events = FindTypeEvents(type).Distinct().ToArray();
-		externalEvents.Add(type, events);
-		return events;
+			events = FindTypeEvents(type).Distinct().ToArray();
+			externalEvents.Add(type, events);
+			return events;
+		}
 	}
 
 	static IEnumerable<string> FindTypeEvents(Type type)
