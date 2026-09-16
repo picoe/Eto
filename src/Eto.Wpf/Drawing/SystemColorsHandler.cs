@@ -1,31 +1,70 @@
+using System.Collections.Concurrent;
+
 namespace Eto.Wpf.Drawing
 {
 	public class SystemColorsHandler : SystemColors.IHandler
 	{
-		static Color? GetResourceColor(sw.ResourceKey key)
+		/// <summary>
+		/// Colors last resolved on the application's thread, for the threads that must not resolve them
+		/// themselves. See <see cref="GetResourceColor"/>.
+		/// </summary>
+		static readonly ConcurrentDictionary<object, Color> _resourceColors = new ConcurrentDictionary<object, Color>();
+
+		/// <summary>
+		/// Re-reads every system color on the application's thread, so its brushes are realized there and
+		/// the cache matches the merged resources. Call whenever the theme or the OS colors change.
+		/// </summary>
+		internal static void RefreshResourceColors()
 		{
 			var app = sw.Application.Current;
+
+			// SystemEvents raises on a thread of its own, and only the application's may read the brushes.
+			if (app != null && !app.CheckAccess())
+			{
+				app.Dispatcher.BeginInvoke(new Action(RefreshResourceColors), swt.DispatcherPriority.Background);
+				return;
+			}
+
+			_resourceColors.Clear();
 			if (app == null)
-				return null;
-			var resource = app.TryFindResource(key);
-			if (resource is swm.SolidColorBrush brush)
-				return brush.Color.ToEto();
-			if (resource is swm.Color color)
-				return color.ToEto();
-			return null;
+				return;
+
+			// Driven off the interface so a color added to SystemColors cannot be left out here.
+			var handler = new SystemColorsHandler();
+			foreach (var property in typeof(SystemColors.IHandler).GetProperties())
+				property.GetValue(handler);
 		}
-		
-		static Color? GetResourceColor(string key)
+
+		/// <summary>
+		/// Resolves <paramref name="key"/> to a color, or null when it cannot be read from this thread.
+		/// </summary>
+		/// <remarks>
+		/// The theme brushes take their color from a DynamicResource so they cannot be frozen, which
+		/// leaves them owned by the thread that first realizes them - reading one from anywhere else
+		/// throws (RH-98688). So nothing is resolved off the application's thread; its last read is used.
+		/// </remarks>
+		static Color? GetResourceColor(object key)
 		{
 			var app = sw.Application.Current;
 			if (app == null)
 				return null;
+
+			if (!app.CheckAccess())
+				return _resourceColors.TryGetValue(key, out var cached) ? cached : (Color?)null;
+
+			Color? color = null;
 			var resource = app.TryFindResource(key);
-			if (resource is swm.SolidColorBrush brush)
-				return brush.Color.ToEto();
-			if (resource is swm.Color color)
-				return color.ToEto();
-			return null;
+			if (resource is swm.Color resourceColor)
+				color = resourceColor.ToEto();
+			// false only when another thread owns the brush, so it can never be read here - skip it
+			else if (resource is swm.SolidColorBrush brush && brush.CheckAccess())
+				color = brush.Color.ToEto();
+
+			if (color != null)
+				_resourceColors[key] = color.Value;
+			else
+				_resourceColors.TryRemove(key, out _);
+			return color;
 		}
 
 		// The entry area of controls such as a TextBox. Distinct from WindowBackground, which is the

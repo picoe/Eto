@@ -1,0 +1,11 @@
+<!-- Resources for UnitTests/SystemColorsTests.cs: like the palette themes, the DynamicResource
+     color is what makes the brush unfreezable, and so owned by the thread that realizes it. -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="Eto.Test.SystemColors.Color">#FF214365</Color>
+
+    <SolidColorBrush x:Key="WindowBackground"
+                     Color="{DynamicResource Eto.Test.SystemColors.Color}" />
+
+</ResourceDictionary>
