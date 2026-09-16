@@ -139,6 +139,14 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		{
 			CheckAndUpdateSystemTheme();
 		}
+
+		// the OS colors the system colors fall back to change here, without any theme being swapped
+		if (e.Category == UserPreferenceCategory.General
+			|| e.Category == UserPreferenceCategory.Color
+			|| e.Category == UserPreferenceCategory.VisualStyle)
+		{
+			Drawing.SystemColorsHandler.RefreshResourceColors();
+		}
 	}
 
 	private void CheckAndUpdateSystemTheme()
@@ -398,6 +406,9 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 			// handler apply any overrides that depend on the merged values.
 			handler.ThemeResourcesMerged();
 		}
+
+		// realize the theme's brushes here, on the only thread that is allowed to read them
+		Drawing.SystemColorsHandler.RefreshResourceColors();
 	}
 
 	public void Open(string url)
