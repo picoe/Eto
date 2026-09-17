@@ -13,6 +13,8 @@ namespace Eto.Mac.Forms.Controls
 		int suppressExpandCollapseEvents;
 		int skipSelectionChanged;
 
+		static readonly IntPtr selSetDelegate = Selector.GetHandle("setDelegate:");
+
 		static readonly object ShowGroupItems_Key = new object();
 		static readonly object AllowGroupSelection_Key = new object();
 
@@ -22,7 +24,17 @@ namespace Eto.Mac.Forms.Controls
 		public bool ShowGroups
 		{
 			get => Widget.Properties.Get<bool>(ShowGroupItems_Key);
-			set => Widget.Properties.Set(ShowGroupItems_Key, value);
+			set
+			{
+				if (Widget.Properties.TrySet(ShowGroupItems_Key, value))
+				{
+					// NSOutlineView caches which delegate methods exist when the delegate is set,
+					// so re-assign it to pick up the change to EtoOutlineDelegate.RespondsToSelector.
+					var del = Control.WeakDelegate;
+					Messaging.void_objc_msgSend_IntPtr(Control.Handle, selSetDelegate, IntPtr.Zero);
+					Control.WeakDelegate = del;
+				}
+			}
 		}
 
 		public bool AllowGroupSelection
@@ -83,6 +95,17 @@ namespace Eto.Mac.Forms.Controls
 
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
+
+			static readonly IntPtr selIsGroupItem = Selector.GetHandle("outlineView:isGroupItem:");
+
+			public override bool RespondsToSelector(Selector sel)
+			{
+				// AppKit asks this for every row whenever it recalculates the table's height, and each
+				// call is an expensive trip back into managed code - so only offer it when it can be true.
+				if (sel?.Handle == selIsGroupItem)
+					return Handler?.ShowGroups == true;
+				return base.RespondsToSelector(sel);
+			}
 
 			public override bool IsGroupItem(NSOutlineView outlineView, NSObject item)
 			{
@@ -906,16 +929,16 @@ namespace Eto.Mac.Forms.Controls
 
 		void ExpandItems(NSObject parent)
 		{
-			int count;
-			if (parent == null)
-				count = store?.Count ?? 0;
-			else
-				count = ((parent as EtoTreeItem)?.Item as ITreeGridStore<ITreeGridItem>)?.Count ?? 0;
+			var parentStore = parent == null ? store : (parent as EtoTreeItem)?.Item as ITreeGridStore<ITreeGridItem>;
+			var count = parentStore?.Count ?? 0;
 
 			for (int i = 0; i < count; i++)
 			{
+				// check the model first - materializing the native item for every row is expensive
+				if (parentStore[i]?.Expanded != true)
+					continue;
 				var item = Control.GetChild(i, parent) as EtoTreeItem;
-				if (item != null && item.Item.Expanded && !Control.IsItemExpanded(item))
+				if (item != null && !Control.IsItemExpanded(item))
 				{
 					Control.ExpandItem(item);
 					ExpandItems(item);
