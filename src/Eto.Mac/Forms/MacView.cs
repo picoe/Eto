@@ -1752,9 +1752,10 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, theEvent.Handle);
 				SuppressMouseEvents--;
 
-				// some controls use event loops until mouse up, so we need to trigger the mouse up here.
+				// some controls use event loops until mouse up, so we need to trigger the mouse up here - from
+				// the current event, not theEvent, which is still the mouse down that got us here.
 				if (!SuppressMouseTriggerCallback)
-					TriggerMouseCallback(theEvent, includeMouseDown: false);
+					TriggerMouseCallback(includeMouseDown: false);
 			}
 			else if (UseMouseTrackingLoop && MacView.InMouseTrackingLoop)
 			{
