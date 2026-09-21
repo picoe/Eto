@@ -582,9 +582,12 @@ namespace Eto.GtkSharp.Forms.Controls
 				SkipSelectedChange = true;
 				SetSelectedRows(value);
 				SkipSelectedChange = false;
-				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				TriggerSelectionChanged();
 			}
 		}
+
+		// Use when changing the selection ourselves, as the native Changed signal is suppressed in that case.
+		protected virtual void TriggerSelectionChanged() => Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 
 		protected abstract void SetSelectedRows(IEnumerable<int> value);
 

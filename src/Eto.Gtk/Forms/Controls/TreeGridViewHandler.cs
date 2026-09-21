@@ -133,6 +133,21 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		protected override void TriggerSelectionChanged()
+		{
+			base.TriggerSelectionChanged();
+			TriggerSelectedItemChanged();
+		}
+
+		void TriggerSelectedItemChanged()
+		{
+			var item = SelectedItem;
+			if (ReferenceEquals(item, lastSelected))
+				return;
+			lastSelected = item;
+			Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
+		}
+
 		bool ChildIsSelected(ITreeGridItem item)
 		{
 			var node = SelectedItem;
@@ -250,14 +265,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				if (handler == null)
+				if (handler == null || handler.SkipSelectedChange)
 					return;
-				var item = handler.SelectedItem;
-				if (!handler.SkipSelectedChange && !object.ReferenceEquals(item, handler.lastSelected))
-				{
-					handler.Callback.OnSelectedItemChanged(handler.Widget, EventArgs.Empty);
-					handler.lastSelected = item;
-				}
+				handler.TriggerSelectedItemChanged();
 			}
 
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
@@ -545,7 +555,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			if (selectionChanged)
 			{
-				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				TriggerSelectionChanged();
 			}
 			SkipSelectedChange = false;
 			RestoreScrollState(scrollState);
