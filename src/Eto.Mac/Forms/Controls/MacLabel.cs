@@ -205,6 +205,17 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		public TextTrimming Trimming
+		{
+			get => _str.Trimming;
+			set
+			{
+				_str.Trimming = value;
+				SetAttributes();
+				InvalidateMeasure();
+			}
+		}
+
 		public string Text
 		{
 			get => _str.Text;

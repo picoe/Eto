@@ -12,6 +12,7 @@ public class EtoAccessLabel : swc.Label
 	sw.TextAlignment _textAlignment;
 	sw.TextDecorationCollection _textDecorations;
 	sw.TextWrapping _textWrapping;
+	sw.TextTrimming _textTrimming;
 	public EtoAccessLabel()
 	{
 		Padding = new sw.Thickness(0);
@@ -121,6 +122,23 @@ public class EtoAccessLabel : swc.Label
 		}
 	}
 
+	public sw.TextTrimming TextTrimming
+	{
+		get => _textTrimming;
+		set
+		{
+			_textTrimming = value;
+			if (Content is swc.TextBlock textBlock)
+			{
+				textBlock.TextTrimming = value;
+			}
+			else if (Content is swc.AccessText accessText)
+			{
+				accessText.TextTrimming = value;
+			}
+		}
+	}
+
 	static swc.TextBlock UnderlineCharacter(string text, int indexToUnderline)
 	{
 		var textBlock = new swc.TextBlock();
@@ -163,7 +181,7 @@ public class EtoAccessLabel : swc.Label
 			if (Content is swc.TextBlock tb)
 				tb.Text = _text;
 			else
-				Content = new swc.TextBlock { Text = _text, TextWrapping = _textWrapping, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
+				Content = new swc.TextBlock { Text = _text, TextWrapping = _textWrapping, TextTrimming = _textTrimming, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
 			return;
 		}
 
@@ -182,6 +200,7 @@ public class EtoAccessLabel : swc.Label
 					sb.Remove(match.Index, 1);
 					var textBlock = UnderlineCharacter(sb.ToString(), match.Index);
 					textBlock.TextWrapping = _textWrapping;
+					textBlock.TextTrimming = _textTrimming;
 					textBlock.TextAlignment = _textAlignment;
 					textBlock.TextDecorations = _textDecorations;
 					Content = textBlock;
@@ -195,7 +214,7 @@ public class EtoAccessLabel : swc.Label
 					if (Content is swc.AccessText accessText)
 						accessText.Text = sb.ToString();
 					else
-						Content = new swc.AccessText { Text = sb.ToString(), TextWrapping = _textWrapping, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
+						Content = new swc.AccessText { Text = sb.ToString(), TextWrapping = _textWrapping, TextTrimming = _textTrimming, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
 				}
 				return;
 			}
@@ -205,7 +224,7 @@ public class EtoAccessLabel : swc.Label
 		if (Content is swc.TextBlock tb2)
 			tb2.Text = text;
 		else
-			Content = new swc.TextBlock { Text = text, TextWrapping = _textWrapping, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
+			Content = new swc.TextBlock { Text = text, TextWrapping = _textWrapping, TextTrimming = _textTrimming, TextAlignment = _textAlignment, TextDecorations = _textDecorations };
 	}
 
 	protected override sw.Size MeasureOverride(sw.Size constraint)

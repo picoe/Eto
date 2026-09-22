@@ -11,6 +11,10 @@ namespace Eto.WinForms.Forms.Controls
 			sd.SizeF? measuredSizeMax;
 			VerticalAlignment verticalAlign;
 			swf.TextFormatFlags textFormat;
+			// The same flags plus the trimming, used when painting only: measuring with an ellipsis flag
+			// reports the space the label was given instead of the space its text needs.
+			swf.TextFormatFlags drawFormat;
+			TextTrimming textTrimming;
 
 			struct Position
 			{
@@ -44,10 +48,7 @@ namespace Eto.WinForms.Forms.Controls
 				set
 				{
 					base.UseMnemonic = value;
-					if (value)
-						textFormat &= ~swf.TextFormatFlags.NoPrefix;
-					else
-						textFormat |= swf.TextFormatFlags.NoPrefix;
+					SetStringFormat();
 				}
 			}
 
@@ -77,6 +78,16 @@ namespace Eto.WinForms.Forms.Controls
 				set
 				{
 					wrapMode = value;
+					SetStringFormat();
+				}
+			}
+
+			public TextTrimming Trimming
+			{
+				get { return textTrimming; }
+				set
+				{
+					textTrimming = value;
 					SetStringFormat();
 				}
 			}
@@ -196,6 +207,8 @@ namespace Eto.WinForms.Forms.Controls
 			void SetStringFormat()
 			{
 				textFormat = swf.TextFormatFlags.Default;
+				if (!base.UseMnemonic)
+					textFormat |= swf.TextFormatFlags.NoPrefix;
 				switch (Wrap)
 				{
 					case WrapMode.None:
@@ -231,6 +244,16 @@ namespace Eto.WinForms.Forms.Controls
 						textFormat |= swf.TextFormatFlags.VerticalCenter;
 						break;
 				}
+				drawFormat = textFormat;
+				switch (textTrimming)
+				{
+					case TextTrimming.CharacterEllipsis:
+						drawFormat |= swf.TextFormatFlags.EndEllipsis;
+						break;
+					case TextTrimming.WordEllipsis:
+						drawFormat |= swf.TextFormatFlags.WordEllipsis;
+						break;
+				}
 				ClearSize();
 			}
 
@@ -244,12 +267,12 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						var r = rect;
 						r.Height = position.Size.Height;
-						swf.TextRenderer.DrawText(e.Graphics, position.Text, Font, r, ForeColor, textFormat);
+						swf.TextRenderer.DrawText(e.Graphics, position.Text, Font, r, ForeColor, drawFormat);
 						rect.Y += r.Height;
 					}
 					return;
 				}
-				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, textFormat);
+				swf.TextRenderer.DrawText(e.Graphics, Text, Font, rect, ForeColor, drawFormat);
 			}
 		}
 
@@ -298,6 +321,19 @@ namespace Eto.WinForms.Forms.Controls
 				{
 					Control.Wrap = value;
 					SetMinimumSize(true);
+					Control.Invalidate();
+				}
+			}
+		}
+
+		public TextTrimming Trimming
+		{
+			get { return Control.Trimming; }
+			set
+			{
+				if (value != Control.Trimming)
+				{
+					Control.Trimming = value;
 					Control.Invalidate();
 				}
 			}

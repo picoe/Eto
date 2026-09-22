@@ -143,6 +143,9 @@ namespace Eto.Test.Sections.Controls
 			var wrapDropDown = new EnumDropDown<WrapMode>();
 			wrapDropDown.SelectedValueBinding.Bind(label, l => l.Wrap);
 
+			var trimmingDropDown = new EnumDropDown<TextTrimming>();
+			trimmingDropDown.SelectedValueBinding.Bind(label, l => l.Trimming);
+
 			var textAlignmentDropDown = new EnumDropDown<TextAlignment>();
 			textAlignmentDropDown.SelectedValueBinding.Bind(label, l => l.TextAlignment);
 
@@ -163,7 +166,7 @@ namespace Eto.Test.Sections.Controls
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
 				Items =
 				{
-					TableLayout.Horizontal(5, null, "Wrap:", wrapDropDown, "Font:", fontSelector, null),
+					TableLayout.Horizontal(5, null, "Wrap:", wrapDropDown, "Trimming:", trimmingDropDown, "Font:", fontSelector, null),
 					TableLayout.Horizontal(5, null, testVerticalAlignment, verticalAlignmentDropDown, "TextAlignment:", textAlignmentDropDown, null),
 					spacer(),
 					new TableLayout(
