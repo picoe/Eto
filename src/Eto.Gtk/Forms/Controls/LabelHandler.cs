@@ -128,26 +128,33 @@ namespace Eto.GtkSharp.Forms.Controls
 			Wrap = WrapMode.Word;
 		}
 
+		WrapMode wrap = WrapMode.Word;
+		TextTrimming trimming;
+
 		public WrapMode Wrap
 		{
-			get
-			{
-				if (!Control.LineWrap)
-					return WrapMode.None;
-				if (Control.LineWrapMode == Pango.WrapMode.Char)
-					return WrapMode.Character;
-				return WrapMode.Word;
-			}
+			get => wrap;
 			set
 			{
-				SetWrap(value);
+				wrap = value;
+				SetWrap();
 			}
 		}
 
-		void SetWrap(WrapMode mode)
+		public TextTrimming Trimming
+		{
+			get => trimming;
+			set
+			{
+				trimming = value;
+				SetWrap();
+			}
+		}
+
+		void SetWrap()
 		{
 			Control.ResetWidth();
-			switch (mode)
+			switch (wrap)
 			{
 				case WrapMode.None:
 					Control.Wrap = false;
@@ -168,6 +175,9 @@ namespace Eto.GtkSharp.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
+			// Pango cannot wrap and ellipsize the same layout - setting both makes it ellipsize to a single
+			// line instead of wrapping.  Wrapping wins here, see Eto.Forms.TextTrimming.
+			Control.Ellipsize = wrap == WrapMode.None ? trimming.ToPango() : Pango.EllipsizeMode.None;
 			Control.QueueResize();
 		}
 

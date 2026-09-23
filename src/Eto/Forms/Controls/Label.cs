@@ -42,6 +42,55 @@ public enum WrapMode
 }
 
 /// <summary>
+/// Trimming mode for text that does not fit the space available, used by <see cref="Label.Trimming"/>
+/// and <see cref="LinkButton.Trimming"/>.
+/// </summary>
+/// <remarks>
+/// This is the control equivalent of <see cref="FormattedTextTrimming"/>, which does the same
+/// for text you draw yourself.
+///
+/// Trimming only takes effect when the control is given less room than its text needs.  It does not change
+/// what the control asks the layout for, which is still the width of its full text - constrain the control
+/// (a scaled table cell, an explicit width, a parent that limits it) or it will simply be given the room it
+/// asked for and never trim.
+///
+/// Wrapping and trimming together is only fully supported on WPF and WinUI, where a wrapped control trims
+/// the last line that fits.  Mac, Gtk, WinForms and iOS say how a line ends with one native setting, and
+/// trimming a wrapped control there would mean knowing how many lines it is allowed, which nothing tells
+/// them - so when the control also wraps, the wrapping wins and the trimming has no effect.  Set
+/// <see cref="WrapMode.None"/> alongside the trimming for behaviour that is the same everywhere.
+///
+/// What each platform does with the trimming itself:
+/// <list type="bullet">
+/// <item><description>WPF, WinUI, WinForms: both ellipsis modes, natively.</description></item>
+/// <item><description>Mac, Gtk, iOS, Android: an end ellipsis only, so <see cref="WordEllipsis"/> gets
+/// <see cref="CharacterEllipsis"/>.</description></item>
+/// <item><description>WinForms <see cref="LinkButton"/>: an end ellipsis only, and
+/// <see cref="LinkButton.Wrap"/> is not implemented - a native LinkLabel lays out its own text.</description></item>
+/// <item><description>Android: <see cref="Label.Wrap"/> and <see cref="LinkButton.Wrap"/> are not
+/// implemented, so only the trimming applies there.</description></item>
+/// </list>
+/// </remarks>
+public enum TextTrimming
+{
+	/// <summary>
+	/// No trimming.  Text too long for the control is clipped.
+	/// </summary>
+	None,
+	/// <summary>
+	/// Show an ellipsis after the last character that fits.
+	/// </summary>
+	CharacterEllipsis,
+	/// <summary>
+	/// Show an ellipsis after the last whole word that fits.
+	/// </summary>
+	/// <remarks>
+	/// Some platforms do not support this and fall back to <see cref="CharacterEllipsis"/> (e.g. Mac and Gtk).
+	/// </remarks>
+	WordEllipsis
+}
+
+/// <summary>
 /// Displays a string of text on the form
 /// </summary>
 [Handler(typeof(Label.IHandler))]
@@ -66,6 +115,24 @@ public class Label : TextControl, IMnemonicControl
 	{
 		get { return Handler.Wrap; }
 		set { Handler.Wrap = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets how text that does not fit the label is trimmed.
+	/// </summary>
+	/// <remarks>
+	/// This only has an effect when the label is given less room than its text needs, which for an auto sized
+	/// label means never - see <see cref="TextTrimming"/>.
+	///
+	/// When <see cref="Wrap"/> is not <see cref="WrapMode.None"/> the trimming applies to the last line that
+	/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
+	/// </remarks>
+	/// <value>The trimming mode for the text.  The default is <see cref="TextTrimming.None"/>.</value>
+	[DefaultValue(TextTrimming.None)]
+	public TextTrimming Trimming
+	{
+		get { return Handler.Trimming; }
+		set { Handler.Trimming = value; }
 	}
 
 	/// <summary>
@@ -171,6 +238,18 @@ public class Label : TextControl, IMnemonicControl
 		/// </remarks>
 		/// <value>The wrapping mode for the text.</value>
 		WrapMode Wrap { get; set; }
+
+		/// <summary>
+		/// Gets or sets how text that does not fit the label is trimmed.
+		/// </summary>
+		/// <remarks>
+		/// This only has an effect when the label is given less room than its text needs.
+		///
+		/// When <see cref="Wrap"/> is not <see cref="WrapMode.None"/> the trimming applies to the last line that
+		/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
+		/// </remarks>
+		/// <value>The trimming mode for the text.</value>
+		TextTrimming Trimming { get; set; }
 	}
 }
 

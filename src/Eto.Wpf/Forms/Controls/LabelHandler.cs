@@ -117,6 +117,19 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public TextTrimming Trimming
+		{
+			get => Control.TextTrimming.ToEto();
+			set
+			{
+				if (value != Trimming)
+				{
+					Control.TextTrimming = value.ToWpf();
+					UpdatePreferredSize();
+				}
+			}
+		}
+
 
 		public override void UpdatePreferredSize()
 		{

@@ -12,6 +12,8 @@ namespace Eto.Mac.Forms.Controls
 		Font _font;
 		bool _useMnemonic = true;
 		bool _enabled = true;
+		WrapMode _wrap = WrapMode.Character;
+		TextTrimming _trimming;
 
 		public string Text
 		{
@@ -90,23 +92,42 @@ namespace Eto.Mac.Forms.Controls
 
 		public WrapMode Wrap
 		{
-			get => _paragraphStyle?.LineBreakMode switch
-			{
-				NSLineBreakMode.Clipping => WrapMode.None,
-				NSLineBreakMode.ByWordWrapping => WrapMode.Word,
-				_ => WrapMode.Character
-			};
+			get => _wrap;
 			set
 			{
-				ParagraphStyle.LineBreakMode = value switch
+				_wrap = value;
+				UpdateLineBreakMode();
+			}
+		}
+
+		public TextTrimming Trimming
+		{
+			get => _trimming;
+			set
+			{
+				_trimming = value;
+				UpdateLineBreakMode();
+			}
+		}
+
+		/// <summary>
+		/// A paragraph style says how a line ends with a single value, so wrapping and truncating are
+		/// the same setting here and cannot both apply.  Truncating a wrapped paragraph would need to
+		/// know how many lines it is allowed (NSTextField.MaximumNumberOfLines), which nothing tells us,
+		/// so wrapping wins and the trimming is left off - see Eto.Forms.TextTrimming.
+		/// </summary>
+		private void UpdateLineBreakMode()
+		{
+			ParagraphStyle.LineBreakMode = _wrap == WrapMode.None && _trimming != TextTrimming.None
+				? NSLineBreakMode.TruncatingTail
+				: _wrap switch
 				{
 					WrapMode.None => NSLineBreakMode.Clipping,
 					WrapMode.Word => NSLineBreakMode.ByWordWrapping,
 					WrapMode.Character => NSLineBreakMode.CharWrapping,
 					_ => throw new NotSupportedException()
 				};
-				_str = null;
-			}
+			_str = null;
 		}
 		
 		public TextAlignment Alignment

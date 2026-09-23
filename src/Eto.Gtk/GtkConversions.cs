@@ -878,6 +878,21 @@ namespace Eto.GtkSharp
 			}
 		}
 
+		public static Pango.EllipsizeMode ToPango(this TextTrimming trimming)
+		{
+			switch (trimming)
+			{
+				case TextTrimming.None:
+					return Pango.EllipsizeMode.None;
+				// Pango only ellipsizes at a character boundary, so a word ellipsis falls back to that.
+				case TextTrimming.CharacterEllipsis:
+				case TextTrimming.WordEllipsis:
+					return Pango.EllipsizeMode.End;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
 		public static Gdk.Cursor ToGdk(this Cursor cursor) => CursorHandler.GetControl(cursor);
 		
 		public static Rectangle GetBounds(this Gdk.Window window)
