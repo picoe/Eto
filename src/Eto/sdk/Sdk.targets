@@ -26,8 +26,9 @@
 
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
     
-    <!-- Need to set this with the macos target if not specified -->
-    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' )">10.15</SupportedOSPlatformVersion>
+    <!-- Otherwise the SDK defaults to the latest macOS version. Use the macOS workload's minimum: 10.15 for net8, 12.0 after -->
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND $(BuildPlatform) == 'macos' AND $(TargetFramework) != '' AND $([MSBuild]::VersionLessThan($([MSBuild]::GetTargetFrameworkVersion($(TargetFramework))), '9.0'))">10.15</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND $(BuildPlatform) == 'macos'">12.0</SupportedOSPlatformVersion>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'macos' AND $(RuntimeIdentifiers) == '' AND $(RuntimeIdentifier) == ''">osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
