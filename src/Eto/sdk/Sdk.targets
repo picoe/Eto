@@ -74,7 +74,15 @@
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 
-  <PropertyGroup>
+  <!-- With UseArtifactsOutput, add the platform to the SDK's pivots rather than setting paths, which would bypass the artifacts layout.
+       Mirrors the SDK's own pivots from Microsoft.NET.DefaultOutputPaths.targets. -->
+  <PropertyGroup Condition="$(UseArtifactsOutput) == 'true' and $(ArtifactsPivots) == ''">
+    <ArtifactsPivots>$(Configuration.ToLowerInvariant())_$(BuildPlatform.ToLowerInvariant())</ArtifactsPivots>
+    <ArtifactsPivots Condition="$(TargetFrameworks) != '' and $(TargetFramework) != ''">$(ArtifactsPivots)_$(TargetFramework.ToLowerInvariant())</ArtifactsPivots>
+    <ArtifactsPivots Condition="$(RuntimeIdentifier) != ''">$(ArtifactsPivots)_$(RuntimeIdentifier.ToLowerInvariant())</ArtifactsPivots>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(UseArtifactsOutput) != 'true'">
     <!-- Each platform gets its own intermediate and output path so they don't conflict -->
     <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">obj\</BaseIntermediateOutputPath>
 
