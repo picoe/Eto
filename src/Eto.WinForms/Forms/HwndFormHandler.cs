@@ -205,7 +205,7 @@ namespace Eto.WinForms.Forms
 
 		public void Close()
 		{
-			throw new NotImplementedException();
+			Win32.SendMessage(Control, Win32.WM.CLOSE, IntPtr.Zero, IntPtr.Zero);
 		}
 
 		public float LogicalPixelSize
