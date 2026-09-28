@@ -4,5 +4,27 @@
 		{
 			"id": "vs"
 		}
+	],
+	"symbolInfo": [
+		{
+			"id": "Mode",
+			"isVisible": true
+		},
+		{
+			"id": "Combined",
+			"isVisible": true
+		},
+		{
+			"id": "IncludeSolution",
+			"isVisible": true
+		},
+		{
+			"id": "IncludeMacOS",
+			"isVisible": true
+		},
+		{
+			"id": "IncludeWinForms",
+			"isVisible": true
+		}
 	]
 }

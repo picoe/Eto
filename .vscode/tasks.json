@@ -38,6 +38,22 @@
 			}
 		},
 		{
+			// Restart VS Code afterwards so C# Dev Kit picks up the changes
+			"label": "install-templates",
+			"type": "shell",
+			"command": "dotnet new install \"$(ls -t ${workspaceFolder}/artifacts/nuget/${config:var.configuration}/Eto.Forms.Templates.*.nupkg | head -1)\" --force",
+			"windows": {
+				"command": "dotnet new install (Get-ChildItem ${workspaceFolder}/artifacts/nuget/${config:var.configuration}/Eto.Forms.Templates.*.nupkg | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName --force"
+			},
+			"dependsOn": [
+				"build-templates"
+			],
+			"problemMatcher": [],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "test-mac-publishing",
 			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:TestMacPublishing",
 			"type": "shell",
