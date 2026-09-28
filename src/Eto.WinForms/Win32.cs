@@ -207,6 +207,7 @@ namespace Eto
 
 			MOVE = 0x0003,
 			SIZE = 0x0005,
+			CLOSE = 0x0010
 		}
 
 		public enum VK : long
