@@ -8,7 +8,10 @@ namespace EtoApp._1.Wpf
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Eto.Platforms.Wpf).Run(new MainForm());
+			var app = new Application(Eto.Platforms.Wpf);
+			// Wpf doesn't follow the system light/dark theme unless asked to
+			app.Theme = Themes.System;
+			app.Run(new MainForm());
 		}
 	}
 }
