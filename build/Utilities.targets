@@ -110,6 +110,26 @@ public class FileUpdate : Task
 ]]>      </Code>
     </Task>
   </UsingTask>
+  <!-- Keeps the first item for each distinct Key metadata value and adds Progress metadata, e.g. "[3/40]" -->
+  <UsingTask TaskName="AddProgress" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <Items ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <Key ParameterType="System.String" Required="true" />
+      <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System.Linq" />
+      <Code Type="Fragment" Language="cs"><![CDATA[
+var unique = Items.GroupBy(i => i.GetMetadata(Key)).Select(g => g.First()).ToArray();
+Result = unique.Select((item, index) =>
+{
+  var result = new TaskItem(item);
+  result.SetMetadata("Progress", $"[{index + 1}/{unique.Length}]");
+  return (ITaskItem)result;
+}).ToArray();
+]]>      </Code>
+    </Task>
+  </UsingTask>
   <UsingTask TaskName="IncrementVersion" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <Version ParameterType="System.String" Required="true" />

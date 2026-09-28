@@ -22,7 +22,8 @@
 
     <!-- Specify that the bundle should be created during build -->
     <!-- Enabled by default only for exe's and if not using a specific project type (e.g. -macos tfm's) -->
-    <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' ) and !$(TargetFramework.Contains('-macos'))">True</MacBuildBundle>
+    <!-- .NET Framework can't be bundled since the bundle runs on .NET -->
+    <MacBuildBundle Condition="$(MacBuildBundle) == '' and $(ProjectTypeGuids) == '' and ( $(OutputType) == 'Exe' Or $(OutputType) == 'WinExe' ) and !$(TargetFramework.Contains('-macos')) and !$(TargetFramework.StartsWith('net4'))">True</MacBuildBundle>
 
     <!-- Specifies the name of the .app bundle, usually the same as the project -->
     <MacBundleName Condition="$(MacBundleName) == '' AND $(OutputAppPath.TrimEnd('/').TrimEnd('\').EndsWith('.app')) == 'True'">$([System.IO.Path]::GetFileName($(OutputAppPath.TrimEnd('/').TrimEnd('\'))))</MacBundleName>

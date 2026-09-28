@@ -8,22 +8,37 @@
 	"symbolInfo": [
 		{
 			"id": "Mode",
+			"name": {
+				"text": "UI Definition"
+			},
 			"isVisible": true
 		},
 		{
-			"id": "Combined",
+			"id": "SeparateProjects",
+			"name": {
+				"text": "Separate Platform Projects"
+			},
 			"isVisible": true
 		},
 		{
 			"id": "IncludeSolution",
+			"name": {
+				"text": "Include Solution File"
+			},
 			"isVisible": true
 		},
 		{
 			"id": "IncludeMacOS",
+			"name": {
+				"text": "Include macOS Workload Project"
+			},
 			"isVisible": true
 		},
 		{
 			"id": "IncludeWinForms",
+			"name": {
+				"text": "Include Windows Forms"
+			},
 			"isVisible": true
 		}
 	]
