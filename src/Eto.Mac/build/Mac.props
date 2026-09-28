@@ -10,6 +10,8 @@
     <BaseOutputAppPath>$([MSBuild]::EnsureTrailingSlash('$(MacOutputPath)'))</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(MacAppendRuntimeIdentifierToOutputPath) == 'True'">$(BaseOutputAppPath)$(RuntimeIdentifier)\</BaseOutputAppPath>
     <OutputPath>$(MacTempBuildPath)bin\</OutputPath>
+    <!-- The SDK only appends the RID itself outside of artifacts output -->
+    <OutputPath Condition="$(UseArtifactsOutput) == 'true' AND $(RuntimeIdentifier) != ''">$(OutputPath)$(RuntimeIdentifier)\</OutputPath>
     <PublishDir>$(MacTempBuildPath)publish\$(RuntimeIdentifier)\</PublishDir>
     <SelfContained Condition="$(MacSelfContained) != ''">$(MacSelfContained)</SelfContained>
     <PublishSingleFile Condition="$(MacPublishSingleFile) != ''">$(MacPublishSingleFile)</PublishSingleFile>

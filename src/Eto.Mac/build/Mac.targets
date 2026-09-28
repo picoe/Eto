@@ -9,6 +9,8 @@
   <PropertyGroup Condition="$(BaseOutputAppPath) == ''">
     <!-- If no explicit location found compute based on base path, configuration, and framework -->
     <!-- This is used when these are imported directly in sdk-style projects, otherwise OutputPath is usually set above -->
+    <!-- Artifacts output doesn't follow the bin\Configuration\TargetFramework layout below, but OutputPath is already final -->
+    <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(UseArtifactsOutput) == 'true' AND $(OutputPath) != ''">$(OutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == '' AND $(BaseOutputPath) != ''">$(BaseOutputPath)</BaseOutputAppPath>
     <BaseOutputAppPath Condition="$(BaseOutputAppPath) == ''">bin\</BaseOutputAppPath>
     <BaseOutputAppPath>$(BaseOutputAppPath)$(Configuration)\</BaseOutputAppPath>
