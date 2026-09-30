@@ -784,7 +784,7 @@ public abstract class Window : Panel
 		public void OnLoadComplete(Window widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
-				widget.OnLoadComplete(e);
+				widget.RaiseLoadComplete(e, always: true);
 		}
 		/// <summary>
 		/// Raises the preview key down event.

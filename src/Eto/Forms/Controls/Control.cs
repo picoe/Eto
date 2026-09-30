@@ -91,6 +91,19 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	}
 
 	/// <summary>
+	/// Gets a value indicating that <see cref="LoadComplete"/> has been raised since the control was last loaded.
+	/// </summary>
+	/// <remarks>
+	/// A control is <see cref="Loaded"/> before it gets its LoadComplete, so this is used to ensure LoadComplete is
+	/// only raised once, e.g. when a child is added to a container that is loaded but hasn't had LoadComplete yet.
+	/// </remarks>
+	internal bool IsLoadComplete
+	{
+		get => GetState(StateFlag.LoadComplete);
+		private set => SetState(StateFlag.LoadComplete, value);
+	}
+
+	/// <summary>
 	/// Gets an enumeration of controls that are in the visual tree.
 	/// </summary>
 	/// <remarks>
@@ -655,6 +668,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 			throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was unloaded more than once"));
 #endif
 		Loaded = false;
+		IsLoadComplete = false;
 		Properties.TriggerEvent(UnLoadKey, this, e);
 		Handler.OnUnLoad(e);
 	}
@@ -1138,7 +1152,20 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	{
 		// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
 		if (!IsDisposed && Handler != null && Loaded)
-			OnLoadComplete(EventArgs.Empty);
+			RaiseLoadComplete(EventArgs.Empty);
+	}
+
+	/// <summary>
+	/// Raises LoadComplete unless it has already been raised since the control was loaded.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	/// <param name="always">Raise it even if it has already been raised, e.g. when a loaded window is shown again.</param>
+	internal void RaiseLoadComplete(EventArgs e, bool always = false)
+	{
+		if (IsLoadComplete && !always)
+			return;
+		IsLoadComplete = true;
+		OnLoadComplete(e);
 	}
 
 	/// <summary>
@@ -1175,7 +1202,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	internal void TriggerLoadComplete(EventArgs e)
 	{
 		using (Platform.Context)
-			OnLoadComplete(e);
+			RaiseLoadComplete(e);
 	}
 
 	internal void TriggerUnLoad(EventArgs e)
