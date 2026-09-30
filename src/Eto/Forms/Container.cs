@@ -400,7 +400,11 @@ public abstract class Container : Control, IBindableWidgetContainer
 					child.TriggerLoad(EventArgs.Empty);
 					assign?.Invoke();
 					ResumeLayout();
-					child.TriggerLoadComplete(EventArgs.Empty);
+					// If this container hasn't had its LoadComplete yet (e.g. the child is added during
+					// Load, or before the deferred LoadComplete of an attached control), the child gets
+					// it when this container does. Raising it now as well raises it twice.
+					if (IsLoadComplete || !Handler.RecurseToChildren)
+						child.TriggerLoadComplete(EventArgs.Empty);
 				}
 				return;
 			}

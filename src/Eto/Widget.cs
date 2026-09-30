@@ -491,7 +491,8 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 		Disposed = 0x01,
 		Loaded = 0x02,
 		IsVisualControl = 0x04,
-		IsVisualControlHasValue = 0x08
+		IsVisualControlHasValue = 0x08,
+		LoadComplete = 0x10
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]

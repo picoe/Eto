@@ -1069,10 +1069,17 @@ namespace Eto.Wpf.Forms
 		{
 			if (NeedsPixelSizeNotifications && Win32.PerMonitorDpiSupported)
 			{
+				// Only ever keep one subscription, in case OnLoadComplete is called again without an
+				// OnUnLoad in between. Otherwise OnUnLoad leaves the extra one behind and the parent
+				// window keeps this control (and everything it references) alive.
 				var parent = Widget.ParentWindow;
-				if (parent != null)
+				var oldParent = ParentWindow;
+				if (!ReferenceEquals(parent, oldParent))
 				{
-					parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
+					if (oldParent != null)
+						oldParent.LogicalPixelSizeChanged -= Parent_PixelSizeChanged;
+					if (parent != null)
+						parent.LogicalPixelSizeChanged += Parent_PixelSizeChanged;
 					ParentWindow = parent;
 				}
 			}
