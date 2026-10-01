@@ -179,6 +179,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 		}
 
+		static readonly ObservableCollection<object> s_longLivedDataStore = new ObservableCollection<object> { "Item 1", "Item 2" };
+
 		public static ControlGCTest GCTest<T>(Action<T> action) => new ControlGCTest { ControlType = typeof(T), Test = c => action((T)c) };
 
 		public static ControlGCTest GCTest<T>(string description, Action<T> action)
@@ -227,6 +229,15 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				c.Step += (sender, e) => { /* do something */ };
 			});
 
+			// a data store that outlives the control (e.g. on a view model) should not keep it alive
+			yield return GCTest("With long lived DataStore", (DropDown c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (ComboBox c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (ListBox c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (CheckBoxList c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (RadioButtonList c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (GridView c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With FilterCollection of long lived collection", (GridView c) => c.DataStore = new FilterCollection<object>(s_longLivedDataStore));
+
 			yield return GCTest("With Panels", (Splitter c) =>
 			{
 				c.Panel1 = new Panel();
@@ -259,6 +270,48 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(reference, Is.Not.Null);
 			Assert.That(reference.Target, Is.Null);
 			Assert.That(reference.IsAlive, Is.False);
+		}
+
+		class ListenerTrackingCollection : ObservableCollection<object>
+		{
+			readonly List<NotifyCollectionChangedEventHandler> _handlers = new List<NotifyCollectionChangedEventHandler>();
+
+			public override event NotifyCollectionChangedEventHandler CollectionChanged
+			{
+				add { lock (_handlers) _handlers.Add(value); base.CollectionChanged += value; }
+				remove { lock (_handlers) _handlers.Remove(value); base.CollectionChanged -= value; }
+			}
+
+			// Native toolkits (e.g. WPF's ItemsSource) can subscribe too, and clean up on their own schedule.
+			public int EtoListenerCount
+			{
+				get { lock (_handlers) return _handlers.Count(h => h.Target?.GetType().Namespace?.StartsWith("Eto", StringComparison.Ordinal) == true); }
+			}
+		}
+
+		[TestCase(typeof(DropDown))]
+		[TestCase(typeof(ComboBox))]
+		[TestCase(typeof(ListBox))]
+		[TestCase(typeof(CheckBoxList))]
+		[TestCase(typeof(RadioButtonList))]
+		[TestCase(typeof(GridView))]
+		public void LongLivedDataStoreShouldDropListenersWhenControlIsCollected(Type controlType)
+		{
+			var store = new ListenerTrackingCollection { "Item 1", "Item 2" };
+			Invoke(() =>
+			{
+				var control = Activator.CreateInstance(controlType);
+				controlType.GetProperty("DataStore").SetValue(control, store);
+			});
+			// The collection never changes, so only the control being collected can remove its listener.
+			for (int i = 0; store.EtoListenerCount > 0 && i < 20; i++)
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				Invoke(() => Application.Instance.RunIteration());
+				Thread.Sleep(10);
+			}
+			Assert.That(store.EtoListenerCount, Is.EqualTo(0));
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
