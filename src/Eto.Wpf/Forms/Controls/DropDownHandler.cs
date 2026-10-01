@@ -106,6 +106,7 @@ namespace Eto.Wpf.Forms.Controls
 		where TCallback: DropDown.ICallback
 	{
 		IEnumerable<object> store;
+		WeakEventListener storeListener;
 
 		public DropDownHandler()
 		{
@@ -158,17 +159,16 @@ namespace Eto.Wpf.Forms.Controls
 			get { return store; }
 			set
 			{
-				if (store is INotifyCollectionChanged notifyChanged)
-				{
-					notifyChanged.CollectionChanged -= Store_CollectionChanged;
-				}
+				storeListener?.Detach();
+				storeListener = null;
 
 				var oldSelectedIndex = SelectedIndex;
 				store = value;
 
-				if (store is INotifyCollectionChanged notifyChanged2)
+				// only hold this handler weakly, so a long lived data store doesn't keep the control alive
+				if (store is INotifyCollectionChanged notifyChanged)
 				{
-					notifyChanged2.CollectionChanged += Store_CollectionChanged;
+					storeListener = WeakEventListener.Create(notifyChanged, this, static (h, s, e) => h.Store_CollectionChanged(s, e));
 				}
 
 				SetVirtualization();
