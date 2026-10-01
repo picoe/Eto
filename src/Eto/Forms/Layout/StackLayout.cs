@@ -290,34 +290,41 @@ public class StackLayout : Panel
 			Parent.CreateIfNeeded(true);
 		}
 
+		// Items are removed from the collection before their logical parent is removed, as that detaches the
+		// control, which calls StackLayout.Remove() for it and would otherwise try to remove it again.
+
 		protected override void RemoveItem(int index)
 		{
 			var item = this[index];
+			base.RemoveItem(index);
 			if (item != null)
 				Parent.RemoveLogicalParent(item.Control);
-			base.RemoveItem(index);
 			Parent.CreateIfNeeded(true);
 		}
 
 		protected override void ClearItems()
 		{
-			foreach (var item in this)
+			var oldItems = this.ToList();
+			base.ClearItems();
+			foreach (var item in oldItems)
 			{
 				if (item != null)
 					Parent.RemoveLogicalParent(item.Control);
 			}
-			base.ClearItems();
 			Parent.CreateIfNeeded(true);
 		}
 
 		protected override void SetItem(int index, StackLayoutItem item)
 		{
 			var last = this[index];
-			if (last != null)
-				Parent.RemoveLogicalParent(last.Control);
 			base.SetItem(index, item);
-			if (item != null)
-				Parent.SetLogicalParent(item.Control);
+			if (!ReferenceEquals(last?.Control, item?.Control))
+			{
+				if (last != null)
+					Parent.RemoveLogicalParent(last.Control);
+				if (item != null)
+					Parent.SetLogicalParent(item.Control);
+			}
 			Parent.CreateIfNeeded(true);
 		}
 
@@ -370,7 +377,35 @@ public class StackLayout : Panel
 		}
 	}
 
+	/// <summary>
+	/// Removes the specified child from the stack
+	/// </summary>
+	/// <remarks>
+	/// This removes the item that contains the child, so that detaching or disposing a child removes it from
+	/// the <see cref="Items"/> collection as well.
+	/// </remarks>
+	/// <param name="child">Child to remove</param>
+	public override void Remove(Control child)
+	{
+		if (child is null)
+			return;
+		// when (re)creating the layout, the cells of the new internal table detach the child controls, which
+		// calls this, but they should stay in the stack.
+		if (isCreating)
+			return;
+		for (int i = 0; i < items.Count; i++)
+		{
+			if (ReferenceEquals(items[i]?.Control, child))
+			{
+				items.RemoveAt(i);
+				return;
+			}
+		}
+		base.Remove(child);
+	}
+
 	bool isCreated;
+	bool isCreating;
 	int suspended;
 
 	/// <summary>
@@ -483,6 +518,19 @@ public class StackLayout : Panel
 	}
 
 	void Create()
+	{
+		isCreating = true;
+		try
+		{
+			CreateLayout();
+		}
+		finally
+		{
+			isCreating = false;
+		}
+	}
+
+	void CreateLayout()
 	{
 		SuspendLayout();
 		var table = new TableLayout { IsVisualControl = true };

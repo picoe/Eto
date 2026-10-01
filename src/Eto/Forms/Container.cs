@@ -383,8 +383,11 @@ public abstract class Container : Control, IBindableWidgetContainer
 			// no-op if there is no parent (handled in detach)
 			child.VisualParent?.Remove(child);
 
-			// Remove from previous parent only if it differs
-			if (child.InternalLogicalParent is not null && !ReferenceEquals(child.InternalLogicalParent, this))
+			// Remove from previous parent only if it differs, and this isn't a visual container (e.g. the internal
+			// layout of a StackLayout) of that same logical parent, which is just moving it within its own layout.
+			if (child.InternalLogicalParent is not null
+				&& !ReferenceEquals(child.InternalLogicalParent, this)
+				&& !(IsVisualControl && ReferenceEquals(LogicalParent, child.InternalLogicalParent)))
 				child.InternalLogicalParent?.Remove(child);
 
 			// Set new logical parent
