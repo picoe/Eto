@@ -187,40 +187,52 @@ namespace Eto.Mac.Forms.Cells
 				};
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+				// The cell view is reused and can outlive the grid, so only reference the handler weakly.
 				view.TextField.BecameFirstResponder += (sender, e) =>
 				{
 					var control = (CellView)(sender as NSView)?.Superview;
+					var colHandler = (control?.WeakHandler?.Target as ImageTextCellHandler)?.ColumnHandler;
+					if (colHandler == null)
+						return;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEditing(ee);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, null, r, col, item);
+					colHandler.DataViewHandler?.OnCellEditing(ee);
 				};
 				view.TextField.EditingEnded += (sender, e) =>
 				{
 					var notification = (NSNotification)sender;
 					var control = (CellView)(notification.Object as NSView)?.Superview;
+					var h = control?.WeakHandler?.Target as ImageTextCellHandler;
+					var colHandler = h?.ColumnHandler;
+					if (colHandler == null)
+						return;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.TextField.ObjectValue);
+					h.SetObjectValue(item, control.TextField.ObjectValue);
 
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEdited(ee);
-					control.ObjectValue = GetObjectValue(item);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, null, r, col, item);
+					colHandler.DataViewHandler?.OnCellEdited(ee);
+					control.ObjectValue = h.GetObjectValue(item);
 				};
 				bool isResigning = false;
 				view.TextField.ResignedFirstResponder += (sender, e) =>
 				{
 					if (isResigning)
 						return;
-					isResigning = true;
 					var control = (CellView)(sender as NSView)?.Superview;
+					var h = control?.WeakHandler?.Target as ImageTextCellHandler;
+					var colHandler = h?.ColumnHandler;
+					if (colHandler == null)
+						return;
+					isResigning = true;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.TextField.ObjectValue);
+					h.SetObjectValue(item, control.TextField.ObjectValue);
 
-					var ee = MacConversions.CreateCellEventArgs(ColumnHandler.Widget, tableView, r, col, item);
-					ColumnHandler.DataViewHandler.OnCellEdited(ee);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, null, r, col, item);
+					colHandler.DataViewHandler?.OnCellEdited(ee);
 					isResigning = false;
 				};
 				view.TextField.Bind(editableBinding, tableColumn, "editable", null);

@@ -21,7 +21,7 @@ namespace Eto.Mac.Forms.Cells
 		public override nfloat GetPreferredWidth(object value, CGSize cellSize, int row, object dataItem)
 		{
 			var column = -1;// TODO: lookup!
-			var args = new MutableCellEventArgs(ColumnHandler?.DataViewHandler as Grid, Widget, row, column, dataItem, CellStates.None, null);
+			var args = new MutableCellEventArgs(ColumnHandler?.DataViewHandler?.Widget, Widget, row, column, dataItem, CellStates.None, null);
 			var identifier = Callback.OnGetIdentifier(Widget, args) ?? string.Empty;
 			Control widthCell;
 			if (!widthCells.TryGetValue(identifier, out widthCell))
@@ -38,6 +38,8 @@ namespace Eto.Mac.Forms.Cells
 
 			var result = widthCell.GetPreferredSize(SizeF.PositiveInfinity).Width;
 
+			// The cached cell's bindings keep these args, so don't let them keep the item alive.
+			args.SetItem(null);
 			widthCell.DataContext = null;
 			return result;
 		}
@@ -160,7 +162,7 @@ namespace Eto.Mac.Forms.Cells
 			if (tableColumn.Editable)
 				state |= CellStates.Editing;
 			var column = -1; // TODO: get index or lookup when needed.
-			var args = new MutableCellEventArgs(ColumnHandler.DataViewHandler as Grid, Widget, row, column, item, state, null);
+			var args = new MutableCellEventArgs(ColumnHandler.DataViewHandler?.Widget, Widget, row, column, item, state, null);
 			var identifier = tableColumn.Identifier;
 			var id = Callback.OnGetIdentifier(Widget, args);
 			if (!string.IsNullOrEmpty(id))

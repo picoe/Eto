@@ -79,6 +79,14 @@ namespace Eto.Mac.Forms.Cells
 		{
 			[Export("item")]
 			public NSObject Item { get; set; }
+
+			WeakReference handler;
+			public CheckBoxCellHandler Handler
+			{
+				get => handler?.Target as CheckBoxCellHandler;
+				set => handler = new WeakReference(value);
+			}
+
 			public CellView() { }
 			public CellView(IntPtr handle) : base(handle) { }
 		}
@@ -90,24 +98,26 @@ namespace Eto.Mac.Forms.Cells
 			var view = tableView.MakeView(tableColumn.Identifier, tableView) as CellView;
 			if (view == null)
 			{
-				view = new CellView { Title = string.Empty };
+				view = new CellView { Title = string.Empty, Handler = this };
 				view.Identifier = tableColumn.Identifier;
 				view.SetButtonType(NSButtonType.Switch);
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+				// The cell view is reused and can outlive the grid, so only reference the handler weakly.
 				view.Activated += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var control = (CellView)sender;
+					var h = control.Handler;
+					var colHandler = h?.ColumnHandler;
 					if (colHandler == null)
 						return;
-					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, tableView, r, col, item);
+					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, null, r, col, item);
 					colHandler.DataViewHandler?.OnCellEditing(ee);
-					SetObjectValue(item, control.ObjectValue);
-					control.ObjectValue = GetObjectValue(item);
+					h.SetObjectValue(item, control.ObjectValue);
+					control.ObjectValue = h.GetObjectValue(item);
 
 					colHandler.DataViewHandler?.OnCellEdited(ee);
 				};
