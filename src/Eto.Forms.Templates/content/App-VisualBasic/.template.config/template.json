@@ -37,15 +37,15 @@
 				}
 			]
 		},
-		"Combined": {
+		"SeparateProjects": {
 			"type": "parameter",
-			"description": "Use a combined project to launch the application (Full .NET Framework only)",
+			"description": "Create a separate project for each platform, instead of a single project that builds for the current OS (or the BuildPlatform property)",
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
 		"IncludeSolution": {
 			"type": "parameter",
-			"description": "Include a .sln file",
+			"description": "Include a .slnx file",
 			"dataType": "bool",
 			"defaultValue": "false"
 		},
@@ -166,7 +166,7 @@
 	"sources": [
 		{
 			"source": "EtoApp.1",
-			"condition": "Combined",
+			"condition": "!SeparateProjects",
 			"modifiers": [
 				{ "condition": "!UseCode && !UseCodePreview", "exclude": [ "**/MainForm.vb" ] },
 				{ "condition": "!UseCodePreview", "exclude": [ "**/*.eto.*" ] },
@@ -176,7 +176,7 @@
 			]
 		},
 		{
-			"condition": "!Combined",
+			"condition": "SeparateProjects",
 			"include": "EtoApp.1/**/*",
 			"exclude": [ "**/Info.plist", "**/MacIcon.icns", "**/Program.vb" ],
 			"modifiers": [
@@ -188,7 +188,7 @@
 		},
 		{
 			"source": "Separate",
-			"condition": "!Combined",
+			"condition": "SeparateProjects",
 			"modifiers": [
 				{ "condition": "!IncludeWinForms", "exclude": [ "**/EtoApp.1.WinForms/**/*" ] },
 				{ "condition": "!IncludeMacOS", "exclude": [ "**/EtoApp.1.MacOS/**/*" ] }
@@ -196,26 +196,26 @@
 		},
 		{
 			"condition": "IncludeSolution",
-			"include": "*.sln"
+			"include": "*.slnx"
 		}
 	],
 	"primaryOutputs": [
-		{ "path": "MainForm.vb", "condition": "Combined && UseCode" },
-		{ "path": "MainForm.eto.vb", "condition": "Combined && UseCodePreview" },
-		{ "path": "MainForm.xeto", "condition": "Combined && UseXeto" },
-		{ "path": "MainForm.jeto", "condition": "Combined && UseJeto" },
-		{ "path": "EtoApp.1.vbproj", "condition": "Combined" },
+		{ "path": "MainForm.vb", "condition": "!SeparateProjects && UseCode" },
+		{ "path": "MainForm.eto.vb", "condition": "!SeparateProjects && UseCodePreview" },
+		{ "path": "MainForm.xeto", "condition": "!SeparateProjects && UseXeto" },
+		{ "path": "MainForm.jeto", "condition": "!SeparateProjects && UseJeto" },
+		{ "path": "EtoApp.1.vbproj", "condition": "!SeparateProjects" },
 
-		{ "path": "EtoApp.1/MainForm.vb", "condition": "!Combined && UseCode" },
-		{ "path": "EtoApp.1/MainForm.eto.vb", "condition": "!Combined && UseCodePreview" },
-		{ "path": "EtoApp.1/MainForm.xeto", "condition": "!Combined && UseXeto" },
-		{ "path": "EtoApp.1/MainForm.jeto", "condition": "!Combined && UseJeto" },
-		{ "path": "EtoApp.1/EtoApp.1.vbproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.Gtk/EtoApp.1.Gtk.vbproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.Mac/EtoApp.1.Mac.vbproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.WinForms/EtoApp.1.WinForms.vbproj", "condition": "!Combined && IncludeWinForms" },
-		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.vbproj", "condition": "!Combined" },
-		{ "path": "EtoApp.1.MacOS/EtoApp.1.MacOS.csproj", "condition": "!Combined && IncludeMacOS" }
+		{ "path": "EtoApp.1/MainForm.vb", "condition": "SeparateProjects && UseCode" },
+		{ "path": "EtoApp.1/MainForm.eto.vb", "condition": "SeparateProjects && UseCodePreview" },
+		{ "path": "EtoApp.1/MainForm.xeto", "condition": "SeparateProjects && UseXeto" },
+		{ "path": "EtoApp.1/MainForm.jeto", "condition": "SeparateProjects && UseJeto" },
+		{ "path": "EtoApp.1/EtoApp.1.vbproj", "condition": "SeparateProjects" },
+		{ "path": "EtoApp.1.Gtk/EtoApp.1.Gtk.vbproj", "condition": "SeparateProjects" },
+		{ "path": "EtoApp.1.Mac/EtoApp.1.Mac.vbproj", "condition": "SeparateProjects" },
+		{ "path": "EtoApp.1.WinForms/EtoApp.1.WinForms.vbproj", "condition": "SeparateProjects && IncludeWinForms" },
+		{ "path": "EtoApp.1.Wpf/EtoApp.1.Wpf.vbproj", "condition": "SeparateProjects" },
+		{ "path": "EtoApp.1.MacOS/EtoApp.1.MacOS.csproj", "condition": "SeparateProjects && IncludeMacOS" }
 	],
 	"guids": [
 		"4A7EEA91-18CE-4C33-8501-76049670866D",

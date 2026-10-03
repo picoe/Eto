@@ -1,4 +1,4 @@
-﻿<!--#if (Combined)-->
+﻿<!--#if (!SeparateProjects)-->
 <Project Sdk="Eto.Forms/2.13.0-dev">
 
   <!--

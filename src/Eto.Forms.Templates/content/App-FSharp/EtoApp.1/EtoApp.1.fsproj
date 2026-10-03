@@ -1,4 +1,4 @@
-﻿<!--#if (Combined)-->
+﻿<!--#if (!SeparateProjects)-->
 <Project Sdk="Eto.Forms/2.13.0-dev">
 
   <!--
@@ -42,7 +42,7 @@
     <Compile Include="MainForm.fs" Condition="$(UseCode) == 'True' OR $(UseCodePreview) == 'True'" />
     <Compile Include="MainForm.xeto.fs" Condition="$(UseXeto) == 'True'" />
     <Compile Include="MainForm.jeto.fs" Condition="$(UseJeto) == 'True'" />
-    <Compile Include="Program.fs" Condition="$(Combined) == 'True'" />
+    <Compile Include="Program.fs" Condition="$(SeparateProjects) != 'True'" />
 
     <EmbeddedResource Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
     <EmbeddedResource Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />
