@@ -207,6 +207,61 @@ namespace Eto.Test.Mac.UnitTests
 			});
 		}
 
+		// RH-89084: same setup as the script attached to the issue.
+		class SelectableDrawable : Drawable
+		{
+			public bool IsSelected { get; set; }
+		}
+
+		class SelectableCell : CustomCell
+		{
+			protected sealed override Control OnCreateCell(CellEventArgs args)
+			{
+				var drawable = new SelectableDrawable();
+				drawable.Bind(d => d.IsSelected, args, a => a.IsSelected, DualBindingMode.OneWay);
+				return drawable;
+			}
+		}
+
+		class LookForThis : TreeGridItem
+		{
+		}
+
+		[Test]
+		public void TreeGridViewShouldNotKeepItemsAfterDataStoreIsCleared()
+		{
+			WeakReference itemReference = null;
+			Shown(form => CreateSelectableCellTree(out itemReference), tree =>
+			{
+				var outline = (NSTableView)tree.ControlObject;
+				outline.LayoutSubtreeIfNeeded();
+				Assert.That(outline.GetView(0, 0, false), Is.Not.Null, "Cell view should be created when shown");
+
+				tree.DataStore = default;
+				tree.ReloadData();
+
+				for (int i = 0; itemReference.IsAlive && i < 50; i++)
+				{
+					GC.Collect();
+					GC.WaitForPendingFinalizers();
+					Application.Instance.RunIteration();
+				}
+				Assert.That(itemReference.IsAlive, Is.False, "Item should be collected");
+			});
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		static TreeGridView CreateSelectableCellTree(out WeakReference itemReference)
+		{
+			var items = new TreeGridItemCollection { new LookForThis() };
+			itemReference = new WeakReference(items[0]);
+			var tree = new TreeGridView { ShowHeader = false, Size = new Size(400, 400) };
+			tree.Columns.Add(new GridColumn { DataCell = new SelectableCell() });
+			tree.DataStore = items;
+			tree.ReloadData();
+			return tree;
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		static Grid CreateCustomCellGrid(bool treeGrid, out WeakReference itemReference)
 		{
