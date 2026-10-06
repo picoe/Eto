@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace Eto;
 
 /// <summary>
@@ -116,8 +118,9 @@ public enum PlatformFeatures
 /// <license type="BSD-3">See LICENSE for full terms</license>
 public abstract class Platform
 {
-	readonly Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
-	readonly Dictionary<Type, HandlerInfo> handlerMap = new Dictionary<Type, HandlerInfo>();
+	// concurrent since widgets (e.g. Bitmap/Graphics) can be created on background threads
+	readonly ConcurrentDictionary<Type, Func<object>> instantiatorMap = new ConcurrentDictionary<Type, Func<object>>();
+	readonly ConcurrentDictionary<Type, HandlerInfo> handlerMap = new ConcurrentDictionary<Type, HandlerInfo>();
 	readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 	readonly Dictionary<object, object> properties = new Dictionary<object, object>();
 	readonly HashSet<Assembly> loadedAssemblies = new HashSet<Assembly>();
@@ -315,25 +318,45 @@ public abstract class Platform
 	/// <param name="assembly">Assembly to load the extensions for.</param>
 	public void LoadAssembly(Assembly assembly)
 	{
-		RegisterAssembly(assembly);
-		loadedAssemblies.Add(assembly);
-
-		// also load associated platform assembly if one is available
-		var an = new AssemblyName(assembly.FullName);
-		an.Name += $".{ID}";
-
-		try
+		lock (loadedAssemblies)
 		{
-			var platformAssembly = Assembly.Load(an);
-			if (platformAssembly != null)
+			RegisterAssembly(assembly);
+			loadedAssemblies.Add(assembly);
+
+			// also load associated platform assembly if one is available
+			var an = new AssemblyName(assembly.FullName);
+			an.Name += $".{ID}";
+
+			try
 			{
-				RegisterAssembly(platformAssembly);
-				loadedAssemblies.Add(platformAssembly);
+				var platformAssembly = Assembly.Load(an);
+				if (platformAssembly != null)
+				{
+					RegisterAssembly(platformAssembly);
+					loadedAssemblies.Add(platformAssembly);
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Error loading assembly {an}\n{ex}");
 			}
 		}
-		catch (Exception ex)
+	}
+
+	/// <summary>
+	/// Loads the assembly if not already loaded, returning true if the caller should retry its lookup.
+	/// </summary>
+	bool EnsureAssemblyLoaded(Assembly assembly)
+	{
+		if (assembly == null)
+			return false;
+		// lock so a thread waiting on another thread's load sees it as loaded once registration has finished
+		lock (loadedAssemblies)
 		{
-			Debug.WriteLine($"Error loading assembly {an}\n{ex}");
+			if (loadedAssemblies.Contains(assembly))
+				return false;
+			LoadAssembly(assembly);
+			return true;
 		}
 	}
 
@@ -601,26 +624,21 @@ public abstract class Platform
 		var handler = type.GetCustomAttribute<HandlerAttribute>(true);
 		if (handler != null && instantiatorMap.TryGetValue(handler.Type, out activator))
 		{
-			instantiatorMap.Add(type, activator);
+			instantiatorMap[type] = activator;
 			return activator;
 		}
 
 		// load the handler type assembly and try again (as type could be a derived class)
 		var handlerAssembly = handler?.Type.Assembly;
-		if (handlerAssembly != null && !loadedAssemblies.Contains(handlerAssembly))
+		if (EnsureAssemblyLoaded(handlerAssembly))
 		{
-			LoadAssembly(handlerAssembly);
 			// since we recurse here it will fall to the next one if this fails.
 			return Find(type);
 		}
 
 		// finally, try the assembly of the current type if we still can't find it
-		var typeAssembly = type.Assembly;
-		if (!loadedAssemblies.Contains(typeAssembly))
-		{
-			LoadAssembly(typeAssembly);
+		if (EnsureAssemblyLoaded(type.Assembly))
 			return Find(type);
-		}
 
 		return null;
 	}
@@ -649,23 +667,17 @@ public abstract class Platform
 			{
 				var autoInit = handler.Type.GetCustomAttribute<AutoInitializeAttribute>(true);
 				info = new HandlerInfo(autoInit == null || autoInit.Initialize, activator);
-				handlerMap.Add(type, info);
+				handlerMap[type] = info;
 				return info;
 			}
 			// load the assembly of the handler type (needed when type is a subclass)
-			if (!loadedAssemblies.Contains(handler.Type.Assembly))
-			{
-				LoadAssembly(handler.Type.Assembly);
+			if (EnsureAssemblyLoaded(handler.Type.Assembly))
 				return FindHandler(type);
-			}
 		}
 
 		// load the assembly of the target type (can be a subclass)
-		if (!loadedAssemblies.Contains(type.Assembly))
-		{
-			LoadAssembly(type.Assembly);
+		if (EnsureAssemblyLoaded(type.Assembly))
 			return FindHandler(type);
-		}
 		return null;
 	}
 
