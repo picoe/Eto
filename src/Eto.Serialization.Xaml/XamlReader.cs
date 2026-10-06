@@ -33,6 +33,11 @@ namespace Eto.Serialization.Xaml
 		/// </summary>
 		public static readonly string EtoFormsNamespace = EtoXamlSchemaContext.EtoFormsNamespace;
 
+		/// <summary>
+		/// Xaml Namespace for designer-only attributes such as <c>d:DataContext</c>, only applied when <see cref="Control.IsDesignMode"/> is true
+		/// </summary>
+		public static readonly string DesignNamespace = EtoXamlSchemaContext.DesignNamespace;
+
 		static readonly Dictionary<Type, string> hotReloadFilePaths = new();
 
 		static IEnumerable<string> GetTypeFiles(Type type)
@@ -346,8 +351,83 @@ namespace Eto.Serialization.Xaml
 			writerSettings.RootObjectInstance = instance;
 			var writer = new XamlObjectWriter(context, writerSettings);
 
-			XamlServices.Transform(reader, writer);
+			Control.BeginDesignLoad();
+			try
+			{
+				Transform(reader, writer, Control.IsDesignRootLoad);
+			}
+			finally
+			{
+				Control.EndDesignLoad();
+			}
 			return (T)writer.Result;
+		}
+
+		static void Transform(XamlXmlReader reader, XamlObjectWriter writer, bool applyDesign)
+		{
+			var lineInfo = reader as IXamlLineInfo;
+			var lineConsumer = writer as IXamlLineInfoConsumer;
+			var passLineInfo = lineInfo != null && lineConsumer != null && lineConsumer.ShouldProvideLineInfo;
+			var types = new Stack<XamlType>();
+
+			while (reader.Read())
+			{
+				// the reader has no line info until it has read a node
+				if (passLineInfo && lineInfo.HasLineInfo)
+					lineConsumer.SetLineInfo(lineInfo.LineNumber, lineInfo.LinePosition);
+
+				switch (reader.NodeType)
+				{
+					case XamlNodeType.StartObject:
+						types.Push(reader.Type);
+						break;
+					case XamlNodeType.GetObject:
+						types.Push(null);
+						break;
+					case XamlNodeType.EndObject:
+						types.Pop();
+						break;
+					case XamlNodeType.StartMember when reader.Member.IsDirective && reader.Member.PreferredXamlNamespace == EtoXamlSchemaContext.DesignNamespace:
+						var owner = types.Count > 0 ? types.Peek() : null;
+						var member = applyDesign ? GetDesignMember(owner, reader.Member.Name) : null;
+						if (member != null)
+						{
+							writer.WriteStartMember(member);
+							continue;
+						}
+						SkipMember(reader);
+						continue;
+				}
+				writer.WriteNode(reader);
+			}
+		}
+
+		static XamlMember GetDesignMember(XamlType owner, string name)
+		{
+			if (name == nameof(BindableWidget.DataContext) && owner?.UnderlyingType != null && typeof(BindableWidget).IsAssignableFrom(owner.UnderlyingType))
+				return owner.GetMember(name);
+			return null;
+		}
+
+		static void SkipMember(XamlXmlReader reader)
+		{
+			// skipping keeps markup extensions such as d:DesignInstance from ever being created
+			var depth = 1;
+			while (depth > 0 && reader.Read())
+			{
+				switch (reader.NodeType)
+				{
+					case XamlNodeType.StartMember:
+					case XamlNodeType.StartObject:
+					case XamlNodeType.GetObject:
+						depth++;
+						break;
+					case XamlNodeType.EndMember:
+					case XamlNodeType.EndObject:
+						depth--;
+						break;
+				}
+			}
 		}
 		
 	}

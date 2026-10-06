@@ -11,6 +11,25 @@ namespace Eto.Forms;
 public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 {
 	/// <summary>
+	/// Gets or sets a value indicating the UI is being shown in a designer preview, e.g. to supply sample data.
+	/// </summary>
+	/// <remarks>
+	/// Set by the designer when it starts; applications should not need to set this.
+	/// </remarks>
+	public static bool IsDesignMode { get; set; }
+
+	// shared by the xaml and json readers so a user control in either format inherits its parent's design data
+	[ThreadStatic]
+	static int designLoadDepth;
+
+	internal static void BeginDesignLoad() => designLoadDepth++;
+
+	internal static void EndDesignLoad() => designLoadDepth--;
+
+	/// <summary>True while loading the outermost file in design mode, where d:DataContext applies.</summary>
+	internal static bool IsDesignRootLoad => IsDesignMode && designLoadDepth == 1;
+
+	/// <summary>
 	/// Gets the handler for the widget, ensuring the current thread is the UI thread
 	/// </summary>
 	/// <value>The handler object for this control</value>

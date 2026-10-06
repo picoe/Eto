@@ -40,6 +40,10 @@ https://github.com/picoe/Eto/wiki
     <Compile Include="..\Shared\WeakEventListener.cs" />
   </ItemGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="Eto.Serialization.Xaml" />
+    <InternalsVisibleTo Include="Eto.Serialization.Json" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="sdk\*" Pack="True" PackagePath="sdk" />
     <None Remove="Eto.Forms.targets" />
     <None Include="Eto.Forms.targets" Pack="true" PackagePath="build" />
