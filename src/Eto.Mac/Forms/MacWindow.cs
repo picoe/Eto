@@ -948,7 +948,14 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public override void Focus() => Control.MakeKeyAndOrderFront(Control);
+		public override void Focus()
+		{
+			// Activate the NSApplication first so the window actually comes to the foreground.
+			// MakeKeyAndOrderFront alone is not enough when the process is in the background
+			// (e.g. after transitioning from Accessory to Regular activation policy).
+			NSApplication.SharedApplication.Activate();
+			Control.MakeKeyAndOrderFront(Control);
+		}
 
 		public string Id { get; set; }
 
