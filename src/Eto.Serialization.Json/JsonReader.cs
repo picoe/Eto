@@ -273,22 +273,38 @@ namespace Eto.Serialization.Json
 				serializer.Converters.Add(new DynamicLayoutConverter());
 				serializer.Converters.Add(new DelegateConverter());
 				serializer.Converters.Add(new PropertyStoreConverter());
-				serializer.Converters.Add(new FontConverter());
+				serializer.Converters.Add(new Converters.FontConverter());
 				serializer.Converters.Add(new StackLayoutConverter());
 				serializer.Converters.Add(new ListItemConverter());
 				serializer.Converters.Add(new TypeConverterConverter());
 			}
+			var localAssembly = namespaceManager?.LocalAssembly ?? (Equals(instance, null) ? typeof(T) : instance.GetType()).Assembly;
+			if (localAssembly == typeof(Control).Assembly)
+				localAssembly = null;
+
+			// nested loads of user controls replace the binder, so it is put back afterwards
+			var oldBinder = serializer.SerializationBinder;
 			serializer.SerializationBinder = new EtoBinder
 			{
 				NamespaceManager = namespaceManager ?? new DefaultNamespaceManager(),
-				Instance = instance
+				Instance = instance,
+				LocalAssembly = localAssembly
 			};
 
-			if (ReferenceEquals(instance, default(T)))
-				return (T)serializer.Deserialize(reader, typeof(T));
+			Control.BeginDesignLoad();
+			try
+			{
+				if (ReferenceEquals(instance, default(T)))
+					return (T)serializer.Deserialize(reader, typeof(T));
 
-			serializer.Populate(reader, instance);
-			return instance;
+				serializer.Populate(reader, instance);
+				return instance;
+			}
+			finally
+			{
+				Control.EndDesignLoad();
+				serializer.SerializationBinder = oldBinder;
+			}
 		}
 	}
 }

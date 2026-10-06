@@ -5,6 +5,14 @@ namespace Eto.Serialization.Json
 		readonly Dictionary<string, NamespaceInfo> namespaces = new Dictionary<string, NamespaceInfo>();
 		
 		public NamespaceInfo DefaultNamespace { get; set; }
+
+		/// <summary>
+		/// Gets or sets the assembly to find types in when a $type has no assembly name, eg. "MyApp.MyControl".
+		/// </summary>
+		/// <remarks>
+		/// When null, the assembly of the object being loaded is used.
+		/// </remarks>
+		public Assembly LocalAssembly { get; set; }
 		
 		public IDictionary<string, NamespaceInfo> Namespaces 
 		{

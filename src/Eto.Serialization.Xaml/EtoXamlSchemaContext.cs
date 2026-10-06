@@ -11,6 +11,7 @@ namespace Eto.Serialization.Xaml
 	class EtoXamlSchemaContext : XamlSchemaContext
 	{
 		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
+		public const string DesignNamespace = "http://schema.picoe.ca/eto.forms/design";
 		readonly Dictionary<Type, XamlType> typeCache = new Dictionary<Type, XamlType>();
 
 		public bool DesignMode { get; set; }
@@ -29,9 +30,44 @@ namespace Eto.Serialization.Xaml
 				if (!DesignMode || type != null)
 					throw;
 				// in designer mode, fail gracefully
-				type = new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
+				type = FindLoadedType(xamlNamespace, name, typeArguments)
+					?? new EtoDesignerType(typeof(DesignerMarkupExtension), this) { TypeName = name, Namespace = xamlNamespace };
 			}
+			if (type == null && DesignMode)
+				type = FindLoadedType(xamlNamespace, name, typeArguments);
 			return type;
+		}
+
+		/// <summary>
+		/// Finds a type from a clr-namespace without an assembly, which the designer can't otherwise
+		/// resolve as there is no class being loaded to take the local assembly from.
+		/// </summary>
+		XamlType FindLoadedType(string xamlNamespace, string name, XamlType[] typeArguments)
+		{
+			const string clrNamespace = "clr-namespace:";
+			if (typeArguments?.Length > 0
+				|| xamlNamespace == null
+				|| !xamlNamespace.StartsWith(clrNamespace, StringComparison.Ordinal)
+				|| xamlNamespace.IndexOf(';') >= 0)
+				return null;
+
+			var fullName = xamlNamespace.Substring(clrNamespace.Length).Trim() + "." + name;
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				if (assembly.IsDynamic)
+					continue;
+				try
+				{
+					var type = assembly.GetType(fullName, false);
+					if (type != null)
+						return GetXamlType(type);
+				}
+				catch
+				{
+					// the project's types can fail to load when one of their dependencies is missing
+				}
+			}
+			return null;
 		}
 
 		public override XamlType GetXamlType(Type type)
