@@ -178,12 +178,8 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 		{
 			if (_formatString == value)
 				return;
+			// keep the decimal places so they apply again when the format string is cleared
 			_formatString = value;
-			if (!string.IsNullOrEmpty(value))
-			{
-				_decimalPlaces = 0;
-				_maximumDecimalPlaces = 0;
-			}
 			CommitText();
 		}
 	}
