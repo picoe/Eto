@@ -289,7 +289,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		{ typeof(uint), (uint.MinValue, uint.MaxValue, 1u, 0, null) },
 		{ typeof(long), (long.MinValue, long.MaxValue, 1L, 0, null) },
 		{ typeof(ulong), (ulong.MinValue, ulong.MaxValue, 1UL, 0, null) },
-		{ typeof(float), (float.MinValue, float.MaxValue, 1f, 7, (v, i) => Math.Round((float)v, Math.Min(i, 7))) },
+		{ typeof(float), (float.MinValue, float.MaxValue, 1f, 7, (v, i) => (float)Math.Round((float)v, Math.Min(i, 7))) },
 		{ typeof(double), (double.MinValue, double.MaxValue, 1d, 15, (v, i) => Math.Round((double)v, Math.Min(i, 15))) },
 		{ typeof(decimal), (decimal.MinValue, decimal.MaxValue, 1m, 28, (v, i) => Math.Round((decimal)v, Math.Min(i, 28))) }
 	};
