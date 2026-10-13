@@ -374,21 +374,27 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 		base.OnStep(e);
 		if (ReadOnly || !Enabled)
 			return;
-		var val = _value ?? Value;
+		var oldValue = _value ?? Value;
+		T val;
+		bool pastMin = false, pastMax = false;
 		if (e.Direction == StepperDirection.Up)
-			val = Add(val, _increment);
-		else
-			val = Subtract(val, _increment);
-
-		if (_wrap)
 		{
-			if (val.CompareTo(_minValue) < 0)
-				val = _maxValue;
-			else if (val.CompareTo(_maxValue) > 0)
-				val = _minValue;
+			val = Add(oldValue, _increment);
+			// integer types overflow around to the other end of their range
+			pastMax = val.CompareTo(oldValue) < 0 || val.CompareTo(_maxValue) > 0;
+		}
+		else
+		{
+			val = Subtract(oldValue, _increment);
+			pastMin = val.CompareTo(oldValue) > 0 || val.CompareTo(_minValue) < 0;
 		}
 
-		Value = val.CompareTo(_minValue) < 0 ? _minValue : val.CompareTo(_maxValue) > 0 ? _maxValue : val;
+		if (pastMax)
+			val = _wrap ? _minValue : _maxValue;
+		else if (pastMin)
+			val = _wrap ? _maxValue : _minValue;
+
+		Value = val;
 	}
 
 	/// <inheritdoc/>
@@ -399,35 +405,24 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	}
 
 #if !NET7_0_OR_GREATER
-	static Delegate GetAddDelegate(Type type)
+	static Delegate GetAddDelegate(Type type) => GetBinaryDelegate(type, Expression.Add);
+
+	static Delegate GetSubtractDelegate(Type type) => GetBinaryDelegate(type, Expression.Subtract);
+
+	static Delegate GetBinaryDelegate(Type type, Func<Expression, Expression, BinaryExpression> operation)
 	{
-		// 1. Create expression parameters targeting those types
 		ParameterExpression paramA = Expression.Parameter(type, "a");
 		ParameterExpression paramB = Expression.Parameter(type, "b");
 
-		// 2. Generate the mathematical Add expression
-		BinaryExpression addExpression = Expression.Add(paramA, paramB);
+		// byte and sbyte have no arithmetic operators, so do the math as int and convert back
+		Expression body;
+		if (type == typeof(byte) || type == typeof(sbyte))
+			body = Expression.Convert(operation(Expression.Convert(paramA, typeof(int)), Expression.Convert(paramB, typeof(int))), type);
+		else
+			body = operation(paramA, paramB);
 
-		// 3. Compile the expression into a reusable delegate execution block
-		var lambda = Expression.Lambda(addExpression, paramA, paramB);
-		var compiledDelegate = lambda.Compile();
-		return compiledDelegate;
+		return Expression.Lambda(body, paramA, paramB).Compile();
 	}
-	
-	static Delegate GetSubtractDelegate(Type type)
-	{
-		// 1. Create expression parameters targeting those types
-		ParameterExpression paramA = Expression.Parameter(type, "a");
-		ParameterExpression paramB = Expression.Parameter(type, "b");
-	
-		// 2. Generate the mathematical Subtract expression
-		BinaryExpression subtractExpression = Expression.Subtract(paramA, paramB);
-
-		// 3. Compile the expression into a reusable delegate execution block
-		var lambda = Expression.Lambda(subtractExpression, paramA, paramB);
-		var compiledDelegate = lambda.Compile();
-		return compiledDelegate;
-	} 
 
 	static Delegate _addDelegate = GetAddDelegate(typeof(T));
 	static Delegate _subtractDelegate = GetSubtractDelegate(typeof(T));
