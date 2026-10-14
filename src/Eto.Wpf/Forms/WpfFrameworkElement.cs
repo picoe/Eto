@@ -1087,7 +1087,17 @@ namespace Eto.Wpf.Forms
 
 		protected float ParentScale
 		{
-			get { return Widget.ParentWindow?.LogicalPixelSize ?? Screen.PrimaryScreen.LogicalPixelSize; }
+			get
+			{
+				// the Eto parent window can be disposed while the native element lives on in another tree (RH-99305)
+				var window = Widget.IsDisposed ? null : Widget.ParentWindow;
+				if (window != null && !window.IsDisposed)
+					return window.LogicalPixelSize;
+				var target = sw.PresentationSource.FromVisual(ContainerControl)?.CompositionTarget;
+				if (target != null)
+					return (float)target.TransformToDevice.M11;
+				return Screen.PrimaryScreen.LogicalPixelSize;
+			}
 		}
 
 		void Parent_PixelSizeChanged(object sender, EventArgs e)
