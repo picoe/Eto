@@ -120,6 +120,35 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
+		[Test]
+		public void ContentShouldNarrowWhenVerticalScrollbarAppears()
+		{
+			// Content that fits is expanded to the full viewport width. When it later grows taller than the
+			// viewport (e.g. a collapsed section is expanded) the vertical scrollbar appears and narrows the
+			// viewport, but the scrollable itself keeps its size so nothing else triggers a new measure.
+			// The content must still be re-measured at the narrower width so it fits beside the scrollbar
+			// instead of being covered by it.
+			Panel content = null;
+			ShownAsync(form =>
+			{
+				form.ClientSize = new Size(300, 200);
+				content = new Panel { Size = new Size(100, 100), BackgroundColor = Colors.Blue };
+				return new Scrollable { Content = content, ExpandContentWidth = true, ExpandContentHeight = false };
+			},
+			async scrollable =>
+			{
+				var fullWidth = scrollable.ClientSize.Width;
+				Assert.That(content.Width, Is.EqualTo(fullWidth), "#1 Content should fill the viewport before the scrollbar appears");
+
+				// grow the content taller than the viewport so the vertical scrollbar appears
+				content.Height = 1000;
+				Assert.That(await WaitUntil(() => scrollable.ClientSize.Width < fullWidth), Is.True, "#2 Viewport should narrow when the vertical scrollbar appears");
+
+				await WaitUntil(() => content.Width == scrollable.ClientSize.Width, 1000);
+				Assert.That(content.Width, Is.EqualTo(scrollable.ClientSize.Width), "#3 Content should narrow to fit beside the scrollbar");
+			});
+		}
+
 		[Test, ManualTest]
 		public void TwoScrollablesShouldNotClipControls()
 		{

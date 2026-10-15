@@ -23,10 +23,29 @@ namespace Eto.Wpf.Forms.Controls
 			// Otherwise wrapping content (labels, checkboxes, etc.) reports the taller height it would
 			// have at its narrower preferred width, inflating the vertical scroll extent even though it
 			// is shown wider and shorter.
-			if (Handler.ExpandContentWidth && double.IsNaN(content.Width))
+			var expandWidth = Handler.ExpandContentWidth && double.IsNaN(content.Width);
+			if (expandWidth)
 				ConstrainExpandedWidth(content, _lastViewportWidth);
 
-			return base.MeasureOverride(constraint);
+			var size = base.MeasureOverride(constraint);
+
+			// A vertical scrollbar that appeared during this measure narrows the viewport, but the content was
+			// measured at the previous width and nothing else changes size to trigger another measure, so it
+			// would sit under the scrollbar until the next resize. Only narrowing is handled here; a wider
+			// viewport (e.g. the screen-sized constraint of a SizeToContent window) is clamped in ArrangeOverride.
+			if (expandWidth && ScrollInfo != null && !double.IsNaN(content.Width))
+			{
+				var viewport = Math.Min(ScrollInfo.ViewportWidth, constraint.Width);
+				if (viewport > 0 && viewport < content.Width - 0.5)
+				{
+					_lastViewportWidth = viewport;
+					content.Width = double.NaN;
+					ConstrainExpandedWidth(content, viewport);
+					size = base.MeasureOverride(constraint);
+				}
+			}
+
+			return size;
 		}
 
 		// Constrain the content to the viewport width when it either fits within it (so it just
