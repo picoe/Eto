@@ -120,8 +120,9 @@ namespace Eto.Wpf.Forms
 			var size = UserPreferredSize;
 			var control = ContainerControl;
 
-			var parentWindow = Widget.ParentWindow;
-			if (ContainsScrollViewer && parentWindow?.AutoSize == true && parentWindow.WindowState == WindowState.Normal)
+			// the Eto window can be disposed while the native element is still queued for layout (RH-99306)
+			var parentWindow = ContainsScrollViewer && !Widget.IsDisposed ? Widget.ParentWindow : null;
+			if (parentWindow != null && !parentWindow.IsDisposed && parentWindow.AutoSize && parentWindow.WindowState == WindowState.Normal)
 			{
 				// The enclosed scrollable is measured with this constraint, which becomes its viewport size.
 				// In an auto-sizing window the content is probed with the monitor size, so without constraining
