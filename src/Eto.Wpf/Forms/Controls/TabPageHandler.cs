@@ -25,10 +25,9 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new swc.TabItem();
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			// Render at the icon's natural size. With the default Stretch (Uniform) the image
-			// grows to fill whatever space the tab strip offers, which for Left/Right placement is
-			// the full control height - blowing the icon up to a huge square.
-			headerImage = new swc.Image { Stretch = swm.Stretch.None };
+			// Shrink oversized images to fit the tab but never enlarge them, otherwise
+			// Left/Right placement blows small icons up to the full control height.
+			headerImage = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly };
 			headerText = new swc.TextBlock();
 			headerText.VerticalAlignment = sw.VerticalAlignment.Center;
 			header.Children.Add(headerImage);
