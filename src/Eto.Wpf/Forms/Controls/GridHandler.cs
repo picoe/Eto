@@ -83,6 +83,23 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		protected override void OnContextMenuOpening(swc.ContextMenuEventArgs e)
+		{
+			var cell = (e.OriginalSource as sw.DependencyObject)?.GetVisualParents().OfType<swc.DataGridCell>().FirstOrDefault();
+			if (IsEnabled && cell != null && !cell.IsSelected && !cell.IsKeyboardFocusWithin)
+			{
+				// The base focuses the cell before selecting its row, which commits any edit. If that reloads
+				// the rows, it then selects a row that's been discarded and throws, so commit first and check.
+				var row = cell.GetVisualParent<swc.DataGridRow>();
+				if (row?.IsEditing == false)
+					CommitEdit(swc.DataGridEditingUnit.Row, true);
+
+				if (row == null || ItemContainerGenerator.ItemFromContainer(row) == sw.DependencyProperty.UnsetValue)
+					return;
+			}
+			base.OnContextMenuOpening(e);
+		}
+
 		public EtoDataGrid()
 		{
 			Loaded += EtoDataGrid_Loaded;
