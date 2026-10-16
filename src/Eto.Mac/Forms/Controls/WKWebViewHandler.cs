@@ -385,10 +385,13 @@ namespace Eto.Mac.Forms.Controls
 			if (printOperation != null)
 			{
 				// RunOperation() doesn't work..
-				var printHelper = new PrintHelper();
-				printOperation.RunOperationModal(Control.Window, printHelper, PrintHelper.PrintOperationDidRunSelector, IntPtr.Zero);
+				// AppKit doesn't retain the delegate and this returns before the sheet closes, so keep it alive until the callback
+				_printHelper = new PrintHelper { Done = () => _printHelper = null };
+				printOperation.RunOperationModal(Control.Window, _printHelper, PrintHelper.PrintOperationDidRunSelector, IntPtr.Zero);
 			}
 		}
+
+		PrintHelper _printHelper;
 
 		class PrintHelper : NSObject
 		{
@@ -396,10 +399,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool Success { get; set; }
 
+			public Action Done { get; set; }
+
 			[Export("printOperationDidRun:success:contextInfo:")]
 			public void PrintOperationDidRun(IntPtr printOperation, bool success, IntPtr contextInfo)
 			{
 				Success = success;
+				Done?.Invoke();
 			}
 		}
 
