@@ -409,12 +409,64 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		_host = new WebView2Host();
 		_host.Child = Control;
 		_host.Handler = this;
+		Control.IsVisibleChanged += Control_IsVisibleChanged;
+		Control.MessageHook += Control_MessageHook;
 #endif
 	}
 
 #if WPF
 	WebView2Host _host;
 	public override System.Windows.FrameworkElement ContainerControl => _host;
+
+	bool _resyncingVisibility;
+	bool _resyncPending;
+
+	const int WM_SHOWWINDOW = 0x0018;
+	const int WM_WINDOWPOSCHANGED = 0x0047;
+
+	// WebView2 is told it is visible before its window is actually shown. When the window is hidden and
+	// shown again in quick succession (e.g. a floating window as the app is deactivated) it can then stay
+	// blank until resized, so tell it again once the window really is on screen.
+	void Control_IsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+	{
+		if (_resyncingVisibility || !(bool)e.NewValue)
+			return;
+		_resyncPending = true;
+		Control.Dispatcher.BeginInvoke(new Action(ResyncVisibility), swt.DispatcherPriority.ContextIdle);
+	}
+
+	// The web view's own window can still be hidden when the re-sync first runs, so try again once it is shown.
+	IntPtr Control_MessageHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+	{
+		if (_resyncPending && (msg == WM_SHOWWINDOW || msg == WM_WINDOWPOSCHANGED))
+			Control.Dispatcher.BeginInvoke(new Action(ResyncVisibility), swt.DispatcherPriority.ContextIdle);
+		return IntPtr.Zero;
+	}
+
+	void ResyncVisibility()
+	{
+		if (!_resyncPending)
+			return;
+		if (Widget.IsDisposed || !webView2Ready || !Control.IsVisible)
+		{
+			_resyncPending = false;
+			return;
+		}
+		if (!Win32.IsWindowVisible(Control.Handle))
+			return;
+
+		_resyncPending = false;
+		_resyncingVisibility = true;
+		try
+		{
+			Control.Visibility = sw.Visibility.Hidden;
+			Control.Visibility = sw.Visibility.Visible;
+		}
+		finally
+		{
+			_resyncingVisibility = false;
+		}
+	}
 #endif
 	/// <summary>
 	/// The default environment to use if none is specified with <see cref="Environment"/>.
