@@ -5,13 +5,18 @@ on:
     branches: [ develop ]
   pull_request:
     branches: [ develop ]
-  release:
-    types: [ published, prereleased ]
+  # called by release.yml to build a release
+  workflow_call:
+    inputs:
+      version:
+        description: Version to build every package as, e.g. 1.2.3
+        type: string
+        default: ''
 
 env:
   DotNetVersion: "10.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ github.ref }}"'
+  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ inputs.version && format(''refs/tags/{0}'', inputs.version) || github.ref }}"'
 
 permissions:
   contents: read
@@ -128,7 +133,7 @@ jobs:
       run: printf 'BuildParameters=%s /p:EnableCodeSigning=False\n' "$BUILD_PARAMETERS" >> "$GITHUB_ENV"
 
     - name: Set notarization credentials
-      if: startsWith(github.ref, 'refs/tags/')
+      if: inputs.version
       env:
         BUILD_PARAMETERS: ${{ env.BuildParameters }}
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
@@ -262,9 +267,7 @@ jobs:
   publish:
     needs: [ build-windows, build-mac, build-linux ]
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
-    permissions:
-      contents: write
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     steps:
       - name: Download nuget artifacts
         uses: actions/download-artifact@v4
@@ -274,10 +277,3 @@ jobs:
 
       - name: Push packages to myget.org
         run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{secrets.MYGET_API_KEY}}
-
-      - name: Add nuget packages to release
-        uses: softprops/action-gh-release@v2
-        if: (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: '*.nupkg'
