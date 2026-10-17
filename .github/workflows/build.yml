@@ -27,12 +27,12 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -43,13 +43,13 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-win
         path: artifacts/nuget/${{ env.BuildConfiguration }}/*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: test-win
         path: |
@@ -57,7 +57,7 @@ jobs:
           !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: samples-win
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
@@ -79,7 +79,7 @@ jobs:
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: log-win
         path: artifacts/log/**/*
@@ -89,12 +89,12 @@ jobs:
     runs-on: macos-26
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -114,7 +114,7 @@ jobs:
 
     - name: Import code signing certificate
       if: github.event_name != 'pull_request'
-      uses: apple-actions/import-codesign-certs@v3
+      uses: apple-actions/import-codesign-certs@v7
       with:
         p12-file-base64: ${{ secrets.DEVID_CERTIFICATE_P12 }}
         p12-password: ${{ secrets.DEVID_CERTIFICATE_P12_PASSWORD }}
@@ -147,14 +147,14 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-mac
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: test-mac
         path: |
@@ -188,7 +188,7 @@ jobs:
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: log-mac
         path: |
@@ -200,12 +200,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
@@ -231,7 +231,7 @@ jobs:
     # The nuget packages built here are the same ones the Windows job uploads, so they aren't
     # published again from this job - the publish job merges the artifacts by file name.
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: test-linux
         path: |
@@ -239,7 +239,7 @@ jobs:
           !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: samples-linux
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
@@ -259,7 +259,7 @@ jobs:
 
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: log-linux
         path: artifacts/log/**/*
@@ -270,7 +270,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     steps:
       - name: Download nuget artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: nuget-*
           merge-multiple: true
