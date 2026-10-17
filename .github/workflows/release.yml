@@ -48,7 +48,7 @@ jobs:
       contents: write
     steps:
     - name: Download nuget artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         pattern: nuget-*
         path: nuget
@@ -83,7 +83,7 @@ jobs:
     outputs:
       version: ${{ steps.next.outputs.version }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         sparse-checkout: build/Common.props
         sparse-checkout-cone-mode: false
