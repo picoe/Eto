@@ -80,5 +80,22 @@ namespace Eto.Mac.Forms.Controls
 		}
 
 		public override NSView ContentControl => Control.View;
+
+		bool visible = true;
+
+		public override bool Visible
+		{
+			get => visible;
+			set
+			{
+				if (visible == value)
+					return;
+				visible = value;
+				(Widget.Parent?.Handler as TabControlHandler)?.SetPageVisible(Widget, value);
+				InvalidateMeasure();
+				if (Widget.Loaded && value)
+					FireOnShown();
+			}
+		}
 	}
 }

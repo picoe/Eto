@@ -65,7 +65,13 @@ namespace Eto.Wpf.Forms.Controls
 		public int SelectedIndex
 		{
 			get { return Control.SelectedIndex; }
-			set { Control.SelectedIndex = value; }
+			set
+			{
+				// a collapsed TabItem can still be selected, showing a page without a tab
+				if (value >= 0 && value < Widget.Pages.Count && !Widget.Pages[value].Visible)
+					return;
+				Control.SelectedIndex = value;
+			}
 		}
 
 		public DockPosition TabPosition
@@ -82,8 +88,28 @@ namespace Eto.Wpf.Forms.Controls
 				Control.Items.Insert(index, page.ControlObject);
 			if (Widget.Loaded)
 				page.GetWpfFrameworkElement()?.SetScale(XScale, YScale);
-			if (Control.Items.Count == 1)
-				SelectedIndex = 0;
+			if (Control.SelectedIndex == -1 && page.Visible)
+				Control.SelectedItem = page.ControlObject;
+		}
+
+		internal void SetPageVisible(TabPage page, bool visible)
+		{
+			if (visible)
+			{
+				if (Control.SelectedIndex == -1)
+					Control.SelectedItem = page.ControlObject;
+				return;
+			}
+			if (!ReferenceEquals(Control.SelectedItem, page.ControlObject))
+				return;
+			// prefer the next visible page, like the other platforms
+			var index = Widget.Pages.IndexOf(page);
+			var next = Widget.Pages.Skip(index + 1).FirstOrDefault(r => r.Visible)
+				?? Widget.Pages.Take(index).LastOrDefault(r => r.Visible);
+			if (next != null)
+				Control.SelectedItem = next.ControlObject;
+			else
+				Control.SelectedIndex = -1;
 		}
 
 		public void ClearTabs()
