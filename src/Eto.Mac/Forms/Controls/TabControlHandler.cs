@@ -65,10 +65,25 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		// Pages index; hidden pages aren't in the native tab view, so indexes differ from it.
 		public int SelectedIndex
 		{
-			get { return (int)(Control.Selected == null ? -1 : Control.IndexOf(Control.Selected)); }
-			set { Control.SelectAt(value); }
+			get
+			{
+				var selected = Control.Selected;
+				if (selected == null)
+					return -1;
+				var page = Widget.Pages.FirstOrDefault(r => ((TabPageHandler)r.Handler).Control == selected);
+				return page != null ? Widget.Pages.IndexOf(page) : -1;
+			}
+			set
+			{
+				if (value < 0 || value >= Widget.Pages.Count)
+					return;
+				var item = ((TabPageHandler)Widget.Pages[value].Handler).Control;
+				if (item.TabView != null)
+					Control.Select(item);
+			}
 		}
 
 		protected override bool ControlEnabled
@@ -86,11 +101,8 @@ namespace Eto.Mac.Forms.Controls
 
 		public void InsertTab(int index, TabPage page)
 		{
-			var tabViewItem = ((TabPageHandler)page.Handler).Control;
-			if (index == -1)
-				Control.Add(tabViewItem);
-			else
-				Control.Insert(tabViewItem, index);
+			if (page.Visible)
+				AddItem(page);
 		}
 
 		public void ClearTabs()
@@ -101,14 +113,42 @@ namespace Eto.Mac.Forms.Controls
 
 		public void RemoveTab(int index, TabPage page)
 		{
+			RemoveItem(page, true);
+		}
+
+		internal void SetPageVisible(TabPage page, bool visible)
+		{
+			if (visible)
+				AddItem(page);
+			else
+				RemoveItem(page, false);
+		}
+
+		void AddItem(TabPage page)
+		{
+			var item = ((TabPageHandler)page.Handler).Control;
+			if (item.TabView != null)
+				return;
+			// NSTabView can't hide a tab, so only visible pages are added to it.
+			var nativeIndex = Widget.Pages.TakeWhile(r => r != page).Count(r => r.Visible);
+			Control.Insert(item, nativeIndex);
+		}
+
+		void RemoveItem(TabPage page, bool alwaysNotify)
+		{
+			var item = ((TabPageHandler)page.Handler).Control;
+			if (item.TabView == null)
+				return;
 			disableSelectedIndexChanged = true;
 			try
 			{
-				var isSelected = SelectedIndex == index;
-				Control.Remove(((TabPageHandler)page.Handler).Control);
-				if (isSelected && Control.Items.Length > 0)
-					SelectedIndex = Math.Min(index, Control.Items.Length - 1);
-				if (Widget.Loaded)
+				var nativeIndex = (int)Control.IndexOf(item);
+				var isSelected = Control.Selected == item;
+				Control.Remove(item);
+				var count = Control.Items.Length;
+				if (isSelected && count > 0)
+					Control.SelectAt(Math.Min(nativeIndex, count - 1));
+				if (Widget.Loaded && (alwaysNotify || isSelected))
 					Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 			}
 			finally

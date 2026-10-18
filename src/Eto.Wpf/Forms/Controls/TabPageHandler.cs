@@ -101,6 +101,18 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public override bool Visible
+		{
+			get => base.Visible;
+			set
+			{
+				if (value == Visible)
+					return;
+				base.Visible = value;
+				(Widget.Parent?.Handler as TabControlHandler)?.SetPageVisible(Widget, value);
+			}
+		}
+
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			this.content.Children.Clear();
