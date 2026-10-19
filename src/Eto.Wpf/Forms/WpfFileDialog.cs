@@ -12,16 +12,21 @@ namespace Eto.Wpf.Forms
 			Control.RestoreDirectory = true;
 		}
 
+		// Cache the full path so FileName round-trips it; cleared on OK so the chosen path wins.
+		string fileName;
+
 		public string FileName
 		{
-			get { return Control.FileName; }
+			get { return fileName ?? Control.FileName; }
 			set
 			{
+				fileName = string.IsNullOrEmpty(value) ? null : value;
 				var dir = Path.GetDirectoryName(value);
 				if (!string.IsNullOrEmpty(dir))
 					Control.InitialDirectory = dir;
 
-				Control.FileName = value;
+				// A full path here would show verbatim in the dialog's file name box and override Directory.
+				Control.FileName = Path.GetFileName(value);
 			}
 		}
 
@@ -70,7 +75,10 @@ namespace Eto.Wpf.Forms
 			if (parent?.HasFocus == false)
 				parent.Focus();
 			SetFilters();
-			return base.ShowDialog(parent);
+			var result = base.ShowDialog(parent);
+			if (result == DialogResult.Ok)
+				fileName = null;
+			return result;
 		}
 
 		public void InsertFilter(int index, FileFilter filter)

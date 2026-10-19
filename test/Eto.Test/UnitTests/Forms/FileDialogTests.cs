@@ -41,6 +41,22 @@ namespace Eto.Test.UnitTests.Forms
 	public class FileDialogTests<T> : TestBase
 		where T : FileDialog, new()
 	{
+		[Test, InvokeOnUI]
+		public void FileNameShouldReturnFullPathThatWasSet()
+		{
+			var fd = new T();
+			var fullPath = Path.Combine(Path.GetTempPath(), "SomeFile.txt");
+
+			fd.FileName = fullPath;
+			Assert.That(fd.FileName, Is.EqualTo(fullPath), "#1");
+
+			fd.FileName = "OtherFile.txt";
+			Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("OtherFile.txt"), "#2");
+
+			fd.FileName = null;
+			Assert.That(fd.FileName, Is.Null.Or.Empty.Or.EqualTo("Untitled"), "#3");
+		}
+
 		[Test, InvokeOnUI, ManualTest]
 		public void FileNameShouldHaveConsistentValues()
 		{

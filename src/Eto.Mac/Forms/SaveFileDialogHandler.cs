@@ -2,27 +2,14 @@ namespace Eto.Mac.Forms
 {
 	public class SaveFileDialogHandler : MacFileDialog<NSSavePanel, SaveFileDialog>, SaveFileDialog.IHandler
 	{
-		bool hasShown;
-		string selectedFileName;
 		string pendingName;
-
 
 		public override string FileName
 		{
-			get => hasShown ? base.FileName : selectedFileName;
 			set
 			{
-				selectedFileName = value;
-				var name = value;
-				if (!string.IsNullOrEmpty(name))
-				{
-					var dir = Path.GetDirectoryName(name);
-					if (!string.IsNullOrEmpty(dir) && System.IO.Directory.Exists(dir))
-						Directory = new Uri(dir);
-					name = Path.GetFileName(name);
-				}
-				SetNameFieldStringValue(name);
-				hasShown = false;
+				base.FileName = value;
+				SetNameFieldStringValue(Path.GetFileName(value));
 			}
 		}
 
@@ -62,18 +49,6 @@ namespace Eto.Mac.Forms
 			base.Initialize();
 		}
 
-		public override DialogResult ShowDialog(Window parent)
-		{
-			hasShown = true;
-			var result = base.ShowDialog(parent);
-			if (result == DialogResult.Ok)
-			{
-				selectedFileName = null;
-			}
-
-			return result;
-		}
-
 		protected override void OnFileTypeChanged()
 		{
 			base.OnFileTypeChanged();
@@ -87,7 +62,7 @@ namespace Eto.Mac.Forms
 			// If the new file type supports the extension, don't change it
 			if (extensions.Select(r => r.TrimStart('*')).Any(r => r == currentExtension))
 			{
-				if (!hasShown)
+				if (!HasShown)
 				{
 					// need to reset the value, otherwise for unknown file types it doubles up the extension
 					Control.NameFieldStringValue = string.Empty;
