@@ -386,6 +386,9 @@ namespace Eto.WinForms.Forms
 
 		protected override void Dispose(bool disposing)
 		{
+			// disposing a form doesn't raise FormClosed, so unload like other platforms; it can't be cancelled so skip Closing
+			if (disposing && Widget.Loaded)
+				Callback.OnClosed(Widget, EventArgs.Empty);
 			DetachKeyMonitor();
 			base.Dispose(disposing);
 		}

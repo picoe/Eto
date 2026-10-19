@@ -606,10 +606,6 @@ namespace Eto.Mac.Forms
 			Control.DidEnterFullScreen += HandleDidEnterFullScreen;
 			Control.DidFailToEnterFullScreen += HandleDidFailToEnterFullScreen;
 			Control.DidExitFullScreen += HandleDidExitFullScreen;
-
-#if MONOMAC
-			HandleEvent(Window.ClosedEvent);
-#endif
 		}
 
 		private static CGSize HandleWillResize(NSWindow sender, CGSize toFrameSize)

@@ -594,4 +594,21 @@ public class FormTests : WindowTests<Form>
 			}
 		});
 	}
+
+	[Test]
+	public void DisposingShownFormShouldUnload()
+	{
+		Invoke(() =>
+		{
+			var form = new Form { ClientSize = new Size(100, 100) };
+			int unloadCount = 0;
+			form.UnLoad += (sender, e) => unloadCount++;
+			form.Show();
+			Assert.That(form.Loaded, Is.True, "Form should be loaded once shown");
+
+			form.Dispose();
+			Assert.That(form.Loaded, Is.False, "Disposing should unload the form");
+			Assert.That(unloadCount, Is.EqualTo(1), "UnLoad should fire exactly once");
+		});
+	}
 }

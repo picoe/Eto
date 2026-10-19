@@ -76,7 +76,9 @@ public abstract class Window : Panel
 	/// <param name="e">Event arguments</param>
 	protected virtual void OnClosed(EventArgs e)
 	{
-		OnUnLoad(EventArgs.Empty);
+		// a window can be closed/disposed without ever being shown
+		if (Loaded)
+			OnUnLoad(EventArgs.Empty);
 		Properties.TriggerEvent(ClosedEvent, this, e);
 	}
 
@@ -302,6 +304,8 @@ public abstract class Window : Panel
 	/// </summary>
 	protected Window()
 	{
+		// always hooked so OnClosed can raise OnUnLoad, even with no Closed subscribers
+		HandleEvent(ClosedEvent);
 	}
 
 	/// <summary>
@@ -311,6 +315,8 @@ public abstract class Window : Panel
 	protected Window(IHandler handler)
 		: base(handler)
 	{
+		// always hooked so OnClosed can raise OnUnLoad, even with no Closed subscribers
+		HandleEvent(ClosedEvent);
 	}
 
 	/// <summary>
