@@ -68,18 +68,37 @@ namespace Eto.Mac.Forms
 			Control.Update();
 		}
 
+		// Cache the full path so FileName round-trips it; cleared on OK so the chosen path wins.
 		string fileName;
+
+		/// <summary>Whether the dialog was shown since FileName was last set.</summary>
+		internal bool HasShown { get; private set; }
 
 		public virtual string FileName
 		{
-			get => Control.Url?.Path ?? fileName;
-			set => fileName = value;
+			// Before showing, the panel reports its own default (e.g. "Untitled") rather than what was set.
+			get => fileName ?? (HasShown ? Control.Url?.Path : null);
+			set
+			{
+				HasShown = false;
+				var dir = Path.GetDirectoryName(value);
+				if (!string.IsNullOrEmpty(dir) && System.IO.Directory.Exists(dir))
+					Control.DirectoryUrl = new NSUrl(new Uri(dir).AbsoluteUri);
+				fileName = string.IsNullOrEmpty(value) ? null : value;
+			}
 		}
 
 		public Uri Directory
 		{
-			get => (Uri)Control.DirectoryUrl;
-			set => Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
+			// MonoMac's NSUrl conversion dereferences a nil url, so guard before casting.
+			get => Control.DirectoryUrl is NSUrl url ? (Uri)url : null;
+			set
+			{
+				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
+				// Last one wins: move a full-path FileName into the new folder so it matches what the dialog shows.
+				if (!string.IsNullOrEmpty(Path.GetDirectoryName(fileName)))
+					fileName = Path.Combine(value.LocalPath, Path.GetFileName(fileName));
+			}
 		}
 
 		public string GetDefaultExtension()
@@ -147,6 +166,7 @@ namespace Eto.Mac.Forms
 		
 		public virtual DialogResult ShowDialog(Window parent)
 		{
+			HasShown = true;
 			//Control.AllowsOtherFileTypes = false;
 			var oldDelegate = Control.Delegate;
 			Control.Delegate = new SavePanelDelegate{ Handler = this };

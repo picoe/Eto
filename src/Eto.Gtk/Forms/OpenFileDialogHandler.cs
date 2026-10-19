@@ -6,8 +6,6 @@ namespace Eto.GtkSharp.Forms
 	public class OpenFileDialogHandler : GtkFileDialog<Gtk.FileChooserDialog, OpenFileDialog>, OpenFileDialog.IHandler
 #endif
 	{
-		string fileName;
-
 		public OpenFileDialogHandler()
 		{
 #if GTKCORE
@@ -31,25 +29,5 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return Control.Filenames; }
 		}
-
-		public override string FileName
-		{
-			get => base.FileName ?? fileName;
-			set => base.FileName = fileName = value;
-		}
-
-		public override DialogResult ShowDialog(Window parent)
-		{
-			var result = base.ShowDialog(parent);
-			
-			// When cancelling, Control.Filename all of the sudden returns a value but is just the folder.
-			// so, combine it with the desired file name, if one was set.
-			if (result == DialogResult.Ok)
-				fileName = null;
-			else if (!string.IsNullOrEmpty(fileName) && string.IsNullOrEmpty(Path.GetDirectoryName(fileName)))
-				Control.SetFilename(Path.Combine(base.FileName, fileName));
-			return result;
-		}
-
 	}
 }

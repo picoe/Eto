@@ -17,15 +17,21 @@ namespace Eto.GtkSharp.Forms
 #endif
 		where TWidget: FileDialog
 	{
+		// Cache the full path and folder so FileName/Directory round-trip them: a FileChooserNative
+		// reports nothing back until it has been shown. Cleared on OK so the chosen path wins.
+		string fileName;
+		Uri directory;
+
 		public virtual string FileName
 		{
 #if GTKCORE
-			get => Control.Filename ?? Control.CurrentName;
+			get => fileName ?? Control.Filename ?? Control.CurrentName;
 #else
-			get => Control.Filename;
+			get => fileName ?? Control.Filename;
 #endif
 			set
 			{
+				fileName = string.IsNullOrEmpty(value) ? null : value;
 				if (string.IsNullOrEmpty(value))
 				{
 					Control.UnselectAll();
@@ -36,7 +42,10 @@ namespace Eto.GtkSharp.Forms
 				{
 					var dir = Path.GetDirectoryName(value);
 					if (!string.IsNullOrEmpty(dir))
+					{
 						Control.SetCurrentFolder(dir);
+						directory = new Uri(dir);
+					}
 					if (File.Exists(value))
 						Control.SetFilename(value);
 				}
@@ -46,10 +55,14 @@ namespace Eto.GtkSharp.Forms
 		
 		public Uri Directory {
 			get {
-				return new Uri(Control.CurrentFolderUri);
+				return directory ?? (Control.CurrentFolderUri != null ? new Uri(Control.CurrentFolderUri) : null);
 			}
 			set {
 				Control.SetCurrentFolderUri(value.AbsoluteUri);
+				directory = value;
+				// Last one wins: move a full-path FileName into the new folder so it matches what the dialog shows.
+				if (!string.IsNullOrEmpty(Path.GetDirectoryName(fileName)))
+					fileName = Path.Combine(value.LocalPath, Path.GetFileName(fileName));
 			}
 		}
 		
@@ -117,8 +130,13 @@ namespace Eto.GtkSharp.Forms
 #endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
-			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
-				GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
+			if (response == DialogResult.Ok)
+			{
+				fileName = null;
+				directory = null;
+				if (!string.IsNullOrEmpty(Control.CurrentFolder))
+					GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
+			}
 
 			return response;
 		}

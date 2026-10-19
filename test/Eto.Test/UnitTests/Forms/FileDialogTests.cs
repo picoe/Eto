@@ -41,6 +41,59 @@ namespace Eto.Test.UnitTests.Forms
 	public class FileDialogTests<T> : TestBase
 		where T : FileDialog, new()
 	{
+		[Test, InvokeOnUI]
+		public void FileNameShouldReturnFullPathThatWasSet()
+		{
+			var fd = new T();
+			var fullPath = Path.Combine(Path.GetTempPath(), "SomeFile.txt");
+
+			fd.FileName = fullPath;
+			Assert.That(fd.FileName, Is.EqualTo(fullPath), "#1");
+
+			fd.FileName = "OtherFile.txt";
+			Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("OtherFile.txt"), "#2");
+
+			fd.FileName = null;
+			Assert.That(fd.FileName, Is.Null.Or.Empty.Or.EqualTo("Untitled"), "#3");
+		}
+
+		[Test, InvokeOnUI]
+		public void DirectoryShouldNotThrowWhenNotSet()
+		{
+			var fd = new T();
+			Assert.DoesNotThrow(() => _ = fd.Directory);
+		}
+
+		[Test, InvokeOnUI]
+		public void FileNameAndDirectoryShouldUseLastOneSet()
+		{
+			var dir1 = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())).FullName;
+			var dir2 = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())).FullName;
+			try
+			{
+				var fd = new T();
+
+				fd.FileName = Path.Combine(dir1, "SomeFile.txt");
+				Assert.That(Path.GetFileName(fd.Directory?.LocalPath.TrimEnd('/', '\\')), Is.EqualTo(Path.GetFileName(dir1)), "#1 setting FileName should set Directory");
+
+				fd.Directory = new Uri(dir2);
+				Assert.That(fd.FileName, Is.EqualTo(Path.Combine(dir2, "SomeFile.txt")), "#2 setting Directory should move FileName");
+
+				fd.FileName = Path.Combine(dir1, "OtherFile.txt");
+				Assert.That(fd.FileName, Is.EqualTo(Path.Combine(dir1, "OtherFile.txt")), "#3.1");
+				Assert.That(Path.GetFileName(fd.Directory?.LocalPath.TrimEnd('/', '\\')), Is.EqualTo(Path.GetFileName(dir1)), "#3.2 setting FileName again should set Directory");
+
+				fd.FileName = "NameOnly.txt";
+				fd.Directory = new Uri(dir2);
+				Assert.That(Path.GetFileName(fd.FileName), Is.EqualTo("NameOnly.txt"), "#4 name only should keep the name");
+			}
+			finally
+			{
+				Directory.Delete(dir1);
+				Directory.Delete(dir2);
+			}
+		}
+
 		[Test, InvokeOnUI, ManualTest]
 		public void FileNameShouldHaveConsistentValues()
 		{
