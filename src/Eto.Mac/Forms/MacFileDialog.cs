@@ -90,8 +90,15 @@ namespace Eto.Mac.Forms
 
 		public Uri Directory
 		{
-			get => (Uri)Control.DirectoryUrl;
-			set => Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
+			// MonoMac's NSUrl conversion dereferences a nil url, so guard before casting.
+			get => Control.DirectoryUrl is NSUrl url ? (Uri)url : null;
+			set
+			{
+				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
+				// Last one wins: move a full-path FileName into the new folder so it matches what the dialog shows.
+				if (!string.IsNullOrEmpty(Path.GetDirectoryName(fileName)))
+					fileName = Path.Combine(value.LocalPath, Path.GetFileName(fileName));
+			}
 		}
 
 		public string GetDefaultExtension()

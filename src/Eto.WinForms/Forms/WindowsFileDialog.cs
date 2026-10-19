@@ -29,8 +29,14 @@ namespace Eto.WinForms.Forms
 
 		public Uri Directory
 		{
-			get { return new Uri(Control.InitialDirectory); }
-			set { Control.InitialDirectory = value.AbsoluteUri; }
+			get { return string.IsNullOrEmpty(Control.InitialDirectory) ? null : new Uri(Control.InitialDirectory); }
+			set
+			{
+				Control.InitialDirectory = value.LocalPath;
+				// Last one wins: move a full-path FileName into the new folder so it matches what the dialog shows.
+				if (!string.IsNullOrEmpty(Path.GetDirectoryName(fileName)))
+					fileName = Path.Combine(value.LocalPath, Path.GetFileName(fileName));
+			}
 		}
 
 		public void InsertFilter(int index, FileFilter filter)
