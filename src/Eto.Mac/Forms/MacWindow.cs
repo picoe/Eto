@@ -569,9 +569,8 @@ namespace Eto.Mac.Forms
 			Control.WillMiniaturize += HandleWillMiniaturize;
 			Control.WillResize = HandleWillResize;
 
-#if MONOMAC
+			// so OnUnLoad always fires on close, not just when Closed is subscribed
 			HandleEvent(Window.ClosedEvent);
-#endif
 		}
 
 		private static CGSize HandleWillResize(NSWindow sender, CGSize toFrameSize)

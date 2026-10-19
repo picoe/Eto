@@ -71,7 +71,9 @@ public abstract class Window : Panel
 	/// <param name="e">Event arguments</param>
 	protected virtual void OnClosed(EventArgs e)
 	{
-		OnUnLoad(EventArgs.Empty);
+		// a window can be closed/disposed without ever being shown
+		if (Loaded)
+			OnUnLoad(EventArgs.Empty);
 		Properties.TriggerEvent(ClosedEvent, this, e);
 	}
 

@@ -148,6 +148,8 @@ namespace Eto.Wpf.Forms
 			Control.SizeChanged += Control_SizeChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+			// so OnUnLoad always fires on close like other platforms, not just when Closed is subscribed
+			HandleEvent(Window.ClosedEvent);
 		}
 
 		protected virtual void OnSourceInitialized()

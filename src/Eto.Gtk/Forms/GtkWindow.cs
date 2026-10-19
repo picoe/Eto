@@ -785,6 +785,9 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (disposing)
 			{
+				// disposing can't be cancelled so skip Closing, but still unload like other platforms
+				if (Widget.Loaded)
+					Callback.OnClosed(Widget, EventArgs.Empty);
 #if !GTKCORE
 				Control.Destroy();
 #endif
