@@ -9,7 +9,8 @@
       tar.gz    Plain archive with a launcher script. Built on any OS.
       appimage  Single self-contained executable that runs on most distros. Needs appimagetool on Linux.
 
-    deb, rpm and tar.gz depend on the system's .NET runtime package, while an AppImage includes .NET.
+    deb, rpm and tar.gz depend on the system's .NET runtime package unless LinuxPackageSelfContained is set,
+    which includes .NET in them and creates one per runtime identifier instead. An AppImage always includes .NET.
 
     Everything below is optional; most values come from the usual project properties.
   -->
@@ -47,12 +48,18 @@
     <!-- Optional AppStream metainfo file, used by software centres to describe the app -->
     <LinuxMetainfoFile Condition="'$(LinuxMetainfoFile)' == ''"></LinuxMetainfoFile>
 
-    <!-- Add the .NET runtime and GTK packages as dependencies. Add your own with LinuxPackageDependency items -->
-    <LinuxPackageDefaultDependencies Condition="'$(LinuxPackageDefaultDependencies)' == ''">True</LinuxPackageDefaultDependencies>
+    <!-- Include .NET in the deb, rpm and tar.gz instead of depending on the system's runtime. Defaults to SelfContained -->
+    <LinuxPackageSelfContained Condition="'$(LinuxPackageSelfContained)' == ''">$(SelfContained)</LinuxPackageSelfContained>
+    <LinuxPackageSelfContained Condition="'$(LinuxPackageSelfContained)' == ''">False</LinuxPackageSelfContained>
+    <!-- Runtime identifiers to create self-contained packages and AppImages for, e.g. linux-x64;linux-arm64.
+         Defaults to RuntimeIdentifier when it's a Linux one, otherwise the architecture of the build machine -->
+    <LinuxPackageRuntimeIdentifiers Condition="'$(LinuxPackageRuntimeIdentifiers)' == '' AND $(RuntimeIdentifier.StartsWith('linux-'))">$(RuntimeIdentifier)</LinuxPackageRuntimeIdentifiers>
+    <LinuxPackageRuntimeIdentifiers Condition="'$(LinuxPackageRuntimeIdentifiers)' == '' AND $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">linux-arm64</LinuxPackageRuntimeIdentifiers>
+    <LinuxPackageRuntimeIdentifiers Condition="'$(LinuxPackageRuntimeIdentifiers)' == ''">linux-x64</LinuxPackageRuntimeIdentifiers>
 
-    <!-- Runtime identifiers to create AppImages for. Defaults to the architecture of the build machine -->
-    <LinuxAppImageRuntimeIdentifiers Condition="'$(LinuxAppImageRuntimeIdentifiers)' == '' AND $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">linux-arm64</LinuxAppImageRuntimeIdentifiers>
-    <LinuxAppImageRuntimeIdentifiers Condition="'$(LinuxAppImageRuntimeIdentifiers)' == ''">linux-x64</LinuxAppImageRuntimeIdentifiers>
+    <!-- Add the .NET runtime (or what a self-contained app needs) and GTK packages as dependencies.
+         Add your own with LinuxPackageDependency items -->
+    <LinuxPackageDefaultDependencies Condition="'$(LinuxPackageDefaultDependencies)' == ''">True</LinuxPackageDefaultDependencies>
 
     <!-- Tools used to create packages that can't be written directly -->
     <LinuxRpmBuildPath Condition="'$(LinuxRpmBuildPath)' == ''">rpmbuild</LinuxRpmBuildPath>
@@ -91,7 +98,7 @@
           Condition="'$(LinuxPackageOnBuild)' == 'True' AND '$(TargetFrameworkIdentifier)' == '.NETCoreApp' AND '$(_LinuxIsPackaging)' != 'True'" />
 
   <!-- Creates the packages in LinuxPackageFormats -->
-  <Target Name="LinuxPackage" DependsOnTargets="_LinuxPackageInit;_LinuxPackageDeb;_LinuxPackageRpm;_LinuxPackageTarGz;_LinuxPackageAppImage" />
+  <Target Name="LinuxPackage" DependsOnTargets="_LinuxPackageInit;_LinuxPackageDeb;_LinuxPackageRpm;_LinuxPackageTarGz;_LinuxPackagePerRuntime" />
 
   <!-- Paths aren't final when this file is imported, so work everything out once the build is running -->
   <Target Name="_LinuxPackageInit">
@@ -131,21 +138,47 @@
       <_LinuxPackageMaintainer Condition="'$(_LinuxPackageMaintainer)' == ''">$(_LinuxPackageTitle)</_LinuxPackageMaintainer>
       <_LinuxDotNetVersion>$([MSBuild]::GetTargetFrameworkVersion('$(TargetFramework)', 2))</_LinuxDotNetVersion>
 
+      <_LinuxSelfContained>$(LinuxPackageSelfContained)</_LinuxSelfContained>
+      <!-- deb, rpm and tar.gz are created by the main build when they depend on .NET, otherwise by each runtime's own instance -->
+      <_LinuxBuildSystemFormats Condition="'$(_LinuxRid)' == '' AND '$(_LinuxSelfContained)' != 'True'">True</_LinuxBuildSystemFormats>
+      <_LinuxBuildSystemFormats Condition="'$(_LinuxRid)' != '' AND '$(_LinuxSelfContained)' == 'True'">True</_LinuxBuildSystemFormats>
+
+      <!-- architecture names for each package format -->
+      <_LinuxDebArch>all</_LinuxDebArch>
+      <_LinuxRpmArch>noarch</_LinuxRpmArch>
+      <_LinuxDebArch Condition="'$(_LinuxRid)' == 'linux-x64'">amd64</_LinuxDebArch>
+      <_LinuxRpmArch Condition="'$(_LinuxRid)' == 'linux-x64'">x86_64</_LinuxRpmArch>
+      <_LinuxArch Condition="'$(_LinuxRid)' == 'linux-x64'">x86_64</_LinuxArch>
+      <_LinuxDebArch Condition="'$(_LinuxRid)' == 'linux-arm64'">arm64</_LinuxDebArch>
+      <_LinuxRpmArch Condition="'$(_LinuxRid)' == 'linux-arm64'">aarch64</_LinuxRpmArch>
+      <_LinuxArch Condition="'$(_LinuxRid)' == 'linux-arm64'">aarch64</_LinuxArch>
+      <_LinuxDebArch Condition="'$(_LinuxRid)' == 'linux-arm'">armhf</_LinuxDebArch>
+      <_LinuxRpmArch Condition="'$(_LinuxRid)' == 'linux-arm'">armv7hl</_LinuxRpmArch>
+      <_LinuxArch Condition="'$(_LinuxRid)' == 'linux-arm'">armhf</_LinuxArch>
+
       <_LinuxTempPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'linuxpkg'))</_LinuxTempPath>
+      <!-- each runtime's instance works in its own folder -->
+      <_LinuxWorkPath>$(_LinuxTempPath)</_LinuxWorkPath>
+      <_LinuxWorkPath Condition="'$(_LinuxRid)' != ''">$(_LinuxTempPath)$(_LinuxRid)/</_LinuxWorkPath>
       <_LinuxOutputPath>$(LinuxPackageOutputPath)</_LinuxOutputPath>
       <_LinuxOutputPath Condition="'$(_LinuxOutputPath)' == ''">$(OutputPath)</_LinuxOutputPath>
       <_LinuxOutputPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(_LinuxOutputPath)'))</_LinuxOutputPath>
       <_LinuxAppDir>usr/lib/$(_LinuxPackageName)</_LinuxAppDir>
     </PropertyGroup>
 
+    <Error Text="Linux packages can't be created for $(_LinuxRid)." Condition="'$(_LinuxRid)' != '' AND '$(_LinuxArch)' == ''" />
+
     <ItemGroup Condition="'$(LinuxPackageDefaultDependencies)' == 'True'">
-      <LinuxPackageDependency Include="dotnet-runtime-$(_LinuxDotNetVersion)" />
+      <LinuxPackageDependency Include="dotnet-runtime-$(_LinuxDotNetVersion)" Condition="'$(_LinuxSelfContained)' != 'True'" />
+      <!-- a self-contained app still needs ICU from the system, which Debian and Ubuntu name by version -->
+      <LinuxPackageDependency Include="libicu80 | libicu79 | libicu78 | libicu77 | libicu76 | libicu75 | libicu74 | libicu73 | libicu72 | libicu71 | libicu70 | libicu69 | libicu68 | libicu67 | libicu66" Format="deb" Condition="'$(_LinuxSelfContained)' == 'True'" />
+      <LinuxPackageDependency Include="libicu" Format="rpm" Condition="'$(_LinuxSelfContained)' == 'True'" />
       <LinuxPackageDependency Include="libgtk-3-0t64 | libgtk-3-0" Format="deb" />
       <LinuxPackageDependency Include="gtk3" Format="rpm" />
     </ItemGroup>
 
-    <!-- AppImages are created in their own build instance, which shares this folder -->
-    <RemoveDir Directories="$(_LinuxTempPath)" Condition="'$(_LinuxAppImageRid)' == ''" />
+    <!-- each runtime's instance shares this folder with the main build -->
+    <RemoveDir Directories="$(_LinuxTempPath)" Condition="'$(_LinuxRid)' == ''" />
     <MakeDir Directories="$(_LinuxOutputPath)" />
   </Target>
 
@@ -155,13 +188,13 @@
       <_LinuxIconFile Condition="'$(LinuxIcon)' != ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(LinuxIcon)'))</_LinuxIconFile>
     </PropertyGroup>
 
-    <PrepareLinuxIcons Condition="'$(_LinuxIconFile)' != ''" IconFile="$(_LinuxIconFile)" IconName="$(_LinuxAppId)" OutputDirectory="$(_LinuxTempPath)icons">
+    <PrepareLinuxIcons Condition="'$(_LinuxIconFile)' != ''" IconFile="$(_LinuxIconFile)" IconName="$(_LinuxAppId)" OutputDirectory="$(_LinuxWorkPath)icons">
       <Output TaskParameter="Icons" ItemName="_LinuxIcon" />
     </PrepareLinuxIcons>
-    <Warning Text="No app icon will be installed. Set LinuxIcon or ApplicationIcon to a .png, .svg or .ico file." Condition="'@(_LinuxIcon)' == ''" />
+    <Warning Text="No app icon will be installed. Set LinuxIcon or ApplicationIcon to a .png, .svg or .ico file." Condition="'@(_LinuxIcon)' == '' AND '$(_LinuxRid)' == ''" />
 
     <WriteDesktopFile Condition="'$(LinuxDesktopFile)' == ''"
-                      OutputFile="$(_LinuxTempPath)$(_LinuxAppId).desktop"
+                      OutputFile="$(_LinuxWorkPath)$(_LinuxAppId).desktop"
                       Name="$(_LinuxPackageTitle)"
                       Comment="$(_LinuxPackageSummary)"
                       Exec="$(_LinuxPackageName)"
@@ -171,7 +204,7 @@
 
     <ItemGroup>
       <_LinuxDesktopFile Include="$(LinuxDesktopFile)" Condition="'$(LinuxDesktopFile)' != ''" />
-      <_LinuxDesktopFile Include="$(_LinuxTempPath)$(_LinuxAppId).desktop" Condition="'$(LinuxDesktopFile)' == ''" />
+      <_LinuxDesktopFile Include="$(_LinuxWorkPath)$(_LinuxAppId).desktop" Condition="'$(LinuxDesktopFile)' == ''" />
       <_LinuxDesktopFiles Include="@(_LinuxDesktopFile)" TargetPath="usr/share/applications/$(_LinuxAppId).desktop" />
       <_LinuxDesktopFiles Include="@(_LinuxIcon)" />
       <_LinuxDesktopFiles Include="$(LinuxMetainfoFile)" TargetPath="usr/share/metainfo/$(_LinuxAppId).metainfo.xml" Condition="'$(LinuxMetainfoFile)' != ''" />
@@ -187,13 +220,20 @@
     </ItemGroup>
   </Target>
 
-  <!-- Publishes the app without .NET for the formats that depend on the system's runtime -->
-  <Target Name="_LinuxPublishFrameworkDependent" DependsOnTargets="_LinuxPackageInit" Condition="'$(_LinuxBuildDeb)' == 'True' OR '$(_LinuxBuildRpm)' == 'True' OR '$(_LinuxBuildTarGz)' == 'True'">
+  <!-- Publishes the app: without .NET in the main build, or with it for each runtime -->
+  <Target Name="_LinuxPublish" DependsOnTargets="_LinuxPackageInit">
     <PropertyGroup>
-      <_LinuxPublishDir>$(_LinuxTempPath)publish/</_LinuxPublishDir>
+      <_LinuxPublishDir>$(_LinuxWorkPath)publish/</_LinuxPublishDir>
+      <_LinuxDotNet>$(DOTNET_HOST_PATH)</_LinuxDotNet>
+      <_LinuxDotNet Condition="'$(_LinuxDotNet)' == ''">dotnet</_LinuxDotNet>
     </PropertyGroup>
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish"
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Condition="'$(_LinuxRid)' == ''"
              Properties="_LinuxIsPackaging=True;Configuration=$(Configuration);TargetFramework=$(TargetFramework);RuntimeIdentifier=;SelfContained=False;UseAppHost=False;PublishReferencesDocumentationFiles=False;PublishDir=$(_LinuxPublishDir)" />
+
+    <!-- A separate process, as the runtime identifier may need restoring and this build has already read the restore results.
+         It doesn't get this build's global properties, so pass the ones that decide where the already compiled
+         referenced projects are and what version the app is. -->
+    <Exec Condition="'$(_LinuxRid)' != ''" Command="&quot;$(_LinuxDotNet)&quot; publish &quot;$(MSBuildProjectFullPath)&quot; -nologo --no-dependencies -c &quot;$(Configuration)&quot; -f &quot;$(TargetFramework)&quot; -r &quot;$(_LinuxRid)&quot; --self-contained -o &quot;$(_LinuxPublishDir)&quot; -p:BuildProjectReferences=False &quot;-p:Platform=$(Platform)&quot; -p:_LinuxIsPackaging=True -p:PublishReferencesDocumentationFiles=False &quot;-p:Version=$(Version)&quot; &quot;-p:AssemblyVersion=$(AssemblyVersion)&quot; &quot;-p:FileVersion=$(FileVersion)&quot; &quot;-p:InformationalVersion=$(InformationalVersion)&quot;" />
     <ItemGroup>
       <_LinuxPublished Include="$(_LinuxPublishDir)**/*" />
       <_LinuxPublished Remove="$(_LinuxPublishDir)**/*.pdb" Condition="'$(LinuxPackageIncludeSymbols)' != 'True'" />
@@ -201,28 +241,33 @@
   </Target>
 
   <!-- Files for deb and rpm, laid out as they're installed -->
-  <Target Name="_LinuxSystemPackageFiles" DependsOnTargets="_LinuxPublishFrameworkDependent;_LinuxPackageDesktopFiles;_LinuxPackageContent">
-    <WriteLinesToFile File="$(_LinuxTempPath)launcher" Overwrite="True"
-                      Lines="#!/bin/sh;exec dotnet /$(_LinuxAppDir)/$(TargetFileName) &quot;%24@&quot;" />
+  <Target Name="_LinuxSystemPackageFiles" DependsOnTargets="_LinuxPublish;_LinuxPackageDesktopFiles;_LinuxPackageContent">
+    <PropertyGroup>
+      <!-- a self-contained app runs its own executable, otherwise the system's dotnet runs it -->
+      <_LinuxRunApp Condition="'$(_LinuxSelfContained)' != 'True'">dotnet /$(_LinuxAppDir)/$(TargetFileName)</_LinuxRunApp>
+      <_LinuxRunApp Condition="'$(_LinuxSelfContained)' == 'True'">/$(_LinuxAppDir)/$(AssemblyName)</_LinuxRunApp>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_LinuxWorkPath)launcher" Overwrite="True"
+                      Lines="#!/bin/sh;exec $(_LinuxRunApp) &quot;%24@&quot;" />
     <ItemGroup>
       <_LinuxSystemFiles Include="@(_LinuxPublished)" TargetPath="$(_LinuxAppDir)/%(RecursiveDir)%(Filename)%(Extension)" />
-      <_LinuxSystemFiles Include="$(_LinuxTempPath)launcher" TargetPath="usr/bin/$(_LinuxPackageName)" Mode="755" />
+      <_LinuxSystemFiles Include="$(_LinuxWorkPath)launcher" TargetPath="usr/bin/$(_LinuxPackageName)" Mode="755" />
       <_LinuxSystemFiles Include="@(_LinuxDesktopFiles)" />
       <_LinuxSystemFiles Include="@(_LinuxContent)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="_LinuxPackageDeb" Condition="'$(_LinuxBuildDeb)' == 'True'" DependsOnTargets="_LinuxSystemPackageFiles">
+  <Target Name="_LinuxPackageDeb" Condition="'$(_LinuxBuildDeb)' == 'True' AND '$(_LinuxBuildSystemFormats)' == 'True'" DependsOnTargets="_LinuxSystemPackageFiles">
     <ItemGroup>
       <_LinuxDebDepends Include="@(LinuxPackageDependency)" Condition="'%(LinuxPackageDependency.Format)' == '' OR '%(LinuxPackageDependency.Format)' == 'deb'" />
     </ItemGroup>
     <PropertyGroup>
-      <_LinuxDebFile>$(_LinuxOutputPath)$(_LinuxPackageName)_$(_LinuxPackageVersion)_all.deb</_LinuxDebFile>
+      <_LinuxDebFile>$(_LinuxOutputPath)$(_LinuxPackageName)_$(_LinuxPackageVersion)_$(_LinuxDebArch).deb</_LinuxDebFile>
     </PropertyGroup>
     <WriteDebPackage Files="@(_LinuxSystemFiles)"
                      Package="$(_LinuxPackageName)"
                      Version="$(_LinuxPackageVersion)"
-                     Architecture="all"
+                     Architecture="$(_LinuxDebArch)"
                      Maintainer="$(_LinuxPackageMaintainer)"
                      Description="$(_LinuxPackageDescription)"
                      Homepage="$(LinuxPackageHomepage)"
@@ -231,7 +276,7 @@
     <Message Text="$(MSBuildProjectName) -> $(_LinuxDebFile)" Importance="high" />
   </Target>
 
-  <Target Name="_LinuxPackageRpm" Condition="'$(_LinuxBuildRpm)' == 'True'" DependsOnTargets="_LinuxSystemPackageFiles">
+  <Target Name="_LinuxPackageRpm" Condition="'$(_LinuxBuildRpm)' == 'True' AND '$(_LinuxBuildSystemFormats)' == 'True'" DependsOnTargets="_LinuxSystemPackageFiles">
     <Exec Command="command -v &quot;$(LinuxRpmBuildPath)&quot;" IgnoreExitCode="True" StandardOutputImportance="low" StandardErrorImportance="low" EchoOff="True">
       <Output TaskParameter="ExitCode" PropertyName="_LinuxRpmBuildExitCode" />
     </Exec>
@@ -241,7 +286,9 @@
 
   <Target Name="_LinuxCreateRpm">
     <PropertyGroup>
-      <_LinuxRpmPath>$(_LinuxTempPath)rpm/</_LinuxRpmPath>
+      <_LinuxRpmPath>$(_LinuxWorkPath)rpm/</_LinuxRpmPath>
+      <!-- rpmbuild only builds for another architecture when asked to target it -->
+      <_LinuxRpmTarget Condition="'$(_LinuxRpmArch)' != 'noarch'">--target $(_LinuxRpmArch)</_LinuxRpmTarget>
     </PropertyGroup>
     <ItemGroup>
       <_LinuxRpmRequires Include="@(LinuxPackageDependency)" Condition="'%(LinuxPackageDependency.Format)' == '' OR '%(LinuxPackageDependency.Format)' == 'rpm'" />
@@ -256,11 +303,11 @@
                   Description="$(_LinuxPackageDescription)"
                   License="$(LinuxPackageLicense)"
                   Url="$(LinuxPackageHomepage)"
-                  Architecture="noarch"
+                  Architecture="$(_LinuxRpmArch)"
                   Requires="@(_LinuxRpmRequires)"
                   OutputFile="$(_LinuxRpmPath)$(_LinuxPackageName).spec" />
     <!-- nodeps: there's nothing to build, and Debian based systems have no rpm database to check against -->
-    <Exec Command="&quot;$(LinuxRpmBuildPath)&quot; -bb --quiet --nodeps --define &quot;_topdir $(_LinuxRpmPath)top&quot; &quot;$(_LinuxRpmPath)$(_LinuxPackageName).spec&quot;" />
+    <Exec Command="&quot;$(LinuxRpmBuildPath)&quot; -bb --quiet --nodeps $(_LinuxRpmTarget) --define &quot;_topdir $(_LinuxRpmPath)top&quot; &quot;$(_LinuxRpmPath)$(_LinuxPackageName).spec&quot;" />
     <ItemGroup>
       <_LinuxRpmFile Include="$(_LinuxRpmPath)top/RPMS/**/*.rpm" />
     </ItemGroup>
@@ -268,17 +315,20 @@
     <Message Text="$(MSBuildProjectName) -> $(_LinuxOutputPath)%(_LinuxRpmFile.Filename)%(_LinuxRpmFile.Extension)" Importance="high" />
   </Target>
 
-  <Target Name="_LinuxPackageTarGz" Condition="'$(_LinuxBuildTarGz)' == 'True'" DependsOnTargets="_LinuxPublishFrameworkDependent;_LinuxPackageContent">
+  <Target Name="_LinuxPackageTarGz" Condition="'$(_LinuxBuildTarGz)' == 'True' AND '$(_LinuxBuildSystemFormats)' == 'True'" DependsOnTargets="_LinuxPublish;_LinuxPackageContent">
     <PropertyGroup>
       <_LinuxTarFolder>$(_LinuxPackageName)-$(_LinuxPackageVersion)</_LinuxTarFolder>
       <_LinuxTarGzFile>$(_LinuxOutputPath)$(_LinuxTarFolder).tar.gz</_LinuxTarGzFile>
+      <_LinuxTarGzFile Condition="'$(_LinuxArch)' != ''">$(_LinuxOutputPath)$(_LinuxTarFolder)-$(_LinuxArch).tar.gz</_LinuxTarGzFile>
+      <_LinuxTarRunApp Condition="'$(_LinuxSelfContained)' != 'True'">dotnet &quot;%24HERE/$(TargetFileName)&quot;</_LinuxTarRunApp>
+      <_LinuxTarRunApp Condition="'$(_LinuxSelfContained)' == 'True'">&quot;%24HERE/$(AssemblyName)&quot;</_LinuxTarRunApp>
     </PropertyGroup>
     <!-- the launcher finds the app next to itself, wherever the archive was extracted -->
-    <WriteLinesToFile File="$(_LinuxTempPath)tar-launcher" Overwrite="True"
-                      Lines="#!/bin/sh;exec dotnet &quot;%24(dirname &quot;%24(readlink -f &quot;%240&quot;)&quot;)/$(TargetFileName)&quot; &quot;%24@&quot;" />
+    <WriteLinesToFile File="$(_LinuxWorkPath)tar-launcher" Overwrite="True"
+                      Lines="#!/bin/sh;HERE=&quot;%24(dirname &quot;%24(readlink -f &quot;%240&quot;)&quot;)&quot;;exec $(_LinuxTarRunApp) &quot;%24@&quot;" />
     <ItemGroup>
       <_LinuxTarFiles Include="@(_LinuxPublished)" TargetPath="$(_LinuxTarFolder)/%(RecursiveDir)%(Filename)%(Extension)" />
-      <_LinuxTarFiles Include="$(_LinuxTempPath)tar-launcher" TargetPath="$(_LinuxTarFolder)/$(_LinuxPackageName)" Mode="755" />
+      <_LinuxTarFiles Include="$(_LinuxWorkPath)tar-launcher" TargetPath="$(_LinuxTarFolder)/$(_LinuxPackageName)" Mode="755" />
       <_LinuxTarFiles Include="@(_LinuxContent)" Condition="$([System.String]::Copy('%(_LinuxContent.TargetPath)').StartsWith('$(_LinuxAppDir)/'))"
                       TargetPath="$(_LinuxTarFolder)/$([System.String]::Copy('%(_LinuxContent.TargetPath)').Substring($([MSBuild]::Add($(_LinuxAppDir.Length), 1))))" />
     </ItemGroup>
@@ -286,43 +336,35 @@
     <Message Text="$(MSBuildProjectName) -> $(_LinuxTarGzFile)" Importance="high" />
   </Target>
 
-  <Target Name="_LinuxPackageAppImage" Condition="'$(_LinuxBuildAppImage)' == 'True'" DependsOnTargets="_LinuxPackageDesktopFiles;_LinuxPackageContent">
-    <Exec Command="command -v &quot;$(LinuxAppImageToolPath)&quot;" IgnoreExitCode="True" StandardOutputImportance="low" StandardErrorImportance="low" EchoOff="True">
+  <!-- Self-contained packages and AppImages are created by an instance of this project for each runtime identifier -->
+  <Target Name="_LinuxPackagePerRuntime" DependsOnTargets="_LinuxPackageDesktopFiles;_LinuxPackageContent"
+          Condition="'$(_LinuxBuildAppImage)' == 'True' OR ('$(_LinuxSelfContained)' == 'True' AND ('$(_LinuxBuildDeb)' == 'True' OR '$(_LinuxBuildRpm)' == 'True' OR '$(_LinuxBuildTarGz)' == 'True'))">
+    <Exec Condition="'$(_LinuxBuildAppImage)' == 'True'" Command="command -v &quot;$(LinuxAppImageToolPath)&quot;" IgnoreExitCode="True" StandardOutputImportance="low" StandardErrorImportance="low" EchoOff="True">
       <Output TaskParameter="ExitCode" PropertyName="_LinuxAppImageToolExitCode" />
     </Exec>
-    <Warning Text="Skipping the AppImage: appimagetool wasn't found. Download it from https://github.com/AppImage/appimagetool/releases, or set LinuxAppImageToolPath." Condition="'$(_LinuxAppImageToolExitCode)' != '0'" />
-    <Warning Text="Skipping the AppImage: it needs an app icon. Set LinuxIcon or ApplicationIcon." Condition="'$(_LinuxAppImageToolExitCode)' == '0' AND '@(_LinuxIcon)' == ''" />
-    <ItemGroup Condition="'$(_LinuxAppImageToolExitCode)' == '0' AND '@(_LinuxIcon)' != ''">
-      <_LinuxAppImageRid Include="$(LinuxAppImageRuntimeIdentifiers)" />
+    <Warning Text="Skipping the AppImage: appimagetool wasn't found. Download it from https://github.com/AppImage/appimagetool/releases, or set LinuxAppImageToolPath." Condition="'$(_LinuxBuildAppImage)' == 'True' AND '$(_LinuxAppImageToolExitCode)' != '0'" />
+    <Warning Text="Skipping the AppImage: it needs an app icon. Set LinuxIcon or ApplicationIcon." Condition="'$(_LinuxBuildAppImage)' == 'True' AND '$(_LinuxAppImageToolExitCode)' == '0' AND '@(_LinuxIcon)' == ''" />
+    <PropertyGroup>
+      <_LinuxRuntimeAppImage Condition="'$(_LinuxBuildAppImage)' == 'True' AND '$(_LinuxAppImageToolExitCode)' == '0' AND '@(_LinuxIcon)' != ''">True</_LinuxRuntimeAppImage>
+    </PropertyGroup>
+    <ItemGroup>
+      <_LinuxPackageRid Include="$(LinuxPackageRuntimeIdentifiers)" />
     </ItemGroup>
-    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="_LinuxCreateAppImage" Condition="'@(_LinuxAppImageRid)' != ''"
-             Properties="_LinuxAppImageRid=%(_LinuxAppImageRid.Identity);_LinuxIsPackaging=True;Configuration=$(Configuration);TargetFramework=$(TargetFramework);LinuxPackageOnBuild=False" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="_LinuxPackageRuntime"
+             Condition="'$(_LinuxRuntimeAppImage)' == 'True' OR '$(_LinuxSelfContained)' == 'True'"
+             Properties="_LinuxRid=%(_LinuxPackageRid.Identity);_LinuxRuntimeAppImage=$(_LinuxRuntimeAppImage);_LinuxIsPackaging=True;Configuration=$(Configuration);TargetFramework=$(TargetFramework);LinuxPackageOnBuild=False" />
   </Target>
 
-  <!-- Runs in its own instance for each runtime identifier, so it gets fresh items and properties -->
-  <Target Name="_LinuxCreateAppImage" DependsOnTargets="_LinuxPackageDesktopFiles;_LinuxPackageContent">
-    <PropertyGroup>
-      <_LinuxAppImageArch Condition="'$(_LinuxAppImageRid)' == 'linux-x64'">x86_64</_LinuxAppImageArch>
-      <_LinuxAppImageArch Condition="'$(_LinuxAppImageRid)' == 'linux-arm64'">aarch64</_LinuxAppImageArch>
-      <_LinuxAppImageArch Condition="'$(_LinuxAppImageRid)' == 'linux-arm'">armhf</_LinuxAppImageArch>
-      <_LinuxAppImagePath>$(_LinuxTempPath)appimage/$(_LinuxAppImageRid)/</_LinuxAppImagePath>
-      <_LinuxAppDirPath>$(_LinuxAppImagePath)AppDir/</_LinuxAppDirPath>
-      <_LinuxAppImagePublishDir>$(_LinuxAppImagePath)publish/</_LinuxAppImagePublishDir>
-      <_LinuxAppImageFile>$(_LinuxOutputPath)$(_LinuxPackageTitle.Replace(' ', ''))-$(_LinuxPackageVersion)-$(_LinuxAppImageArch).AppImage</_LinuxAppImageFile>
-      <_LinuxDotNet>$(DOTNET_HOST_PATH)</_LinuxDotNet>
-      <_LinuxDotNet Condition="'$(_LinuxDotNet)' == ''">dotnet</_LinuxDotNet>
-    </PropertyGroup>
-    <Error Text="AppImages can't be created for $(_LinuxAppImageRid)." Condition="'$(_LinuxAppImageArch)' == ''" />
+  <Target Name="_LinuxPackageRuntime" DependsOnTargets="_LinuxPackageInit;_LinuxPackageDeb;_LinuxPackageRpm;_LinuxPackageTarGz;_LinuxCreateAppImage" />
 
-    <!-- A separate process, as the runtime identifier may need restoring and this build has already read the restore results.
-         It doesn't get this build's global properties, so pass the ones that decide where the already compiled
-         referenced projects are and what version the app is. -->
-    <Exec Command="&quot;$(_LinuxDotNet)&quot; publish &quot;$(MSBuildProjectFullPath)&quot; -nologo --no-dependencies -c &quot;$(Configuration)&quot; -f &quot;$(TargetFramework)&quot; -r &quot;$(_LinuxAppImageRid)&quot; --self-contained -o &quot;$(_LinuxAppImagePublishDir)&quot; -p:BuildProjectReferences=False &quot;-p:Platform=$(Platform)&quot; -p:_LinuxIsPackaging=True -p:PublishReferencesDocumentationFiles=False &quot;-p:Version=$(Version)&quot; &quot;-p:AssemblyVersion=$(AssemblyVersion)&quot; &quot;-p:FileVersion=$(FileVersion)&quot; &quot;-p:InformationalVersion=$(InformationalVersion)&quot;" />
+  <Target Name="_LinuxCreateAppImage" Condition="'$(_LinuxRuntimeAppImage)' == 'True'" DependsOnTargets="_LinuxPublish;_LinuxPackageDesktopFiles;_LinuxPackageContent">
+    <PropertyGroup>
+      <_LinuxAppDirPath>$(_LinuxWorkPath)AppDir/</_LinuxAppDirPath>
+      <_LinuxAppImageFile>$(_LinuxOutputPath)$(_LinuxPackageTitle.Replace(' ', ''))-$(_LinuxPackageVersion)-$(_LinuxArch).AppImage</_LinuxAppImageFile>
+    </PropertyGroup>
 
     <ItemGroup>
-      <_LinuxAppImagePublished Include="$(_LinuxAppImagePublishDir)**/*" />
-      <_LinuxAppImagePublished Remove="$(_LinuxAppImagePublishDir)**/*.pdb" Condition="'$(LinuxPackageIncludeSymbols)' != 'True'" />
-      <_LinuxAppDirFiles Include="@(_LinuxAppImagePublished)" TargetPath="$(_LinuxAppDir)/%(RecursiveDir)%(Filename)%(Extension)" />
+      <_LinuxAppDirFiles Include="@(_LinuxPublished)" TargetPath="$(_LinuxAppDir)/%(RecursiveDir)%(Filename)%(Extension)" />
       <_LinuxAppDirFiles Include="@(_LinuxDesktopFiles)" />
       <_LinuxAppDirFiles Include="@(_LinuxContent)" />
       <!-- the desktop file and icon at the root are what the AppImage shows itself with -->
@@ -350,7 +392,7 @@
     <Delete Files="$(_LinuxAppImageFile)" />
     <!-- extract-and-run lets appimagetool (itself an AppImage) work without FUSE, e.g. in containers -->
     <Exec Command="&quot;$(LinuxAppImageToolPath)&quot; --no-appstream &quot;$(_LinuxAppDirPath)&quot; &quot;$(_LinuxAppImageFile)&quot;"
-          EnvironmentVariables="ARCH=$(_LinuxAppImageArch);APPIMAGE_EXTRACT_AND_RUN=1" />
+          EnvironmentVariables="ARCH=$(_LinuxArch);APPIMAGE_EXTRACT_AND_RUN=1" />
     <Message Text="$(MSBuildProjectName) -> $(_LinuxAppImageFile)" Importance="high" />
   </Target>
 

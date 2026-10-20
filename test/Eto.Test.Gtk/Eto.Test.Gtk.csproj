@@ -13,7 +13,7 @@
     <LinuxPackageFormats>deb;rpm;tar.gz;appimage</LinuxPackageFormats>
     <LinuxIcon>..\Eto.Test\Images\TestIcon.ico</LinuxIcon>
     <LinuxPackageLicense>BSD-3-Clause</LinuxPackageLicense>
-    <LinuxAppImageRuntimeIdentifiers>linux-x64;linux-arm64</LinuxAppImageRuntimeIdentifiers>
+    <LinuxPackageRuntimeIdentifiers>linux-x64;linux-arm64</LinuxPackageRuntimeIdentifiers>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">

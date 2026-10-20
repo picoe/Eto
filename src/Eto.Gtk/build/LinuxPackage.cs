@@ -124,7 +124,61 @@ namespace Eto.Gtk.Build
 		public static int GetMode(ITaskItem item)
 		{
 			var mode = item.GetMetadata("Mode");
-			return string.IsNullOrEmpty(mode) ? 0x1A4 /* 644 */ : Convert.ToInt32(mode, 8);
+			if (!string.IsNullOrEmpty(mode))
+				return Convert.ToInt32(mode, 8);
+			return IsExecutable(item.ItemSpec) ? 0x1ED /* 755 */ : 0x1A4 /* 644 */;
+		}
+
+		/// <summary>
+		/// Gets whether a file is a script or a native program, which need to be executable once installed.
+		/// </summary>
+		/// <remarks>
+		/// Programs and shared libraries are both ELF files, but only programs ask for an interpreter (the dynamic
+		/// loader), so the PT_INTERP program header is what tells a self-contained app's executable apart.
+		/// </remarks>
+		static bool IsExecutable(string file)
+		{
+			using (var stream = File.OpenRead(file))
+			using (var reader = new BinaryReader(stream))
+			{
+				if (stream.Length < 64)
+					return stream.Length >= 2 && reader.ReadByte() == '#' && reader.ReadByte() == '!';
+				var magic = reader.ReadBytes(4);
+				if (magic[0] == '#' && magic[1] == '!')
+					return true;
+				if (magic[0] != 0x7F || magic[1] != 'E' || magic[2] != 'L' || magic[3] != 'F')
+					return false;
+
+				var is64 = reader.ReadByte() == 2;
+				if (reader.ReadByte() != 1)
+					return false; // only little endian, which all supported architectures are
+				long programHeaders;
+				int entrySize, count;
+				if (is64)
+				{
+					stream.Position = 0x20;
+					programHeaders = reader.ReadInt64();
+					stream.Position = 0x36;
+				}
+				else
+				{
+					stream.Position = 0x1C;
+					programHeaders = reader.ReadUInt32();
+					stream.Position = 0x2A;
+				}
+				entrySize = reader.ReadUInt16();
+				count = reader.ReadUInt16();
+				for (int i = 0; i < count; i++)
+				{
+					var position = programHeaders + i * entrySize;
+					if (position + 4 > stream.Length)
+						break;
+					stream.Position = position;
+					if (reader.ReadUInt32() == 3 /* PT_INTERP */)
+						return true;
+				}
+				return false;
+			}
 		}
 
 		public static IEnumerable<ITaskItem> Sorted(ITaskItem[] files) => files.OrderBy(GetTargetPath, StringComparer.Ordinal);
@@ -595,7 +649,9 @@ namespace Eto.Gtk.Build
 			spec.Append($"License: {License}\n");
 			if (!string.IsNullOrEmpty(Url))
 				spec.Append($"URL: {Url}\n");
-			spec.Append($"BuildArch: {Architecture}\n");
+			// other architectures are chosen with rpmbuild's target, as building for one here only works on that architecture
+			if (Architecture == "noarch")
+				spec.Append("BuildArch: noarch\n");
 			foreach (var require in Requires ?? new string[0])
 				spec.Append($"Requires: {require}\n");
 			// the files are prebuilt .NET assemblies, so skip dependency scanning, stripping and debug info
