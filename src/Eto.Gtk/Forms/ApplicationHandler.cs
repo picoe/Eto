@@ -64,40 +64,106 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				badgeLabel = value;
-				if (!string.IsNullOrEmpty(badgeLabel))
+				var hasLabel = !string.IsNullOrEmpty(badgeLabel);
+				var isLinux = EtoEnvironment.Platform.IsLinux;
+
+				// prefer the dock, then a legacy status icon
+				var useDock = isLinux && hasLabel && LinuxLauncherEntry.CanShow(badgeLabel);
+				var useStatusIcon = hasLabel && !useDock && StatusIconIsSupported;
+
+				if (isLinux)
+					LinuxLauncherEntry.Update(useDock ? badgeLabel : null);
+				SetStatusIconBadge(useStatusIcon ? badgeLabel : null);
+			}
+		}
+
+		Bitmap CreateBadgeBitmap(string label)
+		{
+			var bitmap = new Bitmap(32, 32, PixelFormat.Format32bppRgba);
+			using (var graphics = new Graphics(bitmap))
+			{
+				graphics.Clear();
+				DrawBadgeLabel(graphics, bitmap.Size, label);
+			}
+			return bitmap;
+		}
+
+		static bool StatusIconIsSupported
+		{
+			get
+			{
+				if (!EtoEnvironment.Platform.IsLinux)
+					return true;
+				// status icons only show in an X11 system tray, which most desktops no longer run
+				if (Helper.IsWaylandBackend)
+					return false;
+				try
 				{
-#pragma warning disable 612, 618
-					// status icon is obsolete, but GTK 3 has no replacement
-					if (statusIcon == null)
-					{
-						statusIcon = new Gtk.StatusIcon();
-						statusIcon.Activate += delegate
-						{
-							var form = Eto.Forms.Application.Instance.MainForm;
-							if (form != null)
-								form.BringToFront();
-						};
-					}
-
-					var pixbuf = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
-					using(var bmpHandler = new BitmapHandler(pixbuf))
-					{
-						using(var bitmap     = new Bitmap(bmpHandler))
-						{
-							using (var graphics = new Graphics(bitmap))
-							{
-								graphics.Clear();
-								DrawBadgeLabel(graphics, new Size(pixbuf.Width, pixbuf.Height), badgeLabel);
-							}
-						}
-					}
-
-					statusIcon.Pixbuf = pixbuf;
-					statusIcon.Visible = true;
+					return X11SystemTray.IsRunning;
 				}
-				else if (statusIcon != null)
+				catch (Exception ex) when (ex is DllNotFoundException || ex is EntryPointNotFoundException)
+				{
+					return false;
+				}
+			}
+		}
+
+		void SetStatusIconBadge(string label)
+		{
+#pragma warning disable 612, 618
+			// status icon is obsolete, but GTK 3 has no replacement
+			if (label == null)
+			{
+				if (statusIcon != null)
 					statusIcon.Visible = false;
+				return;
+			}
+
+			if (statusIcon == null)
+			{
+				statusIcon = new Gtk.StatusIcon();
+				statusIcon.Activate += delegate
+				{
+					var form = Eto.Forms.Application.Instance.MainForm;
+					if (form != null)
+						form.BringToFront();
+				};
+			}
+
+			using (var bitmap = CreateBadgeBitmap(label))
+				statusIcon.Pixbuf = bitmap.ToGdk();
+			statusIcon.Visible = true;
 #pragma warning restore 612, 618
+		}
+
+		static class X11SystemTray
+		{
+			[DllImport("libgdk-3.so.0", CallingConvention = CallingConvention.Cdecl)]
+			static extern IntPtr gdk_x11_display_get_xdisplay(IntPtr display);
+
+			[DllImport("libgdk-3.so.0", CallingConvention = CallingConvention.Cdecl)]
+			static extern int gdk_x11_screen_get_screen_number(IntPtr screen);
+
+			[DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
+			static extern IntPtr XInternAtom(IntPtr display, string atom_name, bool only_if_exists);
+
+			[DllImport("libX11.so.6", CallingConvention = CallingConvention.Cdecl)]
+			static extern IntPtr XGetSelectionOwner(IntPtr display, IntPtr selection);
+
+			/// <summary>
+			/// Gets whether a system tray that can embed status icons is running on this screen.
+			/// </summary>
+			public static bool IsRunning
+			{
+				get
+				{
+					// a tray owns this selection; GDK can only report owners in our own process
+					var display = Gdk.Display.Default;
+					var xdisplay = gdk_x11_display_get_xdisplay(display.Handle);
+					var screen = gdk_x11_screen_get_screen_number(display.DefaultScreen.Handle);
+					var atom = XInternAtom(xdisplay, "_NET_SYSTEM_TRAY_S" + screen.ToString(CultureInfo.InvariantCulture), true);
+					return atom != IntPtr.Zero && XGetSelectionOwner(xdisplay, atom) != IntPtr.Zero;
+				}
 			}
 		}
 
