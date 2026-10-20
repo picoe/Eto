@@ -107,5 +107,6 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   
   <Import Project="$(LocalEtoPath)\src\Eto.Mac\build\Mac.targets" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'macOS' )" />
+  <Import Project="$(LocalEtoPath)\src\Eto.Gtk\build\Gtk.targets" Condition="$(LocalEtoPath) != '' and $(BuildPlatform) == 'Gtk'" />
 
 </Project>

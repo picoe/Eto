@@ -24,20 +24,10 @@ namespace Eto.GtkSharp.Drawing
 			disposeControl = dispose;
 		}
 #else
-		Gdk.Window drawingWindow;
-		Gdk.DrawingContext drawingContext;
-
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)
 		{
 			this.widget = widget;
-			// frames can only be drawn on the native toplevel, so position and clip to the widget like a draw signal does
-			drawingWindow = drawable.Toplevel;
-			widget.TranslateCoordinates(widget.Toplevel, 0, 0, out var x, out var y);
-			var allocation = widget.Allocation;
-			using (var region = new Cairo.Region(new Cairo.RectangleInt { X = x, Y = y, Width = allocation.Width, Height = allocation.Height }))
-				drawingContext = drawingWindow.BeginDrawFrame(region);
-			this.Control = drawingContext.CairoContext;
-			Control.Translate(x, y);
+			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
 		public GraphicsHandler(Gtk.Widget widget, Cairo.Context context)
@@ -442,15 +432,6 @@ namespace Eto.GtkSharp.Drawing
 			}
 
 			base.Dispose(disposing);
-#if GTK3
-			if (drawingContext != null)
-			{
-				// the frame can only end once the context we drew with has been released
-				drawingWindow.EndDrawFrame(drawingContext);
-				drawingContext = null;
-				drawingWindow = null;
-			}
-#endif
 		}
 
 		public void TranslateTransform(float offsetX, float offsetY)

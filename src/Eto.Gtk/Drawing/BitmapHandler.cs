@@ -216,7 +216,10 @@ namespace Eto.GtkSharp.Drawing
 		public override void SetImage(Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			EnsureData();
-			imageView.Pixbuf = iconSize != null ? GetPixbuf(iconSize.Value.GetSize(), shrink: true) : Control;
+			if (iconSize != null)
+				imageView.SetFromIconSet(new Gtk.IconSet(Control), iconSize.Value);
+			else
+				imageView.Pixbuf = Control;
 		}
 
 		public void SetAlphaDirty() => _isAlphaDirty = _needsAlphaFixup;

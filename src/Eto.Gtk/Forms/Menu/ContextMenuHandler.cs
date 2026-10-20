@@ -139,20 +139,29 @@ namespace Eto.GtkSharp.Forms.Menu
 			Control.ShowAll();
 		}
 
+		PointF? showLocation;
+
 		public void Show(Control relativeTo, PointF? location)
 		{
 			Prepare();
-			var window = relativeTo?.GetContainerWidget()?.GetWindow()
-				?? Gtk.Window.ListToplevels().FirstOrDefault(r => r.IsActive)?.GetWindow();
-			if (location != null && window != null)
+			if (location != null)
 			{
-				var point = relativeTo?.PointToScreen(location.Value) ?? location.Value;
-				window.GetOrigin(out var x, out var y);
-				var rect = new Gdk.Rectangle((int)point.X - x, (int)point.Y - y, 1, 1);
-				Control.PopupAtRect(window, rect, Gdk.Gravity.NorthWest, Gdk.Gravity.NorthWest, Gtk.Global.CurrentEvent);
+				showLocation = relativeTo?.PointToScreen(location.Value) ?? location;
+				Control.Popup(null, null, PopupMenuPosition, 3u, Gtk.Global.CurrentEventTime);
 			}
 			else
-				Control.PopupAtPointer(Gtk.Global.CurrentEvent);
+			{
+				showLocation = null;
+				Control.Popup();
+			}
+		}
+
+		void PopupMenuPosition(Gtk.Menu menu, out int x, out int y, out bool push_in)
+		{
+			var location = showLocation ?? Mouse.Position;
+			x = (int)location.X;
+			y = (int)location.Y;
+			push_in = false;
 		}
 
 		void HandleMenuClosed (object sender, EventArgs e)

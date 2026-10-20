@@ -485,12 +485,6 @@ namespace Eto.GtkSharp
 			}
 		}
 
-		public static Size GetSize(this Gtk.IconSize size)
-		{
-			Gtk.Icon.SizeLookup(size, out var width, out var height);
-			return new Size(width, height);
-		}
-
 		public static Gtk.Image ToGtk(this Image image, Gtk.IconSize? size = null)
 		{
 			if (image == null)
