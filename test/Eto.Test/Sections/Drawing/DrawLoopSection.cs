@@ -7,8 +7,6 @@ namespace Eto.Test.Sections.Drawing
 	{
 		readonly Drawable drawable;
 		readonly DirectDrawingRenderer renderer;
-		readonly Panel content;
-		bool useCreateGraphics;
 		Action drawFrame;
 		Status status = new Status();
 
@@ -33,8 +31,8 @@ namespace Eto.Test.Sections.Drawing
 			renderer = new DirectDrawingRenderer();
 
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
-			layout.AddSeparateRow(UseTexturesAndGradients(), UseTextCoordinates(), UseCreateGraphics(), NumberOfElements());
-			layout.Add(content = new Panel { Content = drawable });
+			layout.AddSeparateRow(UseTexturesAndGradients(), UseTextCoordinates(), NumberOfElements());
+			layout.Add(drawable);
 			this.Content = layout;
 		}
 		
@@ -62,29 +60,10 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		void SetMode()
+		void StartLoop()
 		{
-			drawFrame = null;
 			status.Stop = true;
-			if (useCreateGraphics)
-			{
-				renderer.EraseBoxes = true;
-				if (!drawable.SupportsCreateGraphics)
-				{
-					content.BackgroundColor = Colors.Red;
-					content.Content = new Label { Text = "This platform does not support Drawable.CreateGraphics", TextColor = Colors.White, VerticalAlignment = VerticalAlignment.Center, TextAlignment = TextAlignment.Center };
-					return;
-				}
-				drawFrame = DrawWithCreateGraphics;
-				using (var graphics = drawable.CreateGraphics())
-					graphics.Clear();
-			}
-			else
-			{
-				renderer.EraseBoxes = false;
-				drawFrame = () => { if (!status.Stop) drawable.Invalidate(); };
-			}
-			content.Content = drawable;
+			drawFrame = () => { if (!status.Stop) drawable.Invalidate(); };
 			status = new Status();
 			Task.Run(() => DrawLoop(status));
 		}
@@ -93,16 +72,6 @@ namespace Eto.Test.Sections.Drawing
 		{
 			status.Stop = true;
 			base.OnUnLoad(e);
-		}
-
-		void DrawWithCreateGraphics()
-		{
-			if (status.Stop)
-				return;
-			using (var graphics = drawable.CreateGraphics())
-			{
-				renderer.DrawFrame(graphics, drawable.Size);
-			}
 		}
 
 		Control UseTexturesAndGradients()
@@ -120,25 +89,6 @@ namespace Eto.Test.Sections.Drawing
 					renderer.Boxes.Clear();
 					renderer.RestartFPS();
 				}
-				if (useCreateGraphics && drawable.SupportsCreateGraphics)
-					using (var graphics = drawable.CreateGraphics())
-						graphics.Clear(Brushes.Black);
-			};
-			return control;
-		}
-
-		Control UseCreateGraphics()
-		{
-			var control = new CheckBox
-			{
-				Text = "Use CreateGraphics",
-				Checked = useCreateGraphics
-			};
-			control.CheckedChanged += (sender, e) =>
-			{
-				useCreateGraphics = control.Checked ?? false;
-				renderer.RestartFPS();
-				Application.Instance.AsyncInvoke(SetMode);
 			};
 			return control;
 		}
@@ -159,9 +109,6 @@ namespace Eto.Test.Sections.Drawing
 					renderer.Boxes.Clear();
 					renderer.RestartFPS();
 				}
-				if (useCreateGraphics && drawable.SupportsCreateGraphics)
-					using (var graphics = drawable.CreateGraphics())
-						graphics.Clear(Brushes.Black);
 			};
 			return control;
 		}
@@ -169,7 +116,7 @@ namespace Eto.Test.Sections.Drawing
 		protected override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			SetMode();
+			StartLoop();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -185,7 +132,6 @@ namespace Eto.Test.Sections.Drawing
 		readonly Image texture;
 		readonly Font font;
 		readonly SolidBrush textBrush;
-		readonly SolidBrush eraseBrush;
 		int _NumberOfElements = 20;
 		Size? _canvasSize;
 
@@ -199,7 +145,6 @@ namespace Eto.Test.Sections.Drawing
 
 		public bool UseTexturesAndGradients { get; set; }
 		public bool ShowTextCoordinates { get; set; }
-		public bool EraseBoxes { get; set; }
 		public int NumberOfElements
 		{
 			get => _NumberOfElements;
@@ -231,7 +176,6 @@ namespace Eto.Test.Sections.Drawing
 			texture = TestIcons.Textures;
 			font = SystemFonts.Default();
 			textBrush = new SolidBrush(Colors.White);
-			eraseBrush = new SolidBrush(Colors.Black);
 		}
 
 		public void RestartFPS()
@@ -248,7 +192,6 @@ namespace Eto.Test.Sections.Drawing
 			readonly float rotation;
 			float angle;
 			readonly Action<Graphics> draw;
-			readonly Action<Graphics> erase;
 			readonly Brush fillBrush;
 			RectangleF position;
 			IMatrix transform;
@@ -282,17 +225,13 @@ namespace Eto.Test.Sections.Drawing
 				var rect = new RectangleF(size);
 				color = GetRandomColor(random);
 				var colorPen = new Pen(color);
-				var blackPen = Pens.Black;
-				var blackBrush = Brushes.Black;
 				switch (random.Next(useTexturesAndGradients ? 5 : 2))
 				{
 					case 0:
 						draw = g => g.DrawRectangle(colorPen, rect);
-						erase = g => g.DrawRectangle(blackPen, rect);
 						break;
 					case 1:
 						draw = g => g.DrawEllipse(colorPen, rect);
-						erase = g => g.DrawEllipse(blackPen, rect);
 						break;
 					case 2:
 						switch (random.Next(2))
@@ -308,7 +247,6 @@ namespace Eto.Test.Sections.Drawing
 								break;
 						}
 						draw = g => g.FillEllipse(fillBrush, rect);
-						erase = g => g.FillEllipse(blackBrush, rect);
 						break;
 					case 3:
 						switch (random.Next(3))
@@ -327,12 +265,10 @@ namespace Eto.Test.Sections.Drawing
 								break;
 						}
 						draw = g => g.FillRectangle(fillBrush, rect);
-						erase = g => g.FillRectangle(blackBrush, rect);
 						break;
 					case 4:
 						var font = Fonts.Sans(random.Next(20) + 4);
 						draw = g => g.DrawText(font, color, 0, 0, "Some Text");
-						erase = g => g.DrawText(font, Colors.Black, 0, 0, "Some Text");
 						break;
 				}
 			}
@@ -356,17 +292,6 @@ namespace Eto.Test.Sections.Drawing
 				transform.RotateAt(angle, position.Width / 2, position.Height / 2);
 			}
 
-			public void Erase(Graphics graphics)
-			{
-				if (transform != null)
-				{
-					graphics.SaveTransform();
-					graphics.MultiplyTransform(transform);
-					erase(graphics);
-					graphics.RestoreTransform();
-				}
-			}
-
 			private string Coordinates()
 			{
 				return string.Format("{0}x{1}", position.X, position.Y);
@@ -379,21 +304,6 @@ namespace Eto.Test.Sections.Drawing
 					graphics.DrawText(font, textbrush, position.X, position.Y, Coordinates());
 				}
 			}
-
-			public void CoordianateErase(Graphics graphics, Font font, Brush erasebrush)
-			{
-				if (DisplayTextCoordinates)
-				{
-					// we can't just draw the text again in black or we leave "vapor trails" on the screen!
-					// so clobber the text area with a filled rectangle of erase color
-					var info = Coordinates();
-					var sizeinfo = graphics.MeasureString(font, info);
-					var rec = new RectangleF(position.X, position.Y, sizeinfo.Width, sizeinfo.Height);					
-					graphics.FillRectangle(erasebrush, rec);
-				}
-			}
-
-
 
 			public void Draw(Graphics graphics)
 			{
@@ -431,19 +341,12 @@ namespace Eto.Test.Sections.Drawing
 				graphics.AntiAlias = false;
 				foreach (var box in Boxes)
 				{
-					if (EraseBoxes)
-					{
-						box.CoordianateErase(graphics, font, eraseBrush);
-						box.Erase(graphics);
-					}
 					box.Move(bounds);
 					box.Draw(graphics);
 					box.CoordianateDisplay(graphics, font, textBrush);
 				}
 				
 				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
-				if (EraseBoxes)
-					graphics.FillRectangle(Colors.Black, new RectangleF(graphics.MeasureString(font, fpsText)));
 				graphics.DrawText(font, textBrush, 0, 0, fpsText);
 				
 				TotalFrames++;
