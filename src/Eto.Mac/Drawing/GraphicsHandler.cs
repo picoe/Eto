@@ -495,12 +495,53 @@ namespace Eto.iOS.Drawing
 
 		public void DrawText(Font font, Brush brush, float x, float y, string text)
 		{
+#if OSX
+			if (brush is SolidBrush solidBrush && CanDrawTextLine(font, text))
+			{
+				DrawTextLine((FontHandler)font.Handler, solidBrush.Color, x, y, text);
+				return;
+			}
+#endif
 			var formattedText = SharedFormattedText;
 			formattedText.Text = text;
 			formattedText.Font = font;
 			formattedText.ForegroundBrush = brush;
 			DrawText(formattedText, new PointF(x, y));
 		}
+
+#if OSX
+		// CoreText can't draw underline/strikethrough or break lines, and places emoji differently, so leave those to FormattedText
+		static bool CanDrawTextLine(Font font, string text)
+		{
+			if (font.FontDecoration != FontDecoration.None)
+				return false;
+			foreach (var c in text)
+			{
+				if (char.IsControl(c) || char.IsSurrogate(c) || c == '\u2028' || c == '\u2029')
+					return false;
+			}
+			return true;
+		}
+
+		// Much faster than laying the text out with an NSLayoutManager for every call
+		void DrawTextLine(FontHandler font, Color color, float x, float y, string text)
+		{
+			SetOffset(false);
+			StartDrawing();
+			using (var str = new NSAttributedString(text, font.LineAttributes))
+			using (var line = new CTLine(str))
+			{
+				Control.SetFillColor(color.ToCG());
+				// the text matrix isn't part of the graphics state
+				var textMatrix = Control.TextMatrix;
+				Control.TextMatrix = new CGAffineTransform(1, 0, 0, -1, 0, 0);
+				Control.TextPosition = new CGPoint(x, y + font.LineBaseline);
+				line.Draw(Control);
+				Control.TextMatrix = textMatrix;
+			}
+			EndDrawing();
+		}
+#endif
 
 		public void DrawText(FormattedText formattedText, PointF location)
 		{
