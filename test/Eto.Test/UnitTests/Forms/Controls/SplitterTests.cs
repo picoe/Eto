@@ -572,5 +572,36 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.That(size2, Is.EqualTo(300 - 280 - splitter.SplitterWidth), "#3");
 			});
 		}
+
+		[Test]
+		public void ExpandingContentWithSizeShouldShrinkToPanel()
+		{
+			RichTextArea richText = null;
+			ShownAsync(form =>
+			{
+				richText = new RichTextArea { Size = new Size(-1, 300) };
+				var splitter = new Splitter
+				{
+					Orientation = Orientation.Vertical,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Panel1 = new StackLayout
+					{
+						HorizontalContentAlignment = HorizontalAlignment.Stretch,
+						Items = { new Button { Text = "Button" }, new StackLayoutItem(richText, expand: true) }
+					},
+					Panel2 = new Panel { Size = new Size(50, 50) },
+				};
+				form.ClientSize = new Size(300, 400);
+				form.Content = splitter;
+				return splitter;
+			},
+			async splitter =>
+			{
+				splitter.Position = 150;
+				await Task.Delay(200);
+				// Size is the preferred size, like other platforms, so it shrinks to fit the panel
+				Assert.That(richText.Bounds.Bottom, Is.LessThanOrEqualTo(150));
+			});
+		}
 	}
 }

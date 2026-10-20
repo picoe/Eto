@@ -84,6 +84,10 @@ namespace Eto.GtkSharp.Forms
 				size.Height = Math.Max(size.Height, min.Height);
 
 			base.SetSize(size);
+#if GTK3
+			if (ContainerControl is IGtkPreferredSizeWidget)
+				ContainerControl.SetSizeRequest(min.Width > 0 ? min.Width : -1, min.Height > 0 ? min.Height : -1);
+#endif
 		}
 
 		public virtual Padding Padding
