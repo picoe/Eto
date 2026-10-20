@@ -235,6 +235,9 @@ public class EtoAccessLabel : swc.Label
 		var textFormattingMode = swm.TextOptions.GetTextFormattingMode(this);
 		if (textFormattingMode == swm.TextFormattingMode.Display)
 			size.Width += 1;
+		// layout rounding can round the text's width down by up to half a pixel, which wraps it onto a clipped line
+		else if (UseLayoutRounding)
+			size.Width += 1 / swm.VisualTreeHelper.GetDpi(this).DpiScaleX;
 		return size;
 	}
 
