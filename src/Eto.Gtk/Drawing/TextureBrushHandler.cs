@@ -47,19 +47,33 @@ namespace Eto.GtkSharp.Drawing
 					}
 				}
 				var img = opacityImage ?? Image;
-				Gdk.CairoHelper.SetSourcePixbuf(context, img.ToGdk(), 0, 0);
-
-				var pattern = context.GetSource();
-				var surfacePattern = pattern as Cairo.SurfacePattern;
-				if (surfacePattern != null)
+				if (img.Handler is BitmapHandler bitmapHandler)
 				{
-					surfacePattern.Extend = Cairo.Extend.Repeat;
+					// reuse the bitmap's surface, as converting the image for every fill is slow
+					var surface = bitmapHandler.GetCairoSurface();
+					if (!ReferenceEquals(surface, patternSurface))
+					{
+						pattern?.Dispose();
+						pattern = new Cairo.SurfacePattern(surface) { Extend = Cairo.Extend.Repeat };
+						patternSurface = surface;
+					}
+					context.SetSource(pattern);
+				}
+				else
+				{
+					Gdk.CairoHelper.SetSourcePixbuf(context, img.ToGdk(), 0, 0);
+					using (var source = context.GetSource())
+					{
+						if (source is Cairo.SurfacePattern surfacePattern)
+							surfacePattern.Extend = Cairo.Extend.Repeat;
+					}
 				}
 				if (!ReferenceEquals(InverseTransform, null))
 					context.Transform(InverseTransform);
-
-				pattern.Dispose();
 			}
+
+			Cairo.SurfacePattern pattern;
+			Cairo.Surface patternSurface;
 		}
 
 		public IMatrix GetTransform(TextureBrush widget)
