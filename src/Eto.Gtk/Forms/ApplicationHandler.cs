@@ -66,6 +66,8 @@ namespace Eto.GtkSharp.Forms
 				badgeLabel = value;
 				if (!string.IsNullOrEmpty(badgeLabel))
 				{
+#pragma warning disable 612, 618
+					// status icon is obsolete, but GTK 3 has no replacement
 					if (statusIcon == null)
 					{
 						statusIcon = new Gtk.StatusIcon();
@@ -95,6 +97,7 @@ namespace Eto.GtkSharp.Forms
 				}
 				else if (statusIcon != null)
 					statusIcon.Visible = false;
+#pragma warning restore 612, 618
 			}
 		}
 
@@ -225,26 +228,7 @@ namespace Eto.GtkSharp.Forms
 			_timer.Start();
 		}
 
-		private static bool AnyIsActiveWindow(Gtk.Window[] windows)
-		{
-			var activeWindow = Gdk.Screen.Default.ActiveWindow;
-			if (activeWindow != null)
-			{
-				var activeWindowHandle = activeWindow.Handle;
-				for (int i = 0; i < windows.Length; i++)
-				{
-					Gtk.Window window = windows[i];
-					var gdkwindow = window.GetWindow();
-					if (gdkwindow != null && gdkwindow.Handle == activeWindowHandle)
-					{
-						return true;
-					}
-				}
-				activeWindow.Dispose();
-			}
-
-			return false;
-		}
+		private static bool AnyIsActiveWindow(Gtk.Window[] windows) => windows.Any(r => r.IsActive);
 
 		public void RegisterIsActiveChanged(Gtk.Window window)
 		{
@@ -295,8 +279,6 @@ namespace Eto.GtkSharp.Forms
 						reset.Set();
 					invokeResetEvents.Clear();
 				}
-
-				Gdk.Threads.Leave();
 			}
 
 			if (EtoEnvironment.Platform.IsLinux)
@@ -359,8 +341,7 @@ namespace Eto.GtkSharp.Forms
 			catch
 			{
 				// Use fallback for recent mono versions that do not support UseShellExecute.
-				url = Uri.EscapeUriString(url);
-				Process.Start("xdg-open", url);
+				Process.Start("xdg-open", "\"" + url.Replace("\"", "\\\"") + "\"");
 			}
 		}
 

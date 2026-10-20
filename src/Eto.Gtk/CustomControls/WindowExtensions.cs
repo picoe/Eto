@@ -9,14 +9,14 @@ namespace Eto.GtkSharp.CustomControls
 			
 			Gtk.Grab.Add(window);
 
-			var mask = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
 #if GTK3
-			var grabbed = window.Display.DeviceManager.ClientPointer.Grab(window.GetWindow(), Gdk.GrabOwnership.Window, true, mask, null, 0);
+			var grabbed = window.Display.DefaultSeat.Grab(window.GetWindow(), Gdk.SeatCapabilities.Pointer, true, null, null, null);
 			if (grabbed != Gdk.GrabStatus.Success)
 			{
 				Gtk.Grab.Remove(window);
 			}
 #else
+			var mask = Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.PointerMotionMask;
 			var grabbed = Gdk.Pointer.Grab(window.GdkWindow, true, mask, null, null, 0);
 			if (grabbed == Gdk.GrabStatus.Success)
 			{
@@ -39,7 +39,7 @@ namespace Eto.GtkSharp.CustomControls
 		{
 			Gtk.Grab.Remove(window);
 #if GTK3
-			window.Display.DeviceManager.ClientPointer.Ungrab(0);
+			window.Display.DefaultSeat.Ungrab();
 #else
 			Gdk.Pointer.Ungrab(0);
 			Gdk.Keyboard.Ungrab(0);
