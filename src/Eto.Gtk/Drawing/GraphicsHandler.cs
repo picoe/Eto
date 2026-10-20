@@ -372,7 +372,12 @@ namespace Eto.GtkSharp.Drawing
 
 		Pango.Layout CreateLayout()
 		{
-			return PangoContext != null ? new Pango.Layout(PangoContext) : Pango.CairoHelper.CreateLayout(Control);
+			if (PangoContext != null)
+				return new Pango.Layout(PangoContext);
+			// subpixel antialiasing is only for the screen, and gives the wrong colors on transparent bitmaps
+			using (var options = new Cairo.FontOptions { Antialias = Cairo.Antialias.Gray })
+				Control.FontOptions = options;
+			return Pango.CairoHelper.CreateLayout(Control);
 		}
 
 		public void DrawText(Font font, Brush brush, float x, float y, string text)
@@ -387,8 +392,10 @@ namespace Eto.GtkSharp.Drawing
 				Control.Save();
 				brush.Apply(this);
 				Control.MoveTo(x, y);
-				Pango.CairoHelper.LayoutPath(Control, layout);
-				Control.Fill();
+				// much faster than filling the outline of the text, as glyphs are cached
+				Pango.CairoHelper.ShowLayout(Control, layout);
+				// the move above would otherwise start the path of the next drawing operation
+				Control.NewPath();
 				Control.Restore();
 			}
 			AntiAlias = oldAA;

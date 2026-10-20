@@ -96,6 +96,27 @@ namespace Eto.GtkSharp.Drawing
 
 		public Cairo.ImageSurface Surface { get; set; }
 
+		Cairo.Surface cairoSurface;
+
+		/// <summary>
+		/// Gets a Cairo surface with the bitmap's contents, to use as a source when drawing.
+		/// </summary>
+		public Cairo.Surface GetCairoSurface()
+		{
+			if (Surface != null)
+				return Surface;
+			// converting the pixbuf is slow, so keep it until the bitmap changes
+			return cairoSurface ??= Gdk.CairoHelper.SurfaceCreateFromPixbuf(Pixbuf, 1, null);
+		}
+
+		void ClearCairoSurface()
+		{
+			if (cairoSurface == null)
+				return;
+			((IDisposable)cairoSurface).Dispose();
+			cairoSurface = null;
+		}
+
 		public bool Alpha { get; set; }
 
 		bool _isAlphaDirty;
@@ -189,6 +210,7 @@ namespace Eto.GtkSharp.Drawing
 		public void Unlock(BitmapData bitmapData)
 		{
 			sizes.Clear();
+			ClearCairoSurface();
 			SetAlphaDirty();
 		}
 
@@ -474,12 +496,14 @@ namespace Eto.GtkSharp.Drawing
 			}
 			((IDisposable)Surface).Dispose();
 			Surface = null;
+			ClearCairoSurface();
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
+				ClearCairoSurface();
 				if (Surface != null)
 				{
 					((IDisposable)Surface).Dispose();
