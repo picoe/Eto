@@ -31,8 +31,7 @@ namespace Eto.GtkSharp
 		public static void Init()
 		{
 			var args = new string[0];
-			if (Gtk.Application.InitCheck(string.Empty, ref args))
-				Gdk.Threads.Enter();
+			Gtk.Application.InitCheck(string.Empty, ref args);
 		}
 	}
 

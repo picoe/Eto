@@ -1,4 +1,6 @@
 using Eto.GtkSharp.Forms.Controls;
+// ImageMenuItem is obsolete, but replacing it would show menu images that GTK hides today
+#pragma warning disable 612, 618
 
 namespace Eto.GtkSharp.Forms.Menu
 {
@@ -131,3 +133,4 @@ namespace Eto.GtkSharp.Forms.Menu
 		}
 	}
 }
+#pragma warning restore 612, 618

@@ -29,12 +29,9 @@ namespace Eto.GtkSharp.Forms
 			// must add buttons manually for this case
 			if (Buttons == MessageBoxButtons.YesNoCancel)
 			{
-				var bn = (Gtk.Button)control.AddButton(Gtk.Stock.No, (int)Gtk.ResponseType.No);
-				bn.UseStock = true;
-				var bc = (Gtk.Button)control.AddButton(Gtk.Stock.Cancel, (int)Gtk.ResponseType.Cancel);
-				bc.UseStock = true;
-				var by = (Gtk.Button)control.AddButton(Gtk.Stock.Yes, (int)Gtk.ResponseType.Yes);
-				by.UseStock = true;
+				control.AddButton(Application.Instance.Localize(Widget, "&No").ToPlatformMnemonic(), (int)Gtk.ResponseType.No);
+				control.AddButton(Application.Instance.Localize(Widget, "&Cancel").ToPlatformMnemonic(), (int)Gtk.ResponseType.Cancel);
+				control.AddButton(Application.Instance.Localize(Widget, "&Yes").ToPlatformMnemonic(), (int)Gtk.ResponseType.Yes);
 			}
 			control.DefaultResponse = DefaultButton.ToGtk(Buttons);
 			int ret = control.Run();
