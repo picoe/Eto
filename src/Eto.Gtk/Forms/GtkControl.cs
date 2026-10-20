@@ -27,8 +27,35 @@ namespace Eto.GtkSharp.Forms
 		Control.ICallback Callback { get; }
 	}
 
+	/// <summary>
+	/// Implemented by widgets that report their handler's <see cref="IGtkControl.UserPreferredSize"/> as their
+	/// natural size, so setting a size doesn't need a size request (which GTK treats as a minimum).
+	/// </summary>
+	interface IGtkPreferredSizeWidget
+	{
+	}
+
+	interface IGtkDefaultSize
+	{
+		Size DefaultSize { get; }
+	}
+
 	public static class GtkControlExtensions
 	{
+		internal static Size GetNaturalSizeRequest(this IGtkControl handler)
+		{
+			var size = handler.UserPreferredSize;
+			if (handler is IGtkDefaultSize defaultSize && (size.Width == -1 || size.Height == -1))
+			{
+				var def = defaultSize.DefaultSize;
+				if (size.Width == -1)
+					size.Width = def.Width;
+				if (size.Height == -1)
+					size.Height = def.Height;
+			}
+			return size;
+		}
+
 		public static Gtk.Widget GetContainerWidget(this Control control)
 		{
 			if (control == null)
@@ -77,7 +104,7 @@ namespace Eto.GtkSharp.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl
+	public abstract class GtkControl<TControl, TWidget, TCallback> : WidgetHandler<TControl, TWidget, TCallback>, Control.IHandler, IGtkControl, IGtkDefaultSize
 		where TControl : Gtk.Widget
 		where TWidget : Control
 		where TCallback : Control.ICallback
@@ -154,7 +181,13 @@ namespace Eto.GtkSharp.Forms
 
 		protected virtual void SetSize(Size size)
 		{
-			ContainerControl.SetSizeRequest(size.Width, size.Height);
+#if GTK3
+			// a size request is a minimum in GTK, but on other platforms the size can still shrink to fit
+			if (ContainerControl is IGtkPreferredSizeWidget)
+				ContainerControl.QueueResize();
+			else
+#endif
+				ContainerControl.SetSizeRequest(size.Width, size.Height);
 			InvalidateMeasure();
 		}
 

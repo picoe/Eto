@@ -26,7 +26,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public TextAreaHandler()
 		{
-			scroll = new Gtk.ScrolledWindow();
+			scroll = new EtoScrolledWindow { Handler = this };
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new TControl();
 			scroll.Add(Control);
