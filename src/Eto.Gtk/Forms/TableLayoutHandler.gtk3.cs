@@ -23,7 +23,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		Gtk.Alignment align;
+		CustomControls.PaddingBin align;
 		Gtk.EventBox box;
 		bool[] columnScale;
 		int lastColumnScale;
@@ -48,14 +48,8 @@ namespace Eto.GtkSharp.Forms
 
 		public Padding Padding
 		{
-			get => new Padding((int)align.LeftPadding, (int)align.TopPadding, (int)align.RightPadding, (int)align.BottomPadding);
-			set
-			{
-				align.LeftPadding = (uint)value.Left;
-				align.RightPadding = (uint)value.Right;
-				align.TopPadding = (uint)value.Top;
-				align.BottomPadding = (uint)value.Bottom;
-			}
+			get => align.Padding;
+			set => align.Padding = value;
 		}
 
 		public void Add(Control child, int x, int y)
@@ -76,7 +70,7 @@ namespace Eto.GtkSharp.Forms
 
 		public TableLayoutHandler()
 		{
-			align = new Gtk.Alignment(0, 0, 1.0F, 1.0F);
+			align = new CustomControls.PaddingBin();
 			align.Hexpand = false;
 			align.Vexpand = false;
 			box = new EtoEventBox { Child = align, Handler = this };

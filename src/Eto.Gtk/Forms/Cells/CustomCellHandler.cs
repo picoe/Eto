@@ -9,16 +9,22 @@ using IGtkCellEditableImplementor = Gtk.ICellEditableImplementor;
 
 namespace Eto.GtkSharp.Forms.Cells
 {
+#if GTK2
 	class EtoCellEditable : Gtk.Alignment, IGtkCellEditable, IGtkCellEditableImplementor
+#else
+	class EtoCellEditable : CustomControls.PaddingBin, IGtkCellEditable, IGtkCellEditableImplementor
+#endif
 	{
 		static GLib.GType gtype = GLib.GType.Invalid;
 
 		public Control Content { get; set; }
 
+#if GTK2
 		public EtoCellEditable()// : base(GType)
 			: base(0, 0, 1, 1)
 		{
 		}
+#endif
 
 		public static new GLib.GType GType
 		{
