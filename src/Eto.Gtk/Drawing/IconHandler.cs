@@ -1,11 +1,15 @@
 namespace Eto.GtkSharp.Drawing
 {
 
-	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, Icon.IHandler, IGtkPixbuf
+	public class IconHandler : ImageHandler<Gdk.Pixbuf, Icon>, Icon.IHandler, IGtkPixbuf
 	{
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 
-		public Gdk.Pixbuf Pixbuf { get; set; }
+		public Gdk.Pixbuf Pixbuf
+		{
+			get => Control;
+			set => Control = value;
+		}
 
 		#region IIcon Members
 
@@ -16,7 +20,6 @@ namespace Eto.GtkSharp.Drawing
 				stream.CopyTo(ms);
 				ms.Position = 0;
 				Pixbuf = new Gdk.Pixbuf(ms);
-				Control = new Gtk.IconSet(Pixbuf);
 				ms.Position = 0;
 				CreateFrames(ms);
 			}
@@ -30,7 +33,6 @@ namespace Eto.GtkSharp.Drawing
 				fs.CopyTo(ms);
 				ms.Position = 0;
 				Pixbuf = new Gdk.Pixbuf(ms);
-				Control = new Gtk.IconSet(Pixbuf);
 				ms.Position = 0;
 				CreateFrames(ms);
 			}
@@ -102,10 +104,7 @@ namespace Eto.GtkSharp.Drawing
 
 		public override void SetImage(Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
-			if (iconSize != null)
-				imageView.SetFromIconSet(Control, iconSize.Value);
-			else
-				imageView.Pixbuf = Pixbuf;
+			imageView.Pixbuf = iconSize != null ? GetPixbuf(iconSize.Value.GetSize(), shrink: true) : Pixbuf;
 		}
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
@@ -132,19 +131,6 @@ namespace Eto.GtkSharp.Drawing
 			pattern.Dispose();
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-			if (disposing)
-			{
-				if (Pixbuf != null)
-				{
-					Pixbuf.Dispose();
-					Pixbuf = null;
-				}
-			}
-		}
-
 		public Gdk.Pixbuf GetPixbuf(Size maxSize, Gdk.InterpType interpolation = Gdk.InterpType.Bilinear, bool shrink = false)
 		{
 			Gdk.Pixbuf pixbuf = Pixbuf;
@@ -165,11 +151,6 @@ namespace Eto.GtkSharp.Drawing
 		public void Create(IEnumerable<IconFrame> frames)
 		{
 			this.frames = new List<IconFrame>(frames);
-			Control = new Gtk.IconSet();
-			foreach (var frame in this.frames)
-			{
-				Control.AddSource(new Gtk.IconSource { Pixbuf = frame.Bitmap.ToGdk() });
-			}
 			Pixbuf = this.frames.FirstOrDefault(r => r.Scale == 1)?.Bitmap.ToGdk();
 			if (Pixbuf == null)
 			{
