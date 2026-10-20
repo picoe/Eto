@@ -12,6 +12,14 @@ namespace Eto.GtkSharp.Forms.Controls
 		bool initialPositionSet;
 		int _panel1MinimumSize, _panel2MinimumSize;
 
+		int GetMinimumSize(int size1, int size2, int panedMinimum)
+		{
+			// GTK places the panels using their minimum sizes until we set the initial position, so use their
+			// preferred sizes until then. After that the panels can shrink, so the user can't drag the splitter
+			// beyond its parent.
+			return initialPositionSet ? panedMinimum : GetPreferredPanelSize(size1, size2);
+		}
+
 		int GetPreferredPanelSize(int width1, int width2)
 		{
 			if (position.HasValue)
@@ -111,11 +119,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (Orientation == Gtk.Orientation.Horizontal)
 				{
-					Child1.GetPreferredWidthForHeight(height, out int min1, out int width1);
-					Child2.GetPreferredWidthForHeight(height, out int min2, out int width2);
-					base.OnGetPreferredWidthForHeight(height, out _, out int natural);
+					Child1.GetPreferredWidthForHeight(height, out _, out int width1);
+					Child2.GetPreferredWidthForHeight(height, out _, out int width2);
+					base.OnGetPreferredWidthForHeight(height, out int minimum, out int natural);
 					UpdateHandleSize(natural, width1, width2);
-					minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+					minimum_width = Handler.GetMinimumSize(width1, width2, minimum);
 					natural_width = Handler.GetPreferredPanelSize(width1, width2);
 				}
 				else
@@ -128,11 +136,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (Orientation == Gtk.Orientation.Horizontal)
 				{
-					Child1.GetPreferredWidth(out int min1, out int width1);
-					Child2.GetPreferredWidth(out int min2, out int width2);
-					base.OnGetPreferredWidth(out _, out int natural);
+					Child1.GetPreferredWidth(out _, out int width1);
+					Child2.GetPreferredWidth(out _, out int width2);
+					base.OnGetPreferredWidth(out int minimum, out int natural);
 					UpdateHandleSize(natural, width1, width2);
-					minimum_width = Handler.GetPreferredPanelSize(min1, min2);
+					minimum_width = Handler.GetMinimumSize(width1, width2, minimum);
 					natural_width = Handler.GetPreferredPanelSize(width1, width2);
 				}
 				else
@@ -145,11 +153,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (Orientation == Gtk.Orientation.Vertical)
 				{
-					Child1.GetPreferredHeight(out int min1, out int height1);
-					Child2.GetPreferredHeight(out int min2, out int height2);
-					base.OnGetPreferredHeight(out _, out int natural);
+					Child1.GetPreferredHeight(out _, out int height1);
+					Child2.GetPreferredHeight(out _, out int height2);
+					base.OnGetPreferredHeight(out int minimum, out int natural);
 					UpdateHandleSize(natural, height1, height2);
-					minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+					minimum_height = Handler.GetMinimumSize(height1, height2, minimum);
 					natural_height = Handler.GetPreferredPanelSize(height1, height2);
 				}
 				else
@@ -162,11 +170,11 @@ namespace Eto.GtkSharp.Forms.Controls
 			{
 				if (Orientation == Gtk.Orientation.Vertical)
 				{
-					Child1.GetPreferredHeightForWidth(width, out int min1, out int height1);
-					Child2.GetPreferredHeightForWidth(width, out int min2, out int height2);
-					base.OnGetPreferredHeightForWidth(width, out _, out int natural);
+					Child1.GetPreferredHeightForWidth(width, out _, out int height1);
+					Child2.GetPreferredHeightForWidth(width, out _, out int height2);
+					base.OnGetPreferredHeightForWidth(width, out int minimum, out int natural);
 					UpdateHandleSize(natural, height1, height2);
-					minimum_height = Handler.GetPreferredPanelSize(min1, min2);
+					minimum_height = Handler.GetMinimumSize(height1, height2, minimum);
 					natural_height = Handler.GetPreferredPanelSize(height1, height2);
 				}
 				else
@@ -178,16 +186,65 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				var it = Handler;
+				if (it != null && !it.initialPositionSet && it.Widget.Loaded)
+				{
+					// set the initial position before GTK lays out the panels, otherwise it uses their minimum sizes
+					SetAllocation(allocation);
+					if (it.GetAvailableSize(false) > 0)
+					{
+						it.initialPositionSet = true;
+						it.SetInitialPosition();
+					}
+				}
 				if (it == null || double.IsNaN(it.relative))
 				{
 					base.OnSizeAllocated(allocation);
+					FitChildren();
 					return;
 				}
 				it.suppressSplitterMoved++;
 				base.OnSizeAllocated(allocation);
+				FitChildren();
 				it.suppressSplitterMoved--;
 
 				it.EnsurePosition();
+			}
+
+			void FitChildren()
+			{
+				// GTK never allocates a panel less than its minimum size, it clips it instead (keeping the
+				// end of Panel1 next to the handle). Other platforms size the panels to the splitter, so
+				// their content shrinks.
+				if (Child1?.Visible != true || Child2?.Visible != true)
+					return;
+				var horizontal = Orientation == Gtk.Orientation.Horizontal;
+				var rtl = horizontal && Direction == Gtk.TextDirection.Rtl;
+				var size1 = Math.Max(1, Position);
+				var size2 = Math.Max(1, (horizontal ? Allocation.Width : Allocation.Height) - Position - RealHandleSize);
+				FitChild(Child1, size1, !rtl);
+				FitChild(Child2, size2, rtl);
+			}
+
+			void FitChild(Gtk.Widget child, int size, bool fromEnd)
+			{
+				var rect = child.Allocation;
+				if (Orientation == Gtk.Orientation.Horizontal)
+				{
+					if (rect.Width <= size)
+						return;
+					if (fromEnd)
+						rect.X += rect.Width - size;
+					rect.Width = size;
+				}
+				else
+				{
+					if (rect.Height <= size)
+						return;
+					if (fromEnd)
+						rect.Y += rect.Height - size;
+					rect.Height = size;
+				}
+				child.SizeAllocate(rect);
 			}
 		}
 
@@ -232,7 +289,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		int GetAvailableSize()
 		{
-			return GetAvailableSize(!Control.IsRealized);
+			// the initial position can be set from the first allocation, before we're realized
+			return GetAvailableSize(!Control.IsRealized && !initialPositionSet);
 		}
 		int GetAvailableSize(bool desired)
 		{
