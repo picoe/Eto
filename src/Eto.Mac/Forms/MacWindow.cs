@@ -568,6 +568,7 @@ namespace Eto.Mac.Forms
 			Control.ShouldZoom = HandleShouldZoom;
 			Control.WillMiniaturize += HandleWillMiniaturize;
 			Control.WillResize = HandleWillResize;
+			Control.DidChangeScreen += HandleDidChangeScreen;
 
 #if MONOMAC
 			HandleEvent(Window.ClosedEvent);
@@ -1365,7 +1366,12 @@ namespace Eto.Mac.Forms
 				if (owner != null && (Visible || force))
 				{
 					var macWindow = owner.Handler as IMacWindow;
-					if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)
+					if (macWindow != null && !IsOnSameSpace(macWindow.Control))
+					{
+						// child windows are hidden when on a different screen than their parent, so detach until it comes back
+						Control.ParentWindow?.RemoveChildWindow(Control);
+					}
+					else if (macWindow != null && macWindow.Control.TabbedWindows?.Contains(Control) != true)
 					{
 						macWindow.Control.AddChildWindow(Control, NSWindowOrderingMode.Above);
 						OnSetAsChildWindow();
@@ -1383,8 +1389,31 @@ namespace Eto.Mac.Forms
 			return result;
 		}
 
+		bool IsOnSameSpace(NSWindow ownerWindow)
+		{
+			if (!NSScreen.ScreensHaveSeparateSpaces())
+				return true;
+			var screen = Control.Screen;
+			var ownerScreen = ownerWindow.Screen;
+			return screen == null || ownerScreen == null || Equals(screen, ownerScreen);
+		}
+
+		static void HandleDidChangeScreen(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler != null && handler.Control.IsVisible)
+				handler.EnsureOwner();
+		}
+
 		void HandleGotFocusAsChild(object sender, EventArgs e)
 		{
+			// The owner may have moved to our screen since we were detached
+			if (Control.ParentWindow == null)
+			{
+				EnsureOwner();
+				return;
+			}
+
 			// When there are multiple modeless child windows, clicking on one doesn't bring it to front
 			// so, we remove then re-add the child window to get it to come above again.
 			var parentWindow = Control.ParentWindow;
