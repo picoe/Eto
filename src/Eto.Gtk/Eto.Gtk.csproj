@@ -6,6 +6,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>Eto.GtkSharp</RootNamespace>
     <DefineConstants>$(DefineConstants);GTK3;GTKCORE</DefineConstants>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Eto.Platform.Gtk</PackageId>
@@ -25,6 +26,10 @@ When building for the full framework, .NET Framework 4.6.1 or mono framework 5.1
 
   <ItemGroup>
     <PackageReference Include="GtkSharp" Version="3.24.24.95" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build\*" Exclude="build\Gtk.targets" Pack="True" PackagePath="build" />
+    <None Include="build\Gtk.targets" Pack="True" PackagePath="build\$(PackageId).targets" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj" />

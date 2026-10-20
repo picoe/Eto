@@ -10,11 +10,7 @@ namespace Eto.GtkSharp.Forms
 		where TWidget: Panel
 		where TCallback: Panel.ICallback
 	{
-#if GTK2
 		readonly Gtk.Alignment alignment;
-#else
-		readonly CustomControls.PaddingBin alignment;
-#endif
 		Control content;
 
 		public override Gtk.Widget ContainerContentControl
@@ -24,11 +20,7 @@ namespace Eto.GtkSharp.Forms
 
 		protected GtkPanel()
 		{
-#if GTK2
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-#else
-			alignment = new CustomControls.PaddingBin();
-#endif
 		}
 
 		protected virtual bool UseMinimumSizeRequested { get { return true; } }
@@ -96,7 +88,6 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual Padding Padding
 		{
-#if GTK2
 			get => new Padding((int)alignment.LeftPadding, (int)alignment.TopPadding, (int)alignment.RightPadding, (int)alignment.BottomPadding);
 			set
 			{
@@ -105,10 +96,6 @@ namespace Eto.GtkSharp.Forms
 				alignment.TopPadding = (uint)value.Top;
 				alignment.BottomPadding = (uint)value.Bottom;
 			}
-#else
-			get => alignment.Padding;
-			set => alignment.Padding = value;
-#endif
 		}
 
 		public Control Content
