@@ -513,5 +513,64 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.That(splitter.Panel2.Width, Is.EqualTo(200), "#2");
 			});
 		}
+
+		[TestCase(Orientation.Horizontal)]
+		[TestCase(Orientation.Vertical)]
+		public void GrowingFixedPanelShouldNotGrowSplitterBeyondParent(Orientation orientation)
+		{
+			ShownAsync(form =>
+			{
+				var splitter = new Splitter
+				{
+					Orientation = orientation,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Panel1 = new Panel { Size = new Size(100, 100) },
+					Panel2 = new Panel { Size = new Size(50, 50) },
+				};
+				form.ClientSize = new Size(300, 300);
+				form.Content = splitter;
+				return splitter;
+			},
+			async splitter =>
+			{
+				// like dragging the splitter towards Panel1, past its size
+				splitter.Position = 20;
+				await Task.Delay(200);
+				var size = orientation == Orientation.Horizontal ? splitter.Width : splitter.Height;
+				Assert.That(size, Is.LessThanOrEqualTo(300));
+			});
+		}
+
+		[TestCase(Orientation.Horizontal)]
+		[TestCase(Orientation.Vertical)]
+		public void PanelsSmallerThanContentShouldBeSizedToSplitter(Orientation orientation)
+		{
+			ShownAsync(form =>
+			{
+				var splitter = new Splitter
+				{
+					Orientation = orientation,
+					FixedPanel = SplitterFixedPanel.Panel2,
+					Panel1 = new Panel { Size = new Size(100, 100) },
+					Panel2 = new Panel { Size = new Size(50, 50) },
+				};
+				form.ClientSize = new Size(300, 300);
+				form.Content = splitter;
+				return splitter;
+			},
+			async splitter =>
+			{
+				splitter.Position = 20;
+				await Task.Delay(200);
+				var horizontal = orientation == Orientation.Horizontal;
+				Assert.That(splitter.Panel1.Location, Is.EqualTo(Point.Empty), "#1");
+				Assert.That(horizontal ? splitter.Panel1.Width : splitter.Panel1.Height, Is.EqualTo(20), "#2");
+
+				splitter.Position = 280;
+				await Task.Delay(200);
+				var size2 = horizontal ? splitter.Panel2.Width : splitter.Panel2.Height;
+				Assert.That(size2, Is.EqualTo(300 - 280 - splitter.SplitterWidth), "#3");
+			});
+		}
 	}
 }
