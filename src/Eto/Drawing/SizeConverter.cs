@@ -39,6 +39,21 @@ class SizeConverterInternal : sc.TypeConverter
 		if (text != null)
 		{
 			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+
+			if (parts.Length == 1)
+			{
+				try
+				{
+					return new Size(
+						int.Parse(parts[0])
+					);
+				}
+				catch
+				{
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be a single integer", text));
+				}
+			}
+
 			if (parts.Length != 2)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'width, height'", text));
 

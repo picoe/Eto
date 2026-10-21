@@ -74,7 +74,18 @@ public struct SizeF : IEquatable<SizeF>
 	/// A SizeF with the width and height set to float.NegativeInfinity
 	/// </summary>
 	public static readonly SizeF NegativeInfinity = new SizeF (float.NegativeInfinity, float.NegativeInfinity);
-
+	
+ 	/// <summary>
+	/// Initializes a new Size class with an identical width and height
+	/// </summary>
+	/// <param name="size">Initial width and height of the size</param>
+	public SizeF (float size)
+		: this()
+	{
+		Width = size;
+		Height = size;
+	}
+ 
 	/// <summary>
 	/// Initializes a new SizeF class with the specified width and height
 	/// </summary>
