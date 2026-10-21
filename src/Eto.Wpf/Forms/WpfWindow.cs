@@ -245,7 +245,41 @@ namespace Eto.Wpf.Forms
 				Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
 
-		void MoveFocusToContent() => Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+		void MoveFocusToContent()
+		{
+			// When the last input was a key press, WPF shows the tooltip of the control that gets focus here as if
+			// the user tabbed to it. It only checks whether tooltips are enabled as focus arrives.
+			var suppressed = new List<(sw.DependencyObject element, object value)>();
+			void SuppressToolTip(object sender, KeyboardFocusChangedEventArgs e)
+			{
+				if (e.NewFocus is sw.DependencyObject element)
+				{
+					var value = element.ReadLocalValue(swc.ToolTipService.IsEnabledProperty);
+					if (value != sw.DependencyProperty.UnsetValue && value is not bool)
+						return; // leave bindings alone
+					suppressed.Add((element, value));
+					swc.ToolTipService.SetIsEnabled(element, false);
+				}
+			}
+
+			Control.PreviewGotKeyboardFocus += SuppressToolTip;
+			try
+			{
+				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+			}
+			finally
+			{
+				Control.PreviewGotKeyboardFocus -= SuppressToolTip;
+				for (int i = suppressed.Count - 1; i >= 0; i--)
+				{
+					var (element, value) = suppressed[i];
+					if (value == sw.DependencyProperty.UnsetValue)
+						element.ClearValue(swc.ToolTipService.IsEnabledProperty);
+					else
+						element.SetValue(swc.ToolTipService.IsEnabledProperty, value);
+				}
+			}
+		}
 
 		private void Control_IsEnabledChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
 		{
