@@ -50,12 +50,12 @@ class SizeConverterInternal : sc.TypeConverter
 				}
 				catch
 				{
-					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be a single integer", text));
+					throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'size' or 'width, height'", text));
 				}
 			}
 
 			if (parts.Length != 2)
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'width, height'", text));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'size' or 'width, height'", text));
 
 			try
 			{
@@ -66,7 +66,7 @@ class SizeConverterInternal : sc.TypeConverter
 			}
 			catch
 			{
-				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'width, height'", text));
+				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Size. Should be in the form of 'size' or 'width, height'", text));
 			}
 		}
 		return base.ConvertFrom(context, culture, value);
