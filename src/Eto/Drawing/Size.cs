@@ -102,6 +102,17 @@ public struct Size : IEquatable<Size>
 	public static readonly Size MinValue = new Size (Int32.MinValue, Int32.MinValue);
 		
 	/// <summary>
+	/// Initializes a new Size class with an identical width and height
+	/// </summary>
+	/// <param name="size">Initial width and height of the size</param>
+	public Size (int size)
+		: this()
+	{
+		Width = size;
+		Height = size;
+	}
+		
+	/// <summary>
 	/// Initializes a new Size class with the specified width and height
 	/// </summary>
 	/// <param name="width">Initial width of the size</param>
