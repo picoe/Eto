@@ -1,4 +1,6 @@
+using System.CodeDom.Compiler;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Xml;
 
 
@@ -39,6 +41,7 @@ namespace Eto.Serialization.Xaml
 		public static readonly string DesignNamespace = EtoXamlSchemaContext.DesignNamespace;
 
 		static readonly Dictionary<Type, string> hotReloadFilePaths = new();
+		static readonly Dictionary<Type, DateTime> hotReloadFileTimes = new();
 
 		static IEnumerable<string> GetTypeFiles(Type type)
 		{
@@ -70,6 +73,19 @@ namespace Eto.Serialization.Xaml
 		internal static void RegisterHotReloadFile(Type type, string filePath)
 		{
 			hotReloadFilePaths[type] = filePath;
+			// keep the first time so a later Watch doesn't hide an edit
+			if (!hotReloadFileTimes.ContainsKey(type) && File.Exists(filePath))
+				hotReloadFileTimes[type] = File.GetLastWriteTimeUtc(filePath);
+		}
+
+		/// <summary>Whether the watched .xeto was saved since watching started, so compiled code is out of date.</summary>
+		static bool HasHotReloadChanges(Type type)
+		{
+			if (!hotReloadFilePaths.TryGetValue(type, out var filePath))
+				return false;
+			if (!hotReloadFileTimes.TryGetValue(type, out var time) || !File.Exists(filePath))
+				return true;
+			return File.GetLastWriteTimeUtc(filePath) != time;
 		}
 
 		private static bool FindFileNameFromType(Type type, ref string fileName, string sourcePath)
@@ -208,9 +224,60 @@ namespace Eto.Serialization.Xaml
 			if (Equals(instance, null))
 				throw new ArgumentNullException(nameof(instance));
 
+			if (settings == null && TryLoadGenerated(instance))
+			{
+				HotReload(instance);
+				return;
+			}
+
 			using var stream = GetStream(typeof(T));
 			Load<T>(stream, instance, settings);
 			HotReload(instance);
+		}
+
+		// set by the Eto.Serialization.Xaml.Generator source generator when EtoXamlCodeGen is enabled
+		const string GeneratedMethodName = "InitializeXeto";
+		static readonly Dictionary<Type, MethodInfo> generatedMethods = new();
+
+		static MethodInfo GetGeneratedMethod(Type type)
+		{
+			lock (generatedMethods)
+			{
+				if (generatedMethods.TryGetValue(type, out var method))
+					return method;
+				method = type.GetMethod(GeneratedMethodName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
+				// only use it if it really came from the generator
+				if (method != null && method.GetCustomAttribute<GeneratedCodeAttribute>()?.Tool != "Portable.Xaml.CodeGen")
+					method = null;
+				generatedMethods[type] = method;
+				return method;
+			}
+		}
+
+		static bool TryLoadGenerated<T>(T instance)
+		{
+			// the designer and hot reload need the .xeto as it is now, not as it was compiled
+			if (DesignMode || HasHotReloadChanges(typeof(T)) || HasHotReloadChanges(instance.GetType()))
+				return false;
+
+			var method = GetGeneratedMethod(typeof(T));
+			if (method == null)
+				return false;
+
+			Control.BeginDesignLoad();
+			try
+			{
+				method.Invoke(instance, null);
+			}
+			catch (TargetInvocationException ex) when (ex.InnerException != null)
+			{
+				ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+			}
+			finally
+			{
+				Control.EndDesignLoad();
+			}
+			return true;
 		}
 
 		private static string FindSourceForType(Type type)

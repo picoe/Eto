@@ -168,6 +168,7 @@ internal static class Program
 	}
 
 	static readonly string[] WpfThemeSuffixes = { ".Aero2", ".Aero", ".AeroLite", ".Classic", ".Luna", ".Royale", ".Generic" };
+	static readonly string[] WpfAssemblies = { "PresentationFramework", "PresentationCore", "WindowsBase" };
 
 	// When a themed Eto.Wpf control (e.g. TreeGridView) is laid out, WPF probes for an external per-OS-theme
 	// satellite assembly (e.g. "Eto.Wpf.Aero2") before falling back to the embedded themes/generic.xaml. That
@@ -176,6 +177,8 @@ internal static class Program
 	// which surfaces as a fatal FileLoadException during layout and crashes the test. Registering our own handler
 	// FIRST (before NUnit's) lets us short-circuit those Eto theme probes with the normal FileNotFoundException so
 	// WPF falls back cleanly and NUnit's broken handler never runs.
+	// Same off Windows for WPF itself: ICommand's [TypeConverter] names a PresentationFramework type, so
+	// TypeDescriptor.GetConverter(typeof(ICommand)) (which compiled xeto calls) probes for it.
 	static void AvoidThemeSatelliteResolverCrash()
 	{
 #if NET
@@ -184,6 +187,8 @@ internal static class Program
 			var n = name.Name;
 			if (n != null && n.StartsWith("Eto.", StringComparison.Ordinal) && WpfThemeSuffixes.Any(s => n.EndsWith(s, StringComparison.Ordinal)))
 				throw new FileNotFoundException($"Eto theme satellite '{n}' does not exist; using generic theme.");
+			if (!OperatingSystem.IsWindows() && WpfAssemblies.Contains(n))
+				throw new FileNotFoundException($"WPF assembly '{n}' is only available on Windows.");
 			return null;
 		};
 #endif

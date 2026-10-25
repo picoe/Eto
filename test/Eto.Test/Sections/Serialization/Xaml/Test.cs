@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Serialization.Xaml
 	}
 
 	[HotReload(nameof(InitializeComponent))]
-	public class Test : Panel
+	public partial class Test : Panel
 	{
 		public class MyModel
 		{
