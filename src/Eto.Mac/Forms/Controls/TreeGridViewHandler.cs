@@ -820,6 +820,39 @@ namespace Eto.Mac.Forms.Controls
 			return cachedItems.TryGetValue(item, out myitem) ? myitem : null;
 		}
 
+		// Native items are only created for rows NSOutlineView has asked for, so a visible row may not be cached yet.
+		EtoTreeItem GetVisibleItem(ITreeGridItem item)
+		{
+			if (item == null)
+				return null;
+			var cachedItem = GetCachedItem(item);
+			if (cachedItem != null && Control.RowForItem(cachedItem) >= 0)
+				return cachedItem;
+
+			EtoTreeItem nativeParent = null;
+			IDataStore<ITreeGridItem> container = store;
+			var parent = item.Parent;
+			if (parent != null && !ReferenceEquals(parent, store))
+			{
+				// a parent that isn't shown is a hidden root, so its children are the top level rows
+				nativeParent = GetVisibleItem(parent);
+				if (nativeParent != null)
+				{
+					if (!Control.IsItemExpanded(nativeParent))
+						return null;
+					container = parent as IDataStore<ITreeGridItem>;
+				}
+			}
+
+			var count = container?.Count ?? 0;
+			for (int i = 0; i < count; i++)
+			{
+				if (ReferenceEquals(container[i], item))
+					return Control.GetChild(i, nativeParent) as EtoTreeItem;
+			}
+			return null;
+		}
+
 		int CountRows(ITreeGridItem item)
 		{
 			if (!item.Expanded)
@@ -989,13 +1022,13 @@ namespace Eto.Mac.Forms.Controls
 			bool isSelectionChanged = false;
 			foreach (var sel in selection)
 			{
-				var cachedItem = GetCachedItem(sel as ITreeGridItem);
-				if (cachedItem == null)
+				var nativeItem = GetVisibleItem(sel as ITreeGridItem);
+				if (nativeItem == null)
 				{
 					isSelectionChanged = true;
 					continue;
 				}
-				var row = Control.RowForItem(cachedItem);
+				var row = Control.RowForItem(nativeItem);
 				if (row >= 0)
 					Control.SelectRow((nint)row, true);
 				else
@@ -1073,7 +1106,8 @@ namespace Eto.Mac.Forms.Controls
 					var isSelectionChanged = false;
 					foreach (var sel in selection)
 					{
-						row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
+						var nativeItem = GetVisibleItem(sel as ITreeGridItem);
+						row = nativeItem != null ? Control.RowForItem(nativeItem) : -1;
 						if (row >= 0)
 							Control.SelectRow((nint)row, true);
 						else
