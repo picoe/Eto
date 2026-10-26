@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Windows.Input;
 using Eto.Serialization.Xaml;
 using Portable.Xaml.Markup;
 
@@ -41,6 +43,38 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value;
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
+	}
+
+	public class CompiledXamlModel : INotifyPropertyChanged
+	{
+		string _name;
+		int _count;
+
+		public string Name
+		{
+			get => _name;
+			set { _name = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name))); }
+		}
+
+		public int Count
+		{
+			get => _count;
+			set { _count = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Count))); }
+		}
+
+		public ICommand Command { get; set; }
+
+		public event PropertyChangedEventHandler PropertyChanged;
+	}
+
+	/// <summary>No control has settable float geometry, so this covers parsing those types.</summary>
+	public class CompiledXamlFloats
+	{
+		public SizeF Size { get; set; }
+		public SizeF SingleSize { get; set; }
+		public PointF Point { get; set; }
+		public RectangleF Rectangle { get; set; }
+		public PaddingF Padding { get; set; }
 	}
 
 	/// <summary>Shows which way the panel was loaded.</summary>
