@@ -5,8 +5,12 @@
     <IsPackable>false</IsPackable>
     <IsRoslynComponent>true</IsRoslynComponent>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <Description>Compiles .xeto files into code</Description>
+    <Description>Compiles .xeto and .jeto files into code</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Eto.Serialization.Xaml\EtoJsonReader.cs" Link="EtoJsonReader.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />

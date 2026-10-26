@@ -2,18 +2,24 @@ using Eto.Serialization.Json;
 
 namespace Eto.Test.Sections.Serialization.Json
 {
-	public class Test : Panel
+	public partial class Test : Panel
 	{
 		protected CheckBox MyCheckBox { get; set; }
 
 		protected TextArea MyTextArea { get; set; }
 
 		public Test()
+			: this(t => JsonReader.Load(t))
+		{
+		}
+
+		/// <summary>Loads the .jeto another way, e.g. with Eto.Serialization.Xaml to compare.</summary>
+		internal Test(Action<Test> load)
 		{
 			var sw = new Stopwatch();
 			sw.Start();
 
-			JsonReader.Load(this);
+			load(this);
 
 			sw.Stop();
 			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);

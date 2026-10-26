@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
+  <!-- Eto.Serialization.Xaml may embed them too -->
   <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
     <None Remove="**\*.jeto" />
-    <EmbeddedResource Include="**\*.jeto" />
+    <EmbeddedResource Include="**\*.jeto" Exclude="@(EmbeddedResource)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="**\*.jeto.cs">

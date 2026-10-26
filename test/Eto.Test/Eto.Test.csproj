@@ -6,6 +6,7 @@
     <OutputType>Library</OutputType>
     <IsTestProject>false</IsTestProject>
     <EtoXamlCodeGen>true</EtoXamlCodeGen>
+    <EtoXamlJeto>true</EtoXamlJeto>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   

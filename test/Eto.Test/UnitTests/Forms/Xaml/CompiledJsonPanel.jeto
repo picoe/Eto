@@ -1,0 +1,19 @@
+{
+	/* types are left out where the member or collection says what they are */
+	"d:Padding": "99",
+	Padding: "5",
+	Content: {
+		$type: "TableLayout",
+		$name: "Layout",
+		Spacing: "5,5",
+		Rows: [
+			[ { $type: "Label", $name: "ModeLabel", Text: "{local:LoadMode}" }, { $type: "TextBox", ID: "BoundTextBox", Text: "{Binding Name}", TextChanged: "HandleTextChanged" } ],
+			[ "Text content", { $type: "CheckBox", $name: "MyCheckBox", Text: "Check", Checked: true } ],
+			[ { ScaleWidth: true, Control: { $type: "Button", ID: "ClickButton", Text: "Click", Click: "HandleClick" } }, { $type: "ImageView", Image: "resource:Eto.Test.Images.TestImage.png, Eto.Test" } ],
+			[ [ [ "Nested", { $type: "Label", Text: "{}{Escaped}" } ] ] ],
+			{ $type: "StackLayout", Orientation: "Horizontal", Spacing: 3, Items: [ "A", { Expand: true, Control: { $type: "Label", Text: "B", TextColor: "Red" } } ] },
+			[ { $type: "DropDown", $name: "Choices", Items: [ "One", { Text: "Two", Key: "2" } ] }, null ],
+			null,
+		]
+	}
+}
