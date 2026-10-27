@@ -834,6 +834,10 @@ namespace Eto.GtkSharp.Forms
 
 				return handler.IsEventHandled(Drawable.TextCompositionEvent) || handler.IsEventHandled(Drawable.TextInsertionBoundsRequestedEvent);
 			}
+
+			// Native widgets handle their own input; key handlers alone do not need an extra context.
+			bool ShouldUseInputContext(GtkControl<TControl, TWidget, TCallback> handler)
+				=> handler.IsEventHandled(Eto.Forms.Control.TextInputEvent) || HandlesDrawableComposition(handler);
 			
 			void UpdateDrawableInputMethodLocation(GtkControl<TControl, TWidget, TCallback> handler)
 			{
@@ -985,7 +989,7 @@ namespace Eto.GtkSharp.Forms
 					args.RetVal = e.Handled;
 				}
 
-				if (e == null || !e.Handled)
+				if ((e == null || !e.Handled) && ShouldUseInputContext(handler))
 				{
 					commitHandled = false;
 					UpdateDrawableInputMethodLocation(handler);
@@ -1015,9 +1019,7 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 
-				var shouldFocusInputContext = handler.IsEventHandled(Eto.Forms.Control.TextInputEvent)
-					|| HandlesDrawableComposition(handler);
-				if (shouldFocusInputContext)
+				if (ShouldUseInputContext(handler))
 				{
 					var inputContext = Context;
 					UpdateDrawableInputMethodLocation(handler);
