@@ -1,4 +1,5 @@
 using Eto.Mac;
+using Eto.Mac.Forms.Controls;
 using Eto.Test.UnitTests;
 using NUnit.Framework;
 
@@ -122,5 +123,40 @@ namespace Eto.Test.Mac.UnitTests
 	{
 		protected override Test.UnitTests.Forms.Controls.GridTests<TreeGridView> BaseGridTests => new Test.UnitTests.Forms.Controls.TreeGridViewTests();
 		protected override void SetDataStore(TreeGridView grid, IEnumerable<object> dataStore) => grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
+
+		static bool IsGroupRow(NSOutlineView outlineView, int row) => outlineView.GetRowView(row, true)?.GroupRowStyle == true;
+
+		[Test]
+		public void ShowGroupsShouldApplyWhenToggled()
+		{
+			TreeGridViewHandler handler = null;
+			bool groupBefore = false;
+			bool groupAfter = false;
+
+			Shown(form =>
+			{
+				var tree = new TreeGridView { Size = new Size(200, 200) };
+				tree.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
+				tree.DataStore = new TreeGridItemCollection
+				{
+					new TreeGridItem(new TreeGridItem("Child")) { Values = new[] { "Group" }, Expanded = true }
+				};
+				handler = (TreeGridViewHandler)tree.Handler;
+				form.Content = tree;
+			}, () =>
+			{
+				groupBefore = IsGroupRow(handler.Control, 0);
+				handler.ShowGroups = true;
+				handler.Control.ReloadData();
+				handler.Control.Layout();
+				groupAfter = IsGroupRow(handler.Control, 0);
+			});
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(groupBefore, Is.False, "Top level rows should not be group rows by default");
+				Assert.That(groupAfter, Is.True, "Top level rows should become group rows when ShowGroups is turned on");
+			});
+		}
 	}
 }

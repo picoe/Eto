@@ -35,15 +35,22 @@ namespace Eto.Test.UnitTests
 
 				var result = Application.Instance.Invoke(() =>
 				{
+					var uiSynchronizationContext = SynchronizationContext.Current;
 					try
 					{
 						context.EstablishExecutionEnvironment();
+						SynchronizationContext.SetSynchronizationContext(
+							SafeSynchronizationContext.Create(uiSynchronizationContext, context));
 						return innerCommand.Execute(context);
 					}
 					catch (Exception ex)
 					{
 						exception = ex;
 						return null;
+					}
+					finally
+					{
+						SynchronizationContext.SetSynchronizationContext(uiSynchronizationContext);
 					}
 				});
 
@@ -57,12 +64,12 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-    [SetUpFixture]
-    public class EtoTestSetup
-    {
+	[SetUpFixture]
+	public class EtoTestSetup
+	{
 		static bool _initialized;
 		static bool _appWasCreated;
-		
+
 		/// <summary>
 		/// Timeout for application initialization
 		/// </summary>
@@ -106,11 +113,11 @@ namespace Eto.Test.UnitTests
 						var testPlatformAssembly = $"{names[0]}.Test.{names[1]}";
 						var platformTypeName = platformType.Substring(0, platformType.IndexOf(','));
 						var platformDir = new DirectoryInfo(Path.Combine(dir.FullName, "test", testPlatformAssembly, "Debug"));
-						#if NET
+#if NET
 						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => !r.Name.StartsWith("net4"));
-						#else
+#else
 						platformDir = platformDir.EnumerateDirectories().FirstOrDefault(r => r.Name.StartsWith("net4"));
-						#endif
+#endif
 						var platformPath = Path.Combine(platformDir.FullName, $"{platformAssembly}.dll");
 						if (File.Exists(platformPath))
 						{
@@ -120,7 +127,7 @@ namespace Eto.Test.UnitTests
 								platform = Activator.CreateInstance(type) as Platform;
 						}
 					}
-					
+
 				}
 #endif
 				Platform.Initialize(platform ?? Platform.Detect);
@@ -171,16 +178,16 @@ namespace Eto.Test.UnitTests
 			}
 			_initialized = true;
 		}
-		
-        [OneTimeSetUp]
-        public void GlobalSetup()
-        {
-			Initialize();
-        }
 
-        [OneTimeTearDown]
-        public void GlobalTeardown()
-        {
+		[OneTimeSetUp]
+		public void GlobalSetup()
+		{
+			Initialize();
+		}
+
+		[OneTimeTearDown]
+		public void GlobalTeardown()
+		{
 			if (!_appWasCreated)
 				return;
 			Application.Instance?.AsyncInvoke(() =>
@@ -209,7 +216,7 @@ namespace Eto.Test.UnitTests
 		/// Default timeout for form operations
 		/// </summary>
 		protected const int DefaultTimeout = 4000;
-		
+
 
 		static Application Application
 		{
@@ -235,15 +242,18 @@ namespace Eto.Test.UnitTests
 			var application = Application;
 			Exception exception = null;
 			var context = TestExecutionContext.CurrentContext;
-			
+
 			void finished() => ev.Set();
-			
+
 			void run()
 			{
 				evStart.Set();
+				var uiSynchronizationContext = SynchronizationContext.Current;
 				try
 				{
 					context.EstablishExecutionEnvironment();
+					SynchronizationContext.SetSynchronizationContext(
+						SafeSynchronizationContext.Create(uiSynchronizationContext, context));
 					test(application, finished);
 				}
 				catch (Exception ex)
@@ -251,13 +261,17 @@ namespace Eto.Test.UnitTests
 					exception = ex;
 					ev.Set();
 				}
+				finally
+				{
+					SynchronizationContext.SetSynchronizationContext(uiSynchronizationContext);
+				}
 			}
 
 			if (application != null)
 				application.AsyncInvoke(run);
 			else
 				run();
-				
+
 			if (!evStart.WaitOne(DefaultTimeout))
 				Assert.Fail("Could not start test in time");
 
@@ -342,7 +356,7 @@ namespace Eto.Test.UnitTests
 		}
 
 		public static void Async(Func<Task> test) => Async(DefaultTimeout, test);
-		
+
 		public static void Async(int timeout, Func<Task> test)
 		{
 			Exception exception = null;
@@ -451,7 +465,7 @@ namespace Eto.Test.UnitTests
 						passButton.Click += (sender, e) => form.Close();
 						focusControl = passButton;
 						row.Cells.Add(passButton);
-						
+
 						form.KeyDown += (sender, e) =>
 						{
 							if (e.KeyData == Keys.Enter)
@@ -618,7 +632,7 @@ namespace Eto.Test.UnitTests
 				timeout
 			);
 		}
-		
+
 		/// <summary>
 		/// Test operations on a form once it is shown
 		/// </summary>
@@ -647,6 +661,11 @@ namespace Eto.Test.UnitTests
 								control = init(form);
 								if (control != null && form.Content == null && control != form)
 									form.Content = control;
+								// The replaced content isn't laid out until the platform gets around to it, so
+								// anything the test reads from it (size, splitter position, ...) would still be
+								// zero. Force a layout pass so the replay measures a settled window instead of
+								// racing it - without this the replay assertions fail intermittently on Mac.
+								form.UpdateLayout();
 								if (application == null)
 									await test(control);
 							}
@@ -730,11 +749,71 @@ namespace Eto.Test.UnitTests
 				Assert.Fail("Paint event did not finish");
 		}
 
+		/// <summary>
+		/// Closes <paramref name="window"/> and waits until it is no longer visible.
+		/// </summary>
+		/// <remarks>
+		/// Closing a window is asynchronous on most platforms, so a test that simply calls
+		/// <see cref="Window.Close"/> as it finishes can leave the window on screen while the next test
+		/// starts - which stops that test's window from becoming active and breaks anything relying on
+		/// focus. Prefer this when a test shows a window it manages itself (as opposed to the one
+		/// <see cref="Form(Action{Form}, int)"/> and friends create and tear down for you).
+		/// </remarks>
+		public static async Task CloseAsync(Window window, int timeout = DefaultTimeout)
+		{
+			if (window == null)
+				return;
+			var closed = false;
+			window.Closed += (sender, e) => closed = true;
+			window.Close();
+			await WaitUntil(() => closed && !window.Visible, timeout);
+		}
+
+		/// <summary>
+		/// Waits for <paramref name="condition"/> to become true, polling until <paramref name="timeout"/> elapses.
+		/// </summary>
+		/// <remarks>
+		/// Prefer this over a fixed <c>await Task.Delay(n)</c> when waiting for the UI to settle before
+		/// asserting on its state: it returns as soon as the state is correct so a normal run doesn't pay
+		/// the full delay, while still giving a slow platform the same worst case. Pass whatever fixed
+		/// delay you would have used as the <paramref name="timeout"/>.
+		/// <para>
+		/// It never returns before the first poll, so a pending layout/paint pass always gets a chance to
+		/// run - a condition that is (incorrectly) already true isn't silently accepted on the first check.
+		/// </para>
+		/// Don't use it to wait for something that should *not* happen (e.g. "the window must still be
+		/// hidden after setting its owner"), or where the test needs the platform to fully settle rather
+		/// than just reach the expected state: in both cases the fixed delay is the point.
+		/// <para>
+		/// This does not assert on timeout; let the test's own assertion produce the failure message.
+		/// </para>
+		/// </remarks>
+		/// <param name="condition">Condition to check, evaluated on the calling (UI) thread</param>
+		/// <param name="timeout">Maximum time to wait for the condition, in milliseconds, or -1 to wait indefinitely</param>
+		/// <param name="pollInterval">Time to wait between checks of the condition, in milliseconds</param>
+		/// <returns>True if the condition became true within the timeout, false if it timed out</returns>
+		public static async Task<bool> WaitUntil(Func<bool> condition, int timeout = DefaultTimeout, int pollInterval = 10)
+		{
+			var delay = timeout < 0 ? pollInterval : Math.Min(pollInterval, timeout);
+			var stopwatch = Stopwatch.StartNew();
+			while (true)
+			{
+				await Task.Delay(delay);
+				if (condition())
+					return true;
+				if (timeout >= 0 && stopwatch.ElapsedMilliseconds >= timeout)
+					return false;
+			}
+		}
+
 		public static Task<TEventArgs> WaitEventAsync<TEventArgs>(Action<EventHandler<TEventArgs>> hookEvent)
 			where TEventArgs : EventArgs
 		{
 			var tcs = new TaskCompletionSource<TEventArgs>();
-			hookEvent((sender, e) => tcs.SetResult(e));
+			// The event may fire more than once (e.g. a window shown, hidden, then shown
+			// again), so complete only on the first invocation to avoid transitioning the
+			// task to a completed state twice.
+			hookEvent((sender, e) => tcs.TrySetResult(e));
 			return tcs.Task;
 		}
 
@@ -891,7 +970,7 @@ namespace Eto.Test.UnitTests
 					numericStepper.Value = 100;
 				else if (control is TabControl tabControl)
 				{
-					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" }  });
+					tabControl.Pages.Add(new TabPage { Text = "Tab 1", Content = new Panel { Size = new Size(100, 100), Content = "Hello" } });
 					tabControl.Pages.Add(new TabPage { Text = "Tab 2" });
 					tabControl.Pages.Add(new TabPage { Text = "Tab 3" });
 				}

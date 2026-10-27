@@ -18,7 +18,7 @@ namespace Eto.Mac.Forms
 
 		public DialogResult ShowDialog(Window parent)
 		{
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			var ret = Control.RunModal();
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
 		}

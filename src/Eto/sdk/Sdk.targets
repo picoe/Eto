@@ -26,8 +26,9 @@
 
     <OutputType Condition="$(OutputType) == 'Exe' and ($(BuildPlatform) == 'Wpf' or $(BuildPlatform) == 'Windows')">WinExe</OutputType>
     
-    <!-- Need to set this with the macos target if not specified -->
-    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND ( $(BuildPlatform) == 'macos' )">10.15</SupportedOSPlatformVersion>
+    <!-- Otherwise the SDK defaults to the latest macOS version. Use the macOS workload's minimum: 10.15 for net8, 12.0 after -->
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND $(BuildPlatform) == 'macos' AND $(TargetFramework) != '' AND $([MSBuild]::VersionLessThan($([MSBuild]::GetTargetFrameworkVersion($(TargetFramework))), '9.0'))">10.15</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$(SupportedOSPlatformVersion) == '' AND $(BuildPlatform) == 'macos'">12.0</SupportedOSPlatformVersion>
     <RuntimeIdentifiers Condition="$(BuildPlatform) == 'macos' AND $(RuntimeIdentifiers) == '' AND $(RuntimeIdentifier) == ''">osx-x64;osx-arm64</RuntimeIdentifiers>
   </PropertyGroup>
 
@@ -53,10 +54,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition="$(LocalEtoPath) == ''">
-    <PackageReference Include="Eto.Forms" Version="2.12.0-dev" />
-    <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.12.0-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.12.0-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.12.0-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.13.0-dev" />
+    <PackageReference Include="Eto.Platform.$(BuildPlatform)" Version="2.13.0-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.13.0-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.13.0-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
   
   <ItemGroup Condition="$(LocalEtoPath) != ''">
@@ -74,7 +75,15 @@
     <ProjectReference Include="$(LocalEtoPath)\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.csproj" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 
-  <PropertyGroup>
+  <!-- With UseArtifactsOutput, add the platform to the SDK's pivots rather than setting paths, which would bypass the artifacts layout.
+       Mirrors the SDK's own pivots from Microsoft.NET.DefaultOutputPaths.targets. -->
+  <PropertyGroup Condition="$(UseArtifactsOutput) == 'true' and $(ArtifactsPivots) == ''">
+    <ArtifactsPivots>$(Configuration.ToLowerInvariant())_$(BuildPlatform.ToLowerInvariant())</ArtifactsPivots>
+    <ArtifactsPivots Condition="$(TargetFrameworks) != '' and $(TargetFramework) != ''">$(ArtifactsPivots)_$(TargetFramework.ToLowerInvariant())</ArtifactsPivots>
+    <ArtifactsPivots Condition="$(RuntimeIdentifier) != ''">$(ArtifactsPivots)_$(RuntimeIdentifier.ToLowerInvariant())</ArtifactsPivots>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(UseArtifactsOutput) != 'true'">
     <!-- Each platform gets its own intermediate and output path so they don't conflict -->
     <BaseIntermediateOutputPath Condition="$(BaseIntermediateOutputPath) == ''">obj\</BaseIntermediateOutputPath>
 
@@ -98,5 +107,6 @@
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   
   <Import Project="$(LocalEtoPath)\src\Eto.Mac\build\Mac.targets" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'macOS' )" />
+  <Import Project="$(LocalEtoPath)\src\Eto.Gtk\build\Gtk.targets" Condition="$(LocalEtoPath) != '' and $(BuildPlatform) == 'Gtk'" />
 
 </Project>

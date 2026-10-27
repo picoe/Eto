@@ -5,6 +5,16 @@
     xmlns:e="clr-namespace:Eto.Wpf"
     xmlns:s="clr-namespace:System;assembly=mscorlib">
 
+    <!-- Default colors derived from system colors so they adapt to the current Windows theme.
+         Override any of these keys in your application resources for custom theming. -->
+    <!-- Arrow stroke (collapsed, idle): control dark -->  
+    <SolidColorBrush x:Key="TreeToggleButton.Arrow.Stroke"     Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
+    <!-- Arrow stroke when the mouse hovers: hot-track / interaction color -->
+    <SolidColorBrush x:Key="TreeToggleButton.MouseOver.Stroke" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+    <!-- Arrow fill / stroke when the node is expanded (checked): control text / darkest shadow -->
+    <SolidColorBrush x:Key="TreeToggleButton.Checked.Fill"     Color="{DynamicResource {x:Static SystemColors.ControlDarkDarkColorKey}}"/>
+    <SolidColorBrush x:Key="TreeToggleButton.Checked.Stroke"   Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"/>
+
     <Style TargetType="{x:Type r:TreeToggleButton}">
         <Setter Property="UIElement.Focusable" Value="False" />
         <Setter Property="FrameworkElement.Width" Value="16" />
@@ -13,7 +23,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type r:TreeToggleButton}">
                     <Border Height="16" Width="16" Background="#00FFFFFF" Padding="5,5,5,5">
-                        <Path Fill="#00FFFFFF" Name="ExpandPath" Stroke="#FF989898">
+                        <Path Fill="#00FFFFFF" Name="ExpandPath" Stroke="{DynamicResource TreeToggleButton.Arrow.Stroke}">
                             <Path.Data>
                                 <PathGeometry Figures="M0,0L0,6L6,0z" />
                             </Path.Data>
@@ -24,16 +34,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsMouseOver">
-                            <Setter Property="Shape.Stroke" TargetName="ExpandPath">
-                                <Setter.Value>
-                                    <SolidColorBrush>#FF1BBBFA</SolidColorBrush>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Shape.Fill" TargetName="ExpandPath">
-                                <Setter.Value>
-                                    <SolidColorBrush>#00FFFFFF</SolidColorBrush>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter Property="Shape.Stroke" TargetName="ExpandPath" Value="{DynamicResource TreeToggleButton.MouseOver.Stroke}" />
                             <Trigger.Value>
                                 <s:Boolean>True</s:Boolean>
                             </Trigger.Value>
@@ -44,16 +45,8 @@
                                     <RotateTransform CenterX="3" Angle="180" CenterY="3" />
                                 </Setter.Value>
                             </Setter>
-                            <Setter Property="Shape.Fill" TargetName="ExpandPath">
-                                <Setter.Value>
-                                    <SolidColorBrush>#FF595959</SolidColorBrush>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Shape.Stroke" TargetName="ExpandPath">
-                                <Setter.Value>
-                                    <SolidColorBrush>#FF262626</SolidColorBrush>
-                                </Setter.Value>
-                            </Setter>
+                            <Setter Property="Shape.Fill"   TargetName="ExpandPath" Value="{DynamicResource TreeToggleButton.Checked.Fill}" />
+                            <Setter Property="Shape.Stroke" TargetName="ExpandPath" Value="{DynamicResource TreeToggleButton.Checked.Stroke}" />
                             <Trigger.Value>
                                 <s:Boolean>True</s:Boolean>
                             </Trigger.Value>

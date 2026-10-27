@@ -39,6 +39,13 @@ namespace Eto.Mac.Forms.Controls
 		public override void DidChangeSelection(NSNotification notification)
 		{
 			var handler = Handler;
+
+			if (notification.Object is NSTextView textView && textView.HasMarkedText)
+			{
+				// While an IME composition is in progress the input method owns the keystroke (building, navigating, or committing the composition), so don't surface it as a KeyDown to the app. This matches WPF/Windows, where IME-processed keys aren't raised as key events.
+				return;
+			}
+			
 			var selection = handler.Selection;
 			if (handler.SuppressSelectionChanged == 0 && selection != Handler.lastSelection)
 			{
@@ -118,6 +125,13 @@ namespace Eto.Mac.Forms.Controls
 
 		public override void OnKeyDown(KeyEventArgs e)
 		{
+			if (Control.HasMarkedText)
+			{
+				// While an IME composition is in progress the input method owns the keystroke (building, navigating, or committing the composition), so don't surface it as a KeyDown to the app. This matches WPF/Windows, where IME-processed keys aren't raised as key events.
+				// The KeyDown event is sent for the first key, but not for subsequent keys. Only the last KeyUp for Enter key is sent, but not the KeyDown.
+				return;
+			}
+
 			if (!AcceptsTab)
 			{
 				if (e.KeyData == Keys.Tab)
@@ -139,6 +153,18 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			}
 			base.OnKeyDown(e);
+		}
+		
+		public override void OnKeyUp(KeyEventArgs e)
+		{
+			if (Control.HasMarkedText)
+			{
+				// While an IME composition is in progress the input method owns the keystroke (building, navigating, or committing the composition), so don't surface it as a KeyDown to the app. This matches WPF/Windows, where IME-processed keys aren't raised as key events.
+				// Only the last KeyUp for Enter key is sent, but not the KeyDown.
+				return;
+			}
+
+			base.OnKeyUp(e);
 		}
 
 		public NSScrollView Scroll { get; private set; }

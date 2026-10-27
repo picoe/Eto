@@ -41,9 +41,8 @@ namespace Eto
 						var g = ms.ReadByte();
 						var r = ms.ReadByte();
 						var a = ms.ReadByte();
-						var af = a / 255f;
-						if (af > 0)
-							bd.SetPixel(x, y, new Color(r / af, g / af, b / af, af));
+						if (a > 0)
+							bd.SetPixel(x, y, Color.FromPremultipliedArgb(r, g, b, a));
 					}
 			}
 			return bmp;

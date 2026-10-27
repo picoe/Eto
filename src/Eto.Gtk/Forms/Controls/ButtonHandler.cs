@@ -28,6 +28,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		internal static readonly object Image_Key = new object();
 		internal static readonly object ImagePosition_Key = new object();
+		internal static readonly object ImageNextToText_Key = new object();
 		internal static readonly object MinimumSize_Key = new object();
 
 		protected override Gtk.Button CreateControl() => new EtoButton { Handler = this };

@@ -10,3 +10,5 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition(Eto.Serialization.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Forms", AssemblyName="Eto")]
 [assembly: XmlnsDefinition(Eto.Serialization.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto", AssemblyName="Eto")]
 [assembly: XmlnsPrefix(Eto.Serialization.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "eto")]
+[assembly: XmlnsDefinition(Eto.Serialization.Xaml.EtoXamlSchemaContext.DesignNamespace, "Eto.Serialization.Xaml.Design")]
+[assembly: XmlnsPrefix(Eto.Serialization.Xaml.EtoXamlSchemaContext.DesignNamespace, "d")]

@@ -1,6 +1,55 @@
 namespace Eto.Forms;
 
 /// <summary>
+/// Identifies what initiated a text change in events such as <see cref="TextBox.TextChanging"/>.
+/// </summary>
+public enum TextChangeSource
+{
+	/// <summary>
+	/// The change came from the user, but the specific origin could not be determined by the platform.
+	/// </summary>
+	/// <remarks>
+	/// This is the value used by the legacy <c>fromUser: true</c> constructors and for user-initiated
+	/// changes that don't map to any of the more specific values below (e.g. drag/drop, dictation, or
+	/// services on some platforms).
+	/// </remarks>
+	Unknown,
+
+	/// <summary>
+	/// The change was made programmatically, e.g. by setting the <see cref="TextControl.Text"/> property.
+	/// </summary>
+	/// <remarks>
+	/// Equivalent to the legacy <c>fromUser: false</c>. <see cref="TextChangingEventArgs.FromUser"/> is
+	/// <c>false</c> only for this value.
+	/// </remarks>
+	Programmatic,
+
+	/// <summary>
+	/// The user typed the change using the keyboard.
+	/// </summary>
+	Keyboard,
+
+	/// <summary>
+	/// The change was committed by an input method / text composition (IME), e.g. dead keys or CJK input.
+	/// </summary>
+	/// <remarks>
+	/// Detection of composition is best-effort and platform dependent. Where a platform does not
+	/// distinguish composition from plain typing, such changes are reported as <see cref="Keyboard"/>.
+	/// </remarks>
+	Composition,
+
+	/// <summary>
+	/// The change was a paste from the clipboard.
+	/// </summary>
+	Paste,
+
+	/// <summary>
+	/// The change was a cut to the clipboard (the selected text is removed).
+	/// </summary>
+	Cut
+}
+
+/// <summary>
 /// Arguments for events that handle when text is about to change, such as the <see cref="TextBox.TextChanging"/> event.
 /// </summary>
 /// <remarks>
@@ -50,9 +99,24 @@ public class TextChangingEventArgs : CancelEventArgs
 	public string NewText => newText ?? (newText = GetNewText());
 
 	/// <summary>
-	/// Gets a value indicating that the change was initiated by the user, false
+	/// Gets a value indicating that the change was initiated by the user, false when the change was made programmatically.
 	/// </summary>
-	public bool FromUser { get; }
+	/// <remarks>
+	/// This is a convenience that returns <c>true</c> for any <see cref="Source"/> other than
+	/// <see cref="TextChangeSource.Programmatic"/>. Use <see cref="Source"/> to determine how the user
+	/// initiated the change (typing, paste, etc.).
+	/// </remarks>
+	public bool FromUser => Source != TextChangeSource.Programmatic;
+
+	/// <summary>
+	/// Gets a value indicating how the change was initiated, e.g. by typing, pasting, or programmatically.
+	/// </summary>
+	/// <remarks>
+	/// Some values are best-effort and platform dependent — see the <see cref="TextChangeSource"/> members.
+	/// </remarks>
+	public TextChangeSource Source { get; }
+
+	static TextChangeSource FromUserSource(bool fromUser) => fromUser ? TextChangeSource.Unknown : TextChangeSource.Programmatic;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
@@ -61,10 +125,21 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <param name="range">Range of text to be effected.</param>
 	/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
 	public TextChangingEventArgs(string text, Range<int> range, bool fromUser)
+		: this(text, range, FromUserSource(fromUser))
+	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
+	/// </summary>
+	/// <param name="text">Text to be replaced in the range.</param>
+	/// <param name="range">Range of text to be effected.</param>
+	/// <param name="source">Value indicating how the change was initiated.</param>
+	public TextChangingEventArgs(string text, Range<int> range, TextChangeSource source)
 	{
 		this.text = text ?? string.Empty;
 		this.range = range;
-		FromUser = fromUser;
+		Source = source;
 	}
 
 	/// <summary>
@@ -75,24 +150,47 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <param name="oldText">Current text in the control.</param>
 	/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
 	public TextChangingEventArgs(string text, Range<int> range, string oldText, bool fromUser)
+		: this(text, range, oldText, FromUserSource(fromUser))
 	{
-		this.text = text ?? string.Empty;
-		this.range = range;
-		this.oldText = oldText ?? string.Empty;
-		FromUser = fromUser;
 	}
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
 	/// </summary>
-	/// <param name="newText">Old text for the control</param>
-	/// <param name="oldText">New text for the control</param>
+	/// <param name="text">Text to be replaced in the range.</param>
+	/// <param name="range">Range of text to be effected.</param>
+	/// <param name="oldText">Current text in the control.</param>
+	/// <param name="source">Value indicating how the change was initiated.</param>
+	public TextChangingEventArgs(string text, Range<int> range, string oldText, TextChangeSource source)
+	{
+		this.text = text ?? string.Empty;
+		this.range = range;
+		this.oldText = oldText ?? string.Empty;
+		Source = source;
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
+	/// </summary>
+	/// <param name="oldText">Old text for the control</param>
+	/// <param name="newText">New text for the control</param>
 	/// <param name="fromUser">Value indicating that the change was initiated from the user</param>
 	public TextChangingEventArgs(string oldText, string newText, bool fromUser)
+		: this(oldText, newText, FromUserSource(fromUser))
+	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Eto.Forms.TextChangingEventArgs"/> class.
+	/// </summary>
+	/// <param name="oldText">Old text for the control</param>
+	/// <param name="newText">New text for the control</param>
+	/// <param name="source">Value indicating how the change was initiated.</param>
+	public TextChangingEventArgs(string oldText, string newText, TextChangeSource source)
 	{
 		this.oldText = oldText ?? string.Empty;
 		this.newText = newText ?? string.Empty;
-		FromUser = fromUser;
+		Source = source;
 	}
 
 	Range<int> GetRange()

@@ -55,7 +55,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		protected override void BindCell (ref int dataIndex)
 		{
 			Column.Control.ClearAttributes (Control);
-			SetColumnMap (dataIndex);
+			SetColumnMap(dataIndex, (GLib.GType)typeof(object));
 			Column.Control.AddAttribute (Control, "pixbuf", dataIndex++);
 			base.BindCell(ref dataIndex);
 		}

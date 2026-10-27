@@ -32,6 +32,8 @@ namespace Eto.Serialization.Json.Converters
 						typeName = typeName.Substring(0, assemblyIndex);
 					}
 					type = serializer.SerializationBinder.BindToType(assemblyName, typeName);
+					if (type == null)
+						throw new JsonSerializationException($"Could not find type '{typeToken.Value<string>()}'. Add the assembly name, e.g. \"My.Namespace.MyType, MyAssembly\", or set NamespaceManager.LocalAssembly.");
 				}
 				else
 					type = objectType;

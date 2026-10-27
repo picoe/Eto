@@ -179,6 +179,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 		}
 
+		static readonly ObservableCollection<object> s_longLivedDataStore = new ObservableCollection<object> { "Item 1", "Item 2" };
+
 		public static ControlGCTest GCTest<T>(Action<T> action) => new ControlGCTest { ControlType = typeof(T), Test = c => action((T)c) };
 
 		public static ControlGCTest GCTest<T>(string description, Action<T> action)
@@ -227,6 +229,15 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				c.Step += (sender, e) => { /* do something */ };
 			});
 
+			// a data store that outlives the control (e.g. on a view model) should not keep it alive
+			yield return GCTest("With long lived DataStore", (DropDown c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (ComboBox c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (ListBox c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (CheckBoxList c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (RadioButtonList c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With long lived DataStore", (GridView c) => c.DataStore = s_longLivedDataStore);
+			yield return GCTest("With FilterCollection of long lived collection", (GridView c) => c.DataStore = new FilterCollection<object>(s_longLivedDataStore));
+
 			yield return GCTest("With Panels", (Splitter c) =>
 			{
 				c.Panel1 = new Panel();
@@ -245,12 +256,62 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				reference = new WeakReference(obj);
 				obj = null;
 			});
-			Thread.Sleep(100);
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
+			// Some platforms only drop their own reference to the control once a posted message has been
+			// processed, so retry for a short while instead of always paying a fixed delay - this test has
+			// ~60 cases, so an unconditional sleep here is a large chunk of the whole suite's runtime.
+			for (int i = 0; ; i++)
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				if (reference?.IsAlive != true || i >= 10)
+					break;
+				Thread.Sleep(10);
+			}
 			Assert.That(reference, Is.Not.Null);
 			Assert.That(reference.Target, Is.Null);
 			Assert.That(reference.IsAlive, Is.False);
+		}
+
+		class ListenerTrackingCollection : ObservableCollection<object>
+		{
+			readonly List<NotifyCollectionChangedEventHandler> _handlers = new List<NotifyCollectionChangedEventHandler>();
+
+			public override event NotifyCollectionChangedEventHandler CollectionChanged
+			{
+				add { lock (_handlers) _handlers.Add(value); base.CollectionChanged += value; }
+				remove { lock (_handlers) _handlers.Remove(value); base.CollectionChanged -= value; }
+			}
+
+			// Native toolkits (e.g. WPF's ItemsSource) can subscribe too, and clean up on their own schedule.
+			public int EtoListenerCount
+			{
+				get { lock (_handlers) return _handlers.Count(h => h.Target?.GetType().Namespace?.StartsWith("Eto", StringComparison.Ordinal) == true); }
+			}
+		}
+
+		[TestCase(typeof(DropDown))]
+		[TestCase(typeof(ComboBox))]
+		[TestCase(typeof(ListBox))]
+		[TestCase(typeof(CheckBoxList))]
+		[TestCase(typeof(RadioButtonList))]
+		[TestCase(typeof(GridView))]
+		public void LongLivedDataStoreShouldDropListenersWhenControlIsCollected(Type controlType)
+		{
+			var store = new ListenerTrackingCollection { "Item 1", "Item 2" };
+			Invoke(() =>
+			{
+				var control = Activator.CreateInstance(controlType);
+				controlType.GetProperty("DataStore").SetValue(control, store);
+			});
+			// The collection never changes, so only the control being collected can remove its listener.
+			for (int i = 0; store.EtoListenerCount > 0 && i < 20; i++)
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				Invoke(() => Application.Instance.RunIteration());
+				Thread.Sleep(10);
+			}
+			Assert.That(store.EtoListenerCount, Is.EqualTo(0));
 		}
 
 		[TestCaseSource(nameof(GetControlTypes))]
@@ -369,16 +430,25 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		[TestCaseSource(nameof(GetControlTypes)), InvokeOnUI]
 		public void ControlsShouldHavePreferredSize(IControlTypeInfo<Control> info)
 		{
-			var control = info.CreatePopulatedControl();
-			var size = control.GetPreferredSize();
-			Console.WriteLine($"PreferredSize for {info.Type}: {size}");
-			Assert.That(size.Width, Is.GreaterThan(0), "#1.1 - Preferred width should be greater than zero");
-			Assert.That(size.Height, Is.GreaterThan(0), "#1.2 - Preferred height should be greater than zero");
+			SizeF size = default;
+			SizeF containerSize = default;
 			var padding = new Padding(10);
-			var container = new Panel { Content = control, Padding = padding };
-			var containerSize = container.GetPreferredSize();
-			Assert.That(containerSize.Width, Is.EqualTo(size.Width + padding.Horizontal).Within(0.1), "#2.1 - panel with padding should have correct width");
-			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#2.2 - panel with padding should have correct height");
+			// GTK/GLib criticals are written directly to the native stderr, so capture it to ensure
+			// getting the preferred size of an unparented control doesn't emit any (e.g. the
+			// "gtk_widget_realize: assertion 'widget->priv->anchored...' failed" critical on Gtk).
+			var output = StandardErrorCapture.Capture(() =>
+			{
+				var control = info.CreatePopulatedControl();
+				size = control.GetPreferredSize();
+				Console.WriteLine($"PreferredSize for {info.Type}: {size}");
+				var container = new Panel { Content = control, Padding = padding };
+				containerSize = container.GetPreferredSize();
+			});
+			Assert.That(output, Does.Not.Contain("CRITICAL"), $"#1.1 - A critical warning was emitted while getting the preferred size:{Environment.NewLine}{output}");
+			Assert.That(size.Width, Is.GreaterThan(0), "#2.1 - Preferred width should be greater than zero");
+			Assert.That(size.Height, Is.GreaterThan(0), "#2.2 - Preferred height should be greater than zero");
+			Assert.That(containerSize.Width, Is.EqualTo(size.Width + padding.Horizontal).Within(0.1), "#3.1 - panel with padding should have correct width");
+			Assert.That(containerSize.Height, Is.EqualTo(size.Height + padding.Vertical).Within(0.1), "#3.2 - panel with padding should have correct height");
 		}
 
 		[ManualTest]

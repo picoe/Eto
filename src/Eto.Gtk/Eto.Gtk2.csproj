@@ -4,6 +4,7 @@
     <TargetFrameworks>net462</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <RootNamespace>Eto.GtkSharp</RootNamespace>
+    <DefaultItemExcludes>$(DefaultItemExcludes);build\*</DefaultItemExcludes>
     <DefineConstants>$(DefineConstants);CAIRO;GTK2</DefineConstants>
     <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
     <FixGtkReferences Condition="$(FixGtkReferences)==''">true</FixGtkReferences>

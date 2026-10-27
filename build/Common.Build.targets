@@ -119,15 +119,36 @@
     <None Remove="**\*.tt" />
   </ItemGroup>
 
-  <Target Name="Transform" BeforeTargets="BeforeBuild" Inputs="@(TextTemplate)" Outputs="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" Condition="$(MSBuildRuntimeType) == 'Core'">
+  <!--
+  Transform the T4 templates.
+  
+  In a multi-targeting project this is hooked into the *outer* (cross-targeting) build so it runs
+  once, before the per-TFM inner builds are dispatched.  Otherwise each inner build would run it,
+  and running `dotnet tool restore` / `dotnet t4` concurrently on the same files can fail.
+  It is still hooked into BeforeBuild so single-TFM projects (and `dotnet build -f <tfm>`, which
+  skips the outer build entirely) still transform - by then the outputs are up to date so the
+  inner builds of a normal multi-targeting build simply skip it.
+
+  Note: Inputs/Outputs form a 1:1 mapping, so a partially up-to-date build only passes the
+  out-of-date templates to the `dotnet t4` batch below.
+  -->
+  <Target Name="Transform" BeforeTargets="BeforeBuild;DispatchToInnerBuilds" Inputs="@(TextTemplate)" Outputs="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" Condition="$(MSBuildRuntimeType) == 'Core' AND '@(TextTemplate)' != ''">
     <Message Text="Transforming T4 templates..." Importance="high" />
-    <ItemGroup>
-      <Compile Remove="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
-    </ItemGroup>
-    <Exec Command="dotnet tool restore" />
+    <Exec Command="dotnet tool restore" WorkingDirectory="$(ProjectDir)" />
     <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet t4 %(TextTemplate.Identity) --out %(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs"/>
+  </Target>
+
+  <!--
+  Include the generated files in the compilation.  This is done separately from Transform as that
+  can be skipped (up to date, or already done by the outer build) while the generated file may not
+  have existed when the default Compile glob was evaluated.
+  -->
+  <Target Name="_IncludeTransformOutput" BeforeTargets="BeforeBuild" DependsOnTargets="Transform" Condition="'@(TextTemplate)' != ''">
     <ItemGroup>
-      <Compile Include="%(TextTemplate.RelativeDir)%(TextTemplate.Filename).cs" />
+      <_TransformOutput Include="@(TextTemplate->'%(RelativeDir)%(Filename).cs')" />
+      <_TransformOutputExists Include="@(_TransformOutput)" Condition="Exists('%(Identity)')" />
+      <Compile Remove="@(_TransformOutputExists)" />
+      <Compile Include="@(_TransformOutputExists)" />
     </ItemGroup>
   </Target>
 

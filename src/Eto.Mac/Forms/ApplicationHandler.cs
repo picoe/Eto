@@ -3,7 +3,7 @@ using Eto.Mac.Drawing;
 using System.Runtime.CompilerServices;
 namespace Eto.Mac.Forms
 {
-	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler
+	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler, Application.IActivateHandler
 	{
 		bool _attached;
 		bool? _activateOnStartup;
@@ -21,6 +21,19 @@ namespace Eto.Mac.Forms
 			get { return _activateOnStartup ?? !_attached && Debugger.IsAttached; }
 			set { _activateOnStartup = value; }
 		}
+
+		/// <summary>
+		/// Gets or sets a value indicating the app should take activation from whatever app currently holds it,
+		/// instead of asking for it cooperatively.
+		/// </summary>
+		/// <remarks>
+		/// macOS only hands activation to an app that asks for it when no other app is holding it, so an app
+		/// started while something else is frontmost can show a window that never becomes key - and a control
+		/// in it can never get focus. Turning this on takes activation regardless, which is only appropriate
+		/// when stealing focus from the user is expected - an automated test run being the usual case.
+		/// </remarks>
+		/// <value><c>true</c> to take activation from the frontmost app; otherwise, <c>false</c>. Defaults to <c>false</c>.</value>
+		public bool ActivateIgnoringOtherApps { get; set; }
 
 		// pointer to the initial menu so we know whether we want to keep it or not for the main form
 		internal IntPtr InitialMenu { get; set; }
@@ -224,7 +237,7 @@ namespace Eto.Mac.Forms
 			if (ActivateOnStartup)
 			{
 				// if we're debugging, make the app active when it starts
-				Control.Activate();
+				EnsureActivated(true, true, null);
 			}
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 		}
@@ -294,8 +307,7 @@ namespace Eto.Mac.Forms
 				case Application.ThemeChangedEvent:
 					AddControlObserver(new NSString("effectiveAppearance"), e =>
 					{
-						if (Theme == Themes.System)
-							Callback.OnThemeChanged(Widget, EventArgs.Empty);
+						Callback.OnThemeChanged(Widget, EventArgs.Empty);
 					});
 					break;
 				default:
@@ -343,11 +355,42 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		internal void EnsureActivated(bool showInTaskbar, bool showActivated, Icon icon)
+		{
+			var wasProhibited = Control.ActivationPolicy == NSApplicationActivationPolicy.Prohibited;
+			if (showInTaskbar && wasProhibited)
+			{
+				// use the window icon as the app icon if the app is not in the dock yet
+				if (icon != null)
+					Control.ApplicationIconImage = icon.ToNS();
+				
+				// ensure the dock icon is visible (so we can get a menu, etc)
+				Control.ActivationPolicy = NSApplicationActivationPolicy.Regular;
+			}
+
+			if (!showActivated)
+				return;
+
+			// Later shows should not take activation unless explicitly opted in.
+			if (ActivateIgnoringOtherApps || showInTaskbar && wasProhibited)
+				RequestActivation(false);
+		}
+
+		void RequestActivation(bool explicitlyRequested)
+		{
+			if (MacVersion.IsAtLeast(14, 0) && !ActivateIgnoringOtherApps)
+				Control.Activate();
+			else
+				Control.ActivateIgnoringOtherApps(explicitlyRequested || ActivateIgnoringOtherApps);
+		}
+
+		public void Activate() => RequestActivation(true);
+
 		public Keys CommonModifier => Keys.Application;
 
 		public Keys AlternateModifier => Keys.Alt;
 
-		public bool IsActive => NSApplication.SharedApplication.Active;
+		public bool IsActive => Control.Active;
 
 		Theme _currentTheme = Themes.System;
 		public Theme Theme
@@ -356,7 +399,7 @@ namespace Eto.Mac.Forms
 			set
 			{
 				_currentTheme = value;
-				NSApplication.SharedApplication.Appearance = ThemeHandler.GetControl(value);
+				Control.Appearance = ThemeHandler.GetControl(value);
 			}
 		}
 	}

@@ -1057,6 +1057,12 @@ namespace Eto.WinForms.Forms
 			set { Control.TabIndex = value == int.MaxValue ? 0 : value + 1; }
 		}
 
+		public virtual bool TabStop
+		{
+			get { return Control.TabStop; }
+			set { Control.TabStop = value; }
+		}
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		/// <summary>
@@ -1161,6 +1167,55 @@ namespace Eto.WinForms.Forms
 		{
 			ContainerControl.Capture = false;
 			MouseCaptured = false;
+		}
+
+		Eto.WinForms.Forms.Controls.WinFormsGestureCoordinator _gestureCoordinator;
+
+		public virtual void AddGesture(Gesture item)
+		{
+			if (item == null)
+				throw new ArgumentNullException(nameof(item));
+
+			var handler = ((IHandlerSource)item).Handler as Eto.WinForms.Forms.Controls.IWinFormsGestureHandler;
+			if (handler == null)
+				throw new NotSupportedException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Gesture '{0}' is not supported on WinForms", item.GetType().FullName));
+
+			if (_gestureCoordinator == null)
+				_gestureCoordinator = new Eto.WinForms.Forms.Controls.WinFormsGestureCoordinator(ContainerControl);
+			_gestureCoordinator.Register(handler);
+		}
+
+		public virtual void ClearGestures()
+		{
+			if (_gestureCoordinator == null)
+				return;
+
+			foreach (var gesture in Widget.Gestures)
+			{
+				if (((IHandlerSource)gesture).Handler is Eto.WinForms.Forms.Controls.IWinFormsGestureHandler handler)
+					_gestureCoordinator.Unregister(handler);
+			}
+			DisposeCoordinatorIfEmpty();
+		}
+
+		public virtual void RemoveGesture(Gesture item)
+		{
+			if (item == null || _gestureCoordinator == null)
+				return;
+			if (((IHandlerSource)item).Handler is Eto.WinForms.Forms.Controls.IWinFormsGestureHandler handler)
+			{
+				_gestureCoordinator.Unregister(handler);
+				DisposeCoordinatorIfEmpty();
+			}
+		}
+
+		void DisposeCoordinatorIfEmpty()
+		{
+			if (_gestureCoordinator != null && _gestureCoordinator.Count == 0)
+			{
+				_gestureCoordinator.Dispose();
+				_gestureCoordinator = null;
+			}
 		}
 
 	}

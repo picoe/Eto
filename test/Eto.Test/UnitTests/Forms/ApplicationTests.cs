@@ -151,7 +151,8 @@ public class ApplicationTests : TestBase
 			app.InvokeAsync(async () =>
 			{
 				isSameThreadForInvoke = threadId == Thread.CurrentThread.ManagedThreadId;
-				await Task.Delay(2000);
+				// let the modal dialog actually come up on its thread before closing it again
+				await Task.Delay(250);
 				dialog.Close();
 			});
 

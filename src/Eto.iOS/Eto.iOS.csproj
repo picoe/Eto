@@ -30,7 +30,7 @@
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Project="..\Shared\Common.props" />
+  <Import Project="..\..\build\Common.props" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />

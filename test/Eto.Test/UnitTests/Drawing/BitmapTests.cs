@@ -675,18 +675,20 @@ namespace Eto.Test.UnitTests.Drawing
 					Assert.That(gottenColor.Gb, Is.EqualTo(0), "Green should be 0");
 					Assert.That(gottenColor.Bb, Is.EqualTo(255), "Blue should be 255");
 				}
-				if (format == PixelFormat.Format24bppRgb)
+				if (format != PixelFormat.Format32bppRgba)
 				{
-					Warn.If(gottenColor.Ab, Is.Not.EqualTo(255), "Alpha should be 255 for 24bpp, but 128 is okay as long as the other values are correct");
-					Assert.That(gottenColor.Ab, Is.EqualTo(255).Or.EqualTo(128), "Alpha should be 255 for 24bpp, but 128 is okay as long as the other values are correct");
+					// no alpha channel, so the pixel is always opaque. Some backends leave the unused byte set to
+					// the alpha it was drawn with, which is okay as long as the other values are correct.
+					Warn.If(gottenColor.Ab, Is.Not.EqualTo(255), "Alpha should be 255 without an alpha channel, but 128 is okay as long as the other values are correct");
+					Assert.That(gottenColor.Ab, withAlpha ? Is.EqualTo(255).Or.EqualTo(128) : Is.EqualTo(255), "Alpha should be 255 without an alpha channel, but 128 is okay as long as the other values are correct");
 				}
 				else if (withAlpha)
 				{
-					Assert.That(gottenColor.Ab, Is.EqualTo(128), "Alpha should be 128 for 32bpp");
+					Assert.That(gottenColor.Ab, Is.EqualTo(128), "Alpha should be 128 for 32bpp with alpha");
 				}
 				else
 				{
-					Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255 for 32bpp");
+					Assert.That(gottenColor.Ab, Is.EqualTo(255), "Alpha should be 255 for 32bpp with alpha");
 				}
 			}
 		});

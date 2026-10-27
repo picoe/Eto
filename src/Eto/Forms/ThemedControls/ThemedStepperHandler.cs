@@ -64,6 +64,16 @@ public class ThemedStepperHandler : ThemedControlHandler<Panel, Stepper, Stepper
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether the user can get to the stepper buttons using the tab key.
+	/// </summary>
+	/// <value><c>true</c> to include the buttons in the tab order (the default); <c>false</c> to skip them.</value>
+	public override bool TabStop
+	{
+		get { return upButton.TabStop; }
+		set { upButton.TabStop = downButton.TabStop = value; }
+	}
+
+	/// <summary>
 	/// Gets or sets the orientation of the stepper
 	/// </summary>
 	[DefaultValue(Orientation.Vertical)]

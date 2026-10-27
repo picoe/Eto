@@ -10,6 +10,9 @@ namespace Eto.Serialization.Xaml.Extensions
 {
 	[MarkupExtensionReturnType(typeof(object))]
 	[ContentProperty("Default")]
+#if PORTABLE
+	[XamlCodeGen(nameof(Provide))]
+#endif
 	public class OnExtension : MarkupExtension
 	{
 		public object Mac { get; set; }
@@ -77,5 +80,54 @@ namespace Eto.Serialization.Xaml.Extensions
 
 			return Default;
 		}
+
+#if PORTABLE
+		/// <summary>
+		/// Gets the value for the current platform, used by compiled xeto in place of <see cref="ProvideValue"/>.
+		/// </summary>
+		public static T Provide<T>(
+			XamlOptional<T> @default = default,
+			XamlOptional<T> mac = default,
+			XamlOptional<T> wpf = default,
+			XamlOptional<T> winForms = default,
+			XamlOptional<T> gtk = default,
+			XamlOptional<T> ios = default,
+			XamlOptional<T> android = default,
+			XamlOptional<T> windows = default,
+			XamlOptional<T> linux = default,
+			XamlOptional<T> osx = default,
+			XamlOptional<T> desktop = default,
+			XamlOptional<T> mobile = default)
+		{
+			var p = Platform.Instance;
+			if (p.IsMac && mac.HasValue)
+				return mac.Value;
+			if (p.IsWpf && wpf.HasValue)
+				return wpf.Value;
+			if (p.IsWinForms && winForms.HasValue)
+				return winForms.Value;
+			if (p.IsGtk && gtk.HasValue)
+				return gtk.Value;
+			if (p.IsIos && ios.HasValue)
+				return ios.Value;
+			if (p.IsAndroid && android.HasValue)
+				return android.Value;
+
+			var os = EtoEnvironment.Platform;
+			if (os.IsMac && osx.HasValue)
+				return osx.Value;
+			if (os.IsWindows && windows.HasValue)
+				return windows.Value;
+			if (os.IsLinux && linux.HasValue)
+				return linux.Value;
+
+			if (p.IsDesktop && desktop.HasValue)
+				return desktop.Value;
+			if (p.IsMobile && mobile.HasValue)
+				return mobile.Value;
+
+			return @default.Value;
+		}
+#endif
 	}
 }

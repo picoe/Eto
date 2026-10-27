@@ -27,8 +27,28 @@ https://github.com/picoe/Eto/wiki
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   
+  <!-- ship the .xeto source generator, with the assemblies it loads, in the package's analyzers folder -->
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.26.0" />
+    <ProjectReference Include="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeXamlGeneratorInPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+  <Target Name="IncludeXamlGeneratorInPackage">
+    <MSBuild Projects="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+      <Output TaskParameter="TargetOutputs" ItemName="_XamlGeneratorFile" />
+    </MSBuild>
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="@(_XamlGeneratorFile)" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+
+  <!-- set PortableXamlPath to a Portable.Xaml checkout to build against its source -->
+  <ItemGroup Condition="'$(PortableXamlPath)' == ''">
+    <PackageReference Include="Portable.Xaml" Version="0.31.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(PortableXamlPath)' != ''">
+    <ProjectReference Include="$(PortableXamlPath)src\Portable.Xaml\Portable.Xaml.csproj" />
   </ItemGroup>
   
 </Project>

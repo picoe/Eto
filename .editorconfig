@@ -26,10 +26,10 @@ csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 csharp_space_around_binary_operators = before_and_after
 
-[*.{csproj,vbproj,fsproj,proj,targets,props}]
+[*.{csproj,vbproj,fsproj,proj,targets,props,slnx}]
 indent_style = space
 indent_size = 2
-tab_size = 2
+tab_width = 2
 
 [*.yml]
 indent_style = space

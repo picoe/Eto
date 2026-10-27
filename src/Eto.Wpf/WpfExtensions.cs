@@ -62,6 +62,40 @@ namespace Eto.Wpf
 			return FindVisualChildren<T>(parent, childName).FirstOrDefault();
 		}
 
+		/// <summary>
+		/// Performs a scroll-into-view action on the specified <paramref name="control"/> without
+		/// scrolling any of its scrollable parents.
+		/// </summary>
+		/// <remarks>
+		/// After a ScrollViewer scrolls its own content to satisfy a bring-into-view request, WPF
+		/// re-raises the request from its ScrollContentPresenter so that every scrollable ancestor
+		/// scrolls as well. That is what we want when the user navigates to a control, but not when
+		/// code scrolls a row of a list or grid into view - only that list or grid should scroll.
+		/// </remarks>
+		/// <param name="control">Control to perform the scroll on.</param>
+		/// <param name="scrollIntoView">Action that scrolls the item into view, e.g. ScrollIntoView().</param>
+		public static void ScrollIntoViewWithoutParents(this sw.FrameworkElement control, Action scrollIntoView)
+		{
+			if (control == null)
+				return;
+			var suppress = new sw.RequestBringIntoViewEventHandler((sender, e) => e.Handled = true);
+			control.AddHandler(sw.FrameworkElement.RequestBringIntoViewEvent, suppress);
+			try
+			{
+				scrollIntoView();
+			}
+			finally
+			{
+				// The scroll does not necessarily finish within the call: ScrollIntoView defers to the
+				// dispatcher when the item containers have not been generated yet, and a ScrollViewer
+				// completes a scroll it could not do right away on its next layout pass. Remove the handler
+				// at Background priority, which runs after both of those.
+				control.Dispatcher.BeginInvoke(
+					new Action(() => control.RemoveHandler(sw.FrameworkElement.RequestBringIntoViewEvent, suppress)),
+					swt.DispatcherPriority.Background);
+			}
+		}
+
 		public static void ApplyAllTemplates(this sw.FrameworkElement parent)
 		{
 			if (parent == null) return;

@@ -10,13 +10,11 @@ namespace Eto.Wpf.Forms.Controls
 				IsTabStop = false,
 				Focusable = false,
 
-				Content = new EtoWatermarkTextBox
+				EditContent = new EtoWatermarkTextBox
 				{
 					MinHeight = 0,
 					KeepWatermarkOnGotFocus = true,
 					BorderThickness = new sw.Thickness(0),
-					BorderBrush = null,
-					Background = null,
 					Padding = new sw.Thickness(0),
 				},
 			};
@@ -50,9 +48,9 @@ namespace Eto.Wpf.Forms.Controls
 			set { TextBox.Foreground = value.ToWpfBrush(TextBox.Foreground); }
 		}
 
-		EtoWatermarkTextBox WatermarkTextBox => (EtoWatermarkTextBox)Control.Content;
+		EtoWatermarkTextBox WatermarkTextBox => (EtoWatermarkTextBox)Control.EditContent;
 
-		protected override swc.TextBox TextBox => (swc.TextBox)Control.Content;
+		protected override swc.TextBox TextBox => (swc.TextBox)Control.EditContent;
 
 		protected override swc.Control BorderControl => Control;
 
@@ -66,6 +64,7 @@ namespace Eto.Wpf.Forms.Controls
 					Control.Spin += (sender, e) =>
 					{
 						Callback.OnStep(Widget, new StepperEventArgs(e.Direction == SpinDirection.Increase ? StepperDirection.Up : StepperDirection.Down));
+						e.Handled = true;
 					};
 					break;
 				default:

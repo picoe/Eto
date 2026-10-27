@@ -266,7 +266,7 @@ namespace Eto.GtkSharp.Forms.Controls
 					break;
 #endif
 				case Eto.Forms.Control.ShownEvent:
-					Control.Mapped += Connector.MappedEvent;
+					// raised by FireOnShown, not a native signal
 					break;
 				case DropDown.FormatItemEvent:
 					SetAttributes(true);

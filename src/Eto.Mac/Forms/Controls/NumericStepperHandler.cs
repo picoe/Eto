@@ -172,13 +172,18 @@ namespace Eto.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			// EtoNumberFormatter is what applies CultureInfo when NeedsFormat; DefaultFormatter is a plain
+			// NSNumberFormatter and can only ever format with the OS locale, so replace it up front
+			SetFormatter();
 			var size = GetNaturalSize(SizeF.PositiveInfinity);
 			Control.Frame = new CGRect(0, 0, size.Width, size.Height);
 			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 			Widget.LostFocus += (sender, e) =>
 			{
+				InvalidateOSFormat();
+				EnsureFormatter();
 				var value = TextField.DoubleValue;
-				var newValue = Math.Max(MinValue, Math.Min(MaxValue, TextField.DoubleValue));
+				var newValue = Math.Max(MinValue, Math.Min(MaxValue, value));
 				if (Math.Abs(value - newValue) > double.Epsilon || string.IsNullOrEmpty(TextField.StringValue))
 				{
 					TextField.DoubleValue = newValue;
@@ -187,22 +192,39 @@ namespace Eto.Mac.Forms.Controls
 			};
 			Widget.TextInput += (sender, e) =>
 			{
-				var formatter = (NSNumberFormatter)TextField.Formatter;
-				if (NeedsFormat)
+				// with a format string the text isn't necessarily a plain number, so don't filter what can be typed
+				if (HasFormatString)
 					return;
-				if (e.Text == ".")
+
+				InvalidateOSFormat();
+				EnsureFormatter();
+
+				// filter using the symbols of whichever formatter is in effect: CultureInfo's when we format the value
+				// ourselves, and the native formatter's otherwise - those follow the OS locale, including whatever the
+				// user has customized about it.  Using CultureInfo's for the native case rejects the separator the
+				// field actually displays and parses with, so the value could not be typed at all.
+				var needsFormat = NeedsFormat;
+				var format = CultureInfo.NumberFormat;
+				var nativeFormat = (NSNumberFormatter)TextField.Formatter;
+				var decimalSeparator = needsFormat ? format.NumberDecimalSeparator : nativeFormat.DecimalSeparator;
+				var negativeSign = needsFormat ? format.NegativeSign : nativeFormat.MinusSign;
+				var positiveSign = needsFormat ? format.PositiveSign : nativeFormat.PlusSign;
+				var allowDecimal = MaximumDecimalPlaces > 0;
+
+				if (e.Text == decimalSeparator)
 				{
-					if (MaximumDecimalPlaces == 0 && DecimalPlaces == 0)
+					// only one decimal separator is allowed, unless the existing one is being replaced
+					if (!allowDecimal)
 						e.Cancel = true;
 					else
 					{
 						var str = GetStringValue();
-						e.Cancel = str.Contains(formatter.DecimalSeparator);
+						e.Cancel = str.Contains(decimalSeparator);
 						var editor = TextField.CurrentEditor;
 						if (editor != null && editor.SelectedRange.Length > 0)
 						{
 							var sub = str.Substring((int)editor.SelectedRange.Location, (int)editor.SelectedRange.Length);
-							e.Cancel &= !sub.Contains(formatter.DecimalSeparator);
+							e.Cancel &= !sub.Contains(decimalSeparator);
 						}
 					}
 				}
@@ -213,10 +235,9 @@ namespace Eto.Mac.Forms.Controls
 						if (Char.IsDigit(r))
 							continue;
 						var str = r.ToString();
-						if ((formatter.MaximumFractionDigits > 0 && str == formatter.DecimalSeparator)
-							|| (formatter.UsesGroupingSeparator && str == formatter.GroupingSeparator)
-							|| (MinValue < 0 && (str == formatter.NegativePrefix || str == formatter.NegativeSuffix))
-							|| (MaxValue > 0 && (str == formatter.PositivePrefix || str == formatter.PositiveSuffix)))
+						if ((allowDecimal && str == decimalSeparator)
+							|| (MinValue < 0 && str == negativeSign)
+							|| (MaxValue > 0 && str == positiveSign))
 							continue;
 						e.Cancel = true;
 						break;
@@ -288,6 +309,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			get
 			{
+				EnsureFormatter();
 				var str = GetStringValue();
 				var nsval = ((NSNumberFormatter)TextField.Formatter).NumberFromString(str);
 				if (nsval == null)
@@ -457,6 +479,12 @@ namespace Eto.Mac.Forms.Controls
 
 		void SetFormatter()
 		{
+			// the computed format string depends on the decimal places, which may have changed
+			Widget.Properties.Remove(ComputedFormatString_Key);
+
+			// remember what the OS was formatting like, so EnsureFormatter can tell when it has changed
+			_osFormat = OSFormat;
+
 			var formatter = new EtoNumberFormatter
 			{
 				Handler = this,
@@ -566,9 +594,107 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
-		bool NeedsFormat => HasFormatString || CultureInfo != CultureInfo.CurrentCulture;
-
 		bool HasFormatString => !string.IsNullOrEmpty(FormatString);
+
+		/// <summary>
+		/// Gets whether the value has to be formatted and parsed using <see cref="CultureInfo"/> instead of being
+		/// left to the native formatter.
+		/// </summary>
+		/// <remarks>
+		/// When the culture is the one the OS is set to, the native formatter is left to do the work so that whatever
+		/// the user has customized about their number format is respected - macOS lets the separators be changed
+		/// independently of the region, and CultureInfo cannot represent that.  Any other culture was asked for
+		/// explicitly and has to be applied, even when it happens to be what CurrentCulture is set to.
+		/// </remarks>
+		bool NeedsFormat => HasFormatString || !IsOSCulture;
+
+		/// <summary>
+		/// Gets whether <see cref="CultureInfo"/> is the culture the OS is set to.
+		/// </summary>
+		/// <remarks>
+		/// Compared by name rather than by instance: <see cref="CultureInfo.CurrentCulture"/> is not necessarily the
+		/// OS culture, since an app can set it to anything - and an explicitly assigned culture is never the same
+		/// instance as CurrentCulture even when it names the same culture.
+		/// </remarks>
+		bool IsOSCulture => string.Equals(CultureInfo.Name, OSFormat.Culture, StringComparison.OrdinalIgnoreCase);
+
+		/// <summary>
+		/// Gets the name of the OS locale's culture in the form <see cref="CultureInfo.Name"/> uses, e.g. the
+		/// identifier en_CA becomes en-CA.
+		/// </summary>
+		/// <remarks>
+		/// Read from the autoupdating locale so it follows the user changing their region.  Locale identifiers can
+		/// carry keywords (en_CA@currency=CAD) which have no CultureInfo equivalent, so those are dropped.
+		/// </remarks>
+		static string OSCultureName
+		{
+			get
+			{
+				var identifier = NSLocale.AutoUpdatingCurrentLocale.LocaleIdentifier ?? string.Empty;
+				var keyword = identifier.IndexOf('@');
+				if (keyword >= 0)
+					identifier = identifier.Substring(0, keyword);
+				return identifier.Replace('_', '-');
+			}
+		}
+
+		(string Culture, string Decimal, string Group, string Minus) _osFormat;
+
+		static (string Culture, string Decimal, string Group, string Minus)? s_osFormat;
+		static NSObject[] s_osObservers;
+
+		/// <summary>
+		/// Gets what the OS formats numbers like, to detect the user changing it.
+		/// </summary>
+		/// <remarks>
+		/// NSNumberFormatter reads its symbols from the locale when it is created and keeps them, so one built before
+		/// the user changed their number format still uses the old separators.  The text and the formatter that parses
+		/// it would then disagree, reading a "123,123" typed earlier as 123123.  The culture name is part of it as it
+		/// decides <see cref="IsOSCulture"/>, and so whether the native formatter is used at all.
+		///
+		/// Cached: reading it builds an NSNumberFormatter, which is far too slow to repeat on every value read.  It is
+		/// dropped when the locale changes or the app becomes active, and by <see cref="InvalidateOSFormat"/> whenever
+		/// the user interacts with a stepper.
+		/// </remarks>
+		static (string Culture, string Decimal, string Group, string Minus) OSFormat
+		{
+			get
+			{
+				if (s_osFormat == null)
+				{
+					// changing the number format means leaving for System Settings and coming back, so becoming
+					// active is a better signal than the locale notification, which does not report a format
+					// customized within the same locale
+					s_osObservers ??= new[]
+					{
+						NSNotificationCenter.DefaultCenter.AddObserver(NSLocale.CurrentLocaleDidChangeNotification, n => s_osFormat = null),
+						NSNotificationCenter.DefaultCenter.AddObserver(NSApplication.DidBecomeActiveNotification, n => s_osFormat = null)
+					};
+					var formatter = new NSNumberFormatter { NumberStyle = NSNumberFormatterStyle.Decimal };
+					s_osFormat = (OSCultureName, formatter.DecimalSeparator, formatter.GroupingSeparator, formatter.MinusSign);
+				}
+				return s_osFormat.Value;
+			}
+		}
+
+		/// <summary>
+		/// Discards the cached OS format, so the next read picks up a change the locale notification did not report.
+		/// </summary>
+		static void InvalidateOSFormat() => s_osFormat = null;
+
+		/// <summary>
+		/// Rebuilds the formatter when the OS number format has changed since it was created, which re-renders the
+		/// text from the value rather than leaving it to be reinterpreted with different separators.
+		/// </summary>
+		/// <remarks>
+		/// Called from the points that read the text or the formatter's symbols.  It is not called while formatting,
+		/// as that runs inside the formatter itself.
+		/// </remarks>
+		void EnsureFormatter()
+		{
+			if (_osFormat != OSFormat)
+				SetFormatter();
+		}
 
 		static readonly object CultureInfo_Key = new object();
 
@@ -577,8 +703,10 @@ namespace Eto.Mac.Forms.Controls
 			get { return Widget.Properties.Get<CultureInfo>(CultureInfo_Key, CultureInfo.CurrentCulture); }
 			set
 			{
-				Widget.Properties.Remove(ComputedFormatString_Key);
-				Widget.Properties.Set(CultureInfo_Key, value, SetFormatter, CultureInfo.CurrentCulture);
+				Widget.Properties.Set(CultureInfo_Key, value, CultureInfo.CurrentCulture);
+				// Set() removes the key when the value matches CultureInfo.CurrentCulture, so it can't report whether
+				// the effective culture changed - reformat unconditionally.
+				SetFormatter();
 			}
 		}
 

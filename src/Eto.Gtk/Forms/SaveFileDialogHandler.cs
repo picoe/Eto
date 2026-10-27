@@ -17,7 +17,7 @@ namespace Eto.GtkSharp.Forms
 			Control.DefaultResponse = Gtk.ResponseType.Ok;
 #endif
 			Control.DoOverwriteConfirmation = true;
-			Control.SetCurrentFolder(System.IO.Directory.GetCurrentDirectory());
+			Control.SetCurrentFolder(GtkFileDialogHelper.InitialFolder);
 		}
 	}
 }

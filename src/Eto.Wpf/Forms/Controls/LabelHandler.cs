@@ -7,9 +7,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override sw.Size MeasureOverride(sw.Size constraint)
 		{
-			var size = Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
-			size.Width += 1;
-			return size;
+			return Handler?.MeasureOverride(constraint, base.MeasureOverride) ?? base.MeasureOverride(constraint);
 		}
 	}
 
@@ -114,6 +112,19 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					Control.TextWrapping = value.ToWpf();
 					SetText();
+					UpdatePreferredSize();
+				}
+			}
+		}
+
+		public TextTrimming Trimming
+		{
+			get => Control.TextTrimming.ToEto();
+			set
+			{
+				if (value != Trimming)
+				{
+					Control.TextTrimming = value.ToWpf();
 					UpdatePreferredSize();
 				}
 			}

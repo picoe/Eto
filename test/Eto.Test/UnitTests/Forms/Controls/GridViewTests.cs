@@ -218,14 +218,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 					f.Show();
 				});
 
-				Thread.Sleep(1000);
+				// give the grid time to render its custom cells (where the crash used to happen) before
+				// and after the reload. There's nothing observable to wait on, so this stays a fixed
+				// sleep - just a short one, as a few frames is all the render pass needs.
+				Thread.Sleep(250);
 
 				Application.Instance.Invoke(() =>
 				{
 					g.DataStore = Enumerable.Range(0, 10).Cast<object>().ToList();
 				});
 
-				Thread.Sleep(1000);
+				Thread.Sleep(250);
 			}
 			finally
 			{
@@ -275,5 +278,123 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			if (exception != null)
 				ExceptionDispatchInfo.Capture(exception).Throw();
 		}
+
+		[Test]
+		public void UsingStringListAsDataStoreShouldNotEmitCriticalWarnings()
+		{
+			var output = StandardErrorCapture.Capture(() =>
+			{
+				ShownAsync(form =>
+				{
+					var grid = new GridView { Size = new Size(200, 200) };
+					grid.Columns.Add(new GridColumn
+					{
+						HeaderText = "Text",
+						DataCell = new TextBoxCell { Binding = Binding.Property((string s) => s) }
+					});
+					grid.DataStore = new List<string> { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+					return grid;
+				}, async grid =>
+				{
+					// let the grid render its cells - that's when GTK emits the critical if the data store is
+					// unsupported. Nothing to poll on (we're waiting for output that should never arrive),
+					// so this is a fixed delay, kept to a handful of frames.
+					await Task.Delay(200);
+					grid.ReloadData(Enumerable.Range(0, 5));
+					await Task.Delay(200);
+				});
+			});
+
+			Assert.That(output, Does.Not.Contain("CRITICAL"), $"A critical warning was emitted while rendering a List<string> data store:{Environment.NewLine}{output}");
+		}
+
+		[TestCase(WindowStyle.Default, false)]
+		[TestCase(WindowStyle.None, true)]
+		public void PreferredSizeShouldAccountForAllRowsWhenLargerThanWindow(WindowStyle windowStyle, bool positionRelativeToParent) => Async(10000, async () =>
+		{
+			const int rowHeight = 20;
+			const int rowCount = 5;
+			const int largerRowCount = 10;
+
+			static ObservableCollection<DataItem> CreateRows(int rows)
+			{
+				var collection = new ObservableCollection<DataItem>();
+				for (int i = 0; i < rows; i++)
+					collection.Add(new DataItem(i) { TextValue = $"Item {i}" });
+				return collection;
+			}
+
+			var grid = new GridView { ShowHeader = false, RowHeight = rowHeight };
+			grid.Columns.Add(new GridColumn
+			{
+				DataCell = new TextBoxCell { Binding = Binding.Property((DataItem m) => m.TextValue) }
+			});
+			grid.DataStore = CreateRows(rowCount);
+
+			Window parent = Application.Instance.MainForm;
+			bool closeParent = false;
+			var form = new FloatingForm
+			{
+				WindowStyle = windowStyle,
+				Content = grid,
+				ShowInTaskbar = false,
+				ShowActivated = false,
+				CanFocus = false
+			};
+			// size the child form to fit its content
+			form.Size = Size.Ceiling(grid.GetPreferredSize());
+			try
+			{
+				if (positionRelativeToParent)
+				{
+					if (parent == null)
+					{
+						// a WindowStyle.None form (e.g. a popup) is typically owned by and
+						// positioned relative to a parent window
+						var parentForm = new Form { Content = new Panel(), ClientSize = new Size(400, 400), Location = new Point(100, 100) };
+						closeParent = true;
+						var parentShown = WaitEventAsync<EventArgs>(h => parentForm.Shown += h);
+						parentForm.Show();
+						parent = parentForm;
+						await parentShown;
+					}
+					form.Owner = parent;
+					form.Location = parent.Location + new Size(20, 20);
+				}
+
+				var shown = WaitEventAsync<EventArgs>(h => form.Shown += h);
+				form.Show();
+				await shown;
+				await WaitUntil(() => grid.GetPreferredSize().Height >= rowCount * rowHeight, 1000);
+
+				var preferredSize = grid.GetPreferredSize();
+
+				// The preferred size should reflect the content needed to display every row.
+				Assert.That(preferredSize.Height, Is.GreaterThanOrEqualTo(rowCount * rowHeight), "#1 Preferred height should account for all rows");
+
+				// Hide the same window, swap in a larger list, re-size the child form to the new
+				// content, then re-show it and ensure the preferred size grows to account for the
+				// additional rows.
+				form.Visible = false;
+				await WaitUntil(() => !form.Visible, 100);
+				grid.DataStore = CreateRows(largerRowCount);
+				form.Size = Size.Ceiling(grid.GetPreferredSize());
+				form.Visible = true;
+				await WaitUntil(() => grid.GetPreferredSize().Height >= largerRowCount * rowHeight, 1000);
+
+				var largerSize = grid.GetPreferredSize();
+				Assert.That(largerSize.Height, Is.GreaterThanOrEqualTo(largerRowCount * rowHeight), "#2 Preferred height should account for all rows in the larger list");
+				Assert.That(largerSize.Height, Is.GreaterThan(preferredSize.Height), "#3 Preferred height should be larger when re-shown with more rows");
+			}
+			finally
+			{
+				// Wait for the windows to actually be gone before returning. Closing is asynchronous, so
+				// without this the next test's window can come up while these are still on screen and
+				// never becomes active - which breaks tests that need their control to take focus.
+				await CloseAsync(form);
+				if (closeParent)
+					await CloseAsync(parent);
+			}
+		});
 	}
 }

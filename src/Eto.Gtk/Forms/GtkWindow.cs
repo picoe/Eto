@@ -84,6 +84,7 @@ namespace Eto.GtkSharp.Forms
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		Point? currentLocation;
+		Point? initialLocation;
 		Size minimumSize;
 		WindowState state;
 		WindowStyle style;
@@ -267,6 +268,14 @@ namespace Eto.GtkSharp.Forms
 
 		protected virtual Gdk.WindowTypeHint DefaultTypeHint => Gdk.WindowTypeHint.Normal;
 
+		// Type hint applied to undecorated / non-resizable windows. Overridable so
+		// FloatingForm can request a menu-style popup hint instead of Utility: on
+		// Wayland GTK maps popup hints as xdg_popup surfaces (which don't take
+		// keyboard focus from their parent), whereas a Utility toplevel grabs focus
+		// and makes focus-sensitive popups (autocomplete, tooltips) dismiss
+		// themselves the moment they appear.
+		protected virtual Gdk.WindowTypeHint UndecoratedTypeHint => Gdk.WindowTypeHint.Utility;
+
 		void SetTypeHint()
 		{
 			if (WindowStyle == WindowStyle.Default && (Minimizable || Maximizable))
@@ -275,13 +284,52 @@ namespace Eto.GtkSharp.Forms
 			}
 			else
 			{
-				Control.TypeHint = Gdk.WindowTypeHint.Utility;
+				Control.TypeHint = UndecoratedTypeHint;
 			}
+		}
+
+		/// <summary>
+		/// Height of the client side decoration titlebar while it is not yet part of the window frame.
+		/// </summary>
+		/// <remarks>
+		/// GTK only lays out the titlebar when the window is mapped, and the frame grows to include it
+		/// some time after that. Until it does, the frame is short by the height of the titlebar and
+		/// the window would report a different size before and after being shown.
+		/// </remarks>
+		int MissingTitlebarHeight(Size frame)
+		{
+#if GTKCORE
+			if (!Control.Decorated)
+				return 0;
+			var titlebar = Control.Titlebar;
+			if (titlebar == null || !titlebar.Visible)
+				return 0;
+			// the titlebar has its own allocation, so it is laid out and included in the frame.
+			if (titlebar.Allocation.Height > 1)
+				return 0;
+			// ..otherwise the frame only includes it once it is taller than our own allocation.
+			if (frame.Height > Control.Allocation.Height)
+				return 0;
+			titlebar.GetPreferredHeight(out _, out var natural);
+			return natural;
+#else
+			return 0;
+#endif
+		}
+
+		Size GetFrameSize()
+		{
+			var frame = Control.GetWindow()?.FrameExtents.Size.ToEto();
+			if (frame == null)
+				return UserPreferredSize;
+			var size = frame.Value;
+			size.Height += MissingTitlebarHeight(size);
+			return size;
 		}
 
 		public override Size Size
 		{
-			get => Widget.Loaded ? Control.GetWindow()?.FrameExtents.Size.ToEto() ?? UserPreferredSize : UserPreferredSize;
+			get => Widget.Loaded ? GetFrameSize() : UserPreferredSize;
 			set
 			{
 				DisableAutoSizeUpdate++;
@@ -349,6 +397,12 @@ namespace Eto.GtkSharp.Forms
 		private void Control_Realized(object sender, EventArgs e)
 		{
 			Control.Realized -= Control_Realized;
+			if (initialLocation != null)
+			{
+				TryMovePopupToRect(initialLocation.Value);
+				initialLocation = null;
+			}
+			
 			Size size;
 			if (clientSize.HasValue)
 			{
@@ -381,6 +435,9 @@ namespace Eto.GtkSharp.Forms
 			HandleEvent(Window.LocationChangedEvent); // for RestoreBounds
 			Control.SetSizeRequest(-1, -1);
 			Control.Realized += Connector.Control_Realized;
+			// always hook this up - the window cascades Shown to all of its children, which may have
+			// handlers even when the window itself does not.
+			Control.Shown += Connector.HandleShownEvent;
 
 			ApplicationHandler.Instance.RegisterIsActiveChanged(Control);
 		}
@@ -406,7 +463,7 @@ namespace Eto.GtkSharp.Forms
 					Control.DeleteEvent += Connector.HandleDeleteEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					Control.Shown += Connector.HandleShownEvent;
+					// always hooked up in Initialize
 					break;
 				case Window.WindowStateChangedEvent:
 					Connector.OldState = WindowState;
@@ -421,9 +478,35 @@ namespace Eto.GtkSharp.Forms
 				case Window.LogicalPixelSizeChangedEvent:
 					// not supported on GTK, yet.
 					break;
+				// The toplevel gets key events before it propagates them to the focused widget, so
+				// hooking it here is the capture phase. Note this won't see keys delivered straight to
+				// an embedded foreign window such as a GtkSocket.
+				case Window.PreviewKeyDownEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
+					EventControl.KeyPressEvent += Connector.HandleWindowPreviewKeyPressEvent;
+					break;
+				case Window.PreviewKeyUpEvent:
+					EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
+					EventControl.KeyReleaseEvent += Connector.HandleWindowPreviewKeyReleaseEvent;
+					break;
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+					EventControl.KeyPressEvent -= Connector.HandleWindowPreviewKeyPressEvent;
+					return true;
+				case Window.PreviewKeyUpEvent:
+					EventControl.KeyReleaseEvent -= Connector.HandleWindowPreviewKeyReleaseEvent;
+					return true;
+				default:
+					return base.DetachEvent(id);
 			}
 		}
 
@@ -455,7 +538,12 @@ namespace Eto.GtkSharp.Forms
 				var h = Handler;
 				if (h == null || h.WasClosed)
 					return;
-				Application.Instance.AsyncInvoke(() => h.Callback.OnShown(Handler.Widget, EventArgs.Empty));
+				// cascade to the child controls first, the window raises Shown last
+				Application.Instance.AsyncInvoke(() =>
+				{
+					if (!h.WasClosed)
+						h.FireOnShown();
+				});
 			}
 
 			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
@@ -499,6 +587,30 @@ namespace Eto.GtkSharp.Forms
 					handler.Callback.OnKeyDown(handler.Widget, e);
 					args.RetVal = e.Handled;
 				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleWindowPreviewKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var e = args.Event.ToEto();
+				if (e != null)
+					handler.Callback.OnPreviewKeyDown(handler.Widget, new KeyMonitorEventArgs(e.KeyData, KeyEventType.KeyDown));
+				// deliberately leaves args.RetVal alone, monitoring never consumes the key
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleWindowPreviewKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
+			{
+				var handler = Handler;
+				if (handler == null)
+					return;
+				var e = args.Event.ToEto();
+				if (e != null)
+					handler.Callback.OnPreviewKeyUp(handler.Widget, new KeyMonitorEventArgs(e.KeyData, KeyEventType.KeyUp));
+				// deliberately leaves args.RetVal alone, monitoring never consumes the key
 			}
 
 			public void HandleWindowSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
@@ -630,7 +742,9 @@ namespace Eto.GtkSharp.Forms
 				else
 				{
 					var windows = Gdk.Screen.Default.ToplevelWindows.Where(r => r.State != Gdk.WindowState.Withdrawn && r.WindowType != Gdk.WindowType.Temp).ToList();
-					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()))
+					// only terminate the application when closing the last window if there is a main form set,
+					// otherwise fall through so the Closed event still fires without quitting the run loop
+					if (windows.Count == 1 && ReferenceEquals(windows[0], Control.GetWindow()) && Application.Instance.MainForm != null)
 					{
 						var app = ((ApplicationHandler)Application.Instance.Handler);
 						app.Callback.OnTerminating(app.Widget, args);
@@ -726,14 +840,82 @@ namespace Eto.GtkSharp.Forms
 			{
 				if (currentLocation != null)
 					return currentLocation.Value;
+				if (initialLocation != null)
+					return initialLocation.Value;
 				int x, y;
 				Control.GetPosition(out x, out y);
 				return new Point(x, y);
 			}
 			set
 			{
-				Control.Move(value.X, value.Y);
+				// On Wayland an xdg_popup surface has no global coordinate space:
+				// gtk_window_move is ignored and the popup lands at its parent's
+				// origin. Position popups relative to their transient parent via
+				// gdk_window_move_to_rect instead. On X11/XWayland absolute Move
+				// works (and popups are override-redirect), so keep using it there.
+				if (!TryMovePopupToRect(value))
+					Control.Move(value.X, value.Y);
 			}
+		}
+
+		public Rectangle Bounds
+		{
+			// GTK positions (gtk_window_move) and sizes (gtk_window_resize) windows with separate
+			// calls, so there is no combined API - set size then location.
+			get => new Rectangle(Location, Size);
+			set
+			{
+				if (Control.IsMapped)
+				{
+					var size = Size;
+					UserPreferredSize = value.Size;
+					if (value.Size != size)
+					{
+						// if the size is different, resize the window and wait for the size to be applied
+						Control.GetWindow().Resize(value.Width, value.Height);
+						while (Gtk.Application.EventsPending())
+							Gtk.Application.RunIteration();
+					}
+						
+					if (!TryMovePopupToRect(value.Location))
+						Control.GetWindow().Move(value.X, value.Y);
+					return;
+				}
+				Size = value.Size;
+				Location = value.Location;
+			}
+		}
+
+		static bool IsWaylandDisplay =>
+			(Gdk.Display.Default?.Name ?? string.Empty).StartsWith("wayland", StringComparison.OrdinalIgnoreCase);
+
+		// Anchor a Wayland popup's top-left at `location`, which is in the transient
+		// parent's coordinate space -- exactly what Eto's RectangleToScreen yields
+		// on Wayland (a toplevel's surface origin is 0,0). Returns false when this
+		// isn't a realized Wayland popup with a parent, so the caller falls back to
+		// absolute Move.
+		bool TryMovePopupToRect(Point location)
+		{
+			if (!IsWaylandDisplay)
+				return false;
+
+			var gdkWindow = Control.Window;
+			if (gdkWindow == null || Control.TransientFor == null)
+			{
+				initialLocation = location;
+				return false;
+			}
+
+			var rect = new NativeMethods.GdkRect { X = location.X, Y = location.Y, Width = 1, Height = 1 };
+			NativeMethods.gdk_window_move_to_rect(
+				gdkWindow.Handle,
+				ref rect,
+				NativeMethods.Gravity.GDK_GRAVITY_NORTH_WEST,
+				NativeMethods.Gravity.GDK_GRAVITY_NORTH_WEST,
+				NativeMethods.AnchorHint.None,
+				0, 0);
+
+			return true;
 		}
 
 		public WindowState WindowState
@@ -829,7 +1011,7 @@ namespace Eto.GtkSharp.Forms
 			}
 		}
 
-		protected override void GrabFocus() => Control.GetWindow().Focus(0);
+		protected override void GrabFocus() => Control.GrabFocus();
 
 		public void BringToFront()
 		{
@@ -853,7 +1035,7 @@ namespace Eto.GtkSharp.Forms
 
 		public override bool Visible
 		{
-			get { return base.Visible; }
+			get { return base.Visible && Control.IsMapped; }
 			set
 			{
 				base.Visible = value;
@@ -903,24 +1085,45 @@ namespace Eto.GtkSharp.Forms
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
+			PrepareForMeasure();
 			var size = base.GetPreferredSize(availableSize);
 			return size + WindowDecorationSize;
+		}
+
+		void PrepareForMeasure()
+		{
+			if (!Control.IsRealized)
+			{
+				Control.Child?.ShowAll();
+				Control.Realize();
+			}
+#if GTKCORE
+			// GTK doesn't show the client side decoration titlebar until the window itself is shown,
+			// so until then it measures as zero and the window reports a preferred size that is too
+			// small by the height of the titlebar. Showing it now has no visual effect as the window
+			// isn't visible yet.
+			if (Control.Decorated)
+			{
+				var titlebar = Control.Titlebar;
+				if (titlebar != null && !titlebar.Visible)
+					titlebar.ShowAll();
+			}
+#endif
 		}
 
 		Size WindowDecorationSize
 		{
 			get
 			{
-				if (!Control.IsRealized)
-				{
-					Control.Child?.ShowAll();
-					Control.Realize();
-				}
-					
+				PrepareForMeasure();
+
 				var window = Control.GetWindow();
 				if (window == null)
 					return Size.Empty;
-				return window.FrameExtents.Size.ToEto() - Control.Allocation.Size.ToEto();
+				var allocationSize = Control.Allocation.Size.ToEto();
+				if (allocationSize.Width <= 1 || allocationSize.Height <= 1)
+					return Size.Empty;
+				return window.FrameExtents.Size.ToEto() - allocationSize;
 			}
 		}
 

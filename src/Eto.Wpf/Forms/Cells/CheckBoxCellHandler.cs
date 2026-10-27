@@ -26,9 +26,37 @@ namespace Eto.Wpf.Forms.Cells
 			public CheckBoxCellHandler Handler { get; set; }
 			bool enableEvents;
 
+			public Column()
+			{
+				// DataGridCheckBoxColumn defaults ElementStyle/EditingElementStyle to a hard-coded
+				// Style with no BasedOn, and assigns it as the generated CheckBox's local Style. A
+				// local Style suppresses the implicit CheckBox style, so cells keep the stock WPF
+				// chrome even when the application's theme restyles CheckBox. Clear both and apply
+				// what they set (see DataGridCheckBoxColumn.DefaultElementStyle) as plain property
+				// values instead, which leaves the theme's style free to apply.
+				ElementStyle = null;
+				EditingElementStyle = null;
+			}
+
+			/// <summary>
+			/// Sets what the cleared ElementStyle/EditingElementStyle used to, except that Eto centers
+			/// the check box in the row rather than aligning it to the top.
+			/// </summary>
+			static void ApplyElementDefaults(swc.CheckBox element, bool isEditing)
+			{
+				element.HorizontalAlignment = sw.HorizontalAlignment.Center;
+				element.VerticalAlignment = sw.VerticalAlignment.Center;
+				if (!isEditing)
+				{
+					element.IsHitTestVisible = false;
+					element.Focusable = false;
+				}
+			}
+
 			protected override sw.FrameworkElement GenerateElement(swc.DataGridCell cell, object dataItem)
 			{
 				var element = (swc.CheckBox)base.GenerateElement(cell, dataItem);
+				ApplyElementDefaults(element, isEditing: false);
 				InitializeElement(element, cell, dataItem);
 				return Handler.SetupCell(element, cell);
 			}
@@ -37,7 +65,6 @@ namespace Eto.Wpf.Forms.Cells
 			{
 				if (!IsControlInitialized(element))
 				{
-					element.VerticalAlignment = sw.VerticalAlignment.Center;
 					element.DataContextChanged += (sender, e) =>
 					{
 						var control = sender as swc.CheckBox;
@@ -74,6 +101,7 @@ namespace Eto.Wpf.Forms.Cells
 			protected override sw.FrameworkElement GenerateEditingElement(swc.DataGridCell cell, object dataItem)
 			{
 				var element = (swc.CheckBox)base.GenerateEditingElement(cell, dataItem);
+				ApplyElementDefaults(element, isEditing: true);
 				InitializeElement(element, cell, dataItem);
 				return Handler.SetupCell(element, cell);
 			}

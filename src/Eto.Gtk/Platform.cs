@@ -13,11 +13,35 @@ namespace Eto.GtkSharp
 	{
 		public static bool UseHeaderBar;
 
+		// Whether GTK is running on its Wayland GDK backend (vs X11/XWayland). Honors GDK_BACKEND (a
+		// comma-separated priority list) which can force X11 under a Wayland session; otherwise a set
+		// WAYLAND_DISPLAY indicates Wayland. Fixed for the process. NOTE: this is deliberately distinct from
+		// WaylandClipboard's probe, which asks whether a Wayland *compositor* is reachable for wl_data_control
+		// (independent of the backend GTK chose); here we care specifically about GTK's active backend.
+		public static readonly bool IsWaylandBackend = DetectWaylandBackend();
+
+		static bool DetectWaylandBackend()
+		{
+			var backend = Environment.GetEnvironmentVariable("GDK_BACKEND");
+			if (!string.IsNullOrWhiteSpace(backend))
+				return backend.Split(',')[0].Trim().Equals("wayland", StringComparison.OrdinalIgnoreCase);
+			return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("WAYLAND_DISPLAY"));
+		}
+
 		public static void Init()
 		{
 			var args = new string[0];
 			if (Gtk.Application.InitCheck(string.Empty, ref args))
 				Gdk.Threads.Enter();
+
+			// Wayland and X11 match windows to the installed .desktop file by these.
+			// Set after init, which replaces the program name with the process name.
+			var appId = Assembly.GetEntryAssembly()?.GetCustomAttributes<AssemblyMetadataAttribute>().FirstOrDefault(r => r.Key == "Eto.LinuxAppId")?.Value;
+			if (!string.IsNullOrEmpty(appId))
+			{
+				GLib.Global.ProgramName = appId;
+				Gdk.Global.ProgramClass = appId;
+			}
 		}
 	}
 
@@ -111,6 +135,12 @@ namespace Eto.GtkSharp
 			p.Add<RadialGradientBrush.IHandler>(() => new RadialGradientBrushHandler());
 			p.Add<SystemColors.IHandler>(() => new SystemColorsHandler());
 			p.Add<FormattedText.IHandler>(() => new FormattedTextHandler());
+#if GTKCORE
+			p.Add<MagnificationGesture.IHandler>(() => new MagnificationGestureHandler());
+			p.Add<RotationGesture.IHandler>(() => new RotationGestureHandler());
+			p.Add<PanGesture.IHandler>(() => new PanGestureHandler());
+			p.Add<ScrollGesture.IHandler>(() => new ScrollGestureHandler());
+#endif
 
 			// Forms.Cells
 			p.Add<CheckBoxCell.IHandler>(() => new CheckBoxCellHandler());
@@ -197,7 +227,13 @@ namespace Eto.GtkSharp
 			// Forms
 			p.Add<AboutDialog.IHandler>(() => new AboutDialogHandler());
 			p.Add<Application.IHandler>(() => new ApplicationHandler());
+#if NET6_0_OR_GREATER
+			p.Add<Clipboard.IHandler>(() => WaylandClipboard.IsAvailable
+				? (Clipboard.IHandler)new WaylandClipboardHandler()
+				: new ClipboardHandler());
+#else
 			p.Add<Clipboard.IHandler>(() => new ClipboardHandler());
+#endif
 			p.Add<Cursor.IHandler>(() => new CursorHandler());
 			p.Add<Dialog.IHandler>(() => new DialogHandler());
 			p.Add<Form.IHandler>(() => new FormHandler());

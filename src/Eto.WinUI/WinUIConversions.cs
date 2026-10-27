@@ -152,6 +152,24 @@ public static class WinUIConversions
 		mux.TextWrapping.WrapWholeWords => WrapMode.Word,
 		_ => throw new NotImplementedException()
 	};
+
+	public static mux.TextTrimming ToWinUI(this TextTrimming value) => value switch
+	{
+		TextTrimming.None => mux.TextTrimming.None,
+		TextTrimming.CharacterEllipsis => mux.TextTrimming.CharacterEllipsis,
+		TextTrimming.WordEllipsis => mux.TextTrimming.WordEllipsis,
+		_ => throw new NotImplementedException()
+	};
+
+	public static TextTrimming ToEto(this mux.TextTrimming value) => value switch
+	{
+		mux.TextTrimming.None => TextTrimming.None,
+		mux.TextTrimming.Clip => TextTrimming.None,
+		mux.TextTrimming.CharacterEllipsis => TextTrimming.CharacterEllipsis,
+		mux.TextTrimming.WordEllipsis => TextTrimming.WordEllipsis,
+		_ => throw new NotImplementedException()
+	};
+
 	public static mux.TextAlignment ToWinUI(this TextAlignment value) => value switch
 	{
 		TextAlignment.Left => mux.TextAlignment.Left,

@@ -81,6 +81,17 @@ namespace Eto.Wpf.Forms.Controls
 		}
 	}
 
+	/// <summary>
+	/// Root of the item template used by <see cref="DropDown"/>, laying out the item's image and text.
+	/// </summary>
+	/// <remarks>
+	/// Items are laid out with content we have no control over — most importantly the per-item font from
+	/// <see cref="DropDown.FormatItem"/>, which WPF throws on for fonts it reported as installed but
+	/// cannot actually load. That happens during the layout pass, where it would take down the whole
+	/// application, so this opts in to <see cref="SafeLayout"/>. Note this is also the only thing
+	/// covering an open drop down: its items live in a popup, which WPF lays out in a visual tree rooted
+	/// at the popup rather than under the control, so nothing up in the control can catch it there.
+	/// </remarks>
 	class WpfImageTextGrid : swc.Grid
 	{
 		public WpfImageTextGrid()
@@ -88,6 +99,10 @@ namespace Eto.Wpf.Forms.Controls
 			ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(0, sw.GridUnitType.Auto)});
 			ColumnDefinitions.Add(new swc.ColumnDefinition { Width = new sw.GridLength(1, sw.GridUnitType.Star) });
 		}
+
+		protected override sw.Size MeasureOverride(sw.Size constraint) => SafeLayout.Measure(base.MeasureOverride, constraint);
+
+		protected override sw.Size ArrangeOverride(sw.Size arrangeSize) => SafeLayout.Arrange(base.ArrangeOverride, arrangeSize);
 	}
 
 	public class WpfImageTextBindingBlock : sw.FrameworkElementFactory

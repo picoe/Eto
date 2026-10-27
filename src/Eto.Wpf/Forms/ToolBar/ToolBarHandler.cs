@@ -1,10 +1,14 @@
 namespace Eto.Wpf.Forms.ToolBar
 {
+	public class EtoToolBar : swc.ToolBar
+	{
+	}
+	
 	public class ToolBarHandler : WidgetHandler<swc.ToolBar, Eto.Forms.ToolBar>, Eto.Forms.ToolBar.IHandler
 	{
 		public ToolBarHandler()
 		{
-			Control = new swc.ToolBar { IsTabStop = false, Tag = this };
+			Control = new EtoToolBar { IsTabStop = false, Tag = this };
 			swc.ToolBarTray.SetIsLocked(Control, true);
 			swi.KeyboardNavigation.SetTabNavigation(Control, swi.KeyboardNavigationMode.Continue);
 		}

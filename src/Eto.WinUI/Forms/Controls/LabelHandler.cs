@@ -28,6 +28,11 @@ public class LabelHandler : WinUIBorderedControl<muc.TextBlock, Label, Label.ICa
 		get => Control.TextWrapping.ToEto();
 		set => Control.TextWrapping = value.ToWinUI();
 	}
+	public TextTrimming Trimming
+	{
+		get => Control.TextTrimming.ToEto();
+		set => Control.TextTrimming = value.ToWinUI();
+	}
 	public string Text
 	{
 		get => Control.Text;

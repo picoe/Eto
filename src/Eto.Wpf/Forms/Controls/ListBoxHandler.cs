@@ -19,7 +19,7 @@ namespace Eto.Wpf.Forms.Controls
 				typeof(EtoListBox),
 				new sw.FrameworkPropertyMetadata(null));
 
-		public IIndirectBinding<Image> ItemImageBinding
+		public IIndirectBinding<Image> ImageBinding
 		{
 			get { return (IIndirectBinding<Image>)GetValue(ImageBindingProperty); }
 			set { SetValue(ImageBindingProperty, value); }
@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public static readonly sw.DependencyProperty ImageBindingProperty =
 			sw.DependencyProperty.Register(
-				nameof(ItemImageBinding),
+				nameof(ImageBinding),
 				typeof(IIndirectBinding<Image>),
 				typeof(EtoListBox),
 				new sw.FrameworkPropertyMetadata(null));
@@ -122,7 +122,7 @@ namespace Eto.Wpf.Forms.Controls
 				if (value >= 0 && store != null)
 				{
 					var item = store.AsEnumerable().Skip(value).FirstOrDefault();
-					Control.ScrollIntoView(item);
+					Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(item));
 				}
 			}
 		}
@@ -147,10 +147,10 @@ namespace Eto.Wpf.Forms.Controls
 
 		public IIndirectBinding<Image> ItemImageBinding
 		{
-			get => Control.ItemImageBinding;
+			get => Control.ImageBinding;
 			set
 			{
-				Control.ItemImageBinding = value;
+				Control.ImageBinding = value;
 				Control.InvalidateVisual();
 			}
 		}

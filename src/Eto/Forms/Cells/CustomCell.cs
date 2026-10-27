@@ -105,10 +105,13 @@ public class CellEventArgs : EventArgs, INotifyPropertyChanged
 	/// </summary>
 	public Cell Cell { get; }
 
+	// Weak since platforms can keep these args with native cell views that outlive the grid.
+	readonly WeakReference<Grid> _grid;
+
 	/// <summary>
 	/// Gets the grid that this event was triggered from
 	/// </summary>
-	public Grid Grid { get; }
+	public Grid Grid => _grid != null && _grid.TryGetTarget(out var grid) ? grid : null;
 
 	/// <summary>
 	/// Gets the custom control associated with the cell (if any)
@@ -182,7 +185,7 @@ public class CellEventArgs : EventArgs, INotifyPropertyChanged
 	/// <param name="control">Control object for the cell (if any)</param>
 	public CellEventArgs(Grid grid, Cell cell, int row, int column, object item, CellStates cellState, Control control)
 	{
-		Grid = grid;
+		_grid = grid != null ? new WeakReference<Grid>(grid) : null;
 		Cell = cell;
 		Column = column;
 		Row = row;

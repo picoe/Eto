@@ -280,6 +280,9 @@ namespace Eto.Android.Forms
 		// TODO: Implement TabIndex
 		public int TabIndex { get; set; }
 
+		// TODO: Implement TabStop
+		public bool TabStop { get; set; } = true;
+
 		public virtual IEnumerable<Control> VisualControls => Enumerable.Empty<Control>();
 
 		// TODO: Implement AllowDrop
@@ -307,6 +310,10 @@ namespace Eto.Android.Forms
 		public virtual void UpdateLayout()
 		{
 		}
+
+		public virtual void AddGesture(Gesture item) { }
+		public virtual void ClearGestures() { }
+		public virtual void RemoveGesture(Gesture item) { }
 		
 		public ContextMenu ContextMenu { get; set; }
 

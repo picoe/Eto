@@ -6,6 +6,8 @@
 
 		public void Create(string mask, CultureInfo culture, bool allowPromptAsInput, bool restrictToAscii)
 		{
+			// MaskedTextProvider rejects a mask containing any whitespace other than a regular space, so the mask
+			// is already run through FixedMaskedTextProvider.NormalizeWhitespace() before it gets here.
 			Provider = new MaskedTextProvider(mask, culture, allowPromptAsInput, '_', (char)0, restrictToAscii);
 		}
 

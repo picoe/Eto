@@ -48,6 +48,18 @@ namespace Eto.WinForms.Forms.Controls
 			}
 		}
 
+		bool visible = true;
+
+		public override bool Visible {
+			get { return visible; }
+			set {
+				if (visible == value)
+					return;
+				visible = value;
+				(Widget.Parent?.Handler as TabControlHandler)?.SetPageVisible (Widget, value);
+			}
+		}
+
 		public override void SetParent(Container oldParent, Container newParent)
 		{
 			base.SetParent(oldParent, newParent);

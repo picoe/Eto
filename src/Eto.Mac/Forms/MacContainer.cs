@@ -93,6 +93,8 @@ namespace Eto.Mac.Forms
 				if (handler != null)
 				{
 					handler.RecalculateKeyViewLoop(ref last);
+					if (!child.TabStop)
+						continue;
 					if (last != null)
 						last.NextKeyView = handler.FocusControl;
 					last = handler.FocusControl;

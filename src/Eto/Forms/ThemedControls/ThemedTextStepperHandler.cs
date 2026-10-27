@@ -21,7 +21,7 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	public ThemedTextStepperHandler()
 	{
 		TextBox = new TextBox();
-		Stepper = new Stepper();
+		Stepper = new Stepper { TabStop = false };
 		Control = TableLayout.Horizontal(
 			new TableCell(TextBox, true),
 			Stepper
@@ -336,7 +336,7 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	{
 		var ctl = (Control)sender;
 		var location = Widget.PointFromScreen(ctl.PointToScreen(e.Location));
-		var args = new MouseEventArgs(e.Buttons, e.Modifiers, location, e.Delta, e.Pressure);
+		var args = new MouseEventArgs(e.Buttons, e.Modifiers, location, e.Delta, e.Pressure, e.IsDirectionInverted);
 
 		callback(Widget, args);
 		e.Handled = args.Handled;

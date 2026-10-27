@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Panel xmlns:d="http://schema.picoe.ca/eto.forms/design" xmlns:t="clr-namespace:Eto.Test.UnitTests.Forms.Xaml;assembly=Eto.Test" d:Padding="99" Padding="{On 5, Wpf=6, Mac=7, Gtk=8, WinForms=9}">
+	<Panel.Properties>
+		<local:CompiledXamlConverter x:Key="converter" />
+		<local:CompiledXamlFloats x:Key="floats" Size="1.5, 2" SingleSize="0.1" Point="-0.25,3" Rectangle="1,2,3.5,1E2" Padding="1.5,2" />
+	</Panel.Properties>
+	<TableLayout ID="Layout" Spacing="5,5">
+		<TableRow>
+			<Label x:Name="ModeLabel" Text="{t:LoadMode}" />
+			<TextBox ID="BoundTextBox" Text="{Binding Name, Converter={StaticResource converter}}" TextChanged="HandleTextChanged" />
+		</TableRow>
+		<TableRow>
+			<Label>Text content</Label>
+			<CheckBox x:Name="MyCheckBox" Text="Check" Checked="True" />
+		</TableRow>
+		<TableRow>
+			<TableCell ScaleWidth="True">
+				<Button ID="ClickButton" Text="Click" Click="HandleClick" />
+			</TableCell>
+			<ImageView Image="{Resource Eto.Test.Images.TestImage.png}" />
+		</TableRow>
+		<StackLayout Orientation="Horizontal" Spacing="3">
+			<Label Text="A" />
+			<StackLayoutItem Expand="True">
+				<Label Text="B" TextColor="Red" BackgroundColor="#80FF0000" />
+			</StackLayoutItem>
+		</StackLayout>
+		<TableRow>
+			<Label Text="C" PixelLayout.Location="3, 4" Size="40,20" />
+			<Label Text="D" Size="30" />
+		</TableRow>
+		<TableRow>
+			<TextBox ID="TypedTextBox" Text="{Binding Name}" />
+			<TextBox ID="OneWayTextBox" Text="{Binding Name, Mode=OneWay}" />
+			<NumericStepper ID="CountStepper" Value="{Binding Count}" />
+			<Button ID="CommandButton" Command="{Binding Command}" />
+			<DropDown ID="ItemsDropDown" ItemTextBinding="{Binding Title}" />
+		</TableRow>
+		<TableRow />
+	</TableLayout>
+</Panel>

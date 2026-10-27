@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Forms
 			if (windowStack != null)
 			{
 				// doesn't work on Mac or Windows.. 🤔
-				foreach (var gdkWindow in windowStack.Reverse())
+				foreach (var gdkWindow in Enumerable.Reverse(windowStack))
 				{
 					screenWindowStackWorks = true;
 					if (!gdkWindow.FrameExtents.Contains((int)point.X, (int)point.Y))

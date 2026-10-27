@@ -321,7 +321,7 @@ namespace Eto.Test.UnitTests.Forms
 			container.Content = control;
 			panel.Content = container;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container, 1000);
 
 			Assert.That(container.Content, Is.EqualTo(control), "#1.1 - Content should be set correctly");
 			Assert.That(control.Parent, Is.EqualTo(container), "#1.2 - Child's parent should be the container");
@@ -330,7 +330,7 @@ namespace Eto.Test.UnitTests.Forms
 			container2.Rows.Add(new TableRow(new TableCell(control)));
 			panel.Content = container2;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container2 && container.Content == null, 1000);
 
 			Assert.That(container.Content, Is.Null, "#2.1 - Content should be removed");
 			Assert.That(container2.Rows[0].Cells[0].Control, Is.EqualTo(control), "#2.2 - Content on the second container should be set correctly");
@@ -340,7 +340,7 @@ namespace Eto.Test.UnitTests.Forms
 			container3.Content = control;
 			panel.Content = container3;
 
-			await Task.Delay(1000);
+			await WaitUntil(() => control.Parent == container3 && container2.Rows[0].Cells[0].Control == null, 1000);
 
 			Assert.That(container2.Rows[0].Cells[0].Control, Is.Null, "#3.1 - Content on the second container should be set correctly");
 			Assert.That(container3.Content, Is.EqualTo(control), "#3.2 - Content should be set correctly");
@@ -348,10 +348,80 @@ namespace Eto.Test.UnitTests.Forms
 
 			container3.Content = null;
 
-			await Task.Delay(1000);
-			
+			await WaitUntil(() => control.Parent == null, 1000);
+
 			Assert.That(control.Parent, Is.Null, "#4.2 - Control should not have a parent");
 		}, timeout: 10000);
+
+		class AddContentOnLoadPanel : Panel
+		{
+			public Control ContentToAdd { get; set; }
+
+			protected override void OnLoad(EventArgs e)
+			{
+				base.OnLoad(e);
+				// at this point this panel is loaded but hasn't had its LoadComplete yet
+				Content = ContentToAdd;
+			}
+		}
+
+		class LoadEventCounter
+		{
+			public int Load;
+			public int LoadComplete;
+			public int UnLoad;
+
+			public LoadEventCounter(Control control)
+			{
+				control.Load += (sender, e) => Load++;
+				control.LoadComplete += (sender, e) => LoadComplete++;
+				control.UnLoad += (sender, e) => UnLoad++;
+			}
+		}
+
+		[Test]
+		public void ChildAddedDuringLoadShouldOnlyGetLoadCompleteOnce()
+		{
+			LoadEventCounter counter = null;
+			Shown(form =>
+			{
+				var child = new Panel { Content = new Label { Text = "Child" } };
+				counter = new LoadEventCounter(child);
+				form.Content = new TableLayout(new AddContentOnLoadPanel { ContentToAdd = child });
+			}, () =>
+			{
+				Assert.That(counter.Load, Is.EqualTo(1), "#1 - Load should be raised once");
+				Assert.That(counter.LoadComplete, Is.EqualTo(1), "#2 - LoadComplete should be raised once");
+			});
+		}
+
+		[Test]
+		public void ChildAddedDuringLoadCompleteShouldOnlyGetLoadCompleteOnce()
+		{
+			LoadEventCounter counter = null;
+			Shown(form =>
+			{
+				var child = new Panel { Content = new Label { Text = "Child" } };
+				counter = new LoadEventCounter(child);
+				var parent = new Panel();
+				parent.LoadComplete += (sender, e) => parent.Content = child;
+				form.Content = new TableLayout(parent);
+			}, () =>
+			{
+				Assert.That(counter.Load, Is.EqualTo(1), "#1 - Load should be raised once");
+				Assert.That(counter.LoadComplete, Is.EqualTo(1), "#2 - LoadComplete should be raised once");
+			});
+		}
+
+		[Test]
+		public void ChildAddedToLoadedContainerShouldGetLoadComplete() => Shown(form => (Panel)(form.Content = new Panel()), parent =>
+		{
+			var child = new Panel { Content = new Label { Text = "Child" } };
+			var counter = new LoadEventCounter(child);
+			parent.Content = child;
+			Assert.That(counter.Load, Is.EqualTo(1), "#1 - Load should be raised once");
+			Assert.That(counter.LoadComplete, Is.EqualTo(1), "#2 - LoadComplete should be raised when added to a loaded container");
+		});
 
 	}
 }

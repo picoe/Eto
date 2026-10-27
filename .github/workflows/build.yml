@@ -5,13 +5,21 @@ on:
     branches: [ develop ]
   pull_request:
     branches: [ develop ]
-  release:
-    types: [ published, prereleased ]
+  # called by release.yml to build a release
+  workflow_call:
+    inputs:
+      version:
+        description: Version to build every package as, e.g. 1.2.3
+        type: string
+        default: ''
 
 env:
   DotNetVersion: "10.0.100"
   BuildConfiguration: "Release"
-  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ github.ref }}"'
+  BuildParameters: 'build/Build.proj /v:Minimal /consoleLoggerParameters:NoSummary /p:Configuration=Release "/p:BuildVersion=${{ github.run_id }}" "/p:BuildBranch=${{ inputs.version && format(''refs/tags/{0}'', inputs.version) || github.ref }}"'
+
+permissions:
+  contents: read
 
 jobs:
   build-windows:
@@ -19,29 +27,29 @@ jobs:
     runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: Create global.json
-      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
 
     - name: Build
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Windows /t:Build /bl:artifacts/log/Build.Windows.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-win
         path: artifacts/nuget/${{ env.BuildConfiguration }}/*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: test-win
         path: |
@@ -49,14 +57,29 @@ jobs:
           !artifacts/test/Eto.Test.Mac64/**/*
 
     - name: Upload sample artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: samples-win
         path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
 
+    # These are GUI tests that create real windows, so they need a desktop session to run in.
+    # Windows runners already provide one, so no extra setup is needed here - only the timeout
+    # guard so a test that blocks waiting on the UI can't hang the job for its full 6 hours.
+    # --no-build (which implies --no-restore) runs exactly the binaries the Build step produced
+    # above; without it dotnet test rebuilds them without Platform/BuildVersion set, so the tested
+    # assemblies would be recompiled with a different version stamp than the uploaded artifacts.
+    - name: Run unit tests (Wpf)
+      timeout-minutes: 30
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-windows -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=wpf --report-trx --report-trx-filename wpf.trx
+
+    - name: Test summary (Wpf)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Wpf)" -ResultsRoot artifacts/log -FileName wpf.trx
+
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: log-win
         path: artifacts/log/**/*
@@ -66,17 +89,17 @@ jobs:
     runs-on: macos-26
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ env.DotNetVersion }}
 
     - name: Create global.json
-      run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"}}' > global.json
+      run: del global.json || echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
       
     - name: Clear nuget cache
       run: dotnet nuget locals all --clear
@@ -91,7 +114,7 @@ jobs:
 
     - name: Import code signing certificate
       if: github.event_name != 'pull_request'
-      uses: apple-actions/import-codesign-certs@v3
+      uses: apple-actions/import-codesign-certs@v7
       with:
         p12-file-base64: ${{ secrets.DEVID_CERTIFICATE_P12 }}
         p12-password: ${{ secrets.DEVID_CERTIFICATE_P12_PASSWORD }}
@@ -110,7 +133,7 @@ jobs:
       run: printf 'BuildParameters=%s /p:EnableCodeSigning=False\n' "$BUILD_PARAMETERS" >> "$GITHUB_ENV"
 
     - name: Set notarization credentials
-      if: startsWith(github.ref, 'refs/tags/')
+      if: inputs.version
       env:
         BUILD_PARAMETERS: ${{ env.BuildParameters }}
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
@@ -124,46 +147,160 @@ jobs:
       run: dotnet build ${{ env.BuildParameters }} /p:Platform=Mac /t:Build /bl:artifacts/log/Build.Mac.binlog
 
     - name: Upload nuget artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-mac
         path: |
           artifacts/nuget/${{ env.BuildConfiguration }}/Eto.Platform.macOS*.nupkg
 
     - name: Upload test artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: test-mac
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
           artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/**/Eto.Test.macOS*.pkg
 
+    # These are GUI tests that create real windows, so they need a desktop session to run in. The
+    # macOS runners are auto-logged in to one, so AppKit can reach the window server without any
+    # extra setup - only the timeout guard so a test that blocks waiting on the UI can't hang the
+    # job for its full 6 hours. See the Wpf step above for why --no-build is used.
+    - name: Run unit tests (Mac)
+      timeout-minutes: 30
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=mac --report-trx --report-trx-filename mac.trx
+
+    - name: Test summary (Mac)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Mac)" -ResultsRoot artifacts/log -FileName mac.trx
+
+    # The same tests again, against the modern .NET macOS backend (Eto.macOS) rather than MonoMac
+    # (Eto.Mac64) above. Runs even when that one failed, so both backends always get reported.
+    - name: Run unit tests (macOS)
+      if: ${{ !cancelled() }}
+      timeout-minutes: 30
+      run: dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0-macos -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" -- --platform=mac --report-trx --report-trx-filename macos.trx
+
+    - name: Test summary (macOS)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (macOS)" -FileName macos.trx
+
     - name: Upload log files
       if: ${{ failure() }}
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: log-mac
         path: |
           artifacts/log/**/*
           lib/monomac/artifacts/generated/**/*.binlog
   
-  publish:
-    needs: [ build-windows, build-mac ]
+  build-linux:
+
     runs-on: ubuntu-latest
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/develop') || (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        submodules: true
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: ${{ env.DotNetVersion }}
+
+    - name: Create global.json
+      run: echo '{"sdk":{"version":"${{ env.DotNetVersion }}"},"test":{"runner":"Microsoft.Testing.Platform"}}' > global.json
+
+    # The Gtk tests create real windows, so the job needs the native GTK3 libraries GtkSharp
+    # p/invokes into plus an X display to map them on (Xvfb, used in the test step below).
+    # libgtk-3-0t64 is the name on 24.04+; older images call it libgtk-3-0.
+    # WebView needs webkit2gtk as well - without it every WebView test throws DllNotFoundException and
+    # ControlShouldFireShownEventWhenAddedDynamically hangs until its timeout, which leaves the GTK loop
+    # dirty enough that NUnit can't stop the engine and the test host dies before writing its trx report.
+    # Eto asks for 4.0 and falls back to 4.1 (see NativeMethods.cs); only 4.1 is packaged on 24.04+.
+    - name: Install GTK and Xvfb
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends xvfb libgtk-3-0t64 libwebkit2gtk-4.1-0 \
+          || sudo apt-get install -y --no-install-recommends xvfb libgtk-3-0 libwebkit2gtk-4.0-37
+
+    # Eto.Test.Gtk builds installer packages; the deb and tar.gz need nothing extra, but the rpm needs
+    # rpmbuild and the AppImage needs appimagetool (which only publishes a rolling 'continuous' release).
+    - name: Install packaging tools
+      run: |
+        sudo apt-get install -y --no-install-recommends rpm
+        mkdir -p "$HOME/.local/bin"
+        curl -sSLf -o "$HOME/.local/bin/appimagetool" https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage
+        chmod +x "$HOME/.local/bin/appimagetool"
+        echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+    - name: Build
+      run: dotnet build ${{ env.BuildParameters }} /p:Platform=Linux /t:Build /bl:artifacts/log/Build.Linux.binlog
+
+    # The nuget packages built here are the same ones the Windows job uploads, so they aren't
+    # published again from this job - the publish job merges the artifacts by file name.
+    # The packages go in their own artifact, so leave them (and the self-contained build behind the
+    # AppImage) out of this one.
+    - name: Upload test artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-linux
+        path: |
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*
+          !artifacts/test/Eto.Test.Mac64/**/*
+          !artifacts/test/Eto.Test.Gtk/**/linux-*/**/*
+          !artifacts/test/Eto.Test.Gtk/**/*.deb
+          !artifacts/test/Eto.Test.Gtk/**/*.rpm
+          !artifacts/test/Eto.Test.Gtk/**/*.tar.gz
+          !artifacts/test/Eto.Test.Gtk/**/*.AppImage
+
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-linux-packages
+        path: |
+          artifacts/test/Eto.Test.Gtk/${{ env.BuildConfiguration }}/**/*.deb
+          artifacts/test/Eto.Test.Gtk/${{ env.BuildConfiguration }}/**/*.rpm
+          artifacts/test/Eto.Test.Gtk/${{ env.BuildConfiguration }}/**/*.tar.gz
+          artifacts/test/Eto.Test.Gtk/${{ env.BuildConfiguration }}/**/*.AppImage
+
+    - name: Upload sample artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: samples-linux
+        path: artifacts/samples/*/${{ env.BuildConfiguration }}/**/*
+
+    # Unlike the Windows/Mac runners there's no desktop session here, so the GUI tests run under a
+    # virtual X server (xvfb-run -a picks a free display number). See the Wpf step above for why
+    # --no-build is used, and the timeout guard so a test blocked on the UI can't hang the job.
+    - name: Run unit tests (Gtk)
+      timeout-minutes: 30
+      continue-on-error: true
+      run: xvfb-run -a dotnet test --project test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj -f net10.0 -c ${{ env.BuildConfiguration }} --no-build --filter "TestCategory!=ManualTest" --results-directory artifacts/log -- --platform=gtk --report-trx --report-trx-filename gtk.trx
+
+    - name: Test summary (Gtk)
+      if: ${{ always() }}
+      shell: pwsh
+      run: ./build/TestSummary.ps1 -Title "Unit tests (Gtk)" -ResultsRoot artifacts/log -FileName gtk.trx
+
+    - name: Upload log files
+      if: ${{ failure() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: log-linux
+        path: artifacts/log/**/*
+
+  publish:
+    needs: [ build-windows, build-mac, build-linux ]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
     steps:
       - name: Download nuget artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: nuget-*
           merge-multiple: true
 
       - name: Push packages to myget.org
         run: dotnet nuget push '*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{secrets.MYGET_API_KEY}}
-
-      - name: Add nuget packages to release
-        uses: softprops/action-gh-release@v2
-        if: (github.event_name == 'release' && github.event.action == 'published' && startsWith(github.ref, 'refs/tags/'))
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: '*.nupkg'

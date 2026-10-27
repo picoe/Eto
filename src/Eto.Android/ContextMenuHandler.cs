@@ -103,5 +103,8 @@ namespace Eto.Android
 		{
 			items.Clear();
 		}
+
+		// Android does not add any system items to a popup menu, so this is only stored to round-trip the value.
+		public ContextMenuSystemItems IncludeSystemItems { get; set; } = ContextMenuSystemItems.All;
 	}
 }

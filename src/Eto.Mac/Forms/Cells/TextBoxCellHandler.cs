@@ -129,15 +129,16 @@ namespace Eto.Mac.Forms.Cells
 				};
 
 				var col = Array.IndexOf(tableView.TableColumns(), tableColumn);
+				// The cell view is reused and can outlive the grid, so only reference the handler weakly.
 				view.EditingAborted += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var control = (CellView)sender;
+					var colHandler = (control.WeakHandler?.Target as TextBoxCellHandler)?.ColumnHandler;
 					if (colHandler == null)
 						return;
 					var table = colHandler.DataViewHandler?.Table;
 					if (table == null)
 						return;
-					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
@@ -145,13 +146,13 @@ namespace Eto.Mac.Forms.Cells
 				};
 				view.BecameFirstResponder += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var control = (CellView)sender;
+					var colHandler = (control.WeakHandler?.Target as TextBoxCellHandler)?.ColumnHandler;
 					if (colHandler == null)
 						return;
 					var table = colHandler.DataViewHandler?.Table;
 					if (table == null)
 						return;
-					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
 					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
@@ -159,26 +160,29 @@ namespace Eto.Mac.Forms.Cells
 				};
 				view.EditingEnded += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var notification = (NSNotification)sender;
+					var control = (CellView)notification.Object;
+					var h = control.WeakHandler?.Target as TextBoxCellHandler;
+					var colHandler = h?.ColumnHandler;
 					if (colHandler == null)
 						return;
 					var table = colHandler.DataViewHandler?.Table;
 					if (table == null)
 						return;
-					var notification = (NSNotification)sender;
-					var control = (CellView)notification.Object;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.ObjectValue);
+					h.SetObjectValue(item, control.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
 					colHandler.DataViewHandler?.OnCellEdited(ee);
-					control.ObjectValue = GetObjectValue(item) ?? new NSString(string.Empty);
+					control.ObjectValue = h.GetObjectValue(item) ?? new NSString(string.Empty);
 				};
 				bool isResigning = false;
 				view.ResignedFirstResponder += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var control = (CellView)sender;
+					var h = control.WeakHandler?.Target as TextBoxCellHandler;
+					var colHandler = h?.ColumnHandler;
 					if (colHandler == null)
 						return;
 					if (isResigning)
@@ -187,10 +191,9 @@ namespace Eto.Mac.Forms.Cells
 					if (table == null)
 						return;
 					isResigning = true;
-					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					SetObjectValue(item, control.ObjectValue);
+					h.SetObjectValue(item, control.ObjectValue);
 
 					var ee = MacConversions.CreateCellEventArgs(colHandler.Widget, table, r, col, item);
 					colHandler.DataViewHandler?.OnCellEdited(ee);

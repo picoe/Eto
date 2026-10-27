@@ -26,13 +26,29 @@
 		},
 		{
 			"label": "generate-templates",
-			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:GenerateTemplates",
+			"command": "dotnet msbuild ${workspaceFolder}/build/Build.proj /t:GenerateTemplates -tl:off",
 			"type": "shell",
 			"dependsOn": [
 				"build-templates"
 			],
 			"problemMatcher": "$msCompile",
 			"group": "build",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			// Restart VS Code afterwards so C# Dev Kit picks up the changes
+			"label": "install-templates",
+			"type": "shell",
+			"command": "dotnet new install \"$(ls -t ${workspaceFolder}/artifacts/nuget/${config:var.configuration}/Eto.Forms.Templates.*.nupkg | head -1)\" --force",
+			"windows": {
+				"command": "dotnet new install (Get-ChildItem ${workspaceFolder}/artifacts/nuget/${config:var.configuration}/Eto.Forms.Templates.*.nupkg | Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName --force"
+			},
+			"dependsOn": [
+				"build-templates"
+			],
+			"problemMatcher": [],
 			"presentation": {
 				"clear": true
 			}
@@ -131,6 +147,26 @@
 			}
 		},
 		{
+			"label": "build-unittests",
+			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "run-unittests",
+			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj /p:Configuration=${config:var.configuration} --filter \"TestCategory!=ManualTest\"",
+			"type": "shell",
+			"group": "build",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build-sdk-test",
 			"command": "dotnet build ${config:var.buildProperties} /p:Configuration=${config:var.configuration} ${workspaceFolder}/samples/SdkTest/SdkTest.csproj",
 			"type": "shell",
@@ -157,6 +193,16 @@
 			"problemMatcher": [],
 			"presentation": {
 				"clear": true
+			}
+		},
+		{
+			"label": "test non-manual",
+			"type": "shell",
+			"command": "dotnet test --project ${workspaceFolder}/test/Eto.Test.UnitTests/Eto.Test.UnitTests.csproj --filter \"TestCategory!=ManualTest\"",
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"clear": true,
+				"focus": true
 			}
 		},
 		{

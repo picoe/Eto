@@ -44,5 +44,18 @@ namespace Eto.Android.Forms.Controls
 			get;
 			set;
 		}
+
+		TextTrimming trimming;
+
+		public TextTrimming Trimming
+		{
+			get { return trimming; }
+			set
+			{
+				trimming = value;
+				// A TextView only truncates at a character boundary, so a word ellipsis gets that.
+				Control.Ellipsize = value == TextTrimming.None ? null : a.Text.TextUtils.TruncateAt.End;
+			}
+		}
 	}
 }

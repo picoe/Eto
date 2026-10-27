@@ -13,6 +13,8 @@ namespace Eto.Mac.Forms.Controls
 		int suppressExpandCollapseEvents;
 		int skipSelectionChanged;
 
+		static readonly IntPtr selSetDelegate = Selector.GetHandle("setDelegate:");
+
 		static readonly object ShowGroupItems_Key = new object();
 		static readonly object AllowGroupSelection_Key = new object();
 
@@ -22,7 +24,17 @@ namespace Eto.Mac.Forms.Controls
 		public bool ShowGroups
 		{
 			get => Widget.Properties.Get<bool>(ShowGroupItems_Key);
-			set => Widget.Properties.Set(ShowGroupItems_Key, value);
+			set
+			{
+				if (Widget.Properties.TrySet(ShowGroupItems_Key, value))
+				{
+					// NSOutlineView caches which delegate methods exist when the delegate is set,
+					// so re-assign it to pick up the change to EtoOutlineDelegate.RespondsToSelector.
+					var del = Control.WeakDelegate;
+					Messaging.void_objc_msgSend_IntPtr(Control.Handle, selSetDelegate, IntPtr.Zero);
+					Control.WeakDelegate = del;
+				}
+			}
 		}
 
 		public bool AllowGroupSelection
@@ -83,6 +95,17 @@ namespace Eto.Mac.Forms.Controls
 
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
+
+			static readonly IntPtr selIsGroupItem = Selector.GetHandle("outlineView:isGroupItem:");
+
+			public override bool RespondsToSelector(Selector sel)
+			{
+				// AppKit asks this for every row whenever it recalculates the table's height, and each
+				// call is an expensive trip back into managed code - so only offer it when it can be true.
+				if (sel?.Handle == selIsGroupItem)
+					return Handler?.ShowGroups == true;
+				return base.RespondsToSelector(sel);
+			}
 
 			public override bool IsGroupItem(NSOutlineView outlineView, NSObject item)
 			{
@@ -797,6 +820,39 @@ namespace Eto.Mac.Forms.Controls
 			return cachedItems.TryGetValue(item, out myitem) ? myitem : null;
 		}
 
+		// Native items are only created for rows NSOutlineView has asked for, so a visible row may not be cached yet.
+		EtoTreeItem GetVisibleItem(ITreeGridItem item)
+		{
+			if (item == null)
+				return null;
+			var cachedItem = GetCachedItem(item);
+			if (cachedItem != null && Control.RowForItem(cachedItem) >= 0)
+				return cachedItem;
+
+			EtoTreeItem nativeParent = null;
+			IDataStore<ITreeGridItem> container = store;
+			var parent = item.Parent;
+			if (parent != null && !ReferenceEquals(parent, store))
+			{
+				// a parent that isn't shown is a hidden root, so its children are the top level rows
+				nativeParent = GetVisibleItem(parent);
+				if (nativeParent != null)
+				{
+					if (!Control.IsItemExpanded(nativeParent))
+						return null;
+					container = parent as IDataStore<ITreeGridItem>;
+				}
+			}
+
+			var count = container?.Count ?? 0;
+			for (int i = 0; i < count; i++)
+			{
+				if (ReferenceEquals(container[i], item))
+					return Control.GetChild(i, nativeParent) as EtoTreeItem;
+			}
+			return null;
+		}
+
 		int CountRows(ITreeGridItem item)
 		{
 			if (!item.Expanded)
@@ -906,16 +962,16 @@ namespace Eto.Mac.Forms.Controls
 
 		void ExpandItems(NSObject parent)
 		{
-			int count;
-			if (parent == null)
-				count = store?.Count ?? 0;
-			else
-				count = ((parent as EtoTreeItem)?.Item as ITreeGridStore<ITreeGridItem>)?.Count ?? 0;
+			var parentStore = parent == null ? store : (parent as EtoTreeItem)?.Item as ITreeGridStore<ITreeGridItem>;
+			var count = parentStore?.Count ?? 0;
 
 			for (int i = 0; i < count; i++)
 			{
+				// check the model first - materializing the native item for every row is expensive
+				if (parentStore[i]?.Expanded != true)
+					continue;
 				var item = Control.GetChild(i, parent) as EtoTreeItem;
-				if (item != null && item.Item.Expanded && !Control.IsItemExpanded(item))
+				if (item != null && !Control.IsItemExpanded(item))
 				{
 					Control.ExpandItem(item);
 					ExpandItems(item);
@@ -960,19 +1016,24 @@ namespace Eto.Mac.Forms.Controls
 			else
 				contentView.ScrollToPoint(new CGPoint(loc.X, Control.Frame.Height - contentView.Frame.Height - loc.Y));
 
+			Control.EndUpdates();
+
+			// EndUpdates() applies the pending reload, which clears the selection - so restore it after.
 			bool isSelectionChanged = false;
 			foreach (var sel in selection)
 			{
-				var cachedItem = GetCachedItem(sel as ITreeGridItem);
-				if (cachedItem == null)
+				var nativeItem = GetVisibleItem(sel as ITreeGridItem);
+				if (nativeItem == null)
+				{
+					isSelectionChanged = true;
 					continue;
-				var row = Control.RowForItem(cachedItem);
+				}
+				var row = Control.RowForItem(nativeItem);
 				if (row >= 0)
 					Control.SelectRow((nint)row, true);
 				else
 					isSelectionChanged = true;
 			}
-			Control.EndUpdates();
 
 			ScrollView.ReflectScrolledClipView(contentView);
 			suppressExpandCollapseEvents--;
@@ -1045,7 +1106,8 @@ namespace Eto.Mac.Forms.Controls
 					var isSelectionChanged = false;
 					foreach (var sel in selection)
 					{
-						row = Control.RowForItem(GetCachedItem(sel as ITreeGridItem));
+						var nativeItem = GetVisibleItem(sel as ITreeGridItem);
+						row = nativeItem != null ? Control.RowForItem(nativeItem) : -1;
 						if (row >= 0)
 							Control.SelectRow((nint)row, true);
 						else

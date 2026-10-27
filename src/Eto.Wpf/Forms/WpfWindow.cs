@@ -32,6 +32,8 @@ namespace Eto.Wpf.Forms
 		internal static readonly object Icon_Key = new object();
 		internal static readonly object ShowSystemMenu_Key = new object();
 		internal static readonly object DidBlurBehindWindow_Key = new object();
+		internal static readonly object MonitorKeys_Key = new object();
+		internal static readonly object KeyMonitor_Key = new object();
 	}
 	
 	public class EtoWindowContent : swc.DockPanel
@@ -39,7 +41,7 @@ namespace Eto.Wpf.Forms
 		
 	}
 
-	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost
+	public abstract class WpfWindow<TControl, TWidget, TCallback> : WpfPanel<TControl, TWidget, TCallback>, Window.IHandler, IWpfWindow, IInputBindingHost, Win32.KeyMonitor.ITarget
 		where TControl : sw.Window
 		where TWidget : Window
 		where TCallback : Window.ICallback
@@ -81,6 +83,10 @@ namespace Eto.Wpf.Forms
 		public swc.DockPanel MainPanel { get { return main; } }
 
 		protected override sw.FrameworkElement KeyEventControl => main;
+
+		// main is only in the route when something inside the window has keyboard focus, so hook the
+		// window itself as well to get the keys when focus is on the window.
+		protected override sw.FrameworkElement FallbackKeyEventControl => Control;
 
 		public bool MovableByWindowBackground
 		{
@@ -130,6 +136,7 @@ namespace Eto.Wpf.Forms
 			Control.Content = main;
 			Control.SourceInitialized += (sender, e) => OnSourceInitialized();
 			Control.Loaded += Control_Loaded;
+			Control.IsEnabledChanged += Control_IsEnabledChanged;
 			Control.PreviewKeyDown += (sender, e) =>
 			{
 				// need to call validate on the input bindings before trying to execute them
@@ -162,6 +169,38 @@ namespace Eto.Wpf.Forms
 				SetLocation(initialLocation.Value);
 				initialLocation = null;
 			}
+
+			UpdateMinimumTrackingSize();
+		}
+
+		/// <summary>
+		/// Refreshes the minimum size WPF allows the window to be sized to.
+		/// </summary>
+		/// <remarks>
+		/// WPF caches the minimum tracking size of the window (which it uses as a lower bound when sizing to
+		/// content) from the system metrics before the window is created. Those metrics are for a window with a
+		/// border at the system dpi, so a borderless window could never be smaller than that even though Windows
+		/// allows it to be. Resizing the window to its current size makes Windows send a WM_GETMINMAXINFO with
+		/// the actual values for this window, which WPF then uses instead.
+		/// </remarks>
+		void UpdateMinimumTrackingSize()
+		{
+			if (IsAttached)
+				return;
+
+			var handle = NativeHandle;
+			if (handle == IntPtr.Zero)
+				return;
+
+			Win32.ExecuteInDpiAwarenessContext(() =>
+			{
+				if (Win32.GetWindowRect(handle, out var rect))
+				{
+					// note: must not use SWP.NOSIZE or SWP.NOSENDCHANGING, otherwise WM_GETMINMAXINFO is not sent
+					Win32.SetWindowPos(handle, IntPtr.Zero, 0, 0, rect.width, rect.height, Win32.SWP.NOMOVE | Win32.SWP.NOZORDER | Win32.SWP.NOACTIVATE);
+				}
+				return true;
+			});
 		}
 
 		private IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -198,13 +237,66 @@ namespace Eto.Wpf.Forms
 			// which we do not want.
 			SetSizeToContent();
 			if (Control.ShowActivated)
-				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+				MoveFocusToContent();
 
 			HwndSource?.AddHook(HookProc);
 
 			if (FireOnLoadComplete)
 				Callback.OnLoadComplete(Widget, EventArgs.Empty);
 		}
+
+		void MoveFocusToContent()
+		{
+			// When the last input was a key press, WPF shows the tooltip of the control that gets focus here as if
+			// the user tabbed to it. It only checks whether tooltips are enabled as focus arrives.
+			var suppressed = new List<(sw.DependencyObject element, object value)>();
+			void SuppressToolTip(object sender, KeyboardFocusChangedEventArgs e)
+			{
+				if (e.NewFocus is sw.DependencyObject element)
+				{
+					var value = element.ReadLocalValue(swc.ToolTipService.IsEnabledProperty);
+					if (value != sw.DependencyProperty.UnsetValue && value is not bool)
+						return; // leave bindings alone
+					suppressed.Add((element, value));
+					swc.ToolTipService.SetIsEnabled(element, false);
+				}
+			}
+
+			Control.PreviewGotKeyboardFocus += SuppressToolTip;
+			try
+			{
+				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
+			}
+			finally
+			{
+				Control.PreviewGotKeyboardFocus -= SuppressToolTip;
+				for (int i = suppressed.Count - 1; i >= 0; i--)
+				{
+					var (element, value) = suppressed[i];
+					if (value == sw.DependencyProperty.UnsetValue)
+						element.ClearValue(swc.ToolTipService.IsEnabledProperty);
+					else
+						element.SetValue(swc.ToolTipService.IsEnabledProperty, value);
+				}
+			}
+		}
+
+		private void Control_IsEnabledChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+		{
+			// WPF clears the keyboard focus when a window gets disabled, but does not restore it when
+			// the window is enabled again. A window with nothing focused inside it gets no keyboard
+			// input at all (not even at the window itself), so focus has to be moved back into it.
+			// Which control ends up with it is not preserved, same as the other platforms.
+			if (Control.IsEnabled && Control.IsActive && !Control.IsKeyboardFocusWithin)
+			{
+				// The window itself is focused rather than a control in it, as focusing a control would
+				// look to the user as if they had tabbed to it, showing its tooltip and focus visual.
+				// Clearing the focus scope's element is what keeps Focus() from delegating to whatever
+				// was focused before.
+				swi.FocusManager.SetFocusedElement(Control, null);
+				Control.Focus();
+			}
+		}	
 
 		protected bool FireOnLoadComplete { get; set; }
 
@@ -294,6 +386,10 @@ namespace Eto.Wpf.Forms
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
 					break;
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					AttachKeyMonitor();
+					break;
 				case Window.LogicalPixelSizeChangedEvent:
 					if (PerMonitorDpiHelper.BuiltInPerMonitorSupported && WpfWindow.dpiChangedEvent != null) // .NET 4.6.2 support!
 					{
@@ -373,6 +469,8 @@ namespace Eto.Wpf.Forms
 			base.OnLoad(e);
 			SetScale(false, false);
 			SetupPerMonitorDpi();
+			if (MonitorKeys)
+				RegisterKeyMonitor();
 		}
 
 		protected virtual void UpdateClientSize(Size size)
@@ -435,6 +533,8 @@ namespace Eto.Wpf.Forms
 				return;
 
 			Control.SizeToContent = sizing;
+			Control.InvalidateMeasure();
+			Control.UpdateLayout();
 		}
 
 		static readonly object AutoSize_Key = new object();
@@ -872,6 +972,18 @@ namespace Eto.Wpf.Forms
 			Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(NativeHandle, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
 		}
 
+		public Rectangle Bounds
+		{
+			// WPF sizes windows in logical (WPF) units but positions them in device pixels via Win32,
+			// so there is no single API that sets both cleanly - set size then location.
+			get => new Rectangle(Location, Size);
+			set
+			{
+				Size = value.Size;
+				Location = value.Location;
+			}
+		}
+
 		public WindowState WindowState
 		{
 			get
@@ -1159,8 +1271,89 @@ namespace Eto.Wpf.Forms
 			}
 		}
 
+		bool MonitorKeys
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.MonitorKeys_Key);
+			set => Widget.Properties.Set(WpfWindow.MonitorKeys_Key, value);
+		}
+
+		IDisposable KeyMonitor
+		{
+			get => Widget.Properties.Get<IDisposable>(WpfWindow.KeyMonitor_Key);
+			set => Widget.Properties.Set(WpfWindow.KeyMonitor_Key, value);
+		}
+
+		/// <summary>
+		/// Both preview key events share a single registration, since the underlying hook reports key
+		/// down and key up together. Raising a callback nobody subscribed to is harmless.
+		/// </summary>
+		/// <remarks>
+		/// The registration goes in a process wide list, so it is deferred until the window is loaded
+		/// and dropped again when it unloads. A window that is never shown never registers, and one
+		/// that is closed lets go without waiting for a Dispose that may never come.
+		/// </remarks>
+		void AttachKeyMonitor()
+		{
+			MonitorKeys = true;
+			if (Widget.Loaded)
+				RegisterKeyMonitor();
+		}
+
+		void RegisterKeyMonitor()
+		{
+			if (KeyMonitor == null)
+				KeyMonitor = Win32.KeyMonitor.Register(this);
+		}
+
+		IntPtr Win32.KeyMonitor.ITarget.KeyMonitorHandle => new swin.WindowInteropHelper(Control).Handle;
+
+		void Win32.KeyMonitor.ITarget.OnKeyMonitorKey(int virtualKey, bool isKeyDown)
+		{
+			var key = swi.KeyInterop.KeyFromVirtualKey(virtualKey).ToEto();
+			if (isKeyDown)
+				Callback.OnPreviewKeyDown(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyDown));
+			else
+				Callback.OnPreviewKeyUp(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyUp));
+		}
+
+		void DetachKeyMonitor()
+		{
+			var monitor = KeyMonitor;
+			if (monitor == null)
+				return;
+			monitor.Dispose();
+			KeyMonitor = null;
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					// one registration serves both, so only give it up when neither is still wanted
+					var other = id == Window.PreviewKeyDownEvent ? Window.PreviewKeyUpEvent : Window.PreviewKeyDownEvent;
+					if (!IsEventHandled(other))
+					{
+						MonitorKeys = false;
+						DetachKeyMonitor();
+					}
+					return true;
+				default:
+					return base.DetachEvent(id);
+			}
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			DetachKeyMonitor();
+		}
+
 		protected override void Dispose(bool disposing)
 		{
+			DetachKeyMonitor();
+
 			// close the window when disposing from Eto explicitly
 			if (disposing)
 				Close();

@@ -1,5 +1,5 @@
-﻿<!--#if (Combined)-->
-<Project Sdk="Eto.Forms/2.12.0-dev">
+﻿<!--#if (!SeparateProjects)-->
+<Project Sdk="Eto.Forms/2.13.0-dev">
 
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.
@@ -31,9 +31,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Forms" Version="2.12.0-dev" />
-    <PackageReference Include="Eto.Serialization.Json" Version="2.12.0-dev" Condition="$(UseJeto) == 'True'" />
-    <PackageReference Include="Eto.Serialization.Xaml" Version="2.12.0-dev" Condition="$(UseXeto) == 'True'" />
+    <PackageReference Include="Eto.Forms" Version="2.13.0-dev" />
+    <PackageReference Include="Eto.Serialization.Json" Version="2.13.0-dev" Condition="$(UseJeto) == 'True'" />
+    <PackageReference Include="Eto.Serialization.Xaml" Version="2.13.0-dev" Condition="$(UseXeto) == 'True'" />
   </ItemGroup>
 <!--#endif-->
 
@@ -42,7 +42,7 @@
     <Compile Include="MainForm.fs" Condition="$(UseCode) == 'True' OR $(UseCodePreview) == 'True'" />
     <Compile Include="MainForm.xeto.fs" Condition="$(UseXeto) == 'True'" />
     <Compile Include="MainForm.jeto.fs" Condition="$(UseJeto) == 'True'" />
-    <Compile Include="Program.fs" Condition="$(Combined) == 'True'" />
+    <Compile Include="Program.fs" Condition="$(SeparateProjects) != 'True'" />
 
     <EmbeddedResource Include="MainForm.xeto" Condition="$(UseXeto) == 'True'" />
     <EmbeddedResource Include="MainForm.jeto" Condition="$(UseJeto) == 'True'" />

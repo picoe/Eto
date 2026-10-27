@@ -11,6 +11,35 @@ namespace Eto.Wpf.Drawing
 		Brush _foregroundBrush;
 		bool _hasNewLines;
 		bool _shouldClip;
+		double? _pixelsPerDip;
+		swm.TextFormattingMode? _formattingMode;
+		swm.TextFormattingMode? _targetFormattingMode;
+		double _controlPixelsPerDip;
+		swm.TextFormattingMode _controlFormattingMode;
+
+		/// <summary>
+		/// Gets or sets the mode to lay this text out with, or null (the default) to use the mode of what it
+		/// is drawn on, falling back to the mode of its <see cref="Font"/>.
+		/// </summary>
+		/// <remarks>
+		/// <see cref="Measure"/> has to lay the text out before there is anything to draw it on, so a font
+		/// using <see cref="swm.TextFormattingMode.Display"/> measures with display metrics and is then laid
+		/// out again when it turns out to be drawn on something scaled.  Set this to measure and draw the
+		/// text the same way regardless - <see cref="swm.TextFormattingMode.Ideal"/> to be independent of
+		/// both the scale and the dpi.  It can be set from a style so drawing code doesn't have to reach for
+		/// the handler itself:
+		/// <code>Style.Add&lt;FormattedTextHandler&gt;("canvas", h => h.TextFormattingMode = TextFormattingMode.Ideal);</code>
+		/// </remarks>
+		public swm.TextFormattingMode? TextFormattingMode
+		{
+			get => _formattingMode;
+			set
+			{
+				_formattingMode = value;
+				ValidateTextFormatting();
+			}
+		}
+
 		public FormattedTextWrapMode Wrap
 		{
 			get => _wrap;
@@ -57,6 +86,7 @@ namespace Eto.Wpf.Drawing
 			set
 			{
 				_font = value;
+				ValidateTextFormatting();
 				if (HasControl)
 				{
 					SetFont(Control);
@@ -103,6 +133,27 @@ namespace Eto.Wpf.Drawing
 			Control = null;
 		}
 
+		/// <summary>
+		/// The mode to lay the text out with: what was asked for explicitly, otherwise the mode of what it is
+		/// drawn on, otherwise the mode of the font.
+		/// </summary>
+		swm.TextFormattingMode FormattingModeFor(FontHandler fontHandler)
+			=> _formattingMode ?? _targetFormattingMode ?? fontHandler.TextFormattingMode ?? swm.TextFormattingMode.Ideal;
+
+		/// <summary>
+		/// The formatting mode and dpi of a FormattedText can only be specified when it is created, so it has
+		/// to be recreated whenever either of them changes.
+		/// </summary>
+		void ValidateTextFormatting()
+		{
+			if (!HasControl || !(Font?.Handler is FontHandler fontHandler))
+				return;
+
+			if (FormattingModeFor(fontHandler) != _controlFormattingMode
+				|| (_pixelsPerDip ?? fontHandler.PixelsPerDip) != _controlPixelsPerDip)
+				Invalidate();
+		}
+
 		protected override swm.FormattedText CreateControl()
 		{
 			var font = Font;
@@ -110,15 +161,12 @@ namespace Eto.Wpf.Drawing
 			text = SetWrap(text);
 			_hasNewLines = text.IndexOf('\n') != -1;
 
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-			var formattedText = new swm.FormattedText(
-				text,
-				CultureInfo.CurrentUICulture,
-				sw.FlowDirection.LeftToRight,
-				font.ToWpfTypeface(),
-				font.Size,
-				ForegroundBrush.ToWpf());
-#pragma warning restore CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
+			var fontHandler = (FontHandler)font.Handler;
+			_controlFormattingMode = FormattingModeFor(fontHandler);
+			_controlPixelsPerDip = _pixelsPerDip ?? fontHandler.PixelsPerDip;
+
+			// decorations are applied to the entire text by SetFont below
+			var formattedText = fontHandler.CreateFormattedText(text, ForegroundBrush.ToWpf(), setDecorations: false, pixelsPerDip: _controlPixelsPerDip, formattingMode: _controlFormattingMode);
 
 			// support correctly showing ellipsis when there's a single line
 			if (Wrap == FormattedTextWrapMode.None)
@@ -211,6 +259,12 @@ namespace Eto.Wpf.Drawing
 
 		public void DrawText(GraphicsHandler handler, PointF location)
 		{
+			// lay the text out for the dpi and formatting mode of what we're drawing on now that we know them,
+			// unless a mode was asked for explicitly - measuring has to agree with what is drawn
+			_pixelsPerDip = handler.TargetPixelsPerDip;
+			_targetFormattingMode = handler.TargetTextFormattingMode;
+			ValidateTextFormatting();
+
 			/**
 			//Doesn't do font fallbacks, so it isn't very useful at this point.
 			//Only other way appears to re-write the FormattedText class which comes along with a TON of code.

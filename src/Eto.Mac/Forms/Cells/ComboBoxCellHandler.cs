@@ -239,20 +239,22 @@ namespace Eto.Mac.Forms.Cells
 					Bordered = false,
 					AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable
 				};
+				// The cell view is reused and can outlive the grid, so only reference the handler weakly.
 				view.Activated += (sender, e) =>
 				{
-					var colHandler = ColumnHandler;
+					var control = (CellView)sender;
+					var h = control.Handler;
+					var colHandler = h?.ColumnHandler;
 					if (colHandler == null)
 						return;
-					var control = (CellView)sender;
 					var r = (int)control.Tag;
 					var item = getItem(control.Item, r);
-					var cellArgs = MacConversions.CreateCellEventArgs(colHandler.Widget, tableView, r, col, item);
+					var cellArgs = MacConversions.CreateCellEventArgs(colHandler.Widget, null, r, col, item);
 					colHandler.DataViewHandler?.OnCellEditing(cellArgs);
-					SetObjectValue(item, control.ObjectValue);
+					h.SetObjectValue(item, control.ObjectValue);
 
 					colHandler.DataViewHandler?.OnCellEdited(cellArgs);
-					control.ObjectValue = GetObjectValue(item);
+					control.ObjectValue = h.GetObjectValue(item);
 				};
 				view.Bind(enabledBinding, tableColumn, "editable", null);
 				view.Menu = menu.Copy() as NSMenu;

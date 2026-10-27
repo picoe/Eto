@@ -143,7 +143,7 @@ namespace Eto.WinForms.Forms
 			if (BubbleMouseEvents)
 			{
 				var bubble = new BubbleEventFilter();
-				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseWheel(c, e), null, Win32.WM.MOUSEWHEEL);
+				bubble.AddBubbleMouseEvents((c, cb, e) => cb.OnMouseWheel(c, e), null, Win32.WM.MOUSEWHEEL, Win32.WM.MOUSEHWHEEL);
 				bubble.AddBubbleMouseEvent((c, cb, e) => cb.OnMouseMove(c, e), null, Win32.WM.MOUSEMOVE);
 				bubble.AddBubbleMouseEvents((c, cb, e) => 
 				{

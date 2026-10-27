@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- The Wpf/WinForms fixtures these TFMs reference can only be built on Windows (the Wpf,
+         WinForms, Eto.Test.Wpf and Eto.Test.WinForms projects are excluded from *|Mac and *|Linux
+         in Eto.slnx), so only target them there. -->
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <TargetFrameworks Condition="$(OSPlatform) == 'Windows'">net48;net10.0;net10.0-windows</TargetFrameworks>
+    <TargetFrameworks Condition="$(OSPlatform) == 'Mac'">net10.0;net10.0-macos</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+
+    <!-- net10.0-macos is built as a macOS .app so it initializes the xamarin runtime -->
+    <ApplicationId>ca.picoe.eto.unittests</ApplicationId>
+    <RunWithOpen>false</RunWithOpen>
+    <!-- build for this machine only; the universal app the SDK defaults to in Release has no runtime
+         identifier, so it isn't self-contained and can't reference Eto.Test.macOS (NETSDK1151) -->
+    <RuntimeIdentifier Condition="$(TargetFramework.EndsWith('-macos'))">$(NETCoreSdkPortableRuntimeIdentifier)</RuntimeIdentifier>
+
+    <IsTestProject>true</IsTestProject>
+    <EnableNUnitRunner>true</EnableNUnitRunner>
+    <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
+    <EnableMicrosoftTestingPlatform>true</EnableMicrosoftTestingPlatform>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="4.6.1" />
+    <!-- the net*-macos build runs NUnit in-process instead of through the adapter's bridge (see
+         NUnitTestFramework), and the adapter's engine only adds startup noise there -->
+    <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" Condition="'$(TargetPlatformIdentifier)' != 'macOS'" />
+    <PackageReference Include="Microsoft.Testing.Platform" Version="2.2.3" />
+    <!-- Enables the trx report option so CI can turn the results into a job summary -->
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj" />
+  </ItemGroup>
+  <!-- The platform-specific fixtures live in the Eto.Test.<Platform> app assemblies (e.g.
+       test/Eto.Test.Wpf/UnitTests). Reference them so they are discovered here too rather than only
+       in those apps' own GUI test runners. The references are needed regardless of discovery:
+       EtoTestSetup.Initialize probes the platform app's output directory to locate the platform. -->
+  <ItemGroup Condition="$(TargetFramework) == 'net10.0-windows' or $(TargetFramework) == 'net48'">
+    <ProjectReference Include="..\..\src\Eto.Wpf\Eto.Wpf.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Eto.Test.Wpf\Eto.Test.Wpf.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\..\src\Eto.WinForms\Eto.WinForms.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Eto.Test.WinForms\Eto.Test.WinForms.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'net10.0'">
+    <ProjectReference Include="..\..\src\Eto.Gtk\Eto.Gtk.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Eto.Test.Gtk\Eto.Test.Gtk.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.Mac64.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Eto.Test.Mac\Eto.Test.Mac64.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup Condition="$(TargetFramework) == 'net10.0-macos'">
+    <ProjectReference Include="..\..\src\Eto.Mac\Eto.macOS.csproj" PrivateAssets="all" />
+    <ProjectReference Include="..\Eto.Test.Mac\Eto.Test.macOS.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <!-- Eto.Test.Mac's ResourceTests check each of these lands in the right place in the app bundle, and
+       only run when the tests are running from one - which they now are, so this bundle needs them too. -->
+  <ItemGroup Condition="$(TargetFramework) == 'net10.0-macos'">
+    <None Include="..\Eto.Test.Mac\Assets\TestCopyToOutput.txt" Link="Assets\TestCopyToOutput.txt" CopyToOutputDirectory="PreserveNewest" PublishFolderType="Assembly" />
+    <Content Include="..\Eto.Test.Mac\Assets\TestContent.txt" Link="Assets\TestContent.txt" />
+    <BundleResource Include="..\Eto.Test.Mac\Assets\TestBundleResource.txt" Link="Assets\TestBundleResource.txt" />
+  </ItemGroup>
+
+</Project>

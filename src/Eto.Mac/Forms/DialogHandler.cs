@@ -143,9 +143,10 @@ namespace Eto.Mac.Forms
 
 		public virtual void ShowModal()
 		{
+			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			session = null;
 			EnsureOwner();
 			Application.Instance.AsyncInvoke(FireOnShown); // fire after dialog is shown
@@ -162,9 +163,10 @@ namespace Eto.Mac.Forms
 
 		public virtual Task ShowModalAsync()
 		{
+			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, true, Icon);
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			var tcs = new TaskCompletionSource<bool>();
 			session = null;
 			EnsureOwner();

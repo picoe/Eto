@@ -29,6 +29,13 @@ namespace Eto.iOS.Forms
 			}
 		}
 
+		public Rectangle Bounds
+		{
+			// The view's Frame carries both the location and size, so set it in one assignment.
+			get { return Control.Frame.ToEtoRectangle(); }
+			set { Control.Frame = value.ToNS(); }
+		}
+
 		public double Opacity
 		{
 			get { return Control.Alpha; }

@@ -170,7 +170,7 @@ namespace Eto.Forms.ThemedControls
 			} while (available.Width >= minWidth + increment);
 
 			if (lastGoodSize != null)
-				textLabel.Size = (Size)lastGoodSize.Value;
+				textLabel.Size = Size.Ceiling(lastGoodSize.Value); // truncating can wrap the last word onto a clipped line
 		}
 
 

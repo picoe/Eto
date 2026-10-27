@@ -34,6 +34,11 @@ namespace Eto.Test
 		}
 		static INativeHostControls Handler => Platform.Instance.CreateShared<INativeHostControls>();
 
-		public static IEnumerable<NativeHostTest> GetNativeHostTests() => Handler.GetNativeHostTests();
+		public static IEnumerable<NativeHostTest> GetNativeHostTests()
+		{
+			if (!Platform.Instance.Supports<INativeHostControls>())
+				return Enumerable.Empty<NativeHostTest>();
+			return Handler.GetNativeHostTests();
+		}
     }
 }

@@ -10,6 +10,9 @@
 			get { return box; }
 		}
 
+		WrapMode wrap = WrapMode.Word;
+		TextTrimming trimming;
+
 		public LinkButtonHandler()
 		{
 			Control = new Gtk.LinkButton(string.Empty);
@@ -18,6 +21,57 @@
 			Control.TooltipText = null;
 			box = new Gtk.EventBox();
 			box.Child = Control;
+			SetWrap();
+		}
+
+		// A Gtk.LinkButton is a button wrapping a label, so the text settings go on that label.
+		Gtk.Label TextLabel => Control.Child as Gtk.Label;
+
+		public WrapMode Wrap
+		{
+			get => wrap;
+			set
+			{
+				wrap = value;
+				SetWrap();
+			}
+		}
+
+		public TextTrimming Trimming
+		{
+			get => trimming;
+			set
+			{
+				trimming = value;
+				SetWrap();
+			}
+		}
+
+		void SetWrap()
+		{
+			var label = TextLabel;
+			if (label == null)
+				return;
+
+			switch (wrap)
+			{
+				case WrapMode.None:
+					label.LineWrap = false;
+					break;
+				case WrapMode.Word:
+					label.LineWrapMode = Pango.WrapMode.WordChar;
+					label.LineWrap = true;
+					break;
+				case WrapMode.Character:
+					label.LineWrapMode = Pango.WrapMode.Char;
+					label.LineWrap = true;
+					break;
+				default:
+					throw new NotSupportedException();
+			}
+			// Pango cannot wrap and ellipsize the same layout - wrapping wins, see Eto.Forms.TextTrimming.
+			label.Ellipsize = wrap == WrapMode.None ? trimming.ToPango() : Pango.EllipsizeMode.None;
+			Control.QueueResize();
 		}
 
 		public Color TextColor

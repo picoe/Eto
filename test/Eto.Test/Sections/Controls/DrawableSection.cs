@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Controls
 					TableLayout.HorizontalScaled(
 						10,
 						new TableLayout(
-							"Default",
+							"Default (right click)",
 							Default()
 						),
 						new TableLayout(
@@ -68,7 +68,10 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Drawable
 			{
-				Size = new Size(50, 50)
+				Size = new Size(50, 50),
+				// this drawable does not handle TextInput, so the system should not add items such as
+				// AutoFill to its menu - compare with the IME Input drawable below, which does.
+				ContextMenu = CreateContextMenu("Default")
 			};
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
@@ -77,6 +80,18 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control, "Default");
 
 			return control;
+		}
+
+		ContextMenu CreateContextMenu(string name)
+		{
+			var menu = new ContextMenu();
+			for (var i = 1; i <= 2; i++)
+			{
+				var item = new ButtonMenuItem { Text = $"Custom Item {i}" };
+				item.Click += (sender, e) => Log.Write(name, $"Clicked {((ButtonMenuItem)sender).Text}");
+				menu.Items.Add(item);
+			}
+			return menu;
 		}
 
 		Control WithBackground()
@@ -288,11 +303,14 @@ namespace Eto.Test.Sections.Controls
 			var text = string.Empty;
 			var compositionText = string.Empty;
 			var compositionActive = false;
+			var contextMenu = CreateContextMenu("IME Input");
 			var drawable = new Drawable
 			{
 				CanFocus = true,
 				Size = new Size(420, 60),
-				BackgroundColor = Colors.White
+				BackgroundColor = Colors.White,
+				// this drawable handles TextInput, so the system may add its own items (AutoFill, etc) to the menu
+				ContextMenu = contextMenu
 			};
 			var font = SystemFonts.Default();
 
@@ -346,7 +364,8 @@ namespace Eto.Test.Sections.Controls
 				else
 					drawable.CancelTextComposition();
 				drawable.Focus();
-				e.Handled = true;
+				// don't handle the alternate button, otherwise the platform never gets to show the ContextMenu
+				e.Handled = e.Buttons != MouseButtons.Alternate;
 			};
 			drawable.TextInput += (sender, e) =>
 			{
@@ -385,6 +404,18 @@ namespace Eto.Test.Sections.Controls
 
 			updateCaret();
 
+			var includeSystemItems = new EnumCheckBoxList<ContextMenuSystemItems>();
+			// the check boxes aren't created until the control is loaded, so the initial selection can only be
+			// set once they exist - setting it in the constructor silently does nothing.
+			includeSystemItems.LoadComplete += (sender, e) => includeSystemItems.SelectedValues = new[] { ContextMenuSystemItems.All };
+			includeSystemItems.SelectedValuesChanged += (sender, e) =>
+			{
+				var value = ContextMenuSystemItems.None;
+				foreach (var item in includeSystemItems.SelectedValues)
+					value |= item;
+				contextMenu.IncludeSystemItems = value;
+			};
+
 			return new StackLayout
 			{
 				HorizontalContentAlignment = HorizontalAlignment.Stretch,
@@ -392,6 +423,10 @@ namespace Eto.Test.Sections.Controls
 				Items =
 				{
 					"Click inside the drawable and type with an IME. The candidate/composition UI should follow the caret.",
+					"Right click it to show its ContextMenu. Since this drawable handles TextInput, the system may add"
+						+ " its own items (AutoFill, etc)\nunless IncludeSystemItems is cleared. The 'Default' drawable"
+						+ " above does not handle TextInput, so it should never show them.",
+					new StackLayout { Orientation = Orientation.Horizontal, Spacing = 6, Items = { "IncludeSystemItems:", includeSystemItems } },
 					drawable
 				}
 			};

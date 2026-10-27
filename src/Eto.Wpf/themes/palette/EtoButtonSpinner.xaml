@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoButtonSpinner - custom theme skin
+    =========================================================================
+    EtoButtonSpinner is the chrome used by NumericStepper / TextStepper, and it
+    is also hosted *inside* other controls: the DateTimePicker puts one in the
+    edit area of an EtoCustomComboBox (date modes) or uses it directly (time
+    mode).
+
+    The ControlTemplate (ButtonSpinnerTemplate) is shared by every theme and
+    lives in themes/generic/ButtonSpinner.xaml - this style only supplies the
+    palette chrome, exactly like themes/fluent/ButtonSpinner.xaml does for
+    Fluent. Without it the spinner falls back to the generic style, which fills
+    itself with SystemColors.WindowBrushKey (the palette *Background* color).
+    That is a different color than the Surface fill used by the text-entry
+    controls, so the spinner painted a Background-colored rectangle inside the
+    Surface-colored combo chrome, which read as a spurious inner border around
+    the DateTimePicker text.
+
+    Background therefore comes from the shared TextControlBackground* keys (see
+    themes/palette.xaml) rather than the palette Surface brush directly: the
+    generic ButtonSpinner and CustomComboBox templates redefine those keys to
+    Transparent within their content area, so a hosted spinner adds no fill of
+    its own and only the outer chrome paints. Standalone, they resolve to the
+    palette Surface / DisabledBackground colors so a NumericStepper matches a
+    TextBox.
+    =========================================================================
+    -->
+
+    <!-- Spin buttons: the generic style tints with a hard-coded black overlay, which is
+         invisible on a dark palette - use the palette hover / pressed fills instead. -->
+    <Style x:Key="SpinnerRepeatButtonStyle" TargetType="{x:Type RepeatButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Height" Value="9" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RepeatButton}">
+                    <Border x:Name="ButtonBorder"
+                            HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type efc:EtoButtonSpinner}">
+        <Setter Property="Template"         Value="{DynamicResource ButtonSpinnerTemplate}" />
+        <Setter Property="Background"       Value="{DynamicResource TextControlBackground}" />
+        <Setter Property="Foreground"       Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="BorderBrush"      Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness"  Value="1" />
+        <!-- Padding is left at the generic 2,2 so the text of a DateTimePicker hosted in the
+             combo (which adds its own padding) stays aligned with the other input controls. -->
+        <Setter Property="Padding" Value="2,2" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Style.Triggers>
+            <!-- Only the border reacts to hover / focus, matching the TextBox and DropDown skins -->
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.AccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource TextControlBackgroundDisabled}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+</ResourceDictionary>

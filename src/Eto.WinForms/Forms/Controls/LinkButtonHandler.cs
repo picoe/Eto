@@ -110,6 +110,26 @@
 			set { Control.DisabledLinkColor = value.ToSD(); }
 		}
 
+		// TODO: a native LinkLabel lays its own text out, so there is nothing here to hand this to -
+		// see Eto.Forms.TextTrimming.
+		public WrapMode Wrap { get; set; } = WrapMode.Word;
+
+		TextTrimming trimming;
+
+		public TextTrimming Trimming
+		{
+			get { return trimming; }
+			set
+			{
+				if (trimming == value)
+					return;
+				trimming = value;
+				// AutoEllipsis is all a LinkLabel offers, so a word ellipsis gets the character one.
+				Control.AutoEllipsis = value != TextTrimming.None;
+				Control.Invalidate();
+			}
+		}
+
 		static readonly Win32.WM[] intrinsicEvents = { Win32.WM.LBUTTONDOWN, Win32.WM.LBUTTONUP, Win32.WM.LBUTTONDBLCLK };
 		public override bool ShouldBubbleEvent(swf.Message msg)
 		{

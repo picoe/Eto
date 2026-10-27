@@ -173,11 +173,16 @@ namespace Eto
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
 			MOUSEWHEEL = 0x20A,
+			MOUSEHWHEEL = 0x20E,
+
+			GESTURE = 0x0119,
+			GESTURENOTIFY = 0x011A,
 
 			CUT = 0x0300,
 			COPY = 0x0301,
 			PASTE = 0x0302,
 			CLEAR = 0x0303,
+			CLIPBOARDUPDATE = 0x031D,
 
 			ERASEBKGND = 0x14,
 
@@ -202,6 +207,7 @@ namespace Eto
 
 			MOVE = 0x0003,
 			SIZE = 0x0005,
+			CLOSE = 0x0010
 		}
 
 		public enum VK : long
@@ -340,6 +346,67 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern bool GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct POINTS
+		{
+			public short x;
+			public short y;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GESTUREINFO
+		{
+			public int cbSize;
+			public int dwFlags;
+			public int dwID;
+			public IntPtr hwndTarget;
+			public POINTS ptsLocation;
+			public int dwInstanceID;
+			public int dwSequenceID;
+			public long ullArguments;
+			public int cbExtraArgs;
+		}
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct GESTURECONFIG
+		{
+			public int dwID;
+			public int dwWant;
+			public int dwBlock;
+		}
+
+		public const int GID_BEGIN = 1;
+		public const int GID_END = 2;
+		public const int GID_ZOOM = 3;
+		public const int GID_PAN = 4;
+		public const int GID_ROTATE = 5;
+		public const int GID_TWOFINGERTAP = 6;
+		public const int GID_PRESSANDTAP = 7;
+
+		public const int GF_BEGIN = 0x00000001;
+		public const int GF_INERTIA = 0x00000002;
+		public const int GF_END = 0x00000004;
+
+		public const int GC_ALLGESTURES = 0x00000001;
+		public const int GC_ZOOM = 0x00000001;
+		public const int GC_PAN = 0x00000001;
+		public const int GC_PAN_WITH_SINGLE_FINGER_VERTICALLY = 0x00000002;
+		public const int GC_PAN_WITH_SINGLE_FINGER_HORIZONTALLY = 0x00000004;
+		public const int GC_PAN_WITH_GUTTER = 0x00000008;
+		public const int GC_PAN_WITH_INERTIA = 0x00000010;
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool GetGestureInfo(IntPtr hGestureInfo, ref GESTUREINFO pGestureInfo);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool CloseGestureInfoHandle(IntPtr hGestureInfo);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool SetGestureConfig(IntPtr hwnd, int dwReserved, int cIDs, [In] GESTURECONFIG[] pGestureConfig, int cbSize);
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong(IntPtr hWnd, GWL nIndex);
@@ -504,6 +571,10 @@ namespace Eto
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool UnhookWindowsHookEx(IntPtr hookId);
 
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
+
 		[DllImportAttribute("user32.dll")]
 		public static extern bool ReleaseCapture();
 
@@ -626,6 +697,9 @@ namespace Eto
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto)]
 		public static extern int GlobalSize(IntPtr handle);
 
+		[DllImport("ole32.dll")]
+		public static extern void ReleaseStgMedium(ref System.Runtime.InteropServices.ComTypes.STGMEDIUM pmedium);
+
 
 		public enum SBB
 		{
@@ -674,6 +748,14 @@ namespace Eto
 
 		[DllImport("user32.dll")]
 		public static extern bool DestroyWindow(IntPtr hWnd);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool AddClipboardFormatListener(IntPtr hwnd);
+
+		[DllImport("user32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool RemoveClipboardFormatListener(IntPtr hwnd);
 
 		[DllImport("User32.dll", SetLastError = true)]
 		public static extern int SetWindowRgn(IntPtr hWnd, IntPtr hRgn, bool bRedraw);
@@ -949,6 +1031,23 @@ namespace Eto
 				return SHIL_LARGE;    // 32x32
 			return SHIL_SMALL;       // 16x16
 		}
-		
+
+		public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+		// Title bar / frame tinting. Windows 11 (build 22000) and later only; on earlier
+		// versions DwmSetWindowAttribute simply fails with E_INVALIDARG and the frame keeps
+		// its system appearance. Values are COLORREF (0x00BBGGRR), see MakeColorRef.
+		public const int DWMWA_BORDER_COLOR = 34;
+		public const int DWMWA_CAPTION_COLOR = 35;
+		public const int DWMWA_TEXT_COLOR = 36;
+
+		/// <summary>Sentinel that restores the system default for the color attributes above.</summary>
+		public const int DWMWA_COLOR_DEFAULT = unchecked((int)0xFFFFFFFF);
+
+		/// <summary>Packs RGB components into a COLORREF (0x00BBGGRR) for the DWMWA_*_COLOR attributes.</summary>
+		public static int MakeColorRef(byte r, byte g, byte b) => r | (g << 8) | (b << 16);
+
+		[DllImport("dwmapi.dll")]
+		public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 	}
 }

@@ -1,0 +1,16 @@
+<Solution>
+<!--#if (!SeparateProjects) -->
+	<Project Path="EtoApp.1.vbproj" />
+<!--#else -->
+	<Project Path="EtoApp.1/EtoApp.1.vbproj" />
+	<Project Path="EtoApp.1.Gtk/EtoApp.1.Gtk.vbproj" />
+	<Project Path="EtoApp.1.Mac/EtoApp.1.Mac.vbproj" />
+	<Project Path="EtoApp.1.Wpf/EtoApp.1.Wpf.vbproj" />
+<!--#if (IncludeWinForms) -->
+	<Project Path="EtoApp.1.WinForms/EtoApp.1.WinForms.vbproj" />
+<!--#endif -->
+<!--#if (IncludeMacOS) -->
+	<Project Path="EtoApp.1.MacOS/EtoApp.1.MacOS.csproj" />
+<!--#endif -->
+<!--#endif -->
+</Solution>

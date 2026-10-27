@@ -104,6 +104,37 @@ namespace Eto.Mac.Forms
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, selector);
 		}
 
+		// The NSTextInputClient protocol is added to the *class*, not the instance, so every control of that type
+		// conforms as soon as any single one of them handles the TextInput event.  The two overrides below report
+		// the truth per instance so the system only treats the controls that actually handle text input as text
+		// input - otherwise it adds things like AutoFill to the context menu of every control of that type.
+		static bool HandlesTextInput(IntPtr sender)
+		{
+			return MacBase.GetHandler(Runtime.GetNSObject(sender)) is IMacViewHandler handler && handler.HandlesTextInput;
+		}
+
+		internal static IntPtr InputContext_Selector = Selector.GetHandle("inputContext");
+		internal static MarshalDelegates.Func_IntPtr_IntPtr_IntPtr InputContext_Delegate = InputContext;
+		static IntPtr InputContext(IntPtr sender, IntPtr sel)
+		{
+			if (!HandlesTextInput(sender))
+				return IntPtr.Zero;
+
+			var obj = Runtime.GetNSObject(sender);
+			return Messaging.IntPtr_objc_msgSendSuper(obj.SuperHandle, sel);
+		}
+
+		internal static IntPtr ConformsToProtocol_Selector = Selector.GetHandle("conformsToProtocol:");
+		internal static MarshalDelegates.Func_IntPtr_IntPtr_IntPtr_bool ConformsToProtocol_Delegate = ConformsToProtocol;
+		static bool ConformsToProtocol(IntPtr sender, IntPtr sel, IntPtr protocol)
+		{
+			if (protocol == NSTextInputClientProtocol_Handle && !HandlesTextInput(sender))
+				return false;
+
+			var obj = Runtime.GetNSObject(sender);
+			return Messaging.bool_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, protocol);
+		}
+
 		internal static IntPtr NSTextInputClientProtocol_Handle = ObjCExtensions.GetProtocolHandle("NSTextInputClient");
 
 		static Selector selString = new Selector("string");
@@ -135,11 +166,15 @@ namespace Eto.Mac.Forms
 		public bool EnsureTextInputImplemented(NSView view = null)
 		{
 			view = view ?? TextInputControl;
-			
+
+			// this control actually handles text input, as opposed to merely being an instance of a class that
+			// had the NSTextInputClient protocol added to it by another control.  See MacViewTextInput.InputContext.
+			HandlesTextInput = true;
+
 			// determine whether we need to call InterpretKeyEvents ourselves or if it is already handled by the super class (e.g. NSTextView)
 			// for NSTextField (TextBox, etc), we handle the TextInput event via MacFieldEditor
 			TextInputImplemented = !ObjCExtensions.ClassConformsToProtocol(view.GetSuperclass(), MacViewTextInput.NSTextInputClientProtocol_Handle);
-			
+
 			// if it already conforms to the protocol, add the insertText:replacementRange method only
 			if (view.ConformsToProtocol(MacViewTextInput.NSTextInputClientProtocol_Handle))
 			{
@@ -164,7 +199,12 @@ namespace Eto.Mac.Forms
 			AddMethod(MacViewTextInput.CharacterIndexForPoint_Selector, MacViewTextInput.CharacterIndexForPoint_Delegate, "Q@:{CGPoint=gg}", view);
 			AddMethod(MacViewTextInput.FirstRectForCharacterRange_Selector, MacViewTextInput.FirstRectForCharacterRange_Delegate, "{CGRect=gggg}@:{NSRange=QQ}^{NSRange=QQ}", view);
 			AddMethod(MacViewTextInput.DoCommandBySelector_Selector, MacViewTextInput.DoCommandBySelector_Delegate, "v@:#", view);
-			
+
+			// the protocol above is added to the class, so keep the instances of it that don't handle text input
+			// from being treated as a text input client
+			AddMethod(MacViewTextInput.InputContext_Selector, MacViewTextInput.InputContext_Delegate, "@@:", view);
+			AddMethod(MacViewTextInput.ConformsToProtocol_Selector, MacViewTextInput.ConformsToProtocol_Delegate, "B@:@", view);
+
 			AddMethod(MacView.selInsertTextReplacementRange, MacView.TriggerTextInput_Delegate, "v@:@{NSRange=QQ}", view);
 			return true;
 		}

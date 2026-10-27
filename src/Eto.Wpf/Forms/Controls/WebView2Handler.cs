@@ -409,12 +409,64 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		_host = new WebView2Host();
 		_host.Child = Control;
 		_host.Handler = this;
+		Control.IsVisibleChanged += Control_IsVisibleChanged;
+		Control.MessageHook += Control_MessageHook;
 #endif
 	}
 
 #if WPF
 	WebView2Host _host;
 	public override System.Windows.FrameworkElement ContainerControl => _host;
+
+	bool _resyncingVisibility;
+	bool _resyncPending;
+
+	const int WM_SHOWWINDOW = 0x0018;
+	const int WM_WINDOWPOSCHANGED = 0x0047;
+
+	// WebView2 is told it is visible before its window is actually shown. When the window is hidden and
+	// shown again in quick succession (e.g. a floating window as the app is deactivated) it can then stay
+	// blank until resized, so tell it again once the window really is on screen.
+	void Control_IsVisibleChanged(object sender, sw.DependencyPropertyChangedEventArgs e)
+	{
+		if (_resyncingVisibility || !(bool)e.NewValue)
+			return;
+		_resyncPending = true;
+		Control.Dispatcher.BeginInvoke(new Action(ResyncVisibility), swt.DispatcherPriority.ContextIdle);
+	}
+
+	// The web view's own window can still be hidden when the re-sync first runs, so try again once it is shown.
+	IntPtr Control_MessageHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+	{
+		if (_resyncPending && (msg == WM_SHOWWINDOW || msg == WM_WINDOWPOSCHANGED))
+			Control.Dispatcher.BeginInvoke(new Action(ResyncVisibility), swt.DispatcherPriority.ContextIdle);
+		return IntPtr.Zero;
+	}
+
+	void ResyncVisibility()
+	{
+		if (!_resyncPending)
+			return;
+		if (Widget.IsDisposed || !webView2Ready || !Control.IsVisible)
+		{
+			_resyncPending = false;
+			return;
+		}
+		if (!Win32.IsWindowVisible(Control.Handle))
+			return;
+
+		_resyncPending = false;
+		_resyncingVisibility = true;
+		try
+		{
+			Control.Visibility = sw.Visibility.Hidden;
+			Control.Visibility = sw.Visibility.Visible;
+		}
+		finally
+		{
+			_resyncingVisibility = false;
+		}
+	}
 #endif
 	/// <summary>
 	/// The default environment to use if none is specified with <see cref="Environment"/>.
@@ -473,10 +525,23 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		InitializeAsync();
 	}
 
+	// E_ABORT - reported when initialization is aborted because the control was
+	// torn down before EnsureCoreWebView2Async completed.
+	const int E_ABORT = unchecked((int)0x80004004);
+
 	void Control_CoreWebView2Ready(object sender, CoreWebView2InitializationCompletedEventArgs e)
 	{
 		if (!e.IsSuccess)
 		{
+			// When the control is disposed/unloaded before WebView2 finishes initializing
+			// (e.g. closing a panel or switching the window/viewport layout) the
+			// initialization is aborted with E_ABORT. This is benign and must not be
+			// allowed to escape this native callback, since it would surface as an
+			// unhandled exception on the dispatcher and crash the application.
+			// https://github.com/MicrosoftEdge/WebView2Feedback/issues/2410
+			if (Widget.IsDisposed || e.InitializationException?.HResult == E_ABORT)
+				return;
+
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
 		}
 
@@ -489,9 +554,25 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		if (Widget.IsDisposed)
 			return;
 
-		Control.CoreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
-		Control.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-		Control.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
+		// This runs a dispatcher turn after initialization completed, and the browser
+		// process can die in between - CoreWebView2 then throws InvalidOperationException
+		// from VerifyBrowserNotCrashed. There is nothing left to hook up when that has
+		// happened, and letting it escape this dispatcher callback crashes the application.
+		CoreWebView2 coreWebView2;
+		try
+		{
+			coreWebView2 = Control.CoreWebView2;
+		}
+		catch (InvalidOperationException)
+		{
+			return;
+		}
+		if (coreWebView2 == null)
+			return;
+
+		coreWebView2.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+		coreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+		coreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoadedInjectScripts;
 		webView2Ready = true;
 
 		if (delayedActions != null)

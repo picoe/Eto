@@ -15,6 +15,29 @@ public interface IContextMenuHost
 }
 
 /// <summary>
+/// Flags for the groups of system <see cref="ContextMenu"/> items
+/// </summary>
+[Flags]
+public enum ContextMenuSystemItems
+{
+	/// <summary>
+	/// Do not add any system items to the menu
+	/// </summary>
+	None = 0,
+
+	/// <summary>
+	/// Add all system-defined context menu items that apply to the control.
+	/// </summary>
+	/// <remarks>
+	/// This deliberately has every bit set so that it keeps meaning "everything" as more specific values are
+	/// added, including for code compiled against an earlier version of Eto.  For the same reason, handlers should
+	/// test for the absence of items with <c>value != None</c> rather than <c>value.HasFlag(All)</c>, which would
+	/// only match when every bit is set.
+	/// </remarks>
+	All = ~0
+}
+
+/// <summary>
 /// Represents a context menu that can be shown typically when users right click or press the menu key on a control
 /// </summary>
 /// <copyright>(c) 2014 by Curtis Wensley</copyright>
@@ -132,6 +155,26 @@ public class ContextMenu : Menu, ISubmenu
 		OnPreLoad(EventArgs.Empty);
 		OnLoad(EventArgs.Empty);
 		Handler.Show(relativeTo, location);
+	}
+
+	/// <summary>
+	/// Gets or sets which system items will be automatically included with the menu.
+	/// </summary>
+	/// <remarks>
+	/// Some operating systems, such as macOS, add their own contextual menu items - AutoFill, Services, and the like -
+	/// to any context menu shown for (or assigned to) a control.
+	///
+	/// Set this to <see cref="ContextMenuSystemItems.None"/> to show only the items you have added to <see cref="Items"/>.
+	///
+	/// This applies both to menus shown via <see cref="Show(Control, PointF?)"/> and to menus assigned to a control
+	/// using <see cref="Control.ContextMenu"/>.
+	/// </remarks>
+	/// <value>The system items to include with the menu.  Defaults to <see cref="ContextMenuSystemItems.All"/></value>
+	[DefaultValue(ContextMenuSystemItems.All)]
+	public ContextMenuSystemItems IncludeSystemItems
+	{
+		get => Handler.IncludeSystemItems;
+		set => Handler.IncludeSystemItems = value;
 	}
 
 	/// <summary>
@@ -303,5 +346,16 @@ public class ContextMenu : Menu, ISubmenu
 		/// <param name="relativeTo">Control to show the menu relative to, or null to use screen co-ordinates for <paramref name="location"/></param>
 		/// <param name="location">Location to place the upper left of the context menu, or null to use the mouse position</param>
 		void Show(Control relativeTo, PointF? location);
+
+		/// <summary>
+		/// Gets or sets which system items will be automatically included with the menu.
+		/// </summary>
+		/// <remarks>
+		/// This must be applied to the native menu immediately so that it also takes effect for menus assigned to a
+		/// control via <see cref="Control.ContextMenu"/>, which are shown by the operating system without going through
+		/// <see cref="Show(Control, PointF?)"/>.
+		/// </remarks>
+		/// <value>The system items to include with the menu.  Defaults to <see cref="ContextMenuSystemItems.All"/></value>
+		ContextMenuSystemItems IncludeSystemItems { get; set; }
 	}
 }

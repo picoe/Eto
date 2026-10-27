@@ -1009,6 +1009,36 @@ namespace Eto.Wpf
 					throw new NotSupportedException();
 			}
 		}
+
+		public static sw.TextTrimming ToWpf(this TextTrimming value)
+		{
+			switch (value)
+			{
+				case TextTrimming.None:
+					return sw.TextTrimming.None;
+				case TextTrimming.CharacterEllipsis:
+					return sw.TextTrimming.CharacterEllipsis;
+				case TextTrimming.WordEllipsis:
+					return sw.TextTrimming.WordEllipsis;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static TextTrimming ToEto(this sw.TextTrimming trimming)
+		{
+			switch (trimming)
+			{
+				case sw.TextTrimming.None:
+					return TextTrimming.None;
+				case sw.TextTrimming.CharacterEllipsis:
+					return TextTrimming.CharacterEllipsis;
+				case sw.TextTrimming.WordEllipsis:
+					return TextTrimming.WordEllipsis;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }
 

@@ -11,6 +11,25 @@ namespace Eto.Forms;
 public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInputSource, ICallbackSource
 {
 	/// <summary>
+	/// Gets or sets a value indicating the UI is being shown in a designer preview, e.g. to supply sample data.
+	/// </summary>
+	/// <remarks>
+	/// Set by the designer when it starts; applications should not need to set this.
+	/// </remarks>
+	public static bool IsDesignMode { get; set; }
+
+	// shared by the xaml and json readers so a user control in either format inherits its parent's design data
+	[ThreadStatic]
+	static int designLoadDepth;
+
+	internal static void BeginDesignLoad() => designLoadDepth++;
+
+	internal static void EndDesignLoad() => designLoadDepth--;
+
+	/// <summary>True while loading the outermost file in design mode, where d:DataContext applies.</summary>
+	internal static bool IsDesignRootLoad => IsDesignMode && designLoadDepth == 1;
+
+	/// <summary>
 	/// Gets the handler for the widget, ensuring the current thread is the UI thread
 	/// </summary>
 	/// <value>The handler object for this control</value>
@@ -20,6 +39,58 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		{
 			Application.Instance?.EnsureUIThread();
 			return (IHandler)base.Handler;
+		}
+	}
+
+	static readonly object GesturesKey = new object();
+
+	/// <summary>
+	/// Gets the gestures attached to this control.
+	/// </summary>
+	public Collection<Gesture> Gestures => Properties.Create(GesturesKey, () => new GestureCollection(this));
+
+	class GestureCollection : Collection<Gesture>
+	{
+		public GestureCollection(Control control)
+		{
+			this.control = control;
+		}
+
+		private readonly Control control;
+
+		protected override void InsertItem(int index, Gesture item)
+		{
+			control.Handler.AddGesture(item);
+			item.Control = control;
+			base.InsertItem(index, item);
+		}
+
+		protected override void ClearItems()
+		{
+			foreach (var item in this)
+			{
+				item.Control = null;
+			}
+			control.Handler.ClearGestures();
+			base.ClearItems();
+		}
+
+		protected override void RemoveItem(int index)
+		{
+			var item = this[index];
+			control.Handler.RemoveGesture(item);
+			item.Control = null;
+			base.RemoveItem(index);
+		}
+
+		protected override void SetItem(int index, Gesture item)
+		{
+			var oldItem = this[index];
+			control.Handler.AddGesture(item);
+			control.Handler.RemoveGesture(oldItem);
+			oldItem.Control = null;
+			item.Control = control;
+			base.SetItem(index, item);
 		}
 	}
 
@@ -36,6 +107,19 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	{
 		get => GetState(StateFlag.Loaded);
 		private set => SetState(StateFlag.Loaded, value);
+	}
+
+	/// <summary>
+	/// Gets a value indicating that <see cref="LoadComplete"/> has been raised since the control was last loaded.
+	/// </summary>
+	/// <remarks>
+	/// A control is <see cref="Loaded"/> before it gets its LoadComplete, so this is used to ensure LoadComplete is
+	/// only raised once, e.g. when a child is added to a container that is loaded but hasn't had LoadComplete yet.
+	/// </remarks>
+	internal bool IsLoadComplete
+	{
+		get => GetState(StateFlag.LoadComplete);
+		private set => SetState(StateFlag.LoadComplete, value);
 	}
 
 	/// <summary>
@@ -603,6 +687,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 			throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, "Control was unloaded more than once"));
 #endif
 		Loaded = false;
+		IsLoadComplete = false;
 		Properties.TriggerEvent(UnLoadKey, this, e);
 		Handler.OnUnLoad(e);
 	}
@@ -1086,7 +1171,20 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	{
 		// if the control is disposed before we get here Handler will be null, so omit calling OnLoadComplete
 		if (!IsDisposed && Handler != null && Loaded)
-			OnLoadComplete(EventArgs.Empty);
+			RaiseLoadComplete(EventArgs.Empty);
+	}
+
+	/// <summary>
+	/// Raises LoadComplete unless it has already been raised since the control was loaded.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	/// <param name="always">Raise it even if it has already been raised, e.g. when a loaded window is shown again.</param>
+	internal void RaiseLoadComplete(EventArgs e, bool always = false)
+	{
+		if (IsLoadComplete && !always)
+			return;
+		IsLoadComplete = true;
+		OnLoadComplete(e);
 	}
 
 	/// <summary>
@@ -1123,7 +1221,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	internal void TriggerLoadComplete(EventArgs e)
 	{
 		using (Platform.Context)
-			OnLoadComplete(e);
+			RaiseLoadComplete(e);
 	}
 
 	internal void TriggerUnLoad(EventArgs e)
@@ -1350,6 +1448,29 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	{
 		get { return Handler.TabIndex; }
 		set { Handler.TabIndex = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets a value indicating whether the user can get to this control using the tab key.
+	/// </summary>
+	/// <remarks>
+	/// When <c>false</c>, the control is skipped when cycling through controls with the tab key, but can still be
+	/// focused by clicking on it or by calling <see cref="Focus"/>.
+	/// This is useful for composite controls where only part of the control should be in the tab order, such as
+	/// the spinner of a <see cref="TextStepper"/> or <see cref="NumericStepper"/>.
+	/// 
+	/// The tab key only cycles through the controls within a window, so this has no effect for a <see cref="Window"/>.
+	/// 
+	/// Note that on Gtk this maps directly to whether the underlying widget can be focused, so it also prevents the
+	/// control from being focused by clicking on it, and controls that never accept focus (such as a <see cref="Label"/>)
+	/// will report <c>false</c>. On iOS and Android this has no effect.
+	/// </remarks>
+	/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+	[sc.DefaultValue(true)]
+	public virtual bool TabStop
+	{
+		get { return Handler.TabStop; }
+		set { Handler.TabStop = value; }
 	}
 
 	/// <summary>
@@ -2035,6 +2156,19 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		int TabIndex { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the user can get to this control using the tab key.
+		/// </summary>
+		/// <remarks>
+		/// When <c>false</c>, the control is skipped when cycling through controls with the tab key, but can still be
+		/// focused by clicking on it or by calling <see cref="Control.Focus"/>.
+		/// 
+		/// Note that on Gtk this also prevents the control from being focused by clicking on it, and on iOS and Android
+		/// this has no effect.
+		/// </remarks>
+		/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+		bool TabStop { get; set; }
+
+		/// <summary>
 		/// Gets an enumeration of controls that are in the visual tree.
 		/// </summary>
 		/// <remarks>
@@ -2106,6 +2240,20 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 		/// </summary>
 		void ReleaseMouseCapture();
+		/// <summary>
+		/// Adds a gesture to the control.
+		/// </summary>
+		/// <param name="item">Gesture to add.</param>
+		void AddGesture(Gesture item);
+		/// <summary>
+		/// Removes all gestures from the control.
+		/// </summary>
+		void ClearGestures();
+		/// <summary>
+		/// Removes a gesture from the control.
+		/// </summary>
+		/// <param name="item">Gesture to remove.</param>
+		void RemoveGesture(Gesture item);
 	}
 	#endregion
 }

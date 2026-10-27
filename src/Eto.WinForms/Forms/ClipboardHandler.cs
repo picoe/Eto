@@ -3,9 +3,68 @@ namespace Eto.WinForms.Forms
 {
 	public class ClipboardHandler : DataObjectHandler<Clipboard, Clipboard.ICallback>, Clipboard.IHandler
 	{
+		ClipboardListener changeListener;
+
 		public ClipboardHandler()
 		{
 			Control = new swf.DataObject();
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Clipboard.ChangedEvent:
+					changeListener ??= new ClipboardListener(this);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && changeListener != null)
+			{
+				changeListener.Dispose();
+				changeListener = null;
+			}
+			base.Dispose(disposing);
+		}
+
+		class ClipboardListener : swf.NativeWindow, IDisposable
+		{
+			readonly ClipboardHandler handler;
+			bool registered;
+
+			public ClipboardListener(ClipboardHandler handler)
+			{
+				this.handler = handler;
+				CreateHandle(new swf.CreateParams());
+				registered = Win32.AddClipboardFormatListener(Handle);
+			}
+
+			protected override void WndProc(ref swf.Message m)
+			{
+				if ((uint)m.Msg == (uint)Win32.WM.CLIPBOARDUPDATE)
+					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
+
+				base.WndProc(ref m);
+			}
+
+			public void Dispose()
+			{
+				if (Handle != IntPtr.Zero)
+				{
+					if (registered)
+					{
+						Win32.RemoveClipboardFormatListener(Handle);
+						registered = false;
+					}
+					DestroyHandle();
+				}
+			}
 		}
 
 		protected override bool InnerContainsFileDropList => swf.Clipboard.ContainsFileDropList();
@@ -46,12 +105,9 @@ namespace Eto.WinForms.Forms
 
 		protected override object InnerGetData(string type)
 		{
-#if NET10_0_OR_GREATER
-			swf.Clipboard.TryGetData<object>(type, out var data);
-			return data;
-#else
+#pragma warning disable WFDEV005
 			return swf.Clipboard.GetData(type);
-#endif
+#pragma warning restore WFDEV005
 		}
 
 
@@ -66,4 +122,3 @@ namespace Eto.WinForms.Forms
 		public override bool Contains(string type) => swf.Clipboard.ContainsData(type);
 	}
 }
-

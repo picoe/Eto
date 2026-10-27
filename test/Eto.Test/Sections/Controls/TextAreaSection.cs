@@ -15,6 +15,7 @@ namespace Eto.Test.Sections.Controls
 
 			if (text.ContextMenu != null)
 			{
+				// text.ContextMenu.IncludeSystemItems = ContextMenuSystemItems.None;
 				text.ContextMenu.Items.Insert(0, new ButtonMenuItem(TestItemClick) { Text = "Test" });
 				text.ContextMenu.Items.Insert(1, new SeparatorMenuItem());
 			}
@@ -313,6 +314,10 @@ namespace Eto.Test.Sections.Controls
 			control.SelectionChanged += (sender, e) => Log.Write(control, "SelectionChanged, Selection: {0}", control.Selection);
 
 			control.CaretIndexChanged += (sender, e) => Log.Write(control, "CaretIndexChanged, CaretIndex: {0}", control.CaretIndex);
+
+			control.KeyDown += (sender, e) => Log.Write(control, $"KeyDown: {e.KeyData}");
+			
+			control.KeyUp += (sender, e) => Log.Write(control, $"KeyUp: {e.KeyData}");
 		}
 	}
 }

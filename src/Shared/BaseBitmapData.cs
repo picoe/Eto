@@ -46,7 +46,8 @@ namespace Eto.Shared.Drawing
 			}
 			if (BytesPerPixel == 3)
 			{
-				var col = TranslateDataToArgb(*((int*)pos));
+				var val = pos[0] | (pos[1] << 8) | (pos[2] << 16);
+				var col = TranslateDataToArgb(val);
 				return Color.FromRgb(col);
 			}
 			var bmp = Image as IndexedBitmap;

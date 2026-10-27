@@ -94,7 +94,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			},
 			async scrollable =>
 			{
-				await Task.Delay(100); // wait to see the results
+				await WaitUntil(() => label.Width > 20 && scrollable.Content.Size == scrollable.ClientSize, 100);
 				Assert.That(label.Width, Is.GreaterThan(20), "#1");
 				Assert.That(scrollable.Content.Size, Is.EqualTo(scrollable.ClientSize), "#2");
 			});	
@@ -117,7 +117,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			},
 			async panel =>
 			{
-				await Task.Delay(100); // wait to see the results
+				await WaitUntil(() => label.Width > 20 && panel.Content.Size == panel.ClientSize, 100);
 				Assert.That(label.Width, Is.GreaterThan(20), "#1");
 				Assert.That(panel.Content.Size, Is.EqualTo(panel.ClientSize), "#2");
 			});	

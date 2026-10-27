@@ -18,8 +18,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.That(panel1, Is.SameAs(label.VisualParent), "#2");
 
 				panel1.Content = null;
-				Assert.That(null, Is.SameAs(label.Parent), "#2");
-				Assert.That(null, Is.SameAs(label.VisualParent), "#3");
+				Assert.That(label.Parent, Is.Null, "#2");
+				Assert.That(label.VisualParent, Is.Null, "#3");
 
 				panel2.Content = label;
 				Assert.That(panel2, Is.SameAs(label.Parent), "#3");

@@ -37,7 +37,7 @@
     <ProjectReference Include="..\..\src\Eto.Mac\Eto.macOS.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="NUnit" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestIcon.icns" />
@@ -47,6 +47,7 @@
   <ItemGroup>
     <None Include="Assets\TestCopyToOutput.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <PublishFolderType>Assembly</PublishFolderType>
     </None>
   </ItemGroup>
   <ItemGroup>

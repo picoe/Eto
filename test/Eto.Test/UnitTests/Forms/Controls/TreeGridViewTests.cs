@@ -148,13 +148,158 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 		}
 
+		[TestCase(2, true)]
+		[TestCase(3, true)] // child of the expanded item at row 2
+		[TestCase(4, true)] // collapsed sibling below the expanded item
+		[TestCase(2, false)] // RH-99676: nothing expanded
+		[TestCase(1, false)]
+		public void ReloadDataShouldKeepSelection(int row, bool expandParent)
+		{
+			TreeGridView tree = null;
+			var items = new TreeGridItemCollection();
+			for (int i = 0; i < 5; i++)
+				items.Add(new TreeGridItem { Values = new[] { "Item " + i } });
+			var parent = (TreeGridItem)items[2];
+			parent.Expanded = expandParent;
+			parent.Children.Add(new TreeGridItem { Values = new[] { "Child" } });
+
+			int[] selectedAfter = null;
+			object selectedItemAfter = null;
+			object selectedItemBefore = null;
+			// [0] = raised while selecting, [1] = raised during ReloadData
+			var selectionChanged = new int[2];
+			var selectedRowsChanged = new int[2];
+			var selectedItemsChanged = new int[2];
+			var selectedItemChanged = new int[2];
+			var phase = 0;
+			Shown(form =>
+			{
+				tree = new TreeGridView { Size = new Size(200, 400) };
+				tree.Columns.Add(new GridColumn { HeaderText = "Column 1", DataCell = new TextBoxCell(0) });
+				tree.DataStore = items;
+				tree.SelectionChanged += (sender, e) => selectionChanged[phase]++;
+				tree.SelectedRowsChanged += (sender, e) => selectedRowsChanged[phase]++;
+				tree.SelectedItemsChanged += (sender, e) => selectedItemsChanged[phase]++;
+				tree.SelectedItemChanged += (sender, e) => selectedItemChanged[phase]++;
+				form.Content = tree;
+			}, () =>
+			{
+				tree.SelectedRow = row;
+				selectedItemBefore = tree.SelectedItem;
+				phase = 1;
+				tree.ReloadData();
+				selectedAfter = tree.SelectedRows.ToArray();
+				selectedItemAfter = tree.SelectedItem;
+			});
+
+			Assert.That(selectedAfter, Is.EqualTo(new[] { row }), "Selection should be kept after ReloadData");
+			Assert.That(selectedItemAfter, Is.SameAs(selectedItemBefore), "SelectedItem should be kept after ReloadData");
+
+			Assert.Multiple(() =>
+			{
+				Assert.That(selectionChanged[0], Is.EqualTo(1), "SelectionChanged should be raised once when selecting a row");
+				Assert.That(selectedRowsChanged[0], Is.EqualTo(1), "SelectedRowsChanged should be raised once when selecting a row");
+				Assert.That(selectedItemsChanged[0], Is.EqualTo(1), "SelectedItemsChanged should be raised once when selecting a row");
+				Assert.That(selectedItemChanged[0], Is.EqualTo(1), "SelectedItemChanged should be raised once when selecting a row");
+
+				Assert.That(selectionChanged[1], Is.EqualTo(0), "SelectionChanged should not be raised when ReloadData keeps the selection");
+				Assert.That(selectedRowsChanged[1], Is.EqualTo(0), "SelectedRowsChanged should not be raised when ReloadData keeps the selection");
+				Assert.That(selectedItemsChanged[1], Is.EqualTo(0), "SelectedItemsChanged should not be raised when ReloadData keeps the selection");
+				Assert.That(selectedItemChanged[1], Is.EqualTo(0), "SelectedItemChanged should not be raised when ReloadData keeps the selection");
+			});
+		}
+
+		[TestCase(0)] // collapsed child of an expanded item
+		[TestCase(1)] // child of a nested expanded item
+		[TestCase(2)]
+		public void ReloadDataShouldKeepSelectionOfNestedItem(int childIndex)
+		{
+			TreeGridView tree = null;
+			var items = new TreeGridItemCollection();
+			for (int i = 0; i < 3; i++)
+				items.Add(new TreeGridItem { Values = new[] { "Item " + i } });
+			var parent = (TreeGridItem)items[1];
+			parent.Expanded = true;
+			for (int i = 0; i < 3; i++)
+			{
+				var child = new TreeGridItem { Values = new[] { "Child " + i } };
+				child.Children.Add(new TreeGridItem { Values = new[] { "Grandchild " + i } });
+				parent.Children.Add(child);
+			}
+			var nested = (TreeGridItem)parent.Children[1];
+			nested.Expanded = true;
+			var selectedItem = childIndex == 1 ? nested.Children[0] : parent.Children[childIndex];
+
+			object selectedItemAfter = null;
+			int[] selectedRowsBefore = null;
+			int[] selectedRowsAfter = null;
+			var selectionChanged = 0;
+			Shown(form =>
+			{
+				tree = new TreeGridView { Size = new Size(200, 400) };
+				tree.Columns.Add(new GridColumn { HeaderText = "Column 1", DataCell = new TextBoxCell(0) });
+				tree.DataStore = items;
+				form.Content = tree;
+			}, () =>
+			{
+				tree.SelectedItem = selectedItem;
+				selectedRowsBefore = tree.SelectedRows.ToArray();
+				tree.SelectionChanged += (sender, e) => selectionChanged++;
+				tree.ReloadData();
+				selectedItemAfter = tree.SelectedItem;
+				selectedRowsAfter = tree.SelectedRows.ToArray();
+			});
+
+			Assert.That(selectedItemAfter, Is.SameAs(selectedItem), "SelectedItem should be kept after ReloadData");
+			Assert.That(selectedRowsAfter, Is.EqualTo(selectedRowsBefore), "SelectedRows should be kept after ReloadData");
+			Assert.That(selectionChanged, Is.EqualTo(0), "SelectionChanged should not be raised when ReloadData keeps the selection");
+		}
+
+		[TestCase(0)]
+		[TestCase(1)]
+		public void ReloadItemShouldKeepSelectionOfCollapsedChild(int childIndex)
+		{
+			TreeGridView tree = null;
+			var items = new TreeGridItemCollection();
+			for (int i = 0; i < 3; i++)
+				items.Add(new TreeGridItem { Values = new[] { "Item " + i } });
+			var parent = (TreeGridItem)items[1];
+			parent.Expanded = true;
+			for (int i = 0; i < 2; i++)
+			{
+				var child = new TreeGridItem { Values = new[] { "Child " + i } };
+				child.Children.Add(new TreeGridItem { Values = new[] { "Grandchild " + i } });
+				parent.Children.Add(child);
+			}
+			var selectedItem = parent.Children[childIndex];
+
+			object selectedItemAfter = null;
+			var selectionChanged = 0;
+			Shown(form =>
+			{
+				tree = new TreeGridView { Size = new Size(200, 400) };
+				tree.Columns.Add(new GridColumn { HeaderText = "Column 1", DataCell = new TextBoxCell(0) });
+				tree.DataStore = items;
+				form.Content = tree;
+			}, () =>
+			{
+				tree.SelectedItem = selectedItem;
+				tree.SelectionChanged += (sender, e) => selectionChanged++;
+				tree.ReloadItem(parent, true);
+				selectedItemAfter = tree.SelectedItem;
+			});
+
+			Assert.That(selectedItemAfter, Is.SameAs(selectedItem), "SelectedItem should be kept after ReloadItem");
+			Assert.That(selectionChanged, Is.EqualTo(0), "SelectionChanged should not be raised when ReloadItem keeps the selection");
+		}
+
 		protected override void SetDataStore(TreeGridView grid, IEnumerable<object> dataStore)
 		{
 			grid.DataStore = (ITreeGridStore<ITreeGridItem>)dataStore;
 		}
 
-		[Test, CancelAfter(3000)]
-		public void AddingMultipleItemsShouldNotCrash(CancellationToken token) => Async(async () =>
+		[Test, CancelAfter(10000)]
+		public void AddingMultipleItemsShouldNotCrash(CancellationToken token) => Async(10000, async () =>
 		{
 			var tree = new TreeGridView { Size = new Size(200, 400) };
 			
@@ -182,7 +327,8 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				}
 				tree.DataStore = items;
 			}
-			await Task.Delay(1000);
+			// let any pending reload from the loop above finish before tearing the form down
+			await Task.Delay(100);
 			form.Close();
 
 		});

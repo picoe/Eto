@@ -22,7 +22,7 @@ namespace Eto.Mac.Forms.Printing
 
 		public DialogResult ShowDialog(Window parent)
 		{
-			MacView.InMouseTrackingLoop = false;
+			MacView.CancelMouseTracking();
 			int ret;
 			var docHandler = Document != null ? Document.Handler as PrintDocumentHandler : null;
 

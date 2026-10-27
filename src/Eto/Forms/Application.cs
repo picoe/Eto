@@ -345,6 +345,7 @@ public class Application : Widget
 	{
 		Instance = this;
 		mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+		Initialize();
 	}
 
 	Application(InitHelper init)
@@ -583,6 +584,23 @@ public class Application : Widget
 	public bool IsActive => Handler.IsActive;
 
 	/// <summary>
+	/// Requests native application activation.
+	/// </summary>
+	/// <remarks>
+	/// This method is supported by the native macOS backend and has no effect on other backends.
+	/// The operating system may delay or decline activation; use <see cref="IsActive"/> and
+	/// <see cref="IsActiveChanged"/> to observe the activation state.
+	/// Call this method on the UI thread before calling <see cref="Control.Focus"/> on the desired window.
+	/// </remarks>
+	/// <seealso cref="IsActive"/>
+	/// <seealso cref="IsActiveChanged"/>
+	public void Activate()
+	{
+		EnsureUIThread();
+		(Handler as IActivateHandler)?.Activate();
+	}
+
+	/// <summary>
 	/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
 	/// </summary>
 	/// <remarks>
@@ -706,7 +724,7 @@ public class Application : Widget
 			using (widget.Platform.Context)
 				widget.OnIsActiveChanged(e);
 		}
-		
+
 		/// <summary>
 		/// Raises the <see cref="Application.ThemeChanged"/> event.
 		/// </summary>
@@ -720,6 +738,7 @@ public class Application : Widget
 	/// <summary>
 	/// Handler interface for the <see cref="Application"/> class
 	/// </summary>
+	[AutoInitialize(false)]
 	public new interface IHandler : Widget.IHandler
 	{
 		/// <summary>
@@ -827,5 +846,16 @@ public class Application : Widget
 		/// Gets or sets the current visual theme of the application.
 		/// </summary>
 		Theme Theme { get; set; }
+	}
+
+	/// <summary>
+	/// Optional handler for native application activation.
+	/// </summary>
+	public interface IActivateHandler
+	{
+		/// <summary>
+		/// Requests native application activation.
+		/// </summary>
+		void Activate();
 	}
 }

@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <!--
+    Properties you can set in your project file:
+
+    LinuxAppId: Identifies the app to the desktop, e.g. com.example.MyApp. Defaults to the assembly name.
+    The installed .desktop file is named after it, and Eto uses it as the program name so Wayland and X11
+    can match the app's windows to that file (dock icon, grouping and badges).
+
+    LinuxPackageFormats: Semicolon separated installer packages to create, e.g. deb;rpm;appimage;tar.gz.
+    See LinuxPackage.targets for everything else that can be customized.
+  -->
+
+  <Target Name="_LinuxAddAppIdAttribute" BeforeTargets="GetAssemblyAttributes" Condition="'$(OutputType)' == 'Exe' OR '$(OutputType)' == 'WinExe'">
+    <PropertyGroup>
+      <_LinuxAppId>$(LinuxAppId)</_LinuxAppId>
+      <_LinuxAppId Condition="'$(_LinuxAppId)' == ''">$(AssemblyName)</_LinuxAppId>
+    </PropertyGroup>
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>Eto.LinuxAppId</_Parameter1>
+        <_Parameter2>$(_LinuxAppId)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+  <Import Project="LinuxPackage.targets" Condition="'$(LinuxPackageFormats)' != ''" />
+
+</Project>

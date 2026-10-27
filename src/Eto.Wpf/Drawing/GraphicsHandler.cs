@@ -113,6 +113,49 @@ namespace Eto.Wpf.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Gets the pixels per dip of what is being drawn on to lay out text for, or null when it can't be
+		/// determined and the font should decide.
+		/// </summary>
+		internal double? TargetPixelsPerDip => visual != null && Widget != null ? DPI : (double?)null;
+
+		/// <summary>
+		/// Gets or sets the mode to lay out all text drawn on this graphics with, or null (the default) to
+		/// decide from its transform.
+		/// </summary>
+		/// <remarks>
+		/// <see cref="swm.TextFormattingMode.Display"/> rasterizes the glyphs for the device pixel grid its
+		/// pixels per dip describes, and the result is then scaled by the transform of the context instead of
+		/// the glyphs being rendered at the size they are actually drawn at.  That makes text on a scaled
+		/// context - a canvas the user can zoom, say - come out blurry, so by default it is only kept while
+		/// the transform is a plain translation and text is laid out ideally otherwise.
+		///
+		/// That default changes mode as soon as the transform starts scaling, so text drawn on a canvas
+		/// shifts shape and width between 100% and 120% zoom.  Set this to lay every string out the same way
+		/// whatever the transform is - <see cref="swm.TextFormattingMode.Ideal"/> for a canvas that scales,
+		/// since it renders from the outlines and is resolution independent.  It can be set from a style so
+		/// drawing code doesn't have to reach for the handler itself:
+		/// <code>Style.Add&lt;GraphicsHandler&gt;("canvas", h => h.TextFormattingMode = TextFormattingMode.Ideal);</code>
+		/// </remarks>
+		public swm.TextFormattingMode? TextFormattingMode { get; set; }
+
+		/// <summary>
+		/// Gets the mode to lay text out with for what is being drawn on, or null when the font should decide.
+		/// </summary>
+		internal swm.TextFormattingMode? TargetTextFormattingMode
+		{
+			get
+			{
+				if (TextFormattingMode != null)
+					return TextFormattingMode;
+
+				var current = transforms?.Current;
+				if (current == null || (current.Xx == 1 && current.Yy == 1 && current.Xy == 0 && current.Yx == 0))
+					return null;
+				return swm.TextFormattingMode.Ideal;
+			}
+		}
+
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			SetOffset(false);
@@ -311,11 +354,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = b.ToWpf();
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
-#pragma warning restore CS0618 // Type or member is obsolete
-				if (fontHandler.WpfTextDecorationsFrozen != null)
-					formattedText.SetTextDecorations(fontHandler.WpfTextDecorationsFrozen, 0, text.Length);
+				var formattedText = fontHandler.CreateFormattedText(text, brush, pixelsPerDip: TargetPixelsPerDip, formattingMode: TargetTextFormattingMode);
 				Control.DrawText(formattedText, new sw.Point(x, y));
 			}
 		}
@@ -328,9 +367,7 @@ namespace Eto.Wpf.Drawing
 			if (fontHandler != null)
 			{
 				var brush = new swm.SolidColorBrush(swm.Colors.White);
-#pragma warning disable CS0618 // 'FormattedText.FormattedText(string, CultureInfo, FlowDirection, Typeface, double, Brush)' is obsolete: 'Use the PixelsPerDip override'
-				var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.WpfSize, brush);
-#pragma warning restore CS0618 // Type or member is obsolete
+				var formattedText = fontHandler.CreateFormattedText(text, brush, setDecorations: false, pixelsPerDip: TargetPixelsPerDip, formattingMode: TargetTextFormattingMode);
 				result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 			}
 

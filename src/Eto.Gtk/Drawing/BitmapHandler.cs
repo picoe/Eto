@@ -66,6 +66,26 @@ namespace Eto.GtkSharp.Drawing
 	}
 
 	/// <summary>
+	/// Bitmap data handler for surface data of a bitmap without an alpha channel (Cairo.Format.Rgb24).
+	/// </summary>
+	/// <remarks>
+	/// Cairo's Rgb24 format still uses 32 bits per pixel, but the upper byte is unused and its content
+	/// is undefined after drawing.  Since the bitmap is always fully opaque, ignore that byte when
+	/// reading and force it to 255 when writing instead of treating it as (premultiplied) alpha.
+	/// </remarks>
+	public class SurfaceRgbBitmapDataHandler : BaseBitmapData
+	{
+		public SurfaceRgbBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject, false)
+		{
+		}
+
+		public override int TranslateArgbToData(int argb) => unchecked(argb | (int)0xFF000000);
+
+		public override int TranslateDataToArgb(int bitmapData) => unchecked(bitmapData | (int)0xFF000000);
+	}
+
+	/// <summary>
 	/// Bitmap handler.
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
@@ -75,6 +95,27 @@ namespace Eto.GtkSharp.Drawing
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 
 		public Cairo.ImageSurface Surface { get; set; }
+
+		Cairo.Surface cairoSurface;
+
+		/// <summary>
+		/// Gets a Cairo surface with the bitmap's contents, to use as a source when drawing.
+		/// </summary>
+		public Cairo.Surface GetCairoSurface()
+		{
+			if (Surface != null)
+				return Surface;
+			// converting the pixbuf is slow, so keep it until the bitmap changes
+			return cairoSurface ??= Gdk.CairoHelper.SurfaceCreateFromPixbuf(Pixbuf, 1, null);
+		}
+
+		void ClearCairoSurface()
+		{
+			if (cairoSurface == null)
+				return;
+			((IDisposable)cairoSurface).Dispose();
+			cairoSurface = null;
+		}
 
 		public bool Alpha { get; set; }
 
@@ -145,11 +186,18 @@ namespace Eto.GtkSharp.Drawing
 			Control = pixbuf.ScaleSimple(width, height, interpolation.ToGdk());
 		}
 
+		/// <summary>
+		/// Gets a value indicating that the surface (if any) has an alpha channel, and is therefore premultiplied.
+		/// </summary>
+		bool SurfaceHasAlpha => Surface?.Format == Cairo.Format.Argb32;
+
 		public BitmapData Lock()
 		{
 			if (Surface != null)
 			{
-				return new SurfaceBitmapDataHandler(Widget, Surface.DataPtr, Surface.Stride, 32, null, true);
+				if (SurfaceHasAlpha)
+					return new SurfaceBitmapDataHandler(Widget, Surface.DataPtr, Surface.Stride, 32, null, true);
+				return new SurfaceRgbBitmapDataHandler(Widget, Surface.DataPtr, Surface.Stride, 32, null);
 			}
 			return InnerLock();
 		}
@@ -162,6 +210,7 @@ namespace Eto.GtkSharp.Drawing
 		public void Unlock(BitmapData bitmapData)
 		{
 			sizes.Clear();
+			ClearCairoSurface();
 			SetAlphaDirty();
 		}
 
@@ -177,19 +226,8 @@ namespace Eto.GtkSharp.Drawing
 		public void Save(Stream stream, ImageFormat format)
 		{
 			EnsureData();
-			string fileName = Guid.NewGuid().ToString();
-			Control.Save(fileName, format.ToGdk());
-			Stream fileStream = File.OpenRead(fileName);
-			var buffer = new byte[4096];
-
-			int size = fileStream.Read(buffer, 0, buffer.Length);
-			while (size > 0)
-			{
-				stream.Write(buffer, 0, size);
-				size = fileStream.Read(buffer, 0, buffer.Length);
-			}
-			fileStream.Close();
-			File.Delete(fileName);
+			var buffer = Control.SaveToBuffer(format.ToGdk());
+			stream.Write(buffer, 0, buffer.Length);
 		}
 
 		public override Size Size
@@ -399,28 +437,9 @@ namespace Eto.GtkSharp.Drawing
 			{
 				var size = Size;
 				var srcrow = (byte*)Surface.DataPtr;
-				if (bd.BytesPerPixel == 4 && _isAlphaDirty)
-				{
-					var destrow = (byte*)bd.Data;
-					for (int y = 0; y < size.Height; y++)
-					{
-						var src = (int*)srcrow;
-						var dest = (int*)destrow;
-						for (int x = 0; x < size.Width; x++)
-						{
-							var argb = bd.TranslateArgbToData(*src);
-							argb = unchecked(argb | (int)0xFF000000);
-							*dest = argb;
-							src++;
-							dest++;
-						}
-						srcrow += Surface.Stride;
-						destrow += bd.ScanWidth;
-					}
-					_isAlphaDirty = false;
-				}
 				if (bd.BytesPerPixel == 4)
 				{
+					var surfaceHasAlpha = SurfaceHasAlpha;
 					var destrow = (byte*)bd.Data;
 					for (int y = 0; y < size.Height; y++)
 					{
@@ -428,13 +447,17 @@ namespace Eto.GtkSharp.Drawing
 						var dest = (int*)destrow;
 						for (int x = 0; x < size.Width; x++)
 						{
-							*dest = UnmultiplyAlpha(bd.TranslateArgbToData(*src));
+							var data = bd.TranslateArgbToData(*src);
+							// an Rgb24 surface leaves the alpha byte undefined, and the bitmap is fully opaque
+							*dest = surfaceHasAlpha ? UnmultiplyAlpha(data) : unchecked(data | (int)0xFF000000);
 							src++;
 							dest++;
 						}
 						srcrow += Surface.Stride;
 						destrow += bd.ScanWidth;
 					}
+					if (!surfaceHasAlpha)
+						_isAlphaDirty = false;
 				}
 				else if (bd.BytesPerPixel == 3)
 				{
@@ -473,12 +496,14 @@ namespace Eto.GtkSharp.Drawing
 			}
 			((IDisposable)Surface).Dispose();
 			Surface = null;
+			ClearCairoSurface();
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
+				ClearCairoSurface();
 				if (Surface != null)
 				{
 					((IDisposable)Surface).Dispose();

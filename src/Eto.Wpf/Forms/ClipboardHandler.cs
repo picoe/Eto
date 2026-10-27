@@ -8,10 +8,75 @@ namespace Eto.Wpf.Forms
 		const string EndHtmlPrefix = "EndHTML:";
 		const string StartFragmentPrefix = "StartFragment:";
 		const string EndFragmentPrefix = "EndFragment:";
+		ClipboardListener changeListener;
 
 		public ClipboardHandler()
 		{
 			Control = new sw.DataObject();
+		}
+
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case Clipboard.ChangedEvent:
+					changeListener ??= new ClipboardListener(this);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && changeListener != null)
+			{
+				changeListener.Dispose();
+				changeListener = null;
+			}
+			base.Dispose(disposing);
+		}
+
+		class ClipboardListener : IDisposable
+		{
+			readonly ClipboardHandler handler;
+			readonly swin.HwndSource source;
+			bool registered;
+
+			public ClipboardListener(ClipboardHandler handler)
+			{
+				this.handler = handler;
+
+				var parameters = new swin.HwndSourceParameters("EtoClipboardListener")
+				{
+					Width = 0,
+					Height = 0,
+					WindowStyle = 0
+				};
+				source = new swin.HwndSource(parameters);
+				source.AddHook(WndProc);
+				registered = Win32.AddClipboardFormatListener(source.Handle);
+			}
+
+			IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+			{
+				if ((uint)msg == (uint)Win32.WM.CLIPBOARDUPDATE)
+					handler.Callback.OnChanged(handler.Widget, EventArgs.Empty);
+
+				return IntPtr.Zero;
+			}
+
+			public void Dispose()
+			{
+				if (registered)
+				{
+					Win32.RemoveClipboardFormatListener(source.Handle);
+					registered = false;
+				}
+				source.RemoveHook(WndProc);
+				source.Dispose();
+			}
 		}
 
 		public override sw.IDataObject ReadingDataObject => sw.Clipboard.GetDataObject();

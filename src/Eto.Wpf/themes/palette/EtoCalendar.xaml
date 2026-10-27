@@ -1,0 +1,349 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    Calendar - custom theme
+    =========================================================================
+    Styles the WPF Calendar used by the DateTimePicker drop down
+    (DateTimePickerHandler) and the standalone Eto Calendar control
+    (efc:EtoCalendar). The default WPF Calendar chrome hard-codes light
+    gradient brushes, so the Calendar, CalendarItem, CalendarDayButton and
+    CalendarButton templates are all replaced with flat, palette-based
+    visuals.
+
+    Note: the EtoCalendar style must be BasedOn the Calendar style in this
+    same file - StaticResource/BasedOn cannot see sibling merged
+    dictionaries.
+    =========================================================================
+    -->
+
+    <!-- == Day cells (month view) =========================================== -->
+    <Style x:Key="EtoCustomCalendarDayButtonStyle" TargetType="{x:Type CalendarDayButton}">
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="Background"      Value="Transparent" />
+        <Setter Property="MinWidth"        Value="30" />
+        <Setter Property="MinHeight"       Value="26" />
+        <Setter Property="FontSize"        Value="12" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment"   Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarDayButton}">
+                    <Border x:Name="Bg"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="Content"
+                                          Margin="2"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- hover -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                        </Trigger>
+                        <!-- today: accent ring -->
+                        <Trigger Property="IsToday" Value="True">
+                            <Setter TargetName="Bg" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <!-- days of adjacent months -->
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.SubtleForegroundBrush}" />
+                        </Trigger>
+                        <!-- selected day: accent fill (after IsInactive so selection wins) -->
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.AccentForegroundBrush}" />
+                        </Trigger>
+                        <!-- outside MinDate/MaxDate -->
+                        <Trigger Property="IsBlackedOut" Value="True">
+                            <Setter TargetName="Content" Property="Opacity" Value="0.35" />
+                            <Setter TargetName="Bg" Property="Background" Value="Transparent" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- == Month / year cells (year and decade views) ======================= -->
+    <Style x:Key="EtoCustomCalendarButtonStyle" TargetType="{x:Type CalendarButton}">
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="Background"      Value="Transparent" />
+        <Setter Property="MinWidth"        Value="48" />
+        <Setter Property="MinHeight"       Value="36" />
+        <Setter Property="FontSize"        Value="12" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment"   Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarButton}">
+                    <Border x:Name="Bg"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="Transparent"
+                            BorderThickness="1"
+                            CornerRadius="2"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter x:Name="Content"
+                                          Margin="2"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                        </Trigger>
+                        <!-- month/year containing days outside the displayed range -->
+                        <Trigger Property="IsInactive" Value="True">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.SubtleForegroundBrush}" />
+                        </Trigger>
+                        <!-- month/year containing the selected date -->
+                        <Trigger Property="HasSelectedDays" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.AccentForegroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- == Header / navigation button chrome (shared template pieces) ======= -->
+    <Style x:Key="EtoCustomCalendarNavButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background"      Value="Transparent" />
+        <Setter Property="Foreground"      Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="Focusable"       Value="False" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="Bg"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="2"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.HoverBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bg" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.PressedBackgroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- == Calendar chrome: header, navigation, month/year grids ============ -->
+    <Style x:Key="EtoCustomCalendarItemStyle" TargetType="{x:Type CalendarItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CalendarItem}">
+                    <ControlTemplate.Resources>
+                        <!-- day-of-week titles; CalendarItem looks this up from the template
+                             resources by its ComponentResourceKey -->
+                        <DataTemplate x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type CalendarItem}, ResourceId=DayTitleTemplate}">
+                            <TextBlock Margin="0,4,0,4"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="11"
+                                       Foreground="{DynamicResource Eto.Palette.SubtleForegroundBrush}"
+                                       Text="{Binding}" />
+                        </DataTemplate>
+                    </ControlTemplate.Resources>
+                    <Grid x:Name="PART_Root">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="2"
+                                Padding="6"
+                                SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- header: previous / month-year / next -->
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="PART_PreviousButton"
+                                            Grid.Column="0"
+                                            Padding="8,4"
+                                            Style="{StaticResource EtoCustomCalendarNavButtonStyle}">
+                                        <Path Width="8" Height="12"
+                                              Data="M 6 1 L 1 6 L 6 11"
+                                              Stretch="Uniform"
+                                              Stroke="{DynamicResource Eto.Palette.ForegroundBrush}"
+                                              StrokeThickness="1.4"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"
+                                              SnapsToDevicePixels="True" />
+                                    </Button>
+
+                                    <Button x:Name="PART_HeaderButton"
+                                            Grid.Column="1"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Padding="8,4"
+                                            FontWeight="SemiBold"
+                                            Foreground="{DynamicResource Eto.Palette.ForegroundBrush}"
+                                            Style="{StaticResource EtoCustomCalendarNavButtonStyle}" />
+
+                                    <Button x:Name="PART_NextButton"
+                                            Grid.Column="2"
+                                            Padding="8,4"
+                                            Style="{StaticResource EtoCustomCalendarNavButtonStyle}">
+                                        <Path Width="8" Height="12"
+                                              Data="M 1 1 L 6 6 L 1 11"
+                                              Stretch="Uniform"
+                                              Stroke="{DynamicResource Eto.Palette.ForegroundBrush}"
+                                              StrokeThickness="1.4"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round"
+                                              SnapsToDevicePixels="True" />
+                                    </Button>
+                                </Grid>
+
+                                <!-- month view: 7Ã—7 (day titles + up to 6 week rows) -->
+                                <Grid x:Name="PART_MonthView"
+                                      Grid.Row="1"
+                                      Margin="0,2,0,0"
+                                      HorizontalAlignment="Center"
+                                      Visibility="Visible">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                </Grid>
+
+                                <!-- year / decade view: 4Ã—3 -->
+                                <Grid x:Name="PART_YearView"
+                                      Grid.Row="1"
+                                      Margin="0,2,0,0"
+                                      HorizontalAlignment="Center"
+                                      Visibility="Hidden">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <!-- dimming overlay shown when the calendar is disabled -->
+                        <Rectangle x:Name="PART_DisabledVisual"
+                                   Fill="{DynamicResource Eto.Palette.DisabledBackgroundBrush}"
+                                   Opacity="0.6"
+                                   RadiusX="2" RadiusY="2"
+                                   Visibility="Collapsed" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <!-- year view (months) shown when drilling up via the header button -->
+                        <DataTrigger Binding="{Binding DisplayMode, RelativeSource={RelativeSource AncestorType={x:Type Calendar}}}" Value="Year">
+                            <Setter TargetName="PART_MonthView" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="PART_YearView"  Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <!-- decade view (years) shown when drilling up again -->
+                        <DataTrigger Binding="{Binding DisplayMode, RelativeSource={RelativeSource AncestorType={x:Type Calendar}}}" Value="Decade">
+                            <Setter TargetName="PART_MonthView" Property="Visibility" Value="Hidden" />
+                            <Setter TargetName="PART_YearView"  Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PART_DisabledVisual" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- == Calendar ========================================================== -->
+    <Style x:Key="EtoCustomCalendarStyle" TargetType="{x:Type Calendar}">
+        <Setter Property="Background"            Value="{DynamicResource Eto.Palette.SurfaceBrush}" />
+        <Setter Property="BorderBrush"           Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="BorderThickness"       Value="1" />
+        <Setter Property="Foreground"            Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="CalendarDayButtonStyle" Value="{StaticResource EtoCustomCalendarDayButtonStyle}" />
+        <Setter Property="CalendarButtonStyle"    Value="{StaticResource EtoCustomCalendarButtonStyle}" />
+        <Setter Property="CalendarItemStyle"      Value="{StaticResource EtoCustomCalendarItemStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Calendar}">
+                    <StackPanel x:Name="PART_Root" HorizontalAlignment="Center">
+                        <CalendarItem x:Name="PART_CalendarItem"
+                                      Background="{TemplateBinding Background}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      Style="{TemplateBinding CalendarItemStyle}" />
+                    </StackPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- WPF Calendar (used inside the DateTimePicker drop down) -->
+    <Style TargetType="{x:Type Calendar}" BasedOn="{StaticResource EtoCustomCalendarStyle}" />
+    <!-- Eto Calendar control -->
+    <Style TargetType="{x:Type efc:EtoCalendar}" BasedOn="{StaticResource EtoCustomCalendarStyle}" />
+
+</ResourceDictionary>

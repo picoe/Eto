@@ -58,6 +58,8 @@ namespace Eto.Mac.Forms
 
 		public virtual void Show()
 		{
+			ApplicationHandler.Instance.EnsureActivated(ShowInTaskbar, ShowActivated, Icon);
+			
 			Control.LayoutIfNeeded();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			var visible = Control.IsVisible;

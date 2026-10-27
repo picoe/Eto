@@ -593,9 +593,35 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var rtf = @"{\rtf1\deff0{\fonttbl{\f0 Arial;}{\f1 Arial Black;}}\fs40 {\f1\i Some Text}\par}";
 			richText.Rtf = rtf;
 			richText.Selection = GetRange(text, "Text");
+			if (Platform.Instance.IsMac)
+			{
+				// macOS keeps "Arial Black" as its own font family, which only has a regular typeface, so
+				// there is no italic variant for it to apply. Wpf instead maps it onto the Arial family's
+				// "Black" typeface, which it can synthesize an oblique for.
+				Assert.That(richText.SelectionFamily.Name, Is.EqualTo("Arial Black"), "#2");
+				Assert.That(richText.SelectionTypeface.Name, Is.EqualTo("Regular"), "#3");
+				return;
+			}
 			Assert.That(richText.SelectionItalic, Is.True, "#1");
 			Assert.That(richText.SelectionFamily.Name, Is.EqualTo("Arial"), "#2");
 			Assert.That(richText.SelectionTypeface.Name, Is.EqualTo("Black Oblique"), "#3");
+		}
+
+		[Test]
+		[InvokeOnUI]
+		public void ItalicShouldApplyWhenTypefaceSupportsIt()
+		{
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk does not support RTF format");
+
+			var richText = new RichTextArea();
+
+			var text = "Some Text";
+			var rtf = @"{\rtf1\deff0{\fonttbl{\f0 Arial;}}\fs40 {\f0\i Some Text}\par}";
+			richText.Rtf = rtf;
+			richText.Selection = GetRange(text, "Text");
+			Assert.That(richText.SelectionItalic, Is.True, "#1");
+			Assert.That(richText.SelectionFamily.Name, Is.EqualTo("Arial"), "#2");
 		}
 
 		[Test]

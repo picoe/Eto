@@ -45,7 +45,13 @@ namespace Eto.GtkSharp.Forms.Controls
 		public int SelectedIndex
 		{
 			get { return Control.CurrentPage; }
-			set { Control.CurrentPage = value; }
+			set
+			{
+				// GtkNotebook won't select a hidden page but still raises switch-page.
+				if (value >= 0 && value < Widget.Pages.Count && !Widget.Pages[value].Visible)
+					return;
+				Control.CurrentPage = value;
+			}
 		}
 
 		public void InsertTab(int index, TabPage page)

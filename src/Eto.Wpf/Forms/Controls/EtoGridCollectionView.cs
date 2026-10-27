@@ -13,18 +13,21 @@ namespace Eto.Wpf.Forms.Controls
 			return collection;
 		}
 
+		WeakEventListener _listener;
+
 		public EtoGridCollectionView(IList collection, swc.DataGrid grid)
 		{
 			_collection = collection;
+			// only hold this view weakly, so a long lived data store doesn't keep the grid alive
 			if (_collection is INotifyCollectionChanged collectionChanged)
-				collectionChanged.CollectionChanged += OnCollectionChanged;
+				_listener = WeakEventListener.Create(collectionChanged, this, static (v, s, e) => v.OnCollectionChanged(s, e));
 			_grid = grid;
 		}
 
 		public void Unregister()
 		{
-			if (_collection is INotifyCollectionChanged collectionChanged)
-				collectionChanged.CollectionChanged -= OnCollectionChanged;
+			_listener?.Detach();
+			_listener = null;
 		}
 
 		public object this[int index]

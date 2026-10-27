@@ -1,0 +1,113 @@
+name: Release
+
+# Closing a milestone named like 1.2.3 builds that version and makes a pre-release with the packages.
+# Marking the pre-release as a full release pushes them to nuget.org, see publish.yml.
+# To retry after a failure, fix develop then reopen and close the milestone; it replaces a pre-release left by an earlier run.
+on:
+  milestone:
+    types: [ closed ]
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+    - id: version
+      env:
+        GH_TOKEN: ${{ github.token }}
+        TITLE: ${{ github.event.milestone.title }}
+      run: |
+        if [[ ! "$TITLE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::notice::Milestone '$TITLE' isn't a version like 1.2.3, so no release was made."
+          exit 0
+        fi
+        # fail before the long build rather than after it
+        if [[ "$(gh release view "$TITLE" --repo "$GITHUB_REPOSITORY" --json isPrerelease --jq .isPrerelease 2>/dev/null)" == "false" ]]; then
+          echo "::error::$TITLE is already a full release, so it can't be replaced."
+          exit 1
+        fi
+        echo "version=$TITLE" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: version
+    if: needs.version.outputs.version
+    uses: ./.github/workflows/build.yml
+    # for code signing and notarization
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.version }}
+
+  prerelease:
+    needs: [ version, build ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Download nuget artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: nuget-*
+        path: nuget
+        merge-multiple: true
+
+    - name: Push packages to myget.org
+      run: dotnet nuget push 'nuget/*.nupkg' --skip-duplicate -s https://www.myget.org/F/eto/api/v2/package -k ${{ secrets.MYGET_API_KEY }}
+
+    - name: Create pre-release
+      env:
+        GH_TOKEN: ${{ github.token }}
+        VERSION: ${{ needs.version.outputs.version }}
+        DESCRIPTION: ${{ github.event.milestone.description }}
+        MILESTONE: ${{ github.event.milestone.html_url }}
+      run: |
+        # replace a pre-release from an earlier attempt; full releases were rejected by the version job
+        if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+          gh release delete "$VERSION" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+        fi
+        printf '%s\n\n[Closed issues in this milestone](%s?closed=1)\n' "$DESCRIPTION" "$MILESTONE" > notes.md
+        gh release create "$VERSION" nuget/*.nupkg \
+          --repo "$GITHUB_REPOSITORY" \
+          --target "$GITHUB_SHA" \
+          --title "$VERSION" \
+          --prerelease \
+          --notes-file notes.md \
+          --generate-notes
+
+  next-version:
+    needs: [ version, prerelease ]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.next.outputs.version }}
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        sparse-checkout: build/Common.props
+        sparse-checkout-cone-mode: false
+
+    - id: next
+      env:
+        RELEASED: ${{ needs.version.outputs.version }}
+      run: |
+        IFS=. read -r major minor _ <<< "$RELEASED"
+        next="$major.$((minor + 1)).0"
+        current=$(sed -n 's:.*<DevVersion>\(.*\)</DevVersion>.*:\1:p' build/Common.props)
+        # a patch release doesn't move develop, which is already on the next minor
+        if [[ "$(printf '%s\n%s\n' "$current" "$next" | sort -V | tail -1)" == "$current" ]]; then
+          echo "::notice::Development version $current is already at or past $next, so it wasn't bumped."
+        else
+          echo "version=$next-dev" >> "$GITHUB_OUTPUT"
+        fi
+
+  bump-version:
+    needs: next-version
+    if: needs.next-version.outputs.version
+    uses: ./.github/workflows/manual-version-bump.yml
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      version: ${{ needs.next-version.outputs.version }}

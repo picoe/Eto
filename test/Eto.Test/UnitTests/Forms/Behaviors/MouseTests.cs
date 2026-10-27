@@ -284,5 +284,116 @@ namespace Eto.Test.UnitTests.Forms.Behaviors
 			Assert.That(panel1ShouldNeverBeCaptured, Is.False, "#5 - Panel2 should never be captured");
 			Assert.That(panel2ShouldNeverHaveMouseMoveWithoutCapturing, Is.False, "#6 - Panel2 should not have a MouseMove with a button down without being captured");
 		}
+
+		/// <summary>
+		/// Issue: RH-69389 - When a dialog is shown while dragging (e.g. a package update prompt), the mouse
+		/// capture is taken away from the control being dragged and MouseUp is never fired, so any dragging
+		/// logic never gets a chance to unwind.
+		/// </summary>
+		[Test, ManualTest]
+		public void MouseUpShouldFireWhenDialogIsShownDuringDrag()
+		{
+			var mouseDown = false;
+			string mouseDownResults = null;
+			var dialogShown = false;
+			var dialogClosed = false;
+			var mouseUpCalled = false;
+			var mouseUpBeforeDialogClosed = false;
+			var mouseUpButtons = MouseButtons.None;
+			string mouseUpResults = null;
+			string extraMouseUpResults = null;
+			ManualForm("Click and drag the blue square.\nWhen the dialog appears, release the mouse button and close the dialog.\nThe square should turn green.",
+			form =>
+			{
+				var panel = new Panel { Size = new Size(200, 200), BackgroundColor = Colors.Blue };
+
+				void CheckFinished()
+				{
+					if (mouseUpCalled && dialogClosed)
+						Application.Instance.AsyncInvoke(form.Close);
+				}
+
+				panel.MouseDown += (sender, e) =>
+				{
+					mouseDownResults = $"Panel.MouseDown: {e.Location}, Buttons: {e.Buttons}";
+					if (e.Buttons == MouseButtons.Primary)
+					{
+						mouseDown = true;
+						e.Handled = true; // capture the mouse so we get moves outside the panel
+					}
+				};
+
+				panel.MouseMove += (sender, e) =>
+				{
+					Debug.WriteLine($"Panel.MouseMove: {e.Location}");
+					if (!mouseDown || dialogShown || e.Buttons != MouseButtons.Primary)
+						return;
+
+					// simulate something showing a dialog in the middle of a drag operation, which
+					// takes the mouse capture away from the panel without a MouseUp being fired.
+					dialogShown = true;
+
+					var closeButton = new Button { Text = "Close" };
+					var dialog = new Dialog
+					{
+						Title = "Interrupting Dialog",
+						Content = new StackLayout
+						{
+							Padding = 10,
+							Spacing = 10,
+							HorizontalContentAlignment = HorizontalAlignment.Center,
+							Items =
+							{
+								"Release the mouse button, then close this dialog.",
+								closeButton
+							}
+						},
+						DefaultButton = closeButton,
+						AbortButton = closeButton
+					};
+					closeButton.Click += (s, ee) => dialog.Close();
+					dialog.Closed += (s, ee) =>
+					{
+						dialogClosed = true;
+						CheckFinished();
+					};
+					dialog.ShowModal(form);
+				};
+
+				panel.MouseUp += (sender, e) =>
+				{
+					var results = $"Panel.MouseUp: {e.Location}, Buttons: {e.Buttons}, DialogShown: {dialogShown}, DialogClosed: {dialogClosed}";
+					Debug.WriteLine(results);
+					if (mouseUpCalled)
+					{
+						// the real mouse up should be suppressed as MouseUp was already triggered when the dialog was shown
+						extraMouseUpResults = results;
+						return;
+					}
+					mouseUpResults = results;
+					mouseUpCalled = true;
+					mouseUpBeforeDialogClosed = dialogShown && !dialogClosed;
+					mouseUpButtons = e.Buttons;
+					panel.BackgroundColor = Colors.Green;
+					CheckFinished();
+				};
+
+				return panel;
+			}, allowPass: false);
+
+			Assert.That(dialogShown, Is.True, "#1 - Dialog was not shown, the blue square was not dragged");
+			Assert.That(mouseUpCalled, Is.True, "#2 - MouseUp was not fired after a dialog was shown during a drag");
+			if (mouseUpBeforeDialogClosed)
+			{
+				// the button may not have been released yet, so it shouldn't be mistaken for a click
+				Assert.That(mouseUpButtons, Is.EqualTo(MouseButtons.None), "#3 - MouseUp triggered when the dialog was shown should pass MouseButtons.None");
+				// the real mouse up gets delivered when the modal loop is done, which would also be mistaken for a click
+				Assert.That(extraMouseUpResults, Is.Null, $"#4 - MouseUp should only be triggered once, but was also triggered after the dialog was closed: {extraMouseUpResults}");
+			}
+			// not asserted, only logged: some platforms may only fire the MouseUp after the dialog is dismissed
+			Console.WriteLine(mouseDownResults ?? "No MouseDown event"); // so it shows in the test output for verification
+			Console.WriteLine(mouseUpResults ?? "No MouseUp event"); // so it shows in the test output for verification
+			Console.WriteLine($"MouseUp fired {(mouseUpBeforeDialogClosed ? "while the dialog was shown" : "after the dialog was closed")}");
+		}
 	}
 }

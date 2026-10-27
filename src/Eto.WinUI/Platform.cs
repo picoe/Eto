@@ -70,7 +70,7 @@ namespace Eto.WinUI
 			p.Add<DropDown.IHandler>(() => new DropDownHandler());
 			//p.Add<ComboBox.IHandler>(() => new ComboBoxHandler());
 			//p.Add<ColorPicker.IHandler>(() => new ColorPickerHandler());
-			//p.Add<DateTimePicker.IHandler>(() => new DateTimePickerHandler());
+			p.Add<DateTimePicker.IHandler>(() => new ThemedDateTimePickerHandler());
 			//p.Add<Drawable.IHandler>(() => new DrawableHandler());
 			//p.Add<Expander.IHandler>(() => new ExpanderHandler());
 			p.Add<FontPicker.IHandler>(() => new ThemedFontPickerHandler());

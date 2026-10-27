@@ -1,0 +1,175 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:efc="clr-namespace:Eto.Wpf.Forms.Controls">
+
+    <!--
+    =========================================================================
+    EtoCheckBox / EtoRadioButton - custom styles for the custom theme
+    =========================================================================
+    Uses flat custom indicators with accent-driven checked states while keeping
+    the content/access-key behavior of the underlying WPF controls.
+    Note: the radio handler expects a border named "radioButtonBorder".
+    =========================================================================
+    -->
+
+    <Style x:Key="EtoCheckBoxStyle" TargetType="{x:Type CheckBox}">
+        <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <BulletDecorator Background="Transparent" SnapsToDevicePixels="True">
+                        <BulletDecorator.Bullet>
+                            <Grid Width="16" Height="16">
+                                <Border x:Name="CheckBorder"
+                                        Background="{DynamicResource Eto.Palette.SurfaceBrush}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4" />
+                                <Path x:Name="CheckGlyph"
+                                      Data="M 3 8 L 6.5 11.5 L 13 4.5"
+                                      Stroke="{DynamicResource Eto.Palette.AccentForegroundBrush}"
+                                      StrokeThickness="2"
+                                      StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round"
+                                      StrokeLineJoin="Round"
+                                      Visibility="Collapsed" />
+                                <Rectangle x:Name="IndeterminateGlyph"
+                                           Width="8"
+                                           Height="2"
+                                           RadiusX="1"
+                                           RadiusY="1"
+                                           Fill="{DynamicResource Eto.Palette.AccentForegroundBrush}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="Collapsed" />
+                            </Grid>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter x:Name="Content"
+                                          Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </BulletDecorator>
+
+                    <ControlTemplate.Triggers>
+                        <!-- With no content - e.g. a CheckBoxCell in a grid - the gap after the box
+                             would push the box off-center wherever the check box is itself centered. -->
+                        <Trigger Property="HasContent" Value="False">
+                            <Setter TargetName="Content" Property="Margin" Value="0" />
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="CheckBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="CheckBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="CheckGlyph" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="{x:Null}">
+                            <Setter TargetName="CheckBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="IndeterminateGlyph" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="CheckBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="CheckBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="CheckGlyph" Property="Stroke"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="IndeterminateGlyph" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Every plain CheckBox in the app, including the cells of a CheckBoxCell column -->
+    <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource EtoCheckBoxStyle}" />
+    <!-- Eto's own CheckBox: implicit styles key on the exact type, so it needs its own entry -->
+    <Style TargetType="{x:Type efc:EtoCheckBox}" BasedOn="{StaticResource EtoCheckBoxStyle}" />
+
+    <Style TargetType="{x:Type efc:EtoRadioButton}">
+        <Setter Property="Foreground" Value="{DynamicResource Eto.Palette.ForegroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Eto.Palette.BorderBrush}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type efc:EtoRadioButton}">
+                    <BulletDecorator Background="Transparent" SnapsToDevicePixels="True">
+                        <BulletDecorator.Bullet>
+                            <Grid Width="16" Height="16">
+                                <Border x:Name="radioButtonBorder"
+                                        Width="16"
+                                        Height="16"
+                                        Background="{DynamicResource Eto.Palette.SurfaceBrush}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="8" />
+                                <Ellipse x:Name="RadioGlyph"
+                                         Width="7"
+                                         Height="7"
+                                         Fill="{DynamicResource Eto.Palette.AccentForegroundBrush}"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Visibility="Collapsed" />
+                            </Grid>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter Margin="8,0,0,0"
+                                          VerticalAlignment="Center"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </BulletDecorator>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="radioButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.BorderHoverBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="radioButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="radioButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="radioButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.AccentBrush}" />
+                            <Setter TargetName="RadioGlyph" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                            <Setter TargetName="radioButtonBorder" Property="Background"
+                                    Value="{DynamicResource Eto.Palette.DisabledBackgroundBrush}" />
+                            <Setter TargetName="radioButtonBorder" Property="BorderBrush"
+                                    Value="{DynamicResource Eto.Palette.DisabledBorderBrush}" />
+                            <Setter TargetName="RadioGlyph" Property="Fill"
+                                    Value="{DynamicResource Eto.Palette.DisabledForegroundBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

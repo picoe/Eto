@@ -46,41 +46,59 @@ namespace Eto.iOS.Forms.Controls
 			}
 		}
 
+		// a UILabel starts out word wrapping, which is what the old Control.LineBreakMode getter reported
+		WrapMode wrap = WrapMode.Word;
+		TextTrimming trimming;
+
 		public WrapMode Wrap
 		{
-			get
-			{ 
-				switch (Control.LineBreakMode)
-				{
-					case UILineBreakMode.CharacterWrap:
-						return WrapMode.Character;
-					case UILineBreakMode.WordWrap:
-						return WrapMode.Word;
-					case UILineBreakMode.Clip:
-					default:
-						return WrapMode.None;
-				}
-			}
+			get => wrap;
 			set
 			{
-				LayoutIfNeeded(() =>
-				{
-					switch (value)
-					{
-						case WrapMode.Character:
-							Control.LineBreakMode = UILineBreakMode.CharacterWrap;
-							break;
-						case WrapMode.Word:
-							Control.LineBreakMode = UILineBreakMode.WordWrap;
-							break;
-						case WrapMode.None:
-							Control.LineBreakMode = UILineBreakMode.Clip;
-							break;
-						default:
-							throw new NotSupportedException();
-					}
-				});
+				wrap = value;
+				SetLineBreakMode();
 			}
+		}
+
+		public TextTrimming Trimming
+		{
+			get => trimming;
+			set
+			{
+				trimming = value;
+				SetLineBreakMode();
+			}
+		}
+
+		/// <summary>
+		/// UIKit says how a line ends with a single value, so wrapping and truncating cannot both apply.
+		/// Truncating a wrapped label would need to know how many lines it is allowed, which nothing tells
+		/// us, so wrapping wins and the trimming is left off - see Eto.Forms.TextTrimming.
+		/// </summary>
+		void SetLineBreakMode()
+		{
+			LayoutIfNeeded(() =>
+			{
+				if (wrap == WrapMode.None && trimming != TextTrimming.None)
+				{
+					Control.LineBreakMode = UILineBreakMode.TailTruncation;
+					return;
+				}
+				switch (wrap)
+				{
+					case WrapMode.Character:
+						Control.LineBreakMode = UILineBreakMode.CharacterWrap;
+						break;
+					case WrapMode.Word:
+						Control.LineBreakMode = UILineBreakMode.WordWrap;
+						break;
+					case WrapMode.None:
+						Control.LineBreakMode = UILineBreakMode.Clip;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			});
 		}
 
 		public Eto.Drawing.Color TextColor

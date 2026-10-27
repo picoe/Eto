@@ -60,11 +60,9 @@ namespace Eto.WinForms.Forms
 			try
 			{
 				// WPF can throw exceptions here for FileContents, maybe others.
-#if NET10_0_OR_GREATER
-				Control.TryGetData<object>(type, out var data);
-#else
+#pragma warning disable WFDEV005
 				var data = Control.GetData(type);
-#endif
+#pragma warning restore WFDEV005
 				if (data != null)
 					return data;
 			}
@@ -179,7 +177,18 @@ namespace Eto.WinForms.Forms
 						return img;
 				}
 				if (Contains(sw.DataFormats.Dib) && GetObjectData(sw.DataFormats.Dib) is Stream stream)
-					return Win32.FromDIB(stream);
+				{
+					try
+					{
+						if (stream.CanSeek)
+							stream.Position = 0;
+						return Win32.FromDIB(stream);
+					}
+					catch (IOException)
+					{
+						// Invalid or truncated DIB data should be treated as unavailable.
+					}
+				}
 				return null;
 			}
 			set
@@ -335,7 +344,18 @@ namespace Eto.WinForms.Forms
 					}
 				}
 
-				return GetAsData(GetObjectData(type)) ?? GetAsData(GetStream(type));
+				var data = GetAsData(GetObjectData(type));
+				if (data != null)
+					return data;
+
+				try
+				{
+					return GetAsData(GetStream(type));
+				}
+				catch
+				{
+					return null;
+				}
 			}
 			return null;
 		}
@@ -525,13 +545,24 @@ namespace Eto.WinForms.Forms
 			//using the com IDataObject interface get the data using the defined FORMATETC
 			comDataObject.GetData(ref formatetc, out medium);
 
-			if (medium.tymed == TYMED.TYMED_ISTREAM)
-				return ReadIStream(medium);
+			// IDataObject.GetData hands us ownership of the medium, so it has to be released here --
+			// on this thread. A TYMED_ISTREAM medium (the shell's drag context arrives as one) holds a
+			// raw COM interface pointer, and leaving it to be released later means releasing it from
+			// whatever thread gets there first. See DragDropLib.DataObject.Dispose.
+			try
+			{
+				if (medium.tymed == TYMED.TYMED_ISTREAM)
+					return ReadIStream(medium);
 
-			if (medium.tymed == TYMED.TYMED_HGLOBAL)
-				return ReadHGlobal(medium);
+				if (medium.tymed == TYMED.TYMED_HGLOBAL)
+					return ReadHGlobal(medium);
 
-			return null;
+				return null;
+			}
+			finally
+			{
+				Win32.ReleaseStgMedium(ref medium);
+			}
 		}
 
 
@@ -559,16 +590,24 @@ namespace Eto.WinForms.Forms
 
 		MemoryStream ReadIStream(STGMEDIUM medium)
 		{
+			// GetObjectForIUnknown adds its own reference for the RCW; the caller releases the
+			// medium's. Release the RCW here too so the stream doesn't outlive this call and get
+			// dropped from the finalizer thread.
 			var istream = (IStream)Marshal.GetObjectForIUnknown(medium.unionmember);
-			Marshal.Release(medium.unionmember);
+			try
+			{
+				var stat = new STATSTG();
+				istream.Stat(out stat, 0);
 
-			var stat = new STATSTG();
-			istream.Stat(out stat, 0);
-			
-			var bytes = new byte[stat.cbSize];
-			istream.Read(bytes, bytes.Length, IntPtr.Zero);
+				var bytes = new byte[stat.cbSize];
+				istream.Read(bytes, bytes.Length, IntPtr.Zero);
 
-			return new MemoryStream(bytes);
+				return new MemoryStream(bytes);
+			}
+			finally
+			{
+				Marshal.ReleaseComObject(istream);
+			}
 		}
 	}
 }

@@ -53,8 +53,8 @@
   <!-- Resolve a code sign identity.  Parameters: CodeSignSearchKey -->
   <Target Name="_MacResolveCodeSignIdentity" Outputs="$(ResolvedCodeSignIdentity)">
 
-    <!-- get valid identities that match -->
-    <Exec Command="security find-identity -v -p codesigning | grep -v 'valid identities found' | grep '$(CodeSignSearchKey)' | awk '{print $2}'"
+    <!-- get valid identities that match, as "<sha1> <name>" (the leading "1)" index is stripped) -->
+    <Exec Command="security find-identity -v -p codesigning | grep -v 'valid identities found' | grep '$(CodeSignSearchKey)' | sed -e 's/^[[:space:]]*[0-9][0-9]*)[[:space:]]*//'"
           ConsoleToMSBuild="True"
           StandardOutputImportance="normal">
         <Output TaskParameter="ConsoleOutput" ItemName="MatchingIdentities"/>
@@ -63,11 +63,12 @@
     <Error Text="Could not find code sign key matching '$(CodeSignSearchKey)'. Ensure you have installed your code sign certificate."
            Condition="@(MatchingIdentities->Count()) == '0'" />
 
-    <Error Text="More than one valid code signing certificate matches '$(CodeSignSearchKey)'. Enter a more specific key for the certificate."
+    <Error Text="More than one valid code signing certificate matches '$(CodeSignSearchKey)':%0A%0A@(MatchingIdentities->'    %(Identity)', '%0A')%0A%0ASet CodeSigningKey (or DmgCodeSigningKey for the .dmg) to something that matches only one of the above - any part of the certificate name, or its full SHA-1 - either in your project or on the command line, eg:%0A%0A    dotnet build /p:CodeSigningKey=&quot;Developer ID Application: Your Name (TEAMID)&quot;"
            Condition="@(MatchingIdentities->Count()) > '1'" />
 
     <PropertyGroup>
-      <ResolvedCodeSignIdentity>@(MatchingIdentities)</ResolvedCodeSignIdentity>
+      <_MatchedIdentity>@(MatchingIdentities)</_MatchedIdentity>
+      <ResolvedCodeSignIdentity>$([System.Text.RegularExpressions.Regex]::Match($(_MatchedIdentity), '[0-9A-F]{40}').Value)</ResolvedCodeSignIdentity>
     </PropertyGroup>
   </Target>
 

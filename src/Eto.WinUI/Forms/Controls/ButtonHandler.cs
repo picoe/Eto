@@ -5,6 +5,7 @@ public class ButtonHandler : WinUIControl<muc.Button, Button, Button.ICallback>,
 	muc.TextBlock _textBlock;
 	public Image Image { get; set; }
 	public ButtonImagePosition ImagePosition { get; set; }
+	public bool ImageNextToText { get; set; }
 	public Size MinimumSize { get; set; }
 
 	public string Text

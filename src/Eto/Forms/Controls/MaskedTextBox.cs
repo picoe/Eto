@@ -64,9 +64,9 @@ public class NumericMaskedTextBox<T> : MaskedTextBox<T>
 	/// </remarks>
 	/// <value><c>true</c> to allow sign character; otherwise, <c>false</c>.</value>
 	public bool AllowSign
-	{ 
+	{
 		get { return Provider.AllowSign; }
-		set { Provider.AllowSign = value; } 
+		set { Provider.AllowSign = value; }
 	}
 
 	/// <summary>
@@ -124,18 +124,38 @@ public class NumericMaskedTextBox<T> : MaskedTextBox<T>
 /// </summary>
 /// <remarks>
 /// This is useful when the text can be converted to another type (e.g. DateTime, numeric, etc).
-/// 
+///
 /// The <see cref="Provider"/> specified for the control is responsible for converting the value.
 /// </remarks>
 public class MaskedTextBox<T> : MaskedTextBox
 {
+	T _lastValue;
+
 	/// <summary>
 	/// Event to handle when the <see cref="Value"/> property changes
 	/// </summary>
-	public event EventHandler<EventArgs> ValueChanged
+	public event EventHandler<EventArgs> ValueChanged;
+
+	/// <inheritdoc/>
+	override protected void OnTextChanged(EventArgs e)
 	{
-		add { TextChanged += value; }
-		remove { TextChanged -= value; }
+		base.OnTextChanged(e);
+
+		var val = Value;
+		if (!EqualityComparer<T>.Default.Equals(val, _lastValue))
+		{
+			OnValueChanged(EventArgs.Empty);
+			_lastValue = val;
+		}
+	}
+
+	/// <summary>
+	/// Raises the <see cref="ValueChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments.</param>
+	protected virtual void OnValueChanged(EventArgs e)
+	{
+		ValueChanged?.Invoke(this, e);
 	}
 
 	/// <summary>
@@ -168,14 +188,14 @@ public class MaskedTextBox<T> : MaskedTextBox
 	/// Gets or sets the translated value of the masked text.
 	/// </summary>
 	/// <value>The translated value.</value>
-	public T Value
+	public virtual T Value
 	{
 		get { return Provider != null ? Provider.Value : default(T); }
 		set
 		{
 			if (Provider != null)
 				Provider.Value = value;
-			UpdateText();
+			CommitText();
 		}
 	}
 
@@ -202,44 +222,27 @@ public class MaskedTextBox<T> : MaskedTextBox
 /// Text box with masking capabilities.
 /// </summary>
 /// <remarks>
-/// This uses the <see cref="IMaskedTextProvider"/> as its interface to the mask.  
+/// This uses the <see cref="IMaskedTextProvider"/> as its interface to the mask.
 /// The mask can implement any format it wishes, including both fixed or variable length masks.
 /// The MaskedTextBox allows you to mask, or limit which characters can be entered in the text box with either a fixed, variable, or custom mask.
-/// A fixed mask can be a phone number, postal code, or something that requires a specific format and can be created using the <see cref="FixedMaskedTextProvider"/>. 
+/// A fixed mask can be a phone number, postal code, or something that requires a specific format and can be created using the <see cref="FixedMaskedTextProvider"/>.
 /// A variable mask limits which characters can be entered but is not limited to a fixed number of characters.
 /// An implementation of a variable mask is the <see cref="NumericMaskedTextBox{T}"/> which allows you to enter only numeric values in a text box, and places the positive / negative symbol at the beginning regardless of where you type it.
 /// </remarks>
 [ContentProperty("Provider")]
-public class MaskedTextBox : TextBox
+public class MaskedTextBox : TextBox, IMaskedTextControl
 {
-	IMaskedTextProvider provider;
-	static readonly object InsertKeyModeKey = new object();
-	static readonly object ShowPromptModeKey = new object();
-	static readonly object SupportsInsertKey = new object();
-	static readonly object OverwriteModeKey = new object();
-	static readonly object ShowPlaceholderWhenEmptyKey = new object();
-	static readonly object IsUpdatingTextKey = new object();
+	readonly MaskedTextBoxLogic _logic;
 
-	/// <summary>
-	/// Gets a cached value indicating the current platform supports getting the insert mode state.
-	/// </summary>
-	static bool SupportsInsert
+	string IMaskedTextControl.BaseText
 	{
-		get
-		{
-			// cache whether the platform supports the insert key for Keyboard.IsKeyLocked
-			return Platform.Instance.GetSharedProperty(SupportsInsertKey, () => Keyboard.SupportedLockKeys.Contains(Keys.Insert));
-		}
+		get => base.Text;
+		set => base.Text = value;
 	}
 
-	/// <summary>
-	/// If the platform doesn't support global insert/overwrite mode, this stores an application-wide state of the insert mode
-	/// </summary>
-	static bool ManualOverwriteMode
-	{
-		get { return Platform.Instance.GetSharedProperty(OverwriteModeKey, () => false); }
-		set { Platform.Instance.SetSharedProperty(OverwriteModeKey, value); }
-	}
+	void IMaskedTextControl.UpdateText() => UpdateText();
+
+	void IMaskedTextControl.CommitText() => CommitText();
 
 	/// <summary>
 	/// Gets or sets the masked text provider to specify the mask format.
@@ -247,18 +250,8 @@ public class MaskedTextBox : TextBox
 	/// <value>The masked text provider.</value>
 	public IMaskedTextProvider Provider
 	{
-		get { return provider; }
-		set
-		{
-			if (!ReferenceEquals(value, provider))
-			{
-				var oldProvider = provider;
-				provider = value;
-				if (provider != null && oldProvider != null)
-					provider.Text = oldProvider.Text;
-				UpdateText();
-			}
-		}
+		get => _logic.Provider;
+		set => _logic.Provider = value;
 	}
 
 	/// <summary>
@@ -267,25 +260,16 @@ public class MaskedTextBox : TextBox
 	/// <value>The desired insert mode.</value>
 	public InsertKeyMode InsertMode
 	{
-		get { return Properties.Get<InsertKeyMode?>(InsertKeyModeKey) ?? InsertKeyMode.Insert; }
-		set { Properties[InsertKeyModeKey] = value; }
+		get => _logic.InsertMode;
+		set => _logic.InsertMode = value;
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether typing will overwrite text.
 	/// </summary>
-	/// <seealso cref="InsertMode"/> 
+	/// <seealso cref="InsertMode"/>
 	/// <value><c>true</c> if text will be overwritten; otherwise, <c>false</c> to insert text.</value>
-	public bool IsOverwrite
-	{
-		get
-		{
-			if (InsertMode == InsertKeyMode.Overwrite)
-				return true;
-			var overwrite = SupportsInsert ? Keyboard.IsKeyLocked(Keys.Insert) : ManualOverwriteMode;
-			return InsertMode == InsertKeyMode.Toggle && overwrite; 
-		}
-	}
+	public bool IsOverwrite => _logic.IsOverwrite;
 
 	/// <summary>
 	/// Gets or sets a value indicating that the prompt characters should only be shown when the control has focus.
@@ -303,14 +287,8 @@ public class MaskedTextBox : TextBox
 	/// </summary>
 	public ShowPromptMode ShowPromptMode
 	{
-		get => Properties.Get<ShowPromptMode>(ShowPromptModeKey);
-		set
-		{ 
-			if (Properties.TrySet(ShowPromptModeKey, value))
-			{
-				UpdateText();
-			}
-		}
+		get => _logic.ShowPromptMode;
+		set => _logic.ShowPromptMode = value;
 	}
 
 	/// <summary>
@@ -321,29 +299,30 @@ public class MaskedTextBox : TextBox
 	[DefaultValue(true)]
 	public bool ShowPlaceholderWhenEmpty
 	{
-		get { return Properties.Get<bool?>(ShowPlaceholderWhenEmptyKey) ?? true; }
-		set
-		{ 
-			if (ShowPlaceholderWhenEmpty != value)
-			{
-				Properties[ShowPlaceholderWhenEmptyKey] = value;
-				UpdateText();
-			}
-		}
+		get => _logic.ShowPlaceholderWhenEmpty;
+		set => _logic.ShowPlaceholderWhenEmpty = value;
 	}
 
-	int IsUpdatingText
+	/// <summary>
+	/// Gets or sets a value indicating whether editable mask ranges should be selected automatically.
+	/// </summary>
+	/// <remarks>
+	/// When enabled, the control selects contiguous editable regions from the mask and allows the user
+	/// to move between them using the left and right arrow keys.
+	/// </remarks>
+	[DefaultValue(false)]
+	public bool AutoSelectEditableRanges
 	{
-		get => Properties.Get<int>(IsUpdatingTextKey);
-		set => Properties.Set(IsUpdatingTextKey, value);
+		get => _logic.AutoSelectEditableRanges;
+		set => _logic.AutoSelectEditableRanges = value;
 	}
-
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MaskedTextBox"/> class.
 	/// </summary>
 	public MaskedTextBox()
 	{
+		_logic = new MaskedTextBoxLogic(this);
 		HandleEvent(TextChangingEvent);
 		HandleEvent(TextChangedEvent);
 		HandleEvent(KeyDownEvent);
@@ -360,8 +339,7 @@ public class MaskedTextBox : TextBox
 	{
 		if (provider == null)
 			throw new ArgumentNullException(nameof(provider));
-		this.provider = provider;
-		UpdateText();
+		_logic.Provider = provider;
 	}
 
 	/// <summary>
@@ -370,23 +348,15 @@ public class MaskedTextBox : TextBox
 	/// <remarks>
 	/// Call this in a subclass when you want to update the text based on the state of the control.
 	/// When the <see cref="IMaskedTextProvider.IsEmpty"/> is true, it will set the text to null to show the placeholder text.
-	/// 
+	///
 	/// Override this to perform other actions before or after the text of the control is updated.
 	/// </remarks>
-	protected virtual void UpdateText()
-	{
-		if (provider == null)
-			return;
-		IsUpdatingText++;
-		var hasFocus = HasFocus;
-		if (!hasFocus && ShowPlaceholderWhenEmpty && provider.IsEmpty && !string.IsNullOrEmpty(PlaceholderText))
-			base.Text = null;
-		else if ((hasFocus && ShowPromptMode == ShowPromptMode.OnFocus) || ShowPromptMode == ShowPromptMode.Always)
-			base.Text = provider.DisplayText;
-		else
-			base.Text = provider.Text;
-		IsUpdatingText--;
-	}
+	protected virtual void UpdateText() => _logic.UpdateText();
+
+	/// <summary>
+	/// Commits the text to the provider and updates the display text.
+	/// </summary>
+	protected virtual void CommitText() => _logic.CommitText();
 
 	/// <summary>
 	/// Raises the <see cref="Control.LoadComplete"/> event.
@@ -395,7 +365,7 @@ public class MaskedTextBox : TextBox
 	protected override void OnLoadComplete(EventArgs e)
 	{
 		base.OnLoadComplete(e);
-		UpdateText();
+		_logic.OnLoadComplete();
 	}
 
 	/// <summary>
@@ -405,8 +375,14 @@ public class MaskedTextBox : TextBox
 	protected override void OnGotFocus(EventArgs e)
 	{
 		base.OnGotFocus(e);
-		if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
-			UpdateText();
+		_logic.OnGotFocus();
+	}
+
+	/// <inheritdoc/>
+	protected override void OnMouseUp(MouseEventArgs e)
+	{
+		base.OnMouseUp(e);
+		_logic.OnMouseUp();
 	}
 
 	/// <summary>
@@ -416,8 +392,7 @@ public class MaskedTextBox : TextBox
 	protected override void OnLostFocus(EventArgs e)
 	{
 		base.OnLostFocus(e);
-		if (ShowPromptMode == ShowPromptMode.OnFocus || ShowPlaceholderWhenEmpty)
-			UpdateText();
+		_logic.OnLostFocus();
 	}
 
 	/// <summary>
@@ -426,13 +401,7 @@ public class MaskedTextBox : TextBox
 	/// <param name="e">Event arguments.</param>
 	protected override void OnTextChanged(EventArgs e)
 	{
-		// handle undo/redo and drag/drop which doesn't always get a TextChanging event.
-		if (IsUpdatingText == 0 && provider != null)
-		{
-			provider.Text = base.Text;
-			UpdateText();
-		}
-
+		_logic.OnTextChanged();
 		base.OnTextChanged(e);
 	}
 
@@ -443,53 +412,7 @@ public class MaskedTextBox : TextBox
 	protected override void OnTextChanging(TextChangingEventArgs e)
 	{
 		base.OnTextChanging(e);
-		if (e.Cancel || ReadOnly || !Enabled || !e.FromUser)
-			return;
-		var sel = e.Range;
-		var pos = sel.Start;
-		var len = sel.Length();
-		var overwrite = IsOverwrite;
-		if (provider == null)
-		{
-			// with no provider, still have some functionality
-			if (e.Text.Length > 0)
-			{
-				if (overwrite && len == 0)
-				{
-					var text = Text;
-					if (sel.Start < text.Length)
-						text = text.Remove(sel.Start, Math.Min(text.Length - sel.Start, e.Text.Length));
-					text = text.Insert(sel.Start, e.Text);
-					Text = text;
-				}
-				else
-					SelectedText = e.Text;
-				CaretIndex = pos + e.Text.Length;
-				e.Cancel = true;
-			}
-			return;
-		}
-
-		if (len > 0)
-		{
-			var tempPos = pos;
-			if (overwrite)
-				provider.Clear(ref tempPos, len, true);
-			else
-				provider.Delete(ref tempPos, len, true);
-		}
-
-		foreach (char ch in e.Text)
-		{
-			if (overwrite)
-				provider.Replace(ch, ref pos);
-			else
-				provider.Insert(ch, ref pos);
-		}
-
-		UpdateText();
-		CaretIndex = pos;
-		e.Cancel = true;
+		_logic.OnTextChanging(e);
 	}
 
 	/// <summary>
@@ -499,42 +422,18 @@ public class MaskedTextBox : TextBox
 	protected override void OnKeyDown(KeyEventArgs e)
 	{
 		base.OnKeyDown(e);
-		if (e.Handled || ReadOnly || !Enabled)
-			return;
-		switch (e.KeyData)
-		{
-			case Keys.Delete:
-			case Keys.Backspace:
-				if (provider == null)
-					return;
-				// override default delete/backspace behaviour so we can skip past literals
-				var sel = Selection;
-				var pos = sel.Start;
-				var len = sel.Length();
-				var forward = len > 0 || e.KeyData == Keys.Delete;
-				len = Math.Max(1, len);
-				bool changed;
-				if (IsOverwrite)
-					changed = provider.Clear(ref pos, len, forward);
-				else
-					changed = provider.Delete(ref pos, len, forward);
-
-				if (changed)
-				{
-					Text = provider.DisplayText;
-					CaretIndex = pos;
-				}
-				e.Handled = true;
-				break;
-			case Keys.Insert:
-				if (!SupportsInsert && InsertMode == InsertKeyMode.Toggle)
-				{
-					ManualOverwriteMode = !ManualOverwriteMode;
-					e.Handled = true;
-				}
-				break;
-		}
+		_logic.OnKeyDown(e);
 	}
+
+	/// <summary>
+	/// Selects the editable range at the specified index.
+	/// </summary>
+	/// <param name="index">The index to select the editable range at.</param>
+	/// <param name="forward">Indicates the direction to move the selection.</param>
+	/// <param name="fallbackToFirstLast">Indicates whether to fallback to the first or last editable range if the index is out of bounds.</param>
+	/// <returns><c>true</c> if an editable range was selected; otherwise, <c>false</c>.</returns>
+	protected bool SelectEditableRangeAt(int index, bool forward, bool fallbackToFirstLast = true)
+		=> _logic.SelectEditableRangeAt(index, forward, fallbackToFirstLast);
 
 	/// <summary>
 	/// Gets or sets the text of the control including any mask characters.
@@ -542,25 +441,13 @@ public class MaskedTextBox : TextBox
 	/// <value>The text content of the control.</value>
 	public override string Text
 	{
-		get
-		{
-			return provider != null ? provider.Text : base.Text;
-		}
-		set
-		{
-			if (provider != null)
-			{
-				provider.Text = value;
-				UpdateText();
-			}
-			else
-				base.Text = value;
-		}
+		get => _logic.Text;
+		set => _logic.Text = value;
 	}
 
 	/// <summary>
 	/// Gets a value indicating whether the mask is completed.
 	/// </summary>
 	/// <value><c>true</c> if mask completed; otherwise, <c>false</c>.</value>
-	public bool MaskCompleted => provider?.MaskCompleted == true;
+	public bool MaskCompleted => _logic.MaskCompleted;
 }

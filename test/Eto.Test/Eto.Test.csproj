@@ -3,7 +3,10 @@
     <TargetFrameworks>net48;net10.0;net10.0-windows</TargetFrameworks>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
-    <UseWpf Condition="$(TargetFramework) == 'net8.0-windows'">true</UseWpf>
+    <OutputType>Library</OutputType>
+    <IsTestProject>false</IsTestProject>
+    <EtoXamlCodeGen>true</EtoXamlCodeGen>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -23,15 +26,20 @@
     <Compile Include="..\..\src\Eto\Helper.cs">
       <Link>Helper.cs</Link>
     </Compile>
+    <!-- shared with each platform backend (see src/Shared), compiled here so UnitTests\Drawing\BaseBitmapDataTests
+         can test it directly against a data buffer it controls -->
+    <Compile Include="..\..\src\Shared\BaseBitmapData.cs">
+      <Link>BaseBitmapData.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sections\Serialization\Json\Test.jeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Images\*" />
+  </ItemGroup>
+  <!-- what the packages add to a project, which ProjectReference doesn't -->
+  <Import Project="..\..\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.targets" />
+  <Import Project="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
@@ -39,16 +47,12 @@
     <ProjectReference Include="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="4.3.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NUnit" Version="4.6.1" />
     <PackageReference Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Sections\Serialization\Xaml\Test.xeto" />
-    <None Remove="Sections\Serialization\Json\Test.json" />
     <None Remove="Images\*" />
   </ItemGroup>
   <ItemGroup>

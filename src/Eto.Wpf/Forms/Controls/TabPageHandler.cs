@@ -25,7 +25,9 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Control = new swc.TabItem();
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			headerImage = new swc.Image();
+			// Shrink oversized images to fit the tab but never enlarge them, otherwise
+			// Left/Right placement blows small icons up to the full control height.
+			headerImage = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly };
 			headerText = new swc.TextBlock();
 			headerText.VerticalAlignment = sw.VerticalAlignment.Center;
 			header.Children.Add(headerImage);
@@ -96,6 +98,18 @@ namespace Eto.Wpf.Forms.Controls
 				content.Width = value.Width;
 				content.Height = value.Height;
 				UpdatePreferredSize();
+			}
+		}
+
+		public override bool Visible
+		{
+			get => base.Visible;
+			set
+			{
+				if (value == Visible)
+					return;
+				base.Visible = value;
+				(Widget.Parent?.Handler as TabControlHandler)?.SetPageVisible(Widget, value);
 			}
 		}
 

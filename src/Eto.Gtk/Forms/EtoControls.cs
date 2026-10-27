@@ -2,7 +2,7 @@
 using Eto;
 namespace Eto.GtkSharp.Forms
 {
-    public partial class EtoFrame : Gtk.Frame
+    public partial class EtoFrame : Gtk.Frame, IGtkPreferredSizeWidget
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -18,7 +18,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -32,7 +32,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -46,7 +46,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -60,7 +60,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -74,7 +74,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -89,7 +89,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -101,7 +101,7 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoFixed : Gtk.Fixed
+    public partial class EtoFixed : Gtk.Fixed, IGtkPreferredSizeWidget
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -117,7 +117,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -131,7 +131,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -145,7 +145,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -159,7 +159,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -173,7 +173,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -188,7 +188,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -200,7 +200,7 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoEventBox : Gtk.EventBox
+    public partial class EtoEventBox : Gtk.EventBox, IGtkPreferredSizeWidget
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -216,7 +216,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -230,7 +230,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -244,7 +244,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -258,7 +258,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -272,7 +272,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -287,7 +287,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -299,7 +299,7 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoBox : Gtk.Box
+    public partial class EtoBox : Gtk.Box, IGtkPreferredSizeWidget
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -320,7 +320,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -334,7 +334,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -348,7 +348,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -362,7 +362,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -376,7 +376,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -391,7 +391,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -403,7 +403,7 @@ namespace Eto.GtkSharp.Forms
 
     }
     
-    public partial class EtoScrolledWindow : Gtk.ScrolledWindow
+    public partial class EtoScrolledWindow : Gtk.ScrolledWindow, IGtkPreferredSizeWidget
     {
         WeakReference _handler;
         public IGtkControl Handler
@@ -419,7 +419,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -433,7 +433,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Width > 0)
                     natural_width = userPreferredSize.Width;
 
@@ -447,7 +447,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -461,7 +461,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var userPreferredSize = h.UserPreferredSize;
+                var userPreferredSize = h.GetNaturalSizeRequest();
                 if (userPreferredSize.Height > 0)
                     natural_height = userPreferredSize.Height;
 
@@ -475,7 +475,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;
@@ -490,7 +490,7 @@ namespace Eto.GtkSharp.Forms
             var h = Handler;
             if (h != null)
             {
-                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.UserPreferredSize.Width : h.UserPreferredSize.Height;
+                var preferredSize = orientation == Gtk.Orientation.Horizontal ? h.GetNaturalSizeRequest().Width : h.GetNaturalSizeRequest().Height;
 
                 if (preferredSize > 0)
                     natural_size = preferredSize;

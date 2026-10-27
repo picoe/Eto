@@ -9,7 +9,7 @@ namespace Eto.GtkSharp.Forms.Cells
 
 		void BeginCellEditing(Gtk.TreePath path, int column);
 
-		void SetColumnMap(int dataIndex, int column);
+		void SetColumnMap(int dataIndex, int column, GLib.GType type);
 
 		int RowHeight { get; set; }
 
@@ -119,9 +119,9 @@ namespace Eto.GtkSharp.Forms.Cells
 			}
 		}
 
-		protected int SetColumnMap(int dataIndex)
+		protected int SetColumnMap(int dataIndex, GLib.GType type)
 		{
-			Source.SetColumnMap(dataIndex, ColumnIndex);
+			Source.SetColumnMap(dataIndex, ColumnIndex, type);
 			return dataIndex;
 		}
 

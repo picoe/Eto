@@ -22,6 +22,13 @@ namespace Eto.Mac.Forms.Controls
 			return new EtoWebView(this);
 		}
 
+		protected override SizeF GetNaturalSize(SizeF availableSize)
+		{
+			// WKWebView has no intrinsic size as its content is entirely up to the loaded document,
+			// so report a default size like other controls that can't be measured.
+			return new SizeF(100, 100);
+		}
+
 		public class EtoNavigationDelegate : wk.WKNavigationDelegate
 		{
 			public EtoNavigationDelegate()
@@ -57,7 +64,12 @@ namespace Eto.Mac.Forms.Controls
 			{
 				var h = Handler;
 				if (h == null || h.Widget.IsDisposed)
+				{
+					// WebKit terminates the process when the decision handler is released without
+					// being called, so answer even when there is nothing left to render into.
+					decisionHandler(wk.WKNavigationActionPolicy.Cancel, preferences);
 					return;
+				}
 					
 				var requestUrl = navigationAction.Request.Url;
 				if (h.EnablePrintRouting && requestUrl.AbsoluteString == "eto:print")
@@ -116,14 +128,22 @@ namespace Eto.Mac.Forms.Controls
 
 		class ScriptMessageHandler : wk.WKScriptMessageHandler
 		{
-			private readonly WKWebViewHandler Handler;
+			// WKUserContentController retains its script message handlers, and the content controller is kept
+			// alive by the configuration the handler itself owns. Referencing the handler strongly here would
+			// close that loop with a native retain in it, keeping the WebView alive forever.
+			readonly WeakReference handler;
+			WKWebViewHandler Handler => handler.Target as WKWebViewHandler;
+
 			public ScriptMessageHandler(WKWebViewHandler handler) : base()
 			{
-				Handler = handler;
+				this.handler = new WeakReference(handler);
 			}
 			public override void DidReceiveScriptMessage(wk.WKUserContentController userContentController, wk.WKScriptMessage message)
 			{
-				Handler.Callback.OnMessageReceived(Handler.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
+				var h = Handler;
+				if (h == null || h.Widget.IsDisposed)
+					return;
+				h.Callback.OnMessageReceived(h.Widget, new WebViewMessageEventArgs(message.Body.ToString()));
 			}
 		}
 
@@ -370,10 +390,13 @@ namespace Eto.Mac.Forms.Controls
 			if (printOperation != null)
 			{
 				// RunOperation() doesn't work..
-				var printHelper = new PrintHelper();
-				printOperation.RunOperationModal(Control.Window, printHelper, PrintHelper.PrintOperationDidRunSelector, IntPtr.Zero);
+				// AppKit doesn't retain the delegate and this returns before the sheet closes, so keep it alive until the callback
+				_printHelper = new PrintHelper { Done = () => _printHelper = null };
+				printOperation.RunOperationModal(Control.Window, _printHelper, PrintHelper.PrintOperationDidRunSelector, IntPtr.Zero);
 			}
 		}
+
+		PrintHelper _printHelper;
 
 		class PrintHelper : NSObject
 		{
@@ -381,10 +404,13 @@ namespace Eto.Mac.Forms.Controls
 
 			public bool Success { get; set; }
 
+			public Action Done { get; set; }
+
 			[Export("printOperationDidRun:success:contextInfo:")]
 			public void PrintOperationDidRun(IntPtr printOperation, bool success, IntPtr contextInfo)
 			{
 				Success = success;
+				Done?.Invoke();
 			}
 		}
 

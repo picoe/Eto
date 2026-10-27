@@ -5,9 +5,9 @@
 			"longName": "mode",
 			"shortName": "m"
 		},
-		"Combined": {
-			"longName": "combined",
-			"shortName": "c"
+		"SeparateProjects": {
+			"longName": "separate-projects",
+			"shortName": "sp"
 		},
 		"TargetFrameworkOverride": {
 			"isHidden": "true",

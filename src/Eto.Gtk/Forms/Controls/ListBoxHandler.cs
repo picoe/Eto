@@ -1,4 +1,5 @@
 using Eto.GtkSharp.Drawing;
+
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox, ListBox.ICallback>, ListBox.IHandler, IGtkEnumerableModelHandler<object>
@@ -102,6 +103,19 @@ namespace Eto.GtkSharp.Forms.Controls
 					return new GLib.Value(Widget.ItemTextBinding?.GetValue(item) ?? string.Empty);
 				case 1:
 					return new GLib.Value(Widget.ItemImageBinding?.GetValue(item).ToGdk());
+				default:
+					throw new InvalidOperationException();
+			}
+		}
+
+		public GLib.GType GetColumnType(int col)
+		{
+			switch (col)
+			{
+				case 0:
+					return GLib.GType.String;
+				case 1:
+					return Gdk.Pixbuf.GType;
 				default:
 					throw new InvalidOperationException();
 			}
@@ -211,11 +225,11 @@ namespace Eto.GtkSharp.Forms.Controls
 					Control.QueueDraw();
 			}
 		}
-		
+
 		public IIndirectBinding<string> ItemKeyBinding { get; set; }
-		
+
 		public IIndirectBinding<Image> ItemImageBinding { get; set; }
-		
+
 		internal static readonly object Border_Key = new object();
 		public BorderType Border
 		{

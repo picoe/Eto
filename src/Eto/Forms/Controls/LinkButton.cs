@@ -36,6 +36,44 @@ public class LinkButton : TextControl
 		Properties.TriggerEvent(ClickEvent, this, e);
 	}
 
+	/// <summary>
+	/// Gets or sets the wrap mode for the text
+	/// </summary>
+	/// <remarks>
+	/// This defines the soft wrapping for the link's text.
+	/// Hard wraps can be placed in the text with newline characters.
+	///
+	/// Wrapping will only occur if the link's width is smaller than the space needed for the text.
+	/// If you are autosizing your control, it may get autosized to the width so you will have to add constraints
+	/// to the container or explicitly set the size.
+	/// </remarks>
+	/// <value>The wrapping mode for the text.</value>
+	[DefaultValue(WrapMode.Word)]
+	public WrapMode Wrap
+	{
+		get { return Handler.Wrap; }
+		set { Handler.Wrap = value; }
+	}
+
+	/// <summary>
+	/// Gets or sets how text that does not fit the link is trimmed.
+	/// </summary>
+	/// <remarks>
+	/// A link showing something long that the user does not need to read in full - a url, a file path - is the
+	/// usual reason to set this.  It only has an effect when the link is given less room than its text needs,
+	/// which for an auto sized link means never; see <see cref="TextTrimming"/>.
+	///
+	/// When <see cref="Wrap"/> is not <see cref="WrapMode.None"/> the trimming applies to the last line that
+	/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
+	/// </remarks>
+	/// <value>The trimming mode for the text.  The default is <see cref="TextTrimming.None"/>.</value>
+	[DefaultValue(TextTrimming.None)]
+	public TextTrimming Trimming
+	{
+		get { return Handler.Trimming; }
+		set { Handler.Trimming = value; }
+	}
+
 	static readonly object Command_Key = new object();
 
 	/// <summary>
@@ -127,5 +165,27 @@ public class LinkButton : TextControl
 		/// Gets or sets the color of the text when the control is disabled.
 		/// </summary>
 		Color DisabledTextColor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the wrap mode for the text
+		/// </summary>
+		/// <remarks>
+		/// This defines the soft wrapping for the link's text.
+		/// Hard wraps can be placed in the text with newline characters.
+		/// </remarks>
+		/// <value>The wrapping mode for the text.</value>
+		WrapMode Wrap { get; set; }
+
+		/// <summary>
+		/// Gets or sets how text that does not fit the link is trimmed.
+		/// </summary>
+		/// <remarks>
+		/// This only has an effect when the link is given less room than its text needs.
+		///
+		/// When <see cref="Wrap"/> is not <see cref="WrapMode.None"/> the trimming applies to the last line that
+		/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
+		/// </remarks>
+		/// <value>The trimming mode for the text.</value>
+		TextTrimming Trimming { get; set; }
 	}
 }

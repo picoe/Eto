@@ -111,7 +111,7 @@ namespace Eto.WinForms.Forms
 	}
 
 
-	public class HwndFormHandler : WidgetHandler<IntPtr, Form, Form.ICallback>, Form.IHandler,
+	public class HwndFormHandler : WidgetHandler<IntPtr, Form, Form.ICallback>, Form.IHandler, Win32.KeyMonitor.ITarget,
 #if WPF
  IWpfWindow
 #elif WINFORMS
@@ -119,10 +119,8 @@ namespace Eto.WinForms.Forms
 #endif
 	{
 #if WPF
-		System.Windows.Window IWpfWindow.Control
-		{
-			get { throw new NotImplementedException(); }
-		}
+		System.Windows.Window IWpfWindow.Control => null;
+		
 		public void SetOwnerFor(System.Windows.Window child)
 		{
 			new swin.WindowInteropHelper(child).Owner = Control;
@@ -205,7 +203,7 @@ namespace Eto.WinForms.Forms
 
 		public void Close()
 		{
-			throw new NotImplementedException();
+			Win32.SendMessage(Control, Win32.WM.CLOSE, IntPtr.Zero, IntPtr.Zero);
 		}
 
 		public float LogicalPixelSize
@@ -234,6 +232,23 @@ namespace Eto.WinForms.Forms
 			{
 				var loc = ((PointF)value).LogicalToScreen();
 				Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(Control, IntPtr.Zero, loc.X, loc.Y, 0, 0, Win32.SWP.NOSIZE | Win32.SWP.NOACTIVATE));
+			}
+		}
+		
+		public Rectangle Bounds
+		{
+			get
+			{
+				var rect = new Win32.RECT();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.GetWindowRect(Control, out rect));
+
+				var bounds = new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+				return Rectangle.Round(bounds.ScreenToLogical(SwfScreen));
+			}
+			set
+			{
+				var bounds = ((RectangleF)value).LogicalToScreen();
+				Win32.ExecuteInDpiAwarenessContext(() => Win32.SetWindowPos(Control, IntPtr.Zero, bounds.X, bounds.Y, bounds.Width, bounds.Height, Win32.SWP.NOACTIVATE));
 			}
 		}
 
@@ -708,6 +723,9 @@ namespace Eto.WinForms.Forms
 
 		public int TabIndex { get; set; }
 
+		// TODO: Implement TabStop
+		public bool TabStop { get; set; } = true;
+
 		public IEnumerable<Control> VisualControls => Widget.Controls;
 
 		public bool AllowDrop
@@ -723,7 +741,7 @@ namespace Eto.WinForms.Forms
 		}
 
 		public bool MovableByWindowBackground { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-		public bool AutoSize { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		public bool AutoSize { get => false; set => throw new NotImplementedException(); }
 
 		public void DoDragDrop(DataObject data, DragEffects allowedAction, Image image, PointF offset)
 		{
@@ -745,6 +763,15 @@ namespace Eto.WinForms.Forms
 			if (disposing)
 			{
 				_hookHelper?.RemoveHook(Control, this);
+
+				// only on the Dispose path: the registry is UI thread only, and if the finalizer is
+				// running then this handler was collected, which prunes the registration anyway
+				var keyMonitor = KeyMonitor;
+				if (keyMonitor != null)
+				{
+					keyMonitor.Dispose();
+					KeyMonitor = null;
+				}
 			}
 
 			base.Dispose(disposing);
@@ -822,6 +849,18 @@ namespace Eto.WinForms.Forms
 					};
 
 					break;
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					// Both share one registration, since the hook reports key down and key up together.
+					// Raising a callback nobody subscribed to is harmless.
+					// Unlike a window Eto owns, this one is never shown through Eto so it never loads,
+					// which rules out deferring to OnLoad and tearing down from OnUnLoad. Registering
+					// right away is fine because the monitor holds this handler weakly, matching how
+					// g_windows caches it - dropping the wrapper without disposing prunes the
+					// registration on the next key press.
+					if (KeyMonitor == null)
+						KeyMonitor = Win32.KeyMonitor.Register(this);
+					break;
 				case Window.LogicalPixelSizeChangedEvent:
 					// don't spam the output with warnings for this, many controls use it internally
 					break;
@@ -830,6 +869,48 @@ namespace Eto.WinForms.Forms
 					break;
 			}
 
+		}
+
+		static readonly object KeyMonitor_Key = new object();
+
+		IDisposable KeyMonitor
+		{
+			get => Widget.Properties.Get<IDisposable>(KeyMonitor_Key);
+			set => Widget.Properties.Set(KeyMonitor_Key, value);
+		}
+
+		public override bool DetachEvent(string id)
+		{
+			switch (id)
+			{
+				case Window.PreviewKeyDownEvent:
+				case Window.PreviewKeyUpEvent:
+					// one registration serves both, so only give it up when neither is still wanted
+					var other = id == Window.PreviewKeyDownEvent ? Window.PreviewKeyUpEvent : Window.PreviewKeyDownEvent;
+					if (!IsEventHandled(other))
+					{
+						KeyMonitor?.Dispose();
+						KeyMonitor = null;
+					}
+					return true;
+				default:
+					return base.DetachEvent(id);
+			}
+		}
+
+		IntPtr Win32.KeyMonitor.ITarget.KeyMonitorHandle => Control;
+
+		void Win32.KeyMonitor.ITarget.OnKeyMonitorKey(int virtualKey, bool isKeyDown)
+		{
+#if WPF
+			var key = swi.KeyInterop.KeyFromVirtualKey(virtualKey).ToEto();
+#elif WINFORMS
+			var key = ((swf.Keys)virtualKey).ToEto();
+#endif
+			if (isKeyDown)
+				Callback.OnPreviewKeyDown(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyDown));
+			else
+				Callback.OnPreviewKeyUp(Widget, new KeyMonitorEventArgs(key, KeyEventType.KeyUp));
 		}
 
 		public SizeF GetPreferredSize(SizeF availableSize)
@@ -844,5 +925,8 @@ namespace Eto.WinForms.Forms
 		public bool IsMouseCaptured => throw new NotImplementedException();
 		public bool CaptureMouse() => throw new NotImplementedException();
 		public void ReleaseMouseCapture() => throw new NotImplementedException();
+		public void AddGesture(Gesture item) { }
+		public void ClearGestures() { }
+		public void RemoveGesture(Gesture item) { }
 	}
 }

@@ -423,6 +423,12 @@ namespace Eto.Test.Sections
 
 		public int TotalCount => Results.Sum(r => r.TotalCount);
 
+		public int InitiatedCount => Results.Sum(r => r.InitiatedCount);
+
+		public int CompletedCount => Results.Sum(r => r.CompletedCount);
+
+		public int AssertionResultCount => Results.Sum(r => r.AssertionResultCount);
+
 		public TNode AddToXml(TNode parentNode, bool recursive) => throw new NotImplementedException();
 
 		public TNode ToXml(bool recursive) => null;

@@ -83,7 +83,7 @@ namespace Eto.GtkSharp.Forms.Cells
 		protected override void BindCell(ref int dataIndex)
 		{
 			Column.Control.ClearAttributes(Control);
-			SetColumnMap(dataIndex);
+			SetColumnMap(dataIndex, GLib.GType.Boolean);
 			Column.Control.AddAttribute(Control, "active", dataIndex++);
 			base.BindCell(ref dataIndex);
 		}

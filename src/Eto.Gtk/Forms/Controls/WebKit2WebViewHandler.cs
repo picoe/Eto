@@ -89,33 +89,55 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.Initialize();
 
+			// note: these must go through the (weakly referencing) connector, otherwise the native
+			// signal keeps a strong reference to this handler and the control can never be collected.
 			Control.AddSignalHandler(
 				"context-menu",
-				(Action<object, GLib.SignalArgs>)WebViewHandler_ContextMenu,
+				(Action<object, GLib.SignalArgs>)Connector.HandleContextMenu,
 				typeof(GLib.SignalArgs)
 			);
 
 			Control.AddSignalHandler(
 				"notify::title",
-				(Action<object, GLib.SignalArgs>)WebViewHandler_TitleChanged,
+				(Action<object, GLib.SignalArgs>)Connector.HandleTitleChanged,
 				typeof(GLib.SignalArgs)
 			);
 
 			Control.AddSignalHandler(
 				"load-changed",
-				(Action<object, GLib.SignalArgs>)WebViewHandler_LoadChanged,
+				(Action<object, GLib.SignalArgs>)Connector.HandleLoadChanged,
 				typeof(GLib.SignalArgs)
 			);
 
 			Control.AddSignalHandler(
 				"decide-policy",
-				(Action<object, GLib.SignalArgs>)WebViewHandler_DecidePolicy,
+				(Action<object, GLib.SignalArgs>)Connector.HandleDecidePolicy,
 				typeof(GLib.SignalArgs)
 			);
 
 			var scriptSource = "window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
 			IntPtr script = NativeMethods.webkit_user_script_new(scriptSource, NativeMethods.WebKitUserContentInjectedFrames.WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES, NativeMethods.WebKitUserScriptInjectionTime.WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START, null, null);
 			NativeMethods.webkit_user_content_manager_add_script(NativeMethods.webkit_web_view_get_user_content_manager(Control.Handle), script);
+		}
+
+		protected new WebViewConnector Connector => (WebViewConnector)base.Connector;
+
+		protected override WeakConnector CreateConnector() => new WebViewConnector();
+
+		protected class WebViewConnector : GtkControlConnector
+		{
+			public new WebViewHandler Handler => (WebViewHandler)base.Handler;
+
+			public void HandleContextMenu(object o, GLib.SignalArgs args) => Handler?.WebViewHandler_ContextMenu(o, args);
+
+			public void HandleTitleChanged(object o, GLib.SignalArgs args) => Handler?.WebViewHandler_TitleChanged(o, args);
+
+			public void HandleLoadChanged(object o, GLib.SignalArgs args) => Handler?.WebViewHandler_LoadChanged(o, args);
+
+			[GLib.ConnectBefore]
+			public void HandleDecidePolicy(object o, GLib.SignalArgs args) => Handler?.WebViewHandler_DecidePolicy(o, args);
+
+			public void HandleMessageReceived(object o, GLib.SignalArgs args) => Handler?.WebViewHandler_MessageReceived(o, args);
 		}
 
 		private void WebViewHandler_MessageReceived(object arg1, SignalArgs args)
@@ -203,7 +225,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 					manager.AddSignalHandler(
 						"script-message-received::__eto__",
-						WebViewHandler_MessageReceived,
+						(Action<object, GLib.SignalArgs>)Connector.HandleMessageReceived,
 						typeof(SignalArgs)
 					);
 

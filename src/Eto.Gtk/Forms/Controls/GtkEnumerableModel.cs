@@ -1,14 +1,14 @@
+using GLib;
+
 namespace Eto.GtkSharp.Forms.Controls
 {
 	public interface IGtkEnumerableModelHandler<TItem>
 		where TItem: class
 	{
 		EnumerableChangedHandler<TItem> Collection { get; }
-
 		int NumberOfColumns { get; }
-
 		GLib.Value GetColumnValue(TItem item, int column, int row);
-
+		GType GetColumnType(int col);
 		int GetRowOfItem(TItem item);
 	}
 
@@ -70,8 +70,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public GLib.GType GetColumnType(int col)
 		{
-			GLib.GType result = GLib.GType.String;
-			return result;
+			return Handler.GetColumnType(col);
 		}
 
 		public int GetRow(Gtk.TreeIter iter)

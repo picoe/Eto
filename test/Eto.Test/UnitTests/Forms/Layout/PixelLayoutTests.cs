@@ -64,7 +64,7 @@ namespace Eto.Test.UnitTests.Forms.Layout
 			}, 
 			async layout =>
 			{
-				await Task.Delay(1000);
+				await WaitUntil(() => layout.FindChild("childPanel")?.Width == layout.FindChild("panel1")?.Width, 1000);
 				var panel = layout.FindChild("panel1");
 				var childPanel = layout.FindChild("childPanel");
 				Assert.That(childPanel, Is.Not.Null, "#1");

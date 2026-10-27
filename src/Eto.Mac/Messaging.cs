@@ -18,6 +18,9 @@ namespace Eto.Mac
 		}
 
 		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]
+		public static extern IntPtr IntPtr_objc_msgSendSuper(IntPtr receiver, IntPtr selector);
+
+		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]
 		public static extern IntPtr IntPtr_objc_msgSendSuper_IntPtr(IntPtr receiver, IntPtr selector, IntPtr arg1);
 		
 		[DllImport(LIBOBJC_DYLIB, EntryPoint = "objc_msgSendSuper")]

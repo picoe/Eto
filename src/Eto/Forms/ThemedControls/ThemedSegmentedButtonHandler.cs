@@ -191,6 +191,8 @@ public abstract class ThemedSegmentedItemHandler<TWidget, TCallback> : WidgetHan
 		{
 			case SegmentedItem.ClickEvent:
 				break;
+			case SegmentedItem.SelectedChangedEvent:
+				break;
 			default:
 				base.AttachEvent(id);
 				break;

@@ -1,13 +1,48 @@
-
 // originally from : https://blogs.msdn.microsoft.com/adamroot/2008/02/19/shell-style-drag-and-drop-in-net-part-3/
 // downloads link from: https://stackoverflow.com/questions/36239516/real-implementation-of-the-shell-style-drag-and-drop-in-net-wpf-and-winforms
 // modified to properly set standard cursors without hard coding copy/link/move/etc labels.
+//
+// Fixes vs. the original:
+//   1. GetManagedData wrapped the medium's HGLOBAL in an IStream with
+//      fDeleteOnRelease=true and *also* called ReleaseStgMedium on the medium, so the
+//      HGLOBAL was freed while the stream still owned it: a use-after-free while
+//      reading it, then a second free when the stream was released. That corrupts the
+//      process heap, which later surfaces as an access violation (reported as
+//      System.ExecutionEngineException) in an unrelated ReleaseStgMedium call. The
+//      stream now only borrows the HGLOBAL and the medium is released exactly once.
+//   2. DataObject.SetData always stores a *duplicate* of the medium, so nothing outside
+//      this class can end the lifetime of a resource held in `storage` and leave
+//      ClearStorage releasing a dangling handle.
+//   3. Advise sinks are handed their own copy of the medium instead of the live entry
+//      out of `storage`.
+//   4. RaiseDataChanged no longer enumerates `connections` while ADVF_ONLYONCE handling
+//      removes entries from it.
+//   5. Dispose is idempotent and suppresses finalization.
+//   6. GetMediumFromObject sizes the HGLOBAL by the serialized length rather than the
+//      MemoryStream's capacity, so no uninitialized tail is published.
+//   7. Doc-comment typos cleaned up.
+//   8. Storage is released on the thread that created the DataObject, never on the
+//      finalizer thread. Not everything in there is plain memory -- the shell's drag image
+//      manager parks its drag context in the data object as a TYMED_ISTREAM -- and
+//      ReleaseStgMedium on such a medium calls Release straight through the raw interface
+//      pointer, with no proxy and no apartment switch. From the finalizer thread (MTA) that
+//      runs an STA object's teardown on the wrong thread, which either corrupts the heap or
+//      hangs the finalizer. See Dispose.
+//   9. That same drag context (CFSTR_DRAGCONTEXT) is now never released by this class at all.
+//      The shell hands it to SetData with release: true, but keeps the raw interface pointer
+//      without a counted reference and frees the stream itself when the next drag begins -- so
+//      releasing our entry at teardown was a second free, which is why the crash needed two
+//      drags to show up. See IsShellOwnedMedium. This, rather than fix 8, is what actually
+//      fixes RH-95450 / RH-97411.
+//
+// Deliberately NOT changed: GetData/GetDataHere still report S_OK with an empty STGMEDIUM for a
+// format that isn't present, rather than DV_E_FORMATETC. See the comment in GetDataHere.
 
 #region DragDropLibCore\DragDropHelper.cs
 
 namespace DragDropLib
 {
-		[ComImport]
+	[ComImport]
 	[Guid("4657278A-411B-11d2-839A-00C04FD918D0")]
 	class DragDropHelper { }
 }
@@ -170,19 +205,18 @@ namespace System.Runtime.InteropServices.ComTypes
 		/// <summary>
 		/// Sets the drop description for the drag image manager.
 		/// </summary>
-		/// <param name="dataObject">TheSome text DataObject to set.</param>
+		/// <param name="dataObject">The DataObject to set.</param>
 		/// <param name="dropDescription">The drop description.</param>
 		public static void SetDropDescription(this IDataObject dataObject, DropDescription dropDescription)
 		{
 			ComTypes.FORMATETC formatETC;
 			FillFormatETC(DropDescriptionFormat, TYMED.TYMED_HGLOBAL, out formatETC);
 
-			// We need to set the drop description as an HSome textGLOBAL.
-			// Allocate space ...
+			// We need to set the drop description as an HGLOBAL.
 			IntPtr pDD = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(DropDescription)));
+			bool ownershipTransferred = false;
 			try
 			{
-				// ... and marshal the data
 				Marshal.StructureToPtr(dropDescription, pDD, false);
 
 				// The medium wraps the HGLOBAL
@@ -191,15 +225,16 @@ namespace System.Runtime.InteropServices.ComTypes
 				medium.tymed = ComTypes.TYMED.TYMED_HGLOBAL;
 				medium.unionmember = pDD;
 
-				// Set the data
+				// Set the data with release=true so the DataObject takes ownership of pDD.
 				ComTypes.IDataObject dataObjectCOM = (ComTypes.IDataObject)dataObject;
 				dataObjectCOM.SetData(ref formatETC, ref medium, true);
+				ownershipTransferred = true;
 			}
-			catch
+			finally
 			{
-				// If we failed, we need to free the HGLOBAL memory
-				Marshal.FreeHGlobal(pDD);
-				throw;
+				// Only free if SetData didn't successfully take ownership.
+				if (!ownershipTransferred)
+					Marshal.FreeHGlobal(pDD);
 			}
 		}
 
@@ -343,63 +378,76 @@ namespace System.Runtime.InteropServices.ComTypes
 			FORMATETC formatETC;
 			FillFormatETC(format, TYMED.TYMED_HGLOBAL, out formatETC);
 
+			if (0 != dataObject.QueryGetData(ref formatETC))
+				return null;
+
 			// Get the data as a stream
 			STGMEDIUM medium;
 			dataObject.GetData(ref formatETC, out medium);
 
-			IStream nativeStream;
+			// We own `medium` and release it exactly once, below. The IStream only borrows
+			// the HGLOBAL (fDeleteOnRelease: false) -- letting it own the handle as well
+			// would free it twice, and would be wrong outright when the medium carries a
+			// pUnkForRelease that is responsible for the handle.
 			try
 			{
-				int hr = CreateStreamOnHGlobal(medium.unionmember, true, out nativeStream);
-				if (hr != 0)
-				{
+				if (medium.tymed != TYMED.TYMED_HGLOBAL || medium.unionmember == IntPtr.Zero)
 					return null;
+
+				IStream nativeStream;
+				int hr = CreateStreamOnHGlobal(medium.unionmember, false, out nativeStream);
+				if (hr != 0 || nativeStream == null)
+					return null;
+
+				try
+				{
+					STATSTG statstg;
+					nativeStream.Stat(out statstg, 0);
+					if (statstg.cbSize > int.MaxValue)
+						throw new NotSupportedException();
+					byte[] buf = new byte[statstg.cbSize];
+					nativeStream.Read(buf, (int)statstg.cbSize, IntPtr.Zero);
+					MemoryStream dataStream = new MemoryStream(buf);
+
+					// Check for our stamp
+					int sizeOfGuid = Marshal.SizeOf(typeof(Guid));
+					byte[] guidBytes = new byte[sizeOfGuid];
+					if (dataStream.Length >= sizeOfGuid)
+					{
+						if (sizeOfGuid == dataStream.Read(guidBytes, 0, sizeOfGuid))
+						{
+							Guid guid = new Guid(guidBytes);
+							if (ManagedDataStamp.Equals(guid))
+							{
+								// Stamp matched, so deserialize
+								DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
+								Type dataType = (Type)typeSerializer.ReadObject(dataStream);
+								DataContractSerializer objectSerializer = new DataContractSerializer(dataType);
+								object data2 = objectSerializer.ReadObject(dataStream);
+								if (data2.GetType() == dataType)
+									return data2;
+								else if (data2 is string)
+									return ConvertDataFromString((string)data2, dataType);
+								else
+									return null;
+							}
+						}
+					}
+
+					// Stamp didn't match... attempt to reset the seek pointer
+					if (dataStream.CanSeek)
+						dataStream.Position = 0;
+					return null;
+				}
+				finally
+				{
+					Marshal.ReleaseComObject(nativeStream);
 				}
 			}
 			finally
 			{
 				ReleaseStgMedium(ref medium);
 			}
-
-
-			// Convert the native stream to a managed stream            
-			STATSTG statstg;
-			nativeStream.Stat(out statstg, 0);
-			if (statstg.cbSize > int.MaxValue)
-				throw new NotSupportedException();
-			byte[] buf = new byte[statstg.cbSize];
-			nativeStream.Read(buf, (int)statstg.cbSize, IntPtr.Zero);
-			MemoryStream dataStream = new MemoryStream(buf);
-
-			// Check for our stamp
-			int sizeOfGuid = Marshal.SizeOf(typeof(Guid));
-			byte[] guidBytes = new byte[sizeOfGuid];
-			if (dataStream.Length >= sizeOfGuid)
-			{
-				if (sizeOfGuid == dataStream.Read(guidBytes, 0, sizeOfGuid))
-				{
-					Guid guid = new Guid(guidBytes);
-					if (ManagedDataStamp.Equals(guid))
-					{
-						// Stamp matched, so deserialize
-						DataContractSerializer typeSerializer = new DataContractSerializer(typeof(Type));
-						Type dataType = (Type)typeSerializer.ReadObject(dataStream);
-						DataContractSerializer objectSerializer = new DataContractSerializer(dataType);
-						object data2 = objectSerializer.ReadObject(dataStream);
-						if (data2.GetType() == dataType)
-							return data2;
-						else if (data2 is string)
-							return ConvertDataFromString((string)data2, dataType);
-						else
-							return null;
-					}
-				}
-			}
-
-			// Stamp didn't match... attempt to reset the seek pointer
-			if (dataStream.CanSeek)
-				dataStream.Position = 0;
-			return null;
 		}
 
 		#region Helper methods
@@ -435,8 +483,7 @@ namespace System.Runtime.InteropServices.ComTypes
 			// We'll serialize to a managed stream temporarily
 			MemoryStream stream = new MemoryStream();
 
-			// Write an indentifying stamp, so we can recognize this as custom
-			// marshaled data.
+			// Write an identifying stamp so we can recognize this as custom marshaled data.
 			stream.Write(ManagedDataStamp.ToByteArray(), 0, Marshal.SizeOf(typeof(Guid)));
 
 			// Now serialize the data. Note, if the data is not directly serializable,
@@ -448,12 +495,15 @@ namespace System.Runtime.InteropServices.ComTypes
 			DataContractSerializer objectSerializer = new DataContractSerializer(data.GetType());
 			objectSerializer.WriteObject(stream, GetAsSerializable(data));
 
-			// Now copy to an HGLOBAL
+			// IMPORTANT: size by the number of bytes actually written, not by
+			// GetBuffer().Length -- the buffer is the MemoryStream's capacity, so using its
+			// length would publish an uninitialized tail past the serialized data.
 			byte[] bytes = stream.GetBuffer();
-			IntPtr p = Marshal.AllocHGlobal(bytes.Length);
+			int length = (int)stream.Length;
+			IntPtr p = Marshal.AllocHGlobal(length);
 			try
 			{
-				Marshal.Copy(bytes, 0, p, bytes.Length);
+				Marshal.Copy(bytes, 0, p, length);
 			}
 			catch
 			{
@@ -537,7 +587,7 @@ namespace DragDropLib
 	/// Implements the COM version of IDataObject including SetData.
 	/// </summary>
 	/// <remarks>
-	/// <para>Use this object when using shell (or other unmanged) features
+	/// <para>Use this object when using shell (or other unmanaged) features
 	/// that utilize the clipboard and/or drag and drop.</para>
 	/// <para>The System.Windows.DataObject (.NET 3.0) and
 	/// System.Windows.Forms.DataObject do not support SetData from their COM
@@ -564,14 +614,29 @@ namespace DragDropLib
 
 		#endregion // Unmanaged functions
 
-		// Our internal storage is a simple list
-		private IList<KeyValuePair<FORMATETC, STGMEDIUM>> storage;
+		// Our internal storage is a simple list.
+		// internal rather than private so the unit tests can assert on which handles this object
+		// actually owns -- the class itself is already internal, so this widens nothing.
+		internal IList<KeyValuePair<FORMATETC, STGMEDIUM>> storage;
 
 		// Keeps a progressive unique connection id
 		private int nextConnectionId = 1;
 
 		// List of advisory connections
 		private IDictionary<int, AdviseEntry> connections;
+
+		// Guards against double-dispose / dispose-then-finalize (0 = live, 1 = disposed)
+		private int disposed;
+
+		// The thread that created this object, and its synchronization context.
+		//
+		// Not every STGMEDIUM we hold is plain memory: the shell's drag image manager stores its
+		// drag context in here as a TYMED_ISTREAM, so `storage` ends up owning raw COM interface
+		// pointers with thread affinity. ReleaseStgMedium on one of those calls IStream::Release
+		// straight through the pointer -- no proxy, no apartment switch -- so doing it from the
+		// finalizer thread runs the shell's teardown in the wrong (MTA) apartment. See Dispose.
+		private readonly SynchronizationContext ownerContext = SynchronizationContext.Current;
+		private readonly int ownerThreadId = Thread.CurrentThread.ManagedThreadId;
 
 		// Represents an advisory connection entry.
 		private class AdviseEntry
@@ -606,7 +671,7 @@ namespace DragDropLib
 		}
 
 		/// <summary>
-		/// Clears the internal storage array.
+		/// Clears the internal storage array, releasing every entry.
 		/// </summary>
 		/// <remarks>
 		/// ClearStorage is called by the IDisposable.Dispose method implementation
@@ -614,15 +679,102 @@ namespace DragDropLib
 		/// </remarks>
 		private void ClearStorage()
 		{
+			ClearStorage(true);
+		}
+
+		/// <summary>
+		/// Clears the internal storage array, releasing every entry it is safe to release.
+		/// </summary>
+		/// <param name="releaseComPointers">True to release entries that carry a COM interface pointer
+		/// (TYMED_ISTREAM / TYMED_ISTORAGE, or any medium with a pUnkForRelease). Pass false when running
+		/// on a thread that doesn't own those pointers -- they are leaked rather than released.</param>
+		private void ClearStorage(bool releaseComPointers)
+		{
+			if (storage == null)
+				return;
+
 			lock (storage)
 			{
-				foreach (KeyValuePair<FORMATETC, STGMEDIUM> pair in storage)
+				for (int i = storage.Count - 1; i >= 0; i--)
 				{
-					STGMEDIUM medium = pair.Value;
+					STGMEDIUM medium = storage[i].Value;
+					FORMATETC entryFormat = storage[i].Key;
+
+					if (!releaseComPointers && HoldsComPointer(ref medium))
+						continue;
+
+					// The shell frees its own drag context. Drop the entry, but don't release it --
+					// by this point the object is already gone, so even reading through the pointer
+					// is a use-after-free. See IsShellOwnedMedium.
+					if (IsShellOwnedMedium(ref entryFormat, ref medium))
+					{
+						storage.RemoveAt(i);
+						continue;
+					}
+
+					storage.RemoveAt(i);
 					ReleaseStgMedium(ref medium);
 				}
-				storage.Clear();
 			}
+		}
+
+		/// <summary>
+		/// Determines whether releasing the medium means calling Release on a COM interface pointer.
+		/// </summary>
+		/// <param name="medium">The medium to test.</param>
+		/// <returns>True if the medium's lifetime is tied to a COM object, otherwise False.</returns>
+		private static bool HoldsComPointer(ref STGMEDIUM medium)
+		{
+			return medium.pUnkForRelease != null
+				|| medium.tymed == TYMED.TYMED_ISTREAM
+				|| medium.tymed == TYMED.TYMED_ISTORAGE;
+		}
+
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
+		private static extern uint RegisterClipboardFormat(string lpszFormat);
+
+		// CFSTR_DRAGCONTEXT. Registered lazily; 0 is not a valid registered format id, so it
+		// doubles as the "not yet looked up" sentinel.
+		private static short dragContextFormat;
+
+		private static short DragContextFormat
+		{
+			get
+			{
+				if (dragContextFormat == 0)
+					dragContextFormat = (short)RegisterClipboardFormat("DragContext");
+				return dragContextFormat;
+			}
+		}
+
+		/// <summary>
+		/// True for the shell drag image manager's private drag context stream, which we must
+		/// never release even though it was handed to us with release: true.
+		/// </summary>
+		/// <remarks>
+		/// The shell authors this IStream and passes it to SetData claiming to transfer ownership,
+		/// but keeps the raw interface pointer and frees it itself when the next drag starts -- it
+		/// never took a counted reference for that pointer, so nothing we do to our own reference
+		/// can keep the object alive. Releasing our entry at teardown is therefore a second free of
+		/// an object already gone, which corrupts the heap and surfaces as an access violation
+		/// (reported as System.ExecutionEngineException) inside ReleaseStgMedium, on the drag
+		/// *after* the one that created it. That is RH-95450 / RH-97411.
+		///
+		/// Traced refcounts for one such entry: 1 after SetData (we are the only holder, so the
+		/// shell is holding nothing countable), 2 after handing a copy to a GetData caller, then
+		/// dead by teardown -- one more release than anything in this class performed.
+		///
+		/// Declining to release it is not a leak: the shell frees the stream regardless. Scoped to
+		/// TYMED_ISTREAM deliberately -- the other shell-private formats in a drag (DragImageBits,
+		/// DragWindow, IsShowingLayered, DropDescription, ...) are all TYMED_HGLOBAL, and
+		/// CopyStgMedium genuinely duplicates an HGLOBAL, so for those our copy is a distinct
+		/// block that we do own and must free.
+		/// </remarks>
+		private static bool IsShellOwnedMedium(ref FORMATETC format, ref STGMEDIUM medium)
+		{
+			return medium.tymed == TYMED.TYMED_ISTREAM
+				&& medium.unionmember != IntPtr.Zero
+				&& format.cfFormat == DragContextFormat;
 		}
 
 		/// <summary>
@@ -631,6 +783,7 @@ namespace DragDropLib
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>
@@ -641,13 +794,46 @@ namespace DragDropLib
 		/// is finalizing the release of the object instance.</param>
 		private void Dispose(bool disposing)
 		{
-			if (disposing)
+			// Dispose and the finalizer can race, so claim the flag atomically.
+			if (Interlocked.Exchange(ref disposed, 1) != 0)
+				return;
+
+			// On the owning thread we can release everything right here.
+			if (Thread.CurrentThread.ManagedThreadId == ownerThreadId)
 			{
-				// No managed objects to release
+				ClearStorage();
+				return;
 			}
 
-			// Always release unmanaged objects
-			ClearStorage();
+			// Otherwise -- almost always the finalizer thread -- get back to the thread that owns
+			// the handles before releasing them. `storage` can hold raw COM interface pointers (the
+			// shell's drag context is a TYMED_ISTREAM), and ReleaseStgMedium calls Release directly
+			// through the pointer. Doing that from the finalizer thread, which is in the MTA, runs
+			// an STA object's teardown in the wrong apartment: it either corrupts the heap -- an
+			// access violation reported as System.ExecutionEngineException, from inside
+			// ReleaseStgMedium in ClearStorage, with ~DataObject on the stack -- or wedges the
+			// finalizer thread outright. That is RH-95450 / RH-97411.
+			//
+			// Posting resurrects this instance until the callback runs, which is fine: `disposed` is
+			// already set, so nothing can queue a second pass, and ClearStorage is idempotent.
+			SynchronizationContext context = ownerContext;
+			if (context != null)
+			{
+				try
+				{
+					context.Post(state => ((DataObject)state).ClearStorage(), this);
+					return;
+				}
+				catch (Exception)
+				{
+					// The owning thread is gone (shutdown, dispatcher already torn down). Fall
+					// through and release what we safely can from here.
+				}
+			}
+
+			// No way home. Release the plain memory and leak the COM pointers -- a leak at
+			// shutdown is better than taking the process down.
+			ClearStorage(false);
 		}
 
 		#region COM IDataObject Members
@@ -768,6 +954,13 @@ namespace DragDropLib
 			}
 
 			// Didn't find it. Return an empty data medium.
+			//
+			// Strictly this should report DV_E_FORMATETC, since returning normally tells a COM caller
+			// S_OK. Don't: this object is handed to System.Windows.DataObject and read back through
+			// in-process *managed* calls, so an HRESULT here is raised as a COMException rather than
+			// being handled as a return code -- and neither WPF's OleConverter nor Eto's own readers
+			// (DataObjectHandler.GetStream) check QueryGetData first, so a drag/drop that probes for a
+			// format it doesn't have would fail outright. Callers must check medium.tymed before use.
 			medium = default(STGMEDIUM);
 		}
 
@@ -823,34 +1016,71 @@ namespace DragDropLib
 		/// <param name="release">If true, ownership of the medium's memory will be transferred
 		/// to this object. If false, a copy of the medium will be created and maintained, and
 		/// the caller is responsible for the memory of the medium it provided.</param>
+		/// <remarks>Either way we keep a duplicate of the medium rather than the caller's
+		/// handle, and release the caller's when ownership was transferred to us.</remarks>
 		public void SetData(ref FORMATETC formatIn, ref STGMEDIUM medium, bool release)
 		{
 			lock (storage)
 			{
-				// If the format exists in our storage, remove it prior to resetting it
-				foreach (KeyValuePair<FORMATETC, STGMEDIUM> pair in storage)
+				// Storage must own a resource whose lifetime nothing outside this class can
+				// end. Keeping the caller's handle is not enough for that: a consumer that
+				// releases what it was handed, or a caller that gives us a handle it also
+				// keeps (or gives us the same handle twice under formats that don't compare
+				// equal below), leaves an entry here dangling, and ClearStorage then
+				// releases freed memory and takes the process down.
+				//
+				// Duplicate first, so that an alias of the entry we are about to release is
+				// still valid at this point, and so a failure to copy leaves storage intact.
+				STGMEDIUM sm;
+				if (medium.unionmember == IntPtr.Zero)
 				{
+					// Nothing to duplicate -- e.g. a caller clearing a format.
+					sm = medium;
+				}
+				else
+				{
+					sm = CopyMedium(ref medium);
+				}
+
+				// If the format already exists in storage, drop the old entry.
+				// Capture-then-remove to avoid mutating the collection during enumeration.
+				int existingIndex = -1;
+				for (int i = 0; i < storage.Count; i++)
+				{
+					var pair = storage[i];
 					if ((pair.Key.tymed & formatIn.tymed) > 0
 						&& pair.Key.dwAspect == formatIn.dwAspect
 						&& pair.Key.cfFormat == formatIn.cfFormat)
 					{
-						STGMEDIUM releaseMedium = pair.Value;
-						ReleaseStgMedium(ref releaseMedium);
-						storage.Remove(pair);
+						existingIndex = i;
 						break;
 					}
 				}
+				if (existingIndex >= 0)
+				{
+					STGMEDIUM releaseMedium = storage[existingIndex].Value;
+					FORMATETC releaseFormat = storage[existingIndex].Key;
+					storage.RemoveAt(existingIndex);
 
-				// If release is true, we'll take ownership of the medium.
-				// If not, we'll make a copy of it.
-				STGMEDIUM sm = medium;
-				if (!release)
-					sm = CopyMedium(ref medium);
+					// Same reasoning as ClearStorage: a re-set of the drag context must drop the old
+					// entry without releasing it. See IsShellOwnedMedium.
+					if (!IsShellOwnedMedium(ref releaseFormat, ref releaseMedium))
+						ReleaseStgMedium(ref releaseMedium);
+				}
 
 				// Add it to the internal storage
 				KeyValuePair<FORMATETC, STGMEDIUM> addPair = new KeyValuePair<FORMATETC, STGMEDIUM>(formatIn, sm);
 				storage.Add(addPair);
 				RaiseDataChanged(ref addPair);
+
+				// release == true transferred ownership to us, and we hold a duplicate, so drop the
+				// caller's original. This has to be the LAST thing we do: callers that pass
+				// release: true free the medium themselves if SetData throws (see
+				// SetDropDescription), so releasing it before anything that can fail would let them
+				// free an already-freed handle. Failing before this point simply leaves the caller
+				// owning its medium and us owning the duplicate, which is safe.
+				if (release && medium.unionmember != IntPtr.Zero)
+					ReleaseStgMedium(ref medium);
 			}
 		}
 
@@ -906,15 +1136,33 @@ namespace DragDropLib
 		/// <param name="dataEntry">The data entry for which to raise the event.</param>
 		private void RaiseDataChanged(int connection, ref KeyValuePair<FORMATETC, STGMEDIUM> dataEntry)
 		{
-			AdviseEntry adviseEntry = connections[connection];
+			// A sink may unsubscribe others from its own callback, so don't assume the
+			// connection is still live.
+			AdviseEntry adviseEntry;
+			if (!connections.TryGetValue(connection, out adviseEntry))
+				return;
+
 			FORMATETC format = dataEntry.Key;
+
+			// Hand the sink its own copy of the medium. Per IAdviseSink::OnDataChange the
+			// medium remains ours to release, but a sink that releases it anyway must not be
+			// able to free the entry that is still sitting in storage.
+			STGMEDIUM source = dataEntry.Value;
 			STGMEDIUM medium;
-			if ((adviseEntry.advf & ADVF.ADVF_NODATA) != ADVF.ADVF_NODATA)
-				medium = dataEntry.Value;
+			if ((adviseEntry.advf & ADVF.ADVF_NODATA) != ADVF.ADVF_NODATA && source.unionmember != IntPtr.Zero)
+				medium = CopyMedium(ref source);
 			else
 				medium = default(STGMEDIUM);
 
-			adviseEntry.sink.OnDataChange(ref format, ref medium);
+			try
+			{
+				adviseEntry.sink.OnDataChange(ref format, ref medium);
+			}
+			finally
+			{
+				if (medium.tymed != TYMED.TYMED_NULL)
+					ReleaseStgMedium(ref medium);
+			}
 
 			if ((adviseEntry.advf & ADVF.ADVF_ONLYONCE) == ADVF.ADVF_ONLYONCE)
 				connections.Remove(connection);
@@ -927,7 +1175,13 @@ namespace DragDropLib
 		/// <param name="dataEntry">The relevant data entry.</param>
 		private void RaiseDataChanged(ref KeyValuePair<FORMATETC, STGMEDIUM> dataEntry)
 		{
-			foreach (KeyValuePair<int, AdviseEntry> connection in connections)
+			if (connections.Count == 0)
+				return;
+
+			// Snapshot: ADVF_ONLYONCE handling (and sinks that unsubscribe) remove entries
+			// from `connections` while we are walking it.
+			var snapshot = new List<KeyValuePair<int, AdviseEntry>>(connections);
+			foreach (KeyValuePair<int, AdviseEntry> connection in snapshot)
 			{
 				if (IsFormatCompatible(connection.Value.format, dataEntry.Key))
 					RaiseDataChanged(connection.Key, ref dataEntry);
@@ -1099,4 +1353,3 @@ namespace DragDropLib
 }
 
 #endregion // DragDropLibCore\DataObject.cs
-

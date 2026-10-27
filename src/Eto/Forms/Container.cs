@@ -383,8 +383,11 @@ public abstract class Container : Control, IBindableWidgetContainer
 			// no-op if there is no parent (handled in detach)
 			child.VisualParent?.Remove(child);
 
-			// Remove from previous parent only if it differs
-			if (child.InternalLogicalParent is not null && !ReferenceEquals(child.InternalLogicalParent, this))
+			// Remove from previous parent only if it differs, and this isn't a visual container (e.g. the internal
+			// layout of a StackLayout) of that same logical parent, which is just moving it within its own layout.
+			if (child.InternalLogicalParent is not null
+				&& !ReferenceEquals(child.InternalLogicalParent, this)
+				&& !(IsVisualControl && ReferenceEquals(LogicalParent, child.InternalLogicalParent)))
 				child.InternalLogicalParent?.Remove(child);
 
 			// Set new logical parent
@@ -400,7 +403,11 @@ public abstract class Container : Control, IBindableWidgetContainer
 					child.TriggerLoad(EventArgs.Empty);
 					assign?.Invoke();
 					ResumeLayout();
-					child.TriggerLoadComplete(EventArgs.Empty);
+					// If this container hasn't had its LoadComplete yet (e.g. the child is added during
+					// Load, or before the deferred LoadComplete of an attached control), the child gets
+					// it when this container does. Raising it now as well raises it twice.
+					if (IsLoadComplete || !Handler.RecurseToChildren)
+						child.TriggerLoadComplete(EventArgs.Empty);
 				}
 				return;
 			}

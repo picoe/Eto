@@ -133,6 +133,21 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		protected override void TriggerSelectionChanged()
+		{
+			base.TriggerSelectionChanged();
+			TriggerSelectedItemChanged();
+		}
+
+		void TriggerSelectedItemChanged()
+		{
+			var item = SelectedItem;
+			if (ReferenceEquals(item, lastSelected))
+				return;
+			lastSelected = item;
+			Callback.OnSelectedItemChanged(Widget, EventArgs.Empty);
+		}
+
 		bool ChildIsSelected(ITreeGridItem item)
 		{
 			var node = SelectedItem;
@@ -250,14 +265,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
 				var handler = Handler;
-				if (handler == null)
+				if (handler == null || handler.SkipSelectedChange)
 					return;
-				var item = handler.SelectedItem;
-				if (!handler.SkipSelectedChange && !object.ReferenceEquals(item, handler.lastSelected))
-				{
-					handler.Callback.OnSelectedItemChanged(handler.Widget, EventArgs.Empty);
-					handler.lastSelected = item;
-				}
+				handler.TriggerSelectedItemChanged();
 			}
 
 			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
@@ -433,7 +443,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		}
 
 		protected override void SetSelectedRows(IEnumerable<int> value)
-		
+
 		{
 			Control.Selection.UnselectAll();
 			var dataStore = DataStore;
@@ -467,25 +477,40 @@ namespace Eto.GtkSharp.Forms.Controls
 				}
 			}
 		}
-
+		
 		public GLib.Value GetColumnValue(ITreeGridItem item, int dataColumn, int row, Gtk.TreeIter iter)
 		{
 			// yes, we can get the row.. but it slows down the TreeGridView too much when there are many items
 			// This is only used when formatting the cell, and all other platforms return row=-1 with TreeGridView
 			if (dataColumn == RowDataColumn)
-				return new GLib.Value(row); 
-				// return new GLib.Value(model.GetRowIndexOfIter(iter));
+				return new GLib.Value(row);
+			// return new GLib.Value(model.GetRowIndexOfIter(iter));
 
 			if (dataColumn == ItemDataColumn)
-				return new GLib.Value(item);
-
-			int column;
-			if (ColumnMap.TryGetValue(dataColumn, out column))
 			{
-				var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
+				var gtype = (GLib.GType)typeof(object);
+				var val = new GLib.Value(gtype);
+				val.Val = item;
+				return val;
+			}
+
+			if (ColumnMap.TryGetValue(dataColumn, out var map))
+			{
+				var colHandler = (GridColumnHandler)Widget.Columns[map.column].Handler;
 				return colHandler.GetValue(item, dataColumn, row);
 			}
 			return new GLib.Value((string)null);
+		}
+		
+		public GLib.GType GetColumnType(int col)
+		{
+			if (col == RowDataColumn)
+				return GLib.GType.Int;
+			if (col == ItemDataColumn)
+				return (GLib.GType)typeof(object);
+			if (ColumnMap.TryGetValue(col, out var map))
+				return map.type;
+			return GLib.GType.String;
 		}
 
 		public override int GetRowOfItem(object item)
@@ -499,6 +524,8 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			return -1;
 		}
+
+		protected override int NumberOfRows => DataStore?.GetExpandedRowCount() ?? 0;
 		
 
 		public void ReloadData()
@@ -528,7 +555,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 			if (selectionChanged)
 			{
-				Callback.OnSelectionChanged(Widget, EventArgs.Empty);
+				TriggerSelectionChanged();
 			}
 			SkipSelectedChange = false;
 			RestoreScrollState(scrollState);

@@ -632,6 +632,40 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		}
 
 		[Test]
+		public void SettingSelectedRowsToEmptyShouldNotSelectAnyRow()
+		{
+			Shown(form =>
+			{
+				var grid = new T();
+				grid.ShowHeader = false;
+				grid.Size = new Size(200, 200);
+				grid.AllowMultipleSelection = false;
+				grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) } });
+				SetDataStore(grid, CreateDataStore());
+
+				form.Content = grid;
+				return grid;
+			}, grid =>
+			{
+				// nothing should be selected to start with
+				Assert.That(grid.SelectedRows, Is.Empty, "#1 Grid should not have any selection initially");
+
+				// setting an empty enumeration should keep the selection empty, not select the first row
+				grid.SelectedRows = Enumerable.Empty<int>();
+				Assert.That(grid.SelectedRows, Is.Empty, "#2 Setting SelectedRows to an empty enumeration should not select a row");
+				Assert.That(grid.SelectedRow, Is.EqualTo(-1), "#3 SelectedRow should be -1 when nothing is selected");
+
+				// ..and it should also clear an existing selection
+				grid.SelectedRow = 2;
+				Assert.That(grid.SelectedRow, Is.EqualTo(2), "#4 SelectedRow should be set");
+
+				grid.SelectedRows = Enumerable.Empty<int>();
+				Assert.That(grid.SelectedRows, Is.Empty, "#5 Setting SelectedRows to an empty enumeration should clear the selection, not select the first row");
+				Assert.That(grid.SelectedRow, Is.EqualTo(-1), "#6 SelectedRow should be -1 after clearing the selection");
+			});
+		}
+
+		[Test]
 		public void ColumnsShouldAutoSizeWhenSettingDataAfterLoaded()
 		{
 			ShownAsync(form =>
@@ -647,13 +681,13 @@ namespace Eto.Test.UnitTests.Forms.Controls
 
 			}, async grid =>
 			{
-				await Task.Delay(500);
+				await Task.Delay(100);
 				var list = new TreeGridItemCollection();
 				list.Add(new GridTestItem { Text = "A bit longer text 1", Values = new[] { "Some longer text in the second column 1" } });
 				list.Add(new GridTestItem { Text = "A bit longer text 2", Values = new[] { "Some longer text in the second column 2" } });
 				list.Add(new GridTestItem { Text = "A bit longer text 3", Values = new[] { "Some longer text in the second column 3" } });
 				SetDataStore(grid, list);
-				await Task.Delay(500);
+				await WaitUntil(() => grid.Columns[0].Width > 50 && grid.Columns[1].Width > 50, 500);
 				Assert.That(grid.Columns[0].Width, Is.GreaterThan(50), "First column should be auto-sized to be greater than 50px");
 				Assert.That(grid.Columns[1].Width, Is.GreaterThan(50), "Second column should be auto-sized to be greater than 50px");
 			});
@@ -670,6 +704,32 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			var grid = new T();
 			grid.ShowHeader = false;
 			grid.Size = new Size(300, 200);
+
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) }, AutoSize = true });
+			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Expand = true, AutoSize = true });
+
+			var list = new TreeGridItemCollection();
+			for (int i = 0; i < 100; i++)
+			{
+				list.Add(new GridTestItem { Text = $"Item {i}", Values = new[] { $"col {i}.2", $"col {i}.3", $"col {i}.4", $"col {i}.5" } });
+			}
+			SetDataStore(grid, list);
+
+			return grid;
+		});
+
+		[Test, ManualTest]
+		public void GridShouldExpandToFillContainerLargerThanPreferredSize() => ManualForm(
+			"The grid rows should fill the ENTIRE height (and width) of the window, not just the top-left portion.\n"
+			+ "There should be NO blank/empty space below or to the right of the rows, and a vertical scrollbar should be shown.",
+			form =>
+		{
+			form.ClientSize = new Size(500, 400);
+
+			var grid = new T();
+			grid.ShowHeader = false;
+			// preferred size is intentionally smaller than the window so the grid must expand to fill it.
+			grid.Size = new Size(150, 100);
 
 			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = Binding.Property((GridTestItem m) => m.Text) }, AutoSize = true });
 			grid.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0), Expand = true, AutoSize = true });

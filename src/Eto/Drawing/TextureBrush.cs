@@ -73,6 +73,7 @@ public sealed class TextureBrush : Brush, ITransformBrush
 		this.Image = image;
 		handler = Platform.Instance.TextureBrushHandler;
 		ControlObject = handler.Create (image, opacity);
+		this.opacity = opacity;
 	}
 
 	/// <summary>

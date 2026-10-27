@@ -112,6 +112,9 @@ namespace Eto.GtkSharp.Forms.Menu
 			Changed?.Invoke(this, EventArgs.Empty);
 		}
 
+		// Gtk does not add any system items to a context menu, so this is only stored to round-trip the value.
+		public ContextMenuSystemItems IncludeSystemItems { get; set; } = ContextMenuSystemItems.All;
+
 		protected override Keys GetShortcut()
 		{
 			return Keys.None;

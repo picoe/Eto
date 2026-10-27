@@ -232,6 +232,24 @@ namespace Eto.Serialization.Xaml
 			return base.LookupIsAmbient();
 		}
 
+		protected override XamlTypeInvoker LookupInvoker()
+		{
+			if (UnderlyingType == typeof(PropertyStore))
+				return new PropertyStoreInvoker(this);
+			return base.LookupInvoker();
+		}
+
+		class PropertyStoreInvoker : XamlTypeInvoker
+		{
+			public PropertyStoreInvoker(XamlType type)
+				: base(type)
+			{
+			}
+
+			// reloading into the same instance (e.g. hot reload) sets the same keys again
+			public override void AddToDictionary(object instance, object key, object item) => ((PropertyStore)instance)[key] = item;
+		}
+
 		protected override XamlMember LookupMember(string name, bool skipReadOnlyCheck)
 		{
 			var member = base.LookupMember(name, skipReadOnlyCheck);

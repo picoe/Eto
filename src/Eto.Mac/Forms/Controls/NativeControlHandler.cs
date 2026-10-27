@@ -3,6 +3,18 @@
 	public class NativeControlHandler : MacView<NSView, Control, Control.ICallback>, NativeControlHost.IHandler
 	{
 		NSViewController controller;
+		bool createdOwnView;
+
+		// MacBase.AddMethod adds to the native CLASS, so hosting our own view must not use MacPanelView
+		// itself - every other view deriving from it (notably the window's content view) would inherit
+		// the methods added for this control's events.
+		class EtoNativeControlView : MacPanelView
+		{
+		}
+
+		// there's nothing to measure when we host our own (empty) view, so use a default size
+		// so the control still reports a sane preferred size like other Eto controls.
+		static readonly SizeF DefaultSize = new SizeF(100, 100);
 
 		public NativeControlHandler(NSView nativeControl)
 		{
@@ -32,7 +44,18 @@
 
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return Control?.FittingSize.ToEto() ?? SizeF.Empty;
+			var size = Control?.FittingSize.ToEto() ?? SizeF.Empty;
+			if (createdOwnView)
+			{
+				// there is nothing to measure in the placeholder view we created, so fall back to any
+				// explicitly set size and then to a default so it still reports a sane preferred size.
+				var userSize = UserPreferredSize;
+				if (size.Width <= 0)
+					size.Width = userSize.Width >= 0 ? userSize.Width : Math.Min(DefaultSize.Width, availableSize.Width);
+				if (size.Height <= 0)
+					size.Height = userSize.Height >= 0 ? userSize.Height : Math.Min(DefaultSize.Height, availableSize.Height);
+			}
+			return size;
 		}
 
 		public NativeControlHandler(NSViewController nativeControl)
@@ -52,7 +75,8 @@
 		{
 			if (nativeControl == null)
 			{
-				return new MacPanelView();
+				createdOwnView = true;
+				return new EtoNativeControlView();
 			}
 			else if (nativeControl is NSView view)
 			{

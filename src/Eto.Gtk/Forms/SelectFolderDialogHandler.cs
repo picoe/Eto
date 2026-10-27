@@ -16,7 +16,7 @@ namespace Eto.GtkSharp.Forms
 			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);
 			Control.DefaultResponse = Gtk.ResponseType.Ok;
 #endif
-			Control.SetCurrentFolder(System.IO.Directory.GetCurrentDirectory());
+			Control.SetCurrentFolder(GtkFileDialogHelper.InitialFolder);
 		}
 
 
@@ -33,7 +33,8 @@ namespace Eto.GtkSharp.Forms
 #endif
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto();
-			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
+			if (response == DialogResult.Ok && !string.IsNullOrEmpty(Control.CurrentFolder))
+				GtkFileDialogHelper.LastUsedFolder = Control.CurrentFolder;
 
 			return response;
 		}

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Eto.Forms/2.12.0-dev">
+﻿<Project Sdk="Eto.Forms/2.13.0-dev">
 
   <!--
     Set the BuildPlatform property to the Eto platform you wish to build for.
@@ -10,6 +10,7 @@
     <TargetFramework>net6.0</TargetFramework>
 
     <!-- <EnableDmgBuild>True</EnableDmgBuild> -->
+    <!-- <LinuxPackageFormats>deb;rpm;tar.gz;appimage</LinuxPackageFormats> -->
     <!-- <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile> -->
     <!-- <EnableCodeSigning>True</EnableCodeSigning> -->
     <!-- <EnableNotarization>True</EnableNotarization>     -->

@@ -21,6 +21,10 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 	/// </summary>
 	public TCollection Collection { get; protected set; }
 
+	// Only hold this handler weakly from the collection, so a long lived collection doesn't keep the
+	// control (that owns this handler) alive.
+	WeakEventListener _listener;
+
 	/// <summary>
 	/// Called when the object has been registered (attached) to a collection
 	/// </summary>
@@ -50,7 +54,7 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 		var notify = Collection as INotifyCollectionChanged;
 		if (notify != null)
 		{
-			notify.CollectionChanged += CollectionChanged;
+			_listener = WeakEventListener.Create(notify, this, static (h, s, e) => h.CollectionChanged(s, e));
 		}
 		OnRegisterCollection(EventArgs.Empty);
 		return notify != null;
@@ -64,11 +68,8 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 		if (Collection == null)
 			return;
 			
-		var notify = Collection as INotifyCollectionChanged;
-		if (notify != null)
-		{
-			notify.CollectionChanged -= CollectionChanged;
-		}
+		_listener?.Detach();
+		_listener = null;
 		Collection = null;
 			
 		OnUnregisterCollection(EventArgs.Empty);

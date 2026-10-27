@@ -215,6 +215,7 @@ namespace Eto.Mac
 			PointF point;
 			Keys modifiers;
 			MouseButtons buttons;
+			bool isDirectionInverted = false;
 			if (theEvent != null)
 			{
 				NSView view = handler.ContainerControl;
@@ -240,7 +241,11 @@ namespace Eto.Mac
 				}
 					
 				if (includeWheel)
+				{
 					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+					// only valid for scroll wheel and flick events, which is all includeWheel is used for
+					isDirectionInverted = theEvent.IsDirectionInvertedFromDevice;
+				}
 				modifiers = theEvent.ModifierFlags.ToEto();
 				buttons = theEvent.GetMouseButtons();
 			}
@@ -250,7 +255,7 @@ namespace Eto.Mac
 				modifiers = Keyboard.Modifiers;
 				buttons = Mouse.Buttons;
 			}
-			return new MouseEventArgs(buttons, modifiers, point, delta);
+			return new MouseEventArgs(buttons, modifiers, point, delta, 1.0f, isDirectionInverted);
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
@@ -408,10 +413,41 @@ namespace Eto.Mac
 			}
 		}
 
+		/// <summary>
+		/// Gets the character input for the key event, or null if the key does not correspond to a character.
+		/// </summary>
+		/// <remarks>
+		/// macOS reports non-character keys such as the arrow keys, function keys, page up/down, home/end, etc.
+		/// using the unicode private use area reserved for function keys, so exclude those.
+		/// </remarks>
+		static char? GetKeyChar(NSEvent theEvent)
+		{
+			var characters = theEvent.Characters;
+			if (string.IsNullOrEmpty(characters))
+				return null;
+			var keyChar = characters[0];
+			if (keyChar >= 0xF700 && keyChar <= 0xF8FF)
+				return null;
+			return keyChar;
+		}
+
 		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
-			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
-			Keys key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
+			char? keyChar = GetKeyChar(theEvent);
+			var charactersIgnoringModifiers = theEvent.CharactersIgnoringModifiers;
+			Keys key = Keys.None;
+			if (!string.IsNullOrEmpty(charactersIgnoringModifiers)
+				&& !char.IsControl(charactersIgnoringModifiers[0])
+				&& !theEvent.ModifierFlags.HasFlag(NSEventModifierMask.NumericPadKeyMask))
+			{
+				key = KeyMap.Convert(charactersIgnoringModifiers, 0);
+			}
+			if (key == Keys.None)
+			{
+				// Use the physical key for non-character and numeric-pad keys. NSEvent.KeyCode
+				// does not respect alternative keyboard layouts for printable keys.
+				key = KeyMap.MapKey(theEvent.KeyCode, theEvent.ModifierFlags);
+			}
 			KeyEventArgs kpea;
 			Keys modifiers = theEvent.ModifierFlags.ToEto();
 			key |= modifiers;

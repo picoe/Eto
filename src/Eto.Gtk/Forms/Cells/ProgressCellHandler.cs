@@ -77,9 +77,9 @@
 		protected override void BindCell(ref int dataIndex)
 		{
 			Column.Control.ClearAttributes(Control);
-			valueCol = SetColumnMap(dataIndex);
+			valueCol = SetColumnMap(dataIndex, GLib.GType.Int);
 			Column.Control.AddAttribute(Control, "value", dataIndex++);
-			SetColumnMap(dataIndex);
+			SetColumnMap(dataIndex, GLib.GType.Boolean);
 			Column.Control.AddAttribute(Control, "hasValue", dataIndex++);
 			base.BindCell(ref dataIndex);
 		}

@@ -1,3 +1,4 @@
+using System.Windows.Automation.Peers;
 using Eto.Wpf.Forms.Cells;
 using Eto.Wpf.Forms.Menu;
 using Eto.Wpf.Drawing;
@@ -5,9 +6,49 @@ using Eto.Wpf.CustomControls.TreeGridView;
 
 namespace Eto.Wpf.Forms.Controls
 {
+	/// <summary>
+	/// Automation peer for a grid that keeps the items out of the automation tree.
+	/// </summary>
+	/// <seealso cref="EtoDataGrid.SuppressItemAutomationPeers"/>
+	class EtoDataGridAutomationPeer : FrameworkElementAutomationPeer
+	{
+		// DataGridAutomationPeer is sealed, so this derives from the plain element peer and
+		// reports itself as a data grid rather than specialising the built-in one.
+		public EtoDataGridAutomationPeer(swc.DataGrid owner)
+			: base(owner)
+		{
+		}
+
+		protected override List<AutomationPeer> GetChildrenCore() => new List<AutomationPeer>();
+
+		protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.DataGrid;
+
+		protected override string GetClassNameCore() => nameof(swc.DataGrid);
+	}
+
 	public class EtoDataGrid : swc.DataGrid
 	{
 		public IWpfFrameworkElement Handler { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating that the items of this grid should be kept out of the
+		/// automation tree.
+		/// </summary>
+		/// <remarks>
+		/// WPF's DataGrid peer builds an item peer for every item in the grid - not just the
+		/// realized rows - and holds them in a weak table that it scavenges on each lookup. When a
+		/// UI Automation client is listening, anything that invalidates the peer (scrolling, for
+		/// one) rebuilds that whole collection during the layout pass, which for a grid with a lot
+		/// of items is slow enough to lock the UI up for seconds at a time.
+		///
+		/// Set this on grids where exposing each item to automation isn't worth that cost, such as
+		/// a transient popup list whose selected value is mirrored into a text box that automation
+		/// can see anyway.
+		/// </remarks>
+		public bool SuppressItemAutomationPeers { get; set; }
+
+		protected override AutomationPeer OnCreateAutomationPeer()
+			=> SuppressItemAutomationPeers ? new EtoDataGridAutomationPeer(this) : base.OnCreateAutomationPeer();
 
 		public new void BeginUpdateSelectedItems()
 		{
@@ -40,6 +81,23 @@ namespace Eto.Wpf.Forms.Controls
 					e.Handled = true;
 				}
 			}
+		}
+
+		protected override void OnContextMenuOpening(swc.ContextMenuEventArgs e)
+		{
+			var cell = (e.OriginalSource as sw.DependencyObject)?.GetVisualParents().OfType<swc.DataGridCell>().FirstOrDefault();
+			if (IsEnabled && cell != null && !cell.IsSelected && !cell.IsKeyboardFocusWithin)
+			{
+				// The base focuses the cell before selecting its row, which commits any edit. If that reloads
+				// the rows, it then selects a row that's been discarded and throws, so commit first and check.
+				var row = cell.GetVisualParent<swc.DataGridRow>();
+				if (row?.IsEditing == false)
+					CommitEdit(swc.DataGridEditingUnit.Row, true);
+
+				if (row == null || ItemContainerGenerator.ItemFromContainer(row) == sw.DependencyProperty.UnsetValue)
+					return;
+			}
+			base.OnContextMenuOpening(e);
 		}
 
 		public EtoDataGrid()
@@ -649,7 +707,11 @@ namespace Eto.Wpf.Forms.Controls
 				else
 				{
 					UnselectAll();
-					SelectRow(value.FirstOrDefault());
+					foreach (var row in value)
+					{
+						SelectRow(row);
+						break;
+					}
 				}
 			}
 		}
@@ -707,7 +769,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			CommitEdit();
 			//sometimes couldn't focus to cell, so use ScrollIntoView
-			Control.ScrollIntoView(Control.Items[row]);
+			Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(Control.Items[row]));
 			//set current cell and select its row.
 			if (!SelectedRows.Contains(row))
 			{
@@ -897,7 +959,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		public void ScrollToRow(int row)
 		{
-			Control.ScrollIntoView(Control.Items[row]);
+			Control.ScrollIntoViewWithoutParents(() => Control.ScrollIntoView(Control.Items[row]));
 		}
 
 		public GridLines GridLines
