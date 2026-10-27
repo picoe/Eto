@@ -13,6 +13,7 @@
 		"src",
 		"samples"
 	],
-	"dotnet.defaultSolution": "src/Eto.slnx"
+	"dotnet.defaultSolution": "src/Eto.slnx",
+	"debug.allowBreakpointsEverywhere": true
 
 }

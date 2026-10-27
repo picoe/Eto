@@ -5,6 +5,19 @@
     <None Remove="**\*.xeto" />
     <EmbeddedResource Include="**\*.xeto" />
   </ItemGroup>
+  <!-- set EtoXamlCodeGen to true to compile .xeto files into their (partial) code-behind classes -->
+  <PropertyGroup>
+    <EtoXamlCodeGen Condition="'$(EtoXamlCodeGen)' == ''">False</EtoXamlCodeGen>
+  </PropertyGroup>
+  <ItemGroup>
+    <CompilerVisibleProperty Include="EtoXamlCodeGen" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+    <CompilerVisibleProperty Include="ProjectDir" />
+    <!-- XamlCodeGen="false" on a .xeto opts it out, "true" opts it in -->
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="XamlCodeGen" />
+    <AdditionalFiles Include="@(EmbeddedResource->WithMetadataValue('Extension', '.xeto'))" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Update="**\*.xeto.cs">
       <DependentUpon>%(Filename)</DependentUpon>

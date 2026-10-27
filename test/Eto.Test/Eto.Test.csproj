@@ -5,6 +5,8 @@
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>
     <OutputType>Library</OutputType>
     <IsTestProject>false</IsTestProject>
+    <EtoXamlCodeGen>true</EtoXamlCodeGen>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -31,13 +33,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Sections\Serialization\Json\Test.jeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xeto">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="Images\*" />
+  </ItemGroup>
+  <!-- what the packages add to a project, which ProjectReference doesn't -->
+  <Import Project="..\..\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.targets" />
+  <Import Project="..\..\src\Eto.Serialization.Json\Eto.Serialization.Json.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Eto\Eto.csproj" />
@@ -51,8 +53,6 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Sections\Serialization\Xaml\Test.xeto" />
-    <None Remove="Sections\Serialization\Json\Test.json" />
     <None Remove="Images\*" />
   </ItemGroup>
   <ItemGroup>

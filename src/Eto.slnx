@@ -57,6 +57,7 @@
   </Project>
   <Project Path="Eto.Serialization.Json/Eto.Serialization.Json.csproj" />
   <Project Path="Eto.Serialization.Xaml/Eto.Serialization.Xaml.csproj" />
+  <Project Path="Eto.Serialization.Xaml.Generator/Eto.Serialization.Xaml.Generator.csproj" />
   <Project Path="Eto.WinForms/Eto.WinForms.csproj">
     <Build Solution="*|Linux" Project="false" />
     <Build Solution="*|Mac" Project="false" />
