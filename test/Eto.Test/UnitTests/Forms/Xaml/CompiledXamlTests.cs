@@ -104,6 +104,19 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 				Assert.That(label.TextColor, Is.EqualTo(Colors.Red));
 				Assert.That(label.BackgroundColor, Is.EqualTo(runtimeLabel.BackgroundColor));
 				Assert.That(compiled.Children.OfType<ImageView>().Single().Image, Is.Not.Null);
+
+				Label Find(Panel panel, string text) => panel.Children.OfType<Label>().Single(r => r.Text == text);
+				Assert.That(PixelLayout.GetLocation(Find(compiled, "C")), Is.EqualTo(new Point(3, 4)));
+				Assert.That(Find(compiled, "C").Size, Is.EqualTo(new Size(40, 20)));
+				Assert.That(Find(compiled, "D").Size, Is.EqualTo(new Size(30)));
+
+				var floats = (CompiledXamlFloats)compiled.Properties["floats"];
+				var runtimeFloats = (CompiledXamlFloats)runtime.Properties["floats"];
+				Assert.That(floats.Size, Is.EqualTo(new SizeF(1.5f, 2)).And.EqualTo(runtimeFloats.Size));
+				Assert.That(floats.SingleSize, Is.EqualTo(new SizeF(0.1f)).And.EqualTo(runtimeFloats.SingleSize));
+				Assert.That(floats.Point, Is.EqualTo(new PointF(-0.25f, 3)).And.EqualTo(runtimeFloats.Point));
+				Assert.That(floats.Rectangle, Is.EqualTo(new RectangleF(1, 2, 3.5f, 100)).And.EqualTo(runtimeFloats.Rectangle));
+				Assert.That(floats.Padding, Is.EqualTo(new PaddingF(1.5f, 2)).And.EqualTo(runtimeFloats.Padding));
 			});
 		}
 
@@ -132,6 +145,40 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 				Assert.That(panel.Clicks, Is.EqualTo(1));
 				panel.BoundTextBox.Text = "changed";
 				Assert.That(panel.TextChanges, Is.GreaterThan(0));
+			});
+		}
+
+		[Test]
+		public void BindingsShouldWorkLikeRuntime()
+		{
+			Invoke(() =>
+			{
+				foreach (var (mode, panel) in new[] { ("compiled", new CompiledXamlPanel()), ("runtime", new CompiledXamlPanel(parseAtRuntime: true)) })
+				{
+					var command = new Command();
+					var model = new CompiledXamlModel { Name = "a", Count = 3, Command = command };
+					panel.DataContext = model;
+
+					var typed = panel.FindChild<TextBox>("TypedTextBox");
+					var oneWay = panel.FindChild<TextBox>("OneWayTextBox");
+					var stepper = panel.FindChild<NumericStepper>("CountStepper");
+					Assert.That(typed.Text, Is.EqualTo("a"), mode);
+					Assert.That(oneWay.Text, Is.EqualTo("a"), mode);
+					Assert.That(stepper.Value, Is.EqualTo(3), mode);
+					Assert.That(panel.FindChild<Button>("CommandButton").Command, Is.SameAs(command), mode);
+
+					typed.Text = "b";
+					Assert.That(model.Name, Is.EqualTo("b"), mode + ": two-way should update the model");
+					Assert.That(oneWay.Text, Is.EqualTo("b"), mode + ": the model should update the control");
+					oneWay.Text = "c";
+					Assert.That(model.Name, Is.EqualTo("b"), mode + ": one-way should not update the model");
+
+					stepper.Value = 5;
+					Assert.That(model.Count, Is.EqualTo(5), mode + ": the value should be converted back to the model's type");
+
+					var itemText = panel.FindChild<DropDown>("ItemsDropDown").ItemTextBinding;
+					Assert.That(itemText.GetValue(new { Title = "x" }), Is.EqualTo("x"), mode);
+				}
 			});
 		}
 
