@@ -43,19 +43,24 @@ namespace Eto.GtkSharp.Forms.Controls
 					return;
 
 				toggling = true;
-				if (h.ThreeState)
+				try
 				{
-					if (!c.Inconsistent && c.Active)
-						c.Inconsistent = true;
-					else if (c.Inconsistent)
+					if (h.ThreeState)
 					{
-						c.Inconsistent = false;
-						c.Active = true;
+						if (!c.Inconsistent && c.Active)
+							c.Inconsistent = true;
+						else if (c.Inconsistent)
+						{
+							c.Inconsistent = false;
+							c.Active = true;
+						}
 					}
+					h.Callback.OnCheckedChanged(h.Widget, EventArgs.Empty);
 				}
-				h.Callback.OnCheckedChanged(h.Widget, EventArgs.Empty);
-				toggling = false;
-
+				finally
+				{
+					toggling = false;
+				}
 			}
 		}
 
@@ -78,20 +83,25 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Inconsistent ? null : (bool?)Control.Active; }
 			set
 			{
-				if (value == null)
+				// GTK raises Toggled for assignments too; only clicks should advance the three-state cycle.
+				var oldValue = Checked;
+
+				Control.Toggled -= Connector.HandleToggled;
+
+				try
 				{
-					Control.Inconsistent = true;
+					Control.Inconsistent = value == null;
+
+					if (value != null)
+						Control.Active = value.Value;
+				}
+				finally
+				{
+					Control.Toggled += Connector.HandleToggled;
+				}
+
+				if (Checked != oldValue)
 					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-				}
-				else
-				{
-					// gtk doesn't trigger an event if just Inconsistent has changed.
-					var hasChanged = (Control.Inconsistent && Control.Active == value.Value);
-					Control.Inconsistent = false;
-					Control.Active = value.Value;
-					if (hasChanged)
-						Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-				}
 			}
 		}
 
