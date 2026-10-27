@@ -171,6 +171,8 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Alt_R, Keys.RightAlt);
 			keymap.Add(Gdk.Key.Meta_L, Keys.LeftApplication);
 			keymap.Add(Gdk.Key.Meta_R, Keys.RightApplication);
+			keymap.Add(Gdk.Key.Super_L, Keys.LeftApplication);
+			keymap.Add(Gdk.Key.Super_R, Keys.RightApplication);
 			keymap.Add(Gdk.Key.KP_Enter, Keys.Enter);
 			keymap.Add(Gdk.Key.KP_Up, Keys.Up);
 			keymap.Add(Gdk.Key.KP_Down, Keys.Down);
