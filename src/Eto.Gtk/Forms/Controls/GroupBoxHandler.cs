@@ -2,6 +2,8 @@ namespace Eto.GtkSharp.Forms.Controls
 {
 	public class GroupBoxHandler : GtkPanel<Gtk.Frame, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
+		static readonly object TextColor_Key = new object();
+
 		public GroupBoxHandler ()
 		{
 			Control = new EtoFrame { Handler = this };
@@ -13,10 +15,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			get { return Control.Label; }
 			set
 			{
-				var needsFont = Control.LabelWidget == null && Widget.Properties.ContainsKey(GtkControl.Font_Key);
+				// GTK replaces the label when the title changes, so reapply assigned styles.
 				Control.Label = value;
-				if (needsFont)
-					Control.LabelWidget?.SetFont(Font.ToPango());
+				if (Control.LabelWidget is Gtk.Widget label)
+				{
+					if (Widget.Properties.ContainsKey(GtkControl.Font_Key))
+						label.SetFont(Font.ToPango());
+					if (Widget.Properties.Get<Color?>(TextColor_Key) is Color color)
+						label.SetForeground(color);
+				}
 			}
 		}
 
@@ -27,7 +34,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				else {
 					var label = Control.LabelWidget;
 					var size = Size;
-					size.Height -= label.Allocation.Height + 10;
+					size.Height -= (label?.Allocation.Height ?? 0) + 10;
 					size.Width -= 10;
 					return size;
 				}
@@ -35,7 +42,7 @@ namespace Eto.GtkSharp.Forms.Controls
 			set {
 				var label = Control.LabelWidget;
 				var size = value;
-				size.Height += label.Allocation.Height + 10;
+				size.Height += (label?.Allocation.Height ?? 0) + 10;
 				size.Width += 10;
 				Size = size;
 			}
@@ -54,8 +61,17 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.LabelWidget.GetForeground(); }
-			set { Control.LabelWidget.SetForeground(value); }
+			get
+			{
+				if (Control.LabelWidget is Gtk.Widget label)
+					return label.GetForeground();
+				return Widget.Properties.Get<Color?>(TextColor_Key) ?? Control.GetForeground();
+			}
+			set
+			{
+				Widget.Properties.Set<Color?>(TextColor_Key, value);
+				Control.LabelWidget?.SetForeground(value);
+			}
 		}
 	}
 }
