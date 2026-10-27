@@ -96,6 +96,17 @@ namespace Eto.GtkSharp.Forms.Controls
 			}
 		}
 
+		public override Eto.Drawing.Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				// Allow explicit widths below GTK's default entry minimum.
+				entry.WidthChars = (value.Width == -1) ? -1 : 0;
+				base.Size = value;
+			}
+		}
+
 		public override string Text
 		{
 			get { return entry.Text; }
