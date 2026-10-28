@@ -226,7 +226,94 @@ namespace Eto.WinForms.Drawing
 			this._frames = frames.ToList();
 			var frame = GetIdealIcon();
 			size = frame.Size;
-			Control = (sd.Icon)frame.ControlObject;
+			// a multi-size .ico lets the window pick the best frame for each icon size instead of scaling one
+			Control = CreateMultiSizeIcon(_frames) ?? (sd.Icon)frame.ControlObject;
+		}
+
+		static sd.Icon CreateMultiSizeIcon(IEnumerable<IconFrame> frames)
+		{
+			var icons = frames
+				.Select(r => (sd.Icon)r.ControlObject)
+				.Where(r => r.Width <= 256 && r.Height <= 256)
+				.GroupBy(r => r.Size)
+				.Select(r => r.First())
+				.OrderBy(r => r.Width * r.Height)
+				.ToList();
+			if (icons.Count == 0)
+				return null;
+
+			// uncompressed DIBs rather than PNG, as .NET Framework can't read PNG frames back
+			var images = icons.Select(EncodeDib).ToList();
+			var stream = new MemoryStream();
+			var writer = new BinaryWriter(stream);
+			writer.Write((short)0); // reserved
+			writer.Write((short)1); // type: icon
+			writer.Write((short)icons.Count);
+			var offset = sICONDIR + sICONDIRENTRY * icons.Count;
+			for (int i = 0; i < icons.Count; i++)
+			{
+				// 0 means 256
+				writer.Write((byte)(icons[i].Width & 0xFF));
+				writer.Write((byte)(icons[i].Height & 0xFF));
+				writer.Write((byte)0); // palette size
+				writer.Write((byte)0); // reserved
+				writer.Write((short)1); // planes
+				writer.Write((short)32); // bits per pixel
+				writer.Write(images[i].Length);
+				writer.Write(offset);
+				offset += images[i].Length;
+			}
+			foreach (var image in images)
+				writer.Write(image);
+			writer.Flush();
+			stream.Position = 0;
+			return new sd.Icon(stream);
+		}
+
+		static byte[] EncodeDib(sd.Icon icon)
+		{
+			using (var bitmap = icon.ToBitmap())
+			using (var stream = new MemoryStream())
+			using (var writer = new BinaryWriter(stream))
+			{
+				var width = bitmap.Width;
+				var height = bitmap.Height;
+				var maskStride = (width + 31) / 32 * 4;
+
+				// BITMAPINFOHEADER, with the height doubled to include the AND mask
+				writer.Write(40);
+				writer.Write(width);
+				writer.Write(height * 2);
+				writer.Write((short)1); // planes
+				writer.Write((short)32); // bits per pixel
+				writer.Write(0); // compression: none
+				writer.Write(width * height * 4 + maskStride * height);
+				writer.Write(0);
+				writer.Write(0);
+				writer.Write(0);
+				writer.Write(0);
+
+				var data = bitmap.LockBits(new sd.Rectangle(0, 0, width, height), sd.Imaging.ImageLockMode.ReadOnly, sd.Imaging.PixelFormat.Format32bppArgb);
+				try
+				{
+					var row = new byte[width * 4];
+					// DIB rows are stored bottom-up
+					for (int y = height - 1; y >= 0; y--)
+					{
+						Marshal.Copy(data.Scan0 + y * data.Stride, row, 0, row.Length);
+						writer.Write(row);
+					}
+				}
+				finally
+				{
+					bitmap.UnlockBits(data);
+				}
+
+				// empty AND mask, transparency comes from the alpha channel
+				writer.Write(new byte[maskStride * height]);
+				writer.Flush();
+				return stream.ToArray();
+			}
 		}
 	}
 }
