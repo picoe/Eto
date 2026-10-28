@@ -23,7 +23,9 @@ namespace Eto.Mac.Forms.Controls
 		}
 		public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 		{
-			colorize?.Begin(cellFrame, inView);
+			// without a border there's nothing to tint, the background is drawn as is
+			if (Bezeled || Bordered)
+				colorize?.Begin(cellFrame, inView);
 			base.DrawWithFrame(cellFrame, inView);
 		}
 	}

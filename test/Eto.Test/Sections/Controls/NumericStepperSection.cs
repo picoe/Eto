@@ -61,7 +61,13 @@ namespace Eto.Test.Sections.Controls
 
 			var increment = new NumericStepper { MaximumDecimalPlaces = 15 };
 			increment.ValueBinding.Bind(numeric, n => n.Increment);
-			
+
+			var backgroundColorPicker = new ColorPicker { AllowAlpha = true };
+			backgroundColorPicker.ValueBinding.Bind(numeric, n => n.BackgroundColor);
+
+			var textColorPicker = new ColorPicker { AllowAlpha = true };
+			textColorPicker.ValueBinding.Bind(numeric, n => n.TextColor);
+
 			var options1 = new StackLayout
 			{
 				Spacing = 5,
@@ -111,6 +117,18 @@ namespace Eto.Test.Sections.Controls
 				}
 			};
 
+			var options5 = new StackLayout
+			{
+				Spacing = 5,
+				Orientation = Orientation.Horizontal,
+				VerticalContentAlignment = VerticalAlignment.Center,
+				Items =
+				{
+					"BackgroundColor", backgroundColorPicker,
+					"TextColor", textColorPicker
+				}
+			};
+
 			Content = new StackLayout
 			{
 				Spacing = 5,
@@ -120,6 +138,7 @@ namespace Eto.Test.Sections.Controls
 					options2,
 					options3,
 					options4,
+					options5,
 					"Result:", numeric
 				}
 			};

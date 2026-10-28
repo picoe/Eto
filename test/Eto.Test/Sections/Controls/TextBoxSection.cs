@@ -57,10 +57,17 @@ namespace Eto.Test.Sections.Controls
 			var alwaysShowSelection = new CheckBox { Text = "AlwaysShowSelection" };
 			alwaysShowSelection.CheckedBinding.Bind(textBox, c => c.AlwaysShowSelection);
 
+			var backgroundColorPicker = new ColorPicker { AllowAlpha = true };
+			backgroundColorPicker.ValueBinding.Bind(textBox, c => c.BackgroundColor);
+
+			var textColorPicker = new ColorPicker { AllowAlpha = true };
+			textColorPicker.ValueBinding.Bind(textBox, c => c.TextColor);
+
 			var layout = new DynamicLayout { Padding = 10, DefaultSpacing = new Size(5, 5) };
 			layout.AddSeparateRow(null, enabledCheckBox, readOnlyCheckBox, showBorderCheckBox, null);
 			layout.AddSeparateRow(null, "TextAlignment", alignmentDropDown, "SelectionMode", selectionMode, alwaysShowSelection, null);
 			layout.AddSeparateRow(null, "MaxLength", maxLengthStepper, "PlaceholderText", placeholderText, null);
+			layout.AddSeparateRow(null, "BackgroundColor", backgroundColorPicker, "TextColor", textColorPicker, null);
 			layout.AddSeparateRow(null, cancelTextChangingCheckBox, cancelTextInputCheckBox, null);
 			layout.AddSeparateRow(null, setTextButton, selectAllButton, null);
 			layout.Add(null);

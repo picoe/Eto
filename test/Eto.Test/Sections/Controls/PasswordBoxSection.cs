@@ -7,7 +7,16 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
-			layout.AddRow(new Label { Text = "Default" }, Default());
+			var passwordBox = Default();
+
+			var backgroundColorPicker = new ColorPicker { AllowAlpha = true };
+			backgroundColorPicker.ValueBinding.Bind(passwordBox, c => c.BackgroundColor);
+
+			var textColorPicker = new ColorPicker { AllowAlpha = true };
+			textColorPicker.ValueBinding.Bind(passwordBox, c => c.TextColor);
+
+			layout.AddSeparateRow(null, "BackgroundColor", backgroundColorPicker, "TextColor", textColorPicker, null);
+			layout.AddRow(new Label { Text = "Default" }, passwordBox);
 			layout.AddRow(new Label { Text = "Read Only" }, ReadOnly());
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
 
@@ -17,7 +26,7 @@ namespace Eto.Test.Sections.Controls
 			Content = layout;
 		}
 
-		Control Default()
+		PasswordBox Default()
 		{
 			var control = new PasswordBox { Text = "Some Text" };
 			LogEvents(control);
