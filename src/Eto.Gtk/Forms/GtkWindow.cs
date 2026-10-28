@@ -907,6 +907,10 @@ namespace Eto.GtkSharp.Forms
 				return false;
 			}
 
+			// GDK links the native transient parent only after realization.
+			if (!Control.TransientFor.IsRealized)
+				return false;
+
 			var rect = new NativeMethods.GdkRect { X = location.X, Y = location.Y, Width = 1, Height = 1 };
 			NativeMethods.gdk_window_move_to_rect(
 				gdkWindow.Handle,
