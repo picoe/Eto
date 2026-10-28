@@ -166,5 +166,61 @@ namespace Eto.Wpf.Drawing
 				largest = GetLargestIcon();
 			size = Size.Ceiling((SizeF)largest.PixelSize / largest.Scale);
 		}
+
+		protected override swmi.BitmapFrame CreateControl()
+		{
+			// Window.Icon needs a native image, and an .ico lets WPF pick the best frame for each icon size
+			if (_frames == null || _frames.Count == 0)
+				return base.CreateControl();
+
+			var images = _frames
+				.Select(r => r.ToWpf())
+				.Where(r => r.PixelWidth <= 256 && r.PixelHeight <= 256)
+				.GroupBy(r => new Size(r.PixelWidth, r.PixelHeight))
+				.Select(r => r.First())
+				.OrderBy(r => r.PixelWidth * r.PixelHeight)
+				.ToList();
+
+			// .ico can't hold anything larger than 256x256
+			if (images.Count == 0)
+				return swmi.BitmapFrame.Create(GetLargestIcon().ToWpf());
+
+			var pngs = images.Select(EncodePng).ToList();
+			var stream = new MemoryStream();
+			var writer = new BinaryWriter(stream);
+			writer.Write((short)0); // reserved
+			writer.Write((short)1); // type: icon
+			writer.Write((short)images.Count);
+			var offset = 6 + 16 * images.Count;
+			for (int i = 0; i < images.Count; i++)
+			{
+				// 0 means 256
+				writer.Write((byte)(images[i].PixelWidth & 0xFF));
+				writer.Write((byte)(images[i].PixelHeight & 0xFF));
+				writer.Write((byte)0); // palette size
+				writer.Write((byte)0); // reserved
+				writer.Write((short)1); // planes
+				writer.Write((short)32); // bits per pixel
+				writer.Write(pngs[i].Length);
+				writer.Write(offset);
+				offset += pngs[i].Length;
+			}
+			foreach (var png in pngs)
+				writer.Write(png);
+			writer.Flush();
+			stream.Position = 0;
+			return swmi.BitmapFrame.Create(stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
+		}
+
+		static byte[] EncodePng(swmi.BitmapSource image)
+		{
+			var encoder = new swmi.PngBitmapEncoder();
+			encoder.Frames.Add(swmi.BitmapFrame.Create(image));
+			using (var stream = new MemoryStream())
+			{
+				encoder.Save(stream);
+				return stream.ToArray();
+			}
+		}
 	}
 }
