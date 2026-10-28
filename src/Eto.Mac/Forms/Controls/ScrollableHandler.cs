@@ -73,6 +73,8 @@ namespace Eto.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			// so trackpad gestures latched to the scroll view still reach the controls under the pointer
+			HandleEvent(Eto.Forms.Control.MouseWheelEvent);
 			if (!ContentControl.IsFlipped)
 				// need to keep the scroll position as it scrolls instead of calculating
 				HandleEvent(Scrollable.ScrollEvent);
