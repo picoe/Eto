@@ -242,7 +242,7 @@ namespace Eto.Mac
 					
 				if (includeWheel)
 				{
-					delta = new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+					delta = theEvent.GetWheelDelta();
 					// only valid for scroll wheel and flick events, which is all includeWheel is used for
 					isDirectionInverted = theEvent.IsDirectionInvertedFromDevice;
 				}
@@ -256,6 +256,58 @@ namespace Eto.Mac
 				buttons = Mouse.Buttons;
 			}
 			return new MouseEventArgs(buttons, modifiers, point, delta, 1.0f, isDirectionInverted);
+		}
+
+		// AppKit's line-based deltas are the precise ones divided by 10 (measured on a trackpad)
+		const double PreciseScrollPointsPerLine = 10;
+
+		// smallest line-based delta AppKit reports for precise devices
+		const double MinimumPreciseScrollLines = 0.3;
+
+		static double s_wheelDeltaTimestamp;
+		static SizeF s_wheelDelta;
+		static double s_wheelCarryX;
+		static double s_wheelCarryY;
+
+		/// <summary>
+		/// Gets the scroll wheel delta in lines, using precise deltas when the device has them.
+		/// </summary>
+		public static SizeF GetWheelDelta(this NSEvent theEvent)
+		{
+			if (!theEvent.HasPreciseScrollingDeltas)
+				return new SizeF((float)theEvent.DeltaX, (float)theEvent.DeltaY);
+
+			// each view the event passes through asks for its delta, so only accumulate once per event
+			if (theEvent.Timestamp == s_wheelDeltaTimestamp)
+				return s_wheelDelta;
+			s_wheelDeltaTimestamp = theEvent.Timestamp;
+
+			var phase = theEvent.Phase;
+			if (phase.HasFlag(NSEventPhase.Began) || phase.HasFlag(NSEventPhase.MayBegin))
+				s_wheelCarryX = s_wheelCarryY = 0;
+
+			s_wheelDelta = new SizeF(
+				(float)AccumulateWheelDelta(ref s_wheelCarryX, theEvent.ScrollingDeltaX),
+				(float)AccumulateWheelDelta(ref s_wheelCarryY, theEvent.ScrollingDeltaY));
+			return s_wheelDelta;
+		}
+
+		// AppKit's line-based deltas drop most slow trackpad movement, so report the same minimum step but carry
+		// the remainder over to later events instead
+		static double AccumulateWheelDelta(ref double carry, double points)
+		{
+			var lines = points / PreciseScrollPointsPerLine;
+			if (lines == 0)
+				return 0;
+			// start over when the direction changes so it responds straight away
+			if (Math.Sign(lines) != Math.Sign(carry))
+				carry = 0;
+			carry += lines;
+			if (Math.Abs(carry) < MinimumPreciseScrollLines)
+				return 0;
+			var result = carry;
+			carry = 0;
+			return result;
 		}
 
 		public static MouseButtons GetMouseButtons(this NSEvent theEvent)
