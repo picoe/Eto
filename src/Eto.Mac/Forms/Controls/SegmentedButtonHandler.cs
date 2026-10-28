@@ -184,6 +184,11 @@ namespace Eto.Mac.Forms.Controls
 
 			public override void DrawWithFrame(CGRect cellFrame, NSView inView)
 			{
+				// AppKit centers the segments in a taller frame but draws the menu indicators at its top
+				var height = CellSize.Height;
+				if (height > 0 && cellFrame.Height > height)
+					cellFrame = new CGRect(cellFrame.X, cellFrame.Y + (nfloat)Math.Round((cellFrame.Height - height) / 2), cellFrame.Width, height);
+
 				colorize?.Begin(cellFrame, inView);
 				base.DrawWithFrame(cellFrame, inView);
 			}
