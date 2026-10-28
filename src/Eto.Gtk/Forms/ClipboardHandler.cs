@@ -32,10 +32,12 @@ namespace Eto.GtkSharp.Forms
 		}
 
 		Gtk.TargetList targets = new Gtk.TargetList();
+		Gdk.Pixbuf clipboardImage;
 
 		readonly List<ClipboardData> clipboard = new List<ClipboardData>();
 		bool changedAttached;
 		bool changeQueued;
+		bool updatingClipboard;
 
 		public ClipboardHandler()
 		{
@@ -167,17 +169,28 @@ namespace Eto.GtkSharp.Forms
 
 		void Update()
 		{
-			Control.SetWithData((Gtk.TargetEntry[])targets, (clip, selectionData, info) =>
+			// SetWithData synchronously clears the previous registration. Keep the accumulated
+			// entries during that refresh; a later clear callback means ownership was lost.
+			updatingClipboard = true;
+			try
 			{
-				if (info < clipboard.Count)
+				Control.SetWithData((Gtk.TargetEntry[])targets, (clip, selectionData, info) =>
 				{
-					var clipdata = clipboard[(int)info];
-					clipdata.GetData(selectionData);
-				}
-			}, clip =>
+					if (info < clipboard.Count)
+					{
+						var clipdata = clipboard[(int)info];
+						clipdata.GetData(selectionData);
+					}
+				}, clip =>
+				{
+					if (!updatingClipboard)
+						ClearEntries();
+				});
+			}
+			finally
 			{
-
-			});
+				updatingClipboard = false;
+			}
 			
 #if GTKCORE
 			Control.CanStore = (Gtk.TargetEntry[])targets;
@@ -262,9 +275,11 @@ namespace Eto.GtkSharp.Forms
 					// todo: save as icon
 					//SetData(data, "eto-icon");
 				}
-				var pixbuf = value.ToGdk();
+				var pixbuf = value.ToGdk()?.Copy();
 				if (pixbuf == null)
 					throw new NotSupportedException();
+				clipboardImage?.Dispose();
+				clipboardImage = pixbuf;
 				SetEntry(
 					ClipboardEntryKind.Image,
 					null,
@@ -320,6 +335,13 @@ namespace Eto.GtkSharp.Forms
 		{
 			Control.Clear();
 			targets = new Gtk.TargetList();
+			ClearEntries();
+		}
+
+		void ClearEntries()
+		{
+			clipboardImage?.Dispose();
+			clipboardImage = null;
 			clipboard.Clear();
 		}
 

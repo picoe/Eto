@@ -5,6 +5,29 @@ namespace Eto.Test.UnitTests.Forms
 	public class ClipboardTests : BaseDataObjectTests<Clipboard>
 	{
 		protected override bool IsClipboard => true;
+
+		[Test]
+		public void ImageShouldSurviveSourceDisposal() => Invoke(() =>
+		{
+			using var clipboard = new Clipboard();
+			clipboard.Clear();
+			try
+			{
+				using (var source = new Bitmap(1, 1, PixelFormat.Format32bppRgba))
+				{
+					source.SetPixel(0, 0, Colors.Red);
+					clipboard.Image = source;
+				}
+				clipboard.Text = "Hello";
+				using var result = clipboard.Image as Bitmap;
+				Assert.That(result?.GetPixel(0, 0), Is.EqualTo(Colors.Red));
+				Assert.That(clipboard.Text, Is.EqualTo("Hello"));
+			}
+			finally
+			{
+				clipboard.Clear();
+			}
+		});
 	}
 
 	[TestFixture]
