@@ -63,16 +63,22 @@ namespace Eto.Test.Sections.Controls
 			var checkCommandEnabled = new CheckBox { Text = "CheckCommand.Enabled" };
 			checkCommandEnabled.Bind(c => c.Checked, checkCommand, c => c.Enabled);
 
+			var backgroundColorPicker = new ColorPicker { AllowAlpha = true };
+			backgroundColorPicker.ValueBinding.Bind(segbutton, b => b.BackgroundColor);
 
 			// layout
+			Padding = 10;
+			DefaultSpacing = new Size(5, 5);
+
 			BeginCentered();
-			AddSeparateRow("SelectionMode:", selectionModeDropDown);
-			AddSeparateRow(selectAllButton, clearSelectionButton);
-			AddSeparateRow(checkCommandEnabled);
+			AddSeparateRow("SelectionMode:", selectionModeDropDown, null);
+			AddSeparateRow(selectAllButton, clearSelectionButton, null);
+			AddSeparateRow(checkCommandEnabled, null);
+			AddSeparateRow("BackgroundColor", backgroundColorPicker, null);
 			EndCentered();
 
-			AddSeparateRow(segbutton);
-
+			AddSeparateRow(null, segbutton, null);
+			AddSpace();
 		}
 
 		void LogEvents(SegmentedButton button)

@@ -27,6 +27,7 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(TableLayout.AutoSized(control));
 			layout.AddSeparateRow(AddRowsButton(control), RemoveRowsButton(control), ClearButton(control), SetSelected(control), ClearSelected(control), null);
 			layout.AddSeparateRow(GetEnabled(control), GetReadOnly(control), AutoComplete(control), ShowComboText(control), SetComboText(control), null);
+			layout.AddSeparateRow("BackgroundColor", BackgroundColorPicker(control), "TextColor", TextColorPicker(control), null);
 
 			return layout;
 		}
@@ -114,6 +115,20 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new CheckBox { Text = "Enabled" };
 			control.CheckedBinding.Bind(list, l => l.Enabled);
+			return control;
+		}
+
+		Control BackgroundColorPicker(ComboBox list)
+		{
+			var control = new ColorPicker { AllowAlpha = true };
+			control.ValueBinding.Bind(list, l => l.BackgroundColor);
+			return control;
+		}
+
+		Control TextColorPicker(ComboBox list)
+		{
+			var control = new ColorPicker { AllowAlpha = true };
+			control.ValueBinding.Bind(list, l => l.TextColor);
 			return control;
 		}
 
