@@ -970,6 +970,13 @@ namespace Eto.GtkSharp.Forms
 								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 									Control.Present();
 							}
+							else
+							{
+								// Cancel state requests that GTK saves until the window is shown.
+								Control.Unfullscreen();
+								Control.Unmaximize();
+								Control.Deiconify();
+							}
 							break;
 					}
 				}
