@@ -4,6 +4,17 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class IconTests : TestBase
 	{
+		[Test]
+		public void DisposingIconShouldPreserveSourceBitmap() => Invoke(() =>
+		{
+			using var bitmap = new Bitmap(20, 20, PixelFormat.Format32bppRgba);
+			using var icon = new Icon(1, bitmap);
+			icon.Dispose();
+			Assert.That(bitmap.Size, Is.EqualTo(new Size(20, 20)));
+			bitmap.SetPixel(0, 0, Colors.Red);
+			Assert.That(bitmap.GetPixel(0, 0), Is.EqualTo(Colors.Red));
+		});
+
 		[TestCase(.25f, .5f)]
 		[TestCase(1f, 1f)]
 		[TestCase(1.5f, 1.5f)]
