@@ -30,7 +30,7 @@
 			<Label Text="D" Size="30" />
 		</TableRow>
 		<TableRow>
-			<TextBox ID="TypedTextBox" Text="{Binding Name}" />
+			<TextBox ID="TypedTextBox" x:FieldModifier="public" Text="{Binding Name}" />
 			<TextBox ID="OneWayTextBox" Text="{Binding Name, Mode=OneWay}" />
 			<NumericStepper ID="CountStepper" Value="{Binding Count}" />
 			<Button ID="CommandButton" Command="{Binding Command}" />

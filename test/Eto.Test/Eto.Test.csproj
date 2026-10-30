@@ -35,6 +35,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Images\*" />
+    <!-- parsed at runtime, to test the fields generated for files that aren't compiled -->
+    <EmbeddedResource Include="UnitTests\Forms\Xaml\RuntimeXamlPanel.xeto" XamlCodeGen="false" />
   </ItemGroup>
   <!-- what the packages add to a project, which ProjectReference doesn't -->
   <Import Project="..\..\src\Eto.Serialization.Xaml\Eto.Serialization.Xaml.targets" />

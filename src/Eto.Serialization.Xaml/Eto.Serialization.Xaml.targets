@@ -6,9 +6,10 @@
     <EtoXamlJeto Condition="'$(EtoXamlJeto)' == ''">False</EtoXamlJeto>
   </PropertyGroup>
 
+  <!-- include a file yourself to set metadata on it, e.g. <EmbeddedResource Include="MyForm.xeto" XamlCodeGen="false" /> -->
   <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
     <None Remove="**\*.xeto" />
-    <EmbeddedResource Include="**\*.xeto" />
+    <EmbeddedResource Include="**\*.xeto" Exclude="@(EmbeddedResource)" />
   </ItemGroup>
   <!-- Eto.Serialization.Json may embed them too -->
   <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' and '$(EtoXamlJeto)' == 'true' ">
@@ -21,6 +22,8 @@
   </PropertyGroup>
   <ItemGroup>
     <CompilerVisibleProperty Include="EtoXamlCodeGen" />
+    <!-- access of the fields generated for x:Name and ID, e.g. protected or internal; private when empty -->
+    <CompilerVisibleProperty Include="EtoXamlFieldModifier" />
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="ProjectDir" />
     <!-- XamlCodeGen="false" on a file opts it out, "true" opts it in -->

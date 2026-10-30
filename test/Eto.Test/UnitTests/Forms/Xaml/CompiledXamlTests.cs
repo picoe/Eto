@@ -136,6 +136,37 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 		}
 
 		[Test]
+		public void NamesWithoutCodeBehindMembersShouldGenerateFields()
+		{
+			var field = typeof(CompiledXamlPanel).GetField("TypedTextBox", BindingFlags.Instance | BindingFlags.Public);
+			Assert.That(field?.FieldType, Is.EqualTo(typeof(TextBox)), "x:FieldModifier should make it public");
+			var layoutField = typeof(CompiledXamlPanel).GetField("Layout", BindingFlags.Instance | BindingFlags.NonPublic);
+			Assert.That(layoutField?.IsPrivate, Is.True, "fields should be private by default");
+			Invoke(() =>
+			{
+				foreach (var panel in new[] { new CompiledXamlPanel(), new CompiledXamlPanel(parseAtRuntime: true) })
+				{
+					Assert.That(layoutField.GetValue(panel), Is.SameAs(panel.FindChild<TableLayout>("Layout")));
+					Assert.That(panel.TypedTextBox, Is.SameAs(panel.FindChild<TextBox>("TypedTextBox")));
+				}
+			});
+		}
+
+		[Test]
+		public void NamesInFilesNotCompiledShouldGenerateFields()
+		{
+			Assert.That(typeof(RuntimeXamlPanel).GetMethod("InitializeXeto", BindingFlags.Instance | BindingFlags.NonPublic), Is.Null);
+			var field = typeof(RuntimeXamlPanel).GetField("NameTextBox", BindingFlags.Instance | BindingFlags.Public);
+			Assert.That(field?.FieldType, Is.EqualTo(typeof(TextBox)), "x:FieldModifier should make it public");
+			Invoke(() =>
+			{
+				var panel = new RuntimeXamlPanel();
+				Assert.That(panel.Label, Is.SameAs(panel.FindChild<Label>("NameLabel")));
+				Assert.That(panel.NameTextBox, Is.SameAs(panel.FindChild<TextBox>("NameTextBox")));
+			});
+		}
+
+		[Test]
 		public void EventsShouldBeWired()
 		{
 			Invoke(() =>
