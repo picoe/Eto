@@ -234,6 +234,8 @@ namespace Eto.GtkSharp.Forms
 		const int O_NONBLOCK = 0x800;
 		const short POLLIN = 0x001;
 		const short POLLOUT = 0x004;
+		const short POLLERR = 0x008;
+		const short POLLHUP = 0x010;
 		const int F_GETFL = 3;
 		const int F_SETFL = 4;
 		const int EAGAIN = 11;     // == EWOULDBLOCK on Linux
@@ -424,10 +426,14 @@ namespace Eto.GtkSharp.Forms
 			{
 				int fd = wl_display_get_fd(display);
 				var pfds = new Pollfd[2];
+				// A failed display cannot recover; retrying would spin the dispatch thread.
 				while (running)
 				{
 					while (wl_display_prepare_read(display) != 0)
-						wl_display_dispatch_pending(display);
+					{
+						if (wl_display_dispatch_pending(display) < 0)
+							return;
+					}
 					wl_display_flush(display);
 
 					pfds[0].fd = fd; pfds[0].events = POLLIN; pfds[0].revents = 0;
@@ -442,12 +448,14 @@ namespace Eto.GtkSharp.Forms
 
 					if ((pfds[0].revents & POLLIN) != 0)
 					{
-						wl_display_read_events(display);
-						wl_display_dispatch_pending(display);
+						if (wl_display_read_events(display) < 0 || wl_display_dispatch_pending(display) < 0)
+							return;
 					}
 					else
 					{
 						wl_display_cancel_read(display);
+						if ((pfds[0].revents & (POLLERR | POLLHUP)) != 0)
+							return;
 					}
 
 					if ((pfds[1].revents & POLLIN) != 0)
