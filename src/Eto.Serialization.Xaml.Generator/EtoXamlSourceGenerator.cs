@@ -9,20 +9,22 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Portable.Xaml;
 using Portable.Xaml.CodeGen;
 using Portable.Xaml.CodeGen.Schema;
+using Portable.Xaml.Json;
+using Eto.Serialization.Xaml;
 
 namespace Eto.Serialization.Xaml.Generator
 {
 	/// <summary>
-	/// Compiles .xeto files into the code-behind class when the project sets <c>EtoXamlCodeGen</c> to true.
+	/// Compiles .xeto and .jeto files into the code-behind class when the project sets <c>EtoXamlCodeGen</c> to true.
 	/// </summary>
 	/// <remarks>
-	/// <c>XamlReader.Load(this)</c> then runs the generated method instead of parsing the .xeto at runtime.
+	/// <c>XamlReader.Load(this)</c> (or <c>JetoReader.Load(this)</c>) then runs the generated method instead of parsing the .xeto at runtime.
 	/// </remarks>
 	[Generator(LanguageNames.CSharp)]
 	public class EtoXamlSourceGenerator : XamlSourceGenerator
 	{
-		public const string EtoFormsNamespace = "http://schema.picoe.ca/eto.forms";
-		public const string DesignNamespace = "http://schema.picoe.ca/eto.forms/design";
+		public const string EtoFormsNamespace = EtoJsonReader.EtoFormsNamespace;
+		public const string DesignNamespace = EtoJsonReader.DesignNamespace;
 
 		/// <summary>Name of the generated method, which XamlReader looks up.</summary>
 		public const string MethodName = "InitializeXeto";
@@ -31,7 +33,7 @@ namespace Eto.Serialization.Xaml.Generator
 
 		protected override bool ShouldGenerate(AdditionalText file, AnalyzerConfigOptions fileOptions, AnalyzerConfigOptions globalOptions)
 		{
-			if (!file.Path.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase))
+			if (!file.Path.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase) && !IsJson(file.Path))
 				return false;
 			if (fileOptions.TryGetValue("build_metadata.AdditionalFiles.XamlCodeGen", out var fileValue) && !string.IsNullOrEmpty(fileValue))
 				return IsTrue(fileValue);
@@ -39,6 +41,8 @@ namespace Eto.Serialization.Xaml.Generator
 		}
 
 		static bool IsTrue(string value) => string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+
+		internal static bool IsJson(string path) => path?.EndsWith(".jeto", StringComparison.OrdinalIgnoreCase) == true;
 
 		protected override void ConfigureOptions(XamlCodeGenOptions options, AdditionalText file, AnalyzerConfigOptions fileOptions, AnalyzerConfigOptions globalOptions)
 		{
@@ -89,6 +93,22 @@ namespace Eto.Serialization.Xaml.Generator
 
 		protected override XamlCodeEmitter CreateEmitter(XamlCodeGenOptions options, INamedTypeSymbol rootClass)
 			=> new EtoXamlCodeEmitter(SchemaContext, options, rootClass);
+
+		protected override XamlReader CreateReader(string text, XamlCodeGenOptions options)
+		{
+			if (!EtoXamlSourceGenerator.IsJson(options.FilePath))
+				return base.CreateReader(text, options);
+
+			var settings = new XamlJsonReaderSettings { ProvideLineInfo = true };
+			EtoJsonReader.AddNamespaces(settings);
+			foreach (var ns in options.Namespaces)
+				settings.AddNamespace(ns.Key, ns.Value);
+			// .jeto files don't name their root type, so it is the class they're loaded into
+			var rootClass = options.RootClassName != null ? Compilation.GetTypeByMetadataName(options.RootClassName) : null;
+			if (rootClass != null)
+				settings.RootType = SchemaContext.GetXamlType(rootClass);
+			return new EtoJsonReader(new StringReader(text), SchemaContext, settings);
+		}
 
 		protected override void PrepareOptions(XamlCodeGenOptions options)
 		{

@@ -43,6 +43,7 @@ namespace Eto.Serialization.Xaml
 		static readonly Dictionary<Type, string> hotReloadFilePaths = new();
 		static readonly Dictionary<Type, DateTime> hotReloadFileTimes = new();
 
+		// in order of preference
 		static IEnumerable<string> GetTypeFiles(Type type)
 		{
 			yield return type.FullName + ".xeto";
@@ -50,19 +51,19 @@ namespace Eto.Serialization.Xaml
 			yield return type.Name + ".xeto"; // for F#/VB.NET projects
 		}
 
-		static Stream GetStream(Type type)
+		/// <summary>Opens the first of <paramref name="files"/> found, in order of preference.</summary>
+		internal static Stream GetStream(Type type, IEnumerable<string> files)
 		{
-			// try in order of preference: .xeto, .xaml, short name .xeto (for F#/VB.NET projects)
-			foreach (var file in GetTypeFiles(type))
+			foreach (var file in files)
 			{
 				var stream = GetStream(type, file);
 				if (stream != null)
 					return stream;
 			}
-			throw new InvalidOperationException($"Embedded resource '{type.FullName}.xeto' not found in assembly '{type.Assembly}'");
+			throw new InvalidOperationException($"Embedded resource '{files.First()}' not found in assembly '{type.Assembly}'");
 		}
 
-		static Stream GetStream(Type type, string resourceName)
+		internal static Stream GetStream(Type type, string resourceName)
 		{
 			if (hotReloadFilePaths.TryGetValue(type, out var filePath) && File.Exists(filePath))
 				return File.OpenRead(filePath);
@@ -88,7 +89,7 @@ namespace Eto.Serialization.Xaml
 			return File.GetLastWriteTimeUtc(filePath) != time;
 		}
 
-		private static bool FindFileNameFromType(Type type, ref string fileName, string sourcePath)
+		internal static bool FindFileNameFromType(Type type, IEnumerable<string> files, ref string fileName, string sourcePath)
 		{
 			if (sourcePath != null && File.Exists(sourcePath))
 				sourcePath = Path.GetDirectoryName(sourcePath);
@@ -115,7 +116,7 @@ namespace Eto.Serialization.Xaml
 				return false;
 			}
 			
-			foreach (var file in GetTypeFiles(type))
+			foreach (var file in files)
 			{
 				if (File.Exists(file))
 				{
@@ -149,7 +150,7 @@ namespace Eto.Serialization.Xaml
 			if (control == null)
 				throw new ArgumentNullException(nameof(control));
 
-			if (!FindFileNameFromType(typeof(T), ref fileName, sourcePath))
+			if (!FindFileNameFromType(typeof(T), GetTypeFiles(typeof(T)), ref fileName, sourcePath))
 			{
 				Trace.WriteLine($"File {fileName ?? $"for {typeof(T).FullName}"} could not be found to watch for hot reload.");
 				return false;
@@ -183,7 +184,7 @@ namespace Eto.Serialization.Xaml
 		public static T Load<T>()
 			where T : new()
 		{
-			using var stream = GetStream(typeof(T));
+			using var stream = GetStream(typeof(T), GetTypeFiles(typeof(T)));
 			var instance = Load<T>(stream, default);
 			HotReload(instance);
 			return instance;
@@ -230,7 +231,7 @@ namespace Eto.Serialization.Xaml
 				return;
 			}
 
-			using var stream = GetStream(typeof(T));
+			using var stream = GetStream(typeof(T), GetTypeFiles(typeof(T)));
 			Load<T>(stream, instance, settings);
 			HotReload(instance);
 		}
@@ -254,7 +255,7 @@ namespace Eto.Serialization.Xaml
 			}
 		}
 
-		static bool TryLoadGenerated<T>(T instance)
+		internal static bool TryLoadGenerated<T>(T instance)
 		{
 			// the designer and hot reload need the .xeto as it is now, not as it was compiled
 			if (DesignMode || HasHotReloadChanges(typeof(T)) || HasHotReloadChanges(instance.GetType()))
@@ -280,7 +281,7 @@ namespace Eto.Serialization.Xaml
 			return true;
 		}
 
-		private static string FindSourceForType(Type type)
+		internal static string FindSourceForType(Type type)
 		{
 			var stack = new StackTrace(true);
 			for (int i = 0; i < stack.FrameCount; i++)
@@ -410,7 +411,7 @@ namespace Eto.Serialization.Xaml
 			return Load<T>(new XamlXmlReader(reader, context, readerSettings), instance);
 		}
 
-		private static T Load<T>(XamlXmlReader reader, T instance)
+		internal static T Load<T>(Portable.Xaml.XamlReader reader, T instance)
 		{
 			var writerSettings = new XamlObjectWriterSettings();
 			writerSettings.ExternalNameScope = new EtoNameScope { Instance = instance };
@@ -430,7 +431,7 @@ namespace Eto.Serialization.Xaml
 			return (T)writer.Result;
 		}
 
-		static void Transform(XamlXmlReader reader, XamlObjectWriter writer, bool applyDesign)
+		static void Transform(Portable.Xaml.XamlReader reader, XamlObjectWriter writer, bool applyDesign)
 		{
 			var lineInfo = reader as IXamlLineInfo;
 			var lineConsumer = writer as IXamlLineInfoConsumer;
@@ -476,7 +477,7 @@ namespace Eto.Serialization.Xaml
 			return null;
 		}
 
-		static void SkipMember(XamlXmlReader reader)
+		static void SkipMember(Portable.Xaml.XamlReader reader)
 		{
 			// skipping keeps markup extensions such as d:DesignInstance from ever being created
 			var depth = 1;

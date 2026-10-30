@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
 
+  <!-- set EtoXamlJeto to true to embed (and compile) .jeto files for JetoReader -->
+  <PropertyGroup>
+    <EtoXamlJeto Condition="'$(EtoXamlJeto)' == ''">False</EtoXamlJeto>
+  </PropertyGroup>
+
   <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' ">
     <None Remove="**\*.xeto" />
     <EmbeddedResource Include="**\*.xeto" />
   </ItemGroup>
-  <!-- set EtoXamlCodeGen to true to compile .xeto files into their (partial) code-behind classes -->
+  <!-- Eto.Serialization.Json may embed them too -->
+  <ItemGroup Condition=" '$(EnableDefaultCompileItems)' == 'true' and '$(EtoXamlJeto)' == 'true' ">
+    <None Remove="**\*.jeto" />
+    <EmbeddedResource Include="**\*.jeto" Exclude="@(EmbeddedResource)" />
+  </ItemGroup>
+  <!-- set EtoXamlCodeGen to true to compile .xeto (and .jeto) files into their (partial) code-behind classes -->
   <PropertyGroup>
     <EtoXamlCodeGen Condition="'$(EtoXamlCodeGen)' == ''">False</EtoXamlCodeGen>
   </PropertyGroup>
@@ -13,9 +23,10 @@
     <CompilerVisibleProperty Include="EtoXamlCodeGen" />
     <CompilerVisibleProperty Include="RootNamespace" />
     <CompilerVisibleProperty Include="ProjectDir" />
-    <!-- XamlCodeGen="false" on a .xeto opts it out, "true" opts it in -->
+    <!-- XamlCodeGen="false" on a file opts it out, "true" opts it in -->
     <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="XamlCodeGen" />
     <AdditionalFiles Include="@(EmbeddedResource->WithMetadataValue('Extension', '.xeto'))" />
+    <AdditionalFiles Include="@(EmbeddedResource->WithMetadataValue('Extension', '.jeto'))" Condition="'$(EtoXamlJeto)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +37,17 @@
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="**\*.xeto.fs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup Condition="'$(EtoXamlJeto)' == 'true'">
+    <Compile Update="**\*.jeto.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="**\*.jeto.vb">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="**\*.jeto.fs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
