@@ -229,6 +229,9 @@ namespace Eto.GtkSharp
 				if (!inversekeymap.ContainsKey(val.Value))
 					inversekeymap.Add(val.Value, val.Key);
 			}
+			var useMeta = EtoEnvironment.Platform.IsWindows || EtoEnvironment.Platform.IsMac;
+			inversekeymap[Keys.LeftApplication] = useMeta ? Gdk.Key.Meta_L : Gdk.Key.Super_L;
+			inversekeymap[Keys.RightApplication] = useMeta ? Gdk.Key.Meta_R : Gdk.Key.Super_R;
 			return inversekeymap;
 		}
 	}
