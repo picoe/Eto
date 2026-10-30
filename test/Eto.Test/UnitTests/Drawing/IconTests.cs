@@ -47,6 +47,16 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.That(icon.Frames.All(r => r.Scale == 1), Is.True, "#4");
 		}
 
+		[TestCase("TestIconPng.ico", new[] { 256 })]
+		[TestCase("TestIconMixed.ico", new[] { 16, 256 })]
+		public void IconFromIcoShouldSupportPngCompressedFrames(string resourceName, int[] sizes)
+		{
+			using var stream = GetType().Assembly.GetManifestResourceStream($"Eto.Test.Images.{resourceName}");
+			using var icon = new Icon(stream);
+			Assert.That(icon.Frames.Select(r => r.PixelSize),
+				Is.EquivalentTo(sizes.Select(size => new Size(size, size))));
+		}
+
 		[TestCase(.50f, 64, null)]
 		[TestCase(.25f, 32, null)]
 		[TestCase(1, 128, null)]
