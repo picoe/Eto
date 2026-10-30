@@ -184,6 +184,7 @@ namespace Eto.GtkSharp.Drawing
 		{
 			var pixbuf = image.ToGdk();
 			Control = pixbuf.ScaleSimple(width, height, interpolation.ToGdk());
+			Alpha = Control.HasAlpha;
 		}
 
 		/// <summary>
