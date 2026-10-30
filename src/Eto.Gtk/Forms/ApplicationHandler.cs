@@ -282,8 +282,6 @@ namespace Eto.GtkSharp.Forms
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
-			if (EtoEnvironment.Platform.IsLinux)
-				LinuxNotificationHandler.Init();
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
