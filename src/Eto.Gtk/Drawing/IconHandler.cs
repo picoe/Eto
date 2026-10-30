@@ -4,8 +4,20 @@ namespace Eto.GtkSharp.Drawing
 	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, Icon.IHandler, IGtkPixbuf
 	{
 		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
+		Gdk.Pixbuf pixbuf;
 
-		public Gdk.Pixbuf Pixbuf { get; set; }
+		public Gdk.Pixbuf Pixbuf
+		{
+			get => pixbuf;
+			set
+			{
+				foreach (var scaled in sizes.Values)
+					if (!ReferenceEquals(scaled, value))
+						scaled?.Dispose();
+				sizes.Clear();
+				pixbuf = value;
+			}
+		}
 
 		#region IIcon Members
 
@@ -137,11 +149,9 @@ namespace Eto.GtkSharp.Drawing
 			base.Dispose(disposing);
 			if (disposing)
 			{
-				if (Pixbuf != null)
-				{
-					Pixbuf.Dispose();
-					Pixbuf = null;
-				}
+				var primary = Pixbuf;
+				Pixbuf = null;
+				primary?.Dispose();
 			}
 		}
 
