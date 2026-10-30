@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		readonly Gtk.Box tab;
 		Gtk.Image gtkimage;
 		Image image;
+		string text = string.Empty;
 		public static Size MaxImageSize = new Size(16, 16);
 
 		public TabPageHandler()
@@ -57,8 +58,13 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override string Text
 		{
-			get { return label.Text.ToEtoMnemonic(); }
-			set { label.TextWithMnemonic = value.ToPlatformMnemonic(); }
+			// Gtk.Label.Text omits mnemonic markers and unescapes literals, so retain the assigned title.
+			get { return text; }
+			set
+			{
+				text = value ?? string.Empty;
+				label.TextWithMnemonic = text.ToPlatformMnemonic();
+			}
 		}
 
 		protected override void Dispose(bool disposing)
