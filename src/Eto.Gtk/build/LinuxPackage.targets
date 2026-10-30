@@ -387,7 +387,8 @@
 
     <WriteLinesToFile File="$(_LinuxAppDirPath)AppRun" Overwrite="True"
                       Lines="#!/bin/sh;HERE=&quot;%24(dirname &quot;%24(readlink -f &quot;%240&quot;)&quot;)&quot;;exec &quot;%24HERE/$(_LinuxAppDir)/$(AssemblyName)&quot; &quot;%24@&quot;" />
-    <Exec Command="chmod +x &quot;$(_LinuxAppDirPath)AppRun&quot;" />
+    <!-- the AppImage runs as other users, and appimagetool rejects files they can't read or execute -->
+    <Exec Command="chmod -R a+rX &quot;$(_LinuxAppDirPath)&quot; &amp;&amp; chmod a+rx &quot;$(_LinuxAppDirPath)AppRun&quot;" />
 
     <Delete Files="$(_LinuxAppImageFile)" />
     <!-- extract-and-run lets appimagetool (itself an AppImage) work without FUSE, e.g. in containers -->
