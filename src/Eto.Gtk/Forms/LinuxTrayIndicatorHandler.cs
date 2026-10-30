@@ -7,6 +7,9 @@ namespace Eto.GtkSharp.Forms
 	public class LinuxTrayIndicatorHandler : WidgetHandler<GLib.Object, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{
 		const string libappindicator = "libappindicator3.so.1";
+		const string libgio = "libgio-2.0.so.0";
+		const string libglib = "libglib-2.0.so.0";
+		const string libgobject = "libgobject-2.0.so.0";
 		Image image;
 		string imagePath;
 		ContextMenu menu;
@@ -35,7 +38,27 @@ namespace Eto.GtkSharp.Forms
 		[DllImport(libappindicator, CallingConvention = CallingConvention.Cdecl)]
 		public extern static void app_indicator_dispose(IntPtr gobject);
 
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_bus_get_sync(GLib.BusType busType, IntPtr cancellable, IntPtr error);
+
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_dbus_connection_call_sync(IntPtr connection, string busName, string objectPath,
+			string interfaceName, string methodName, IntPtr parameters, IntPtr replyType, GLib.DBusCallFlags flags,
+			int timeoutMs, IntPtr cancellable, ref IntPtr error);
+
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern int g_dbus_error_quark();
+
+		[DllImport(libglib, CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_variant_unref(IntPtr value);
+
+		[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_object_unref(IntPtr obj);
+
 		static uint Id = 0;
+
+		// The standard name libappindicator waits for, then the one Cinnamon's watcher is activatable under.
+		static readonly string[] WatcherNames = { "org.kde.StatusNotifierWatcher", "org.x.StatusNotifierWatcher" };
 
 		public string Title
 		{
@@ -46,7 +69,13 @@ namespace Eto.GtkSharp.Forms
 		public bool Visible
 		{
 			get { return app_indicator_get_status(Control.Handle) == 1; }
-			set { app_indicator_set_status(Control.Handle, value ? 1 : 0); }
+			set
+			{
+				// A watcher is only needed once an icon is wanted, and asking on each Show restarts one that has died since.
+				if (value)
+					Task.Run(EnsureStatusNotifierWatcher);
+				app_indicator_set_status(Control.Handle, value ? 1 : 0);
+			}
 		}
 
 		public LinuxTrayIndicatorHandler()
@@ -54,7 +83,7 @@ namespace Eto.GtkSharp.Forms
 #if NET
 			DllImportResolverManager.Add((name, assembly, path) =>
 			{
-				if (name == libappindicator) 
+				if (name == libappindicator)
 				{
 					IntPtr result = IntPtr.Zero;
 					if (!NativeLibrary.TryLoad("libayatana-appindicator3.so.1", assembly, path, out result))
@@ -66,11 +95,54 @@ namespace Eto.GtkSharp.Forms
 				return IntPtr.Zero;
 			});
 #endif
-			
+
 			Control = GLib.Object.GetObject(app_indicator_new(Assembly.GetExecutingAssembly().FullName + Id, "", 0));
 			app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
 
 			Id++;
+		}
+
+		/// <summary>
+		/// Asks the bus to start the StatusNotifier watcher if it is activatable but not running. Any call to an
+		/// activatable name starts its service, and Peer.Ping takes no arguments. Nothing waits for the result:
+		/// libappindicator watches the standard name and registers when it appears.
+		/// </summary>
+		static void EnsureStatusNotifierWatcher()
+		{
+			var connection = IntPtr.Zero;
+			try
+			{
+				connection = g_bus_get_sync(GLib.BusType.Session, IntPtr.Zero, IntPtr.Zero);
+				if (connection == IntPtr.Zero)
+					return;
+
+				foreach (var busName in WatcherNames)
+				{
+					var error = IntPtr.Zero;
+					var reply = g_dbus_connection_call_sync(connection, busName, "/StatusNotifierWatcher",
+						"org.freedesktop.DBus.Peer", "Ping", IntPtr.Zero, IntPtr.Zero, GLib.DBusCallFlags.None, 5000, IntPtr.Zero, ref error);
+					if (reply != IntPtr.Zero)
+					{
+						g_variant_unref(reply);
+						return;
+					}
+					// Only a name with no service at all moves on to the next; a running but unresponsive watcher is left alone.
+					if (error == IntPtr.Zero)
+						return;
+					var failure = new GLib.GException(error);
+					if (failure.Domain != g_dbus_error_quark() || failure.Code != (int)GLib.DBusError.ServiceUnknown)
+						return;
+				}
+			}
+			catch
+			{
+				// Watcher activation is optional; retain libappindicator's existing fallback.
+			}
+			finally
+			{
+				if (connection != IntPtr.Zero)
+					g_object_unref(connection);
+			}
 		}
 
 		void RemoveTempImage()
