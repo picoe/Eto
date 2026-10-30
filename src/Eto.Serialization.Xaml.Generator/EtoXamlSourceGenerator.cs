@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Portable.Xaml;
 using Portable.Xaml.CodeGen;
 using Portable.Xaml.CodeGen.Schema;
@@ -19,6 +23,8 @@ namespace Eto.Serialization.Xaml.Generator
 	/// </summary>
 	/// <remarks>
 	/// <c>XamlReader.Load(this)</c> (or <c>JetoReader.Load(this)</c>) then runs the generated method instead of parsing the .xeto at runtime.
+	/// Objects with an <c>x:Name</c> or <c>ID</c> get a private field unless the code-behind already declares one.
+	/// Set <c>x:FieldModifier</c> on an object, or <c>EtoXamlFieldModifier</c> in the project, to change its access.
 	/// </remarks>
 	[Generator(LanguageNames.CSharp)]
 	public class EtoXamlSourceGenerator : XamlSourceGenerator
@@ -32,9 +38,12 @@ namespace Eto.Serialization.Xaml.Generator
 		protected override string DiagnosticPrefix => "ETOXAML";
 
 		protected override bool ShouldGenerate(AdditionalText file, AnalyzerConfigOptions fileOptions, AnalyzerConfigOptions globalOptions)
+			=> IsXamlFile(file.Path) && IsCompiled(fileOptions, globalOptions);
+
+		internal static bool IsXamlFile(string path) => path.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase) || IsJson(path);
+
+		internal static bool IsCompiled(AnalyzerConfigOptions fileOptions, AnalyzerConfigOptions globalOptions)
 		{
-			if (!file.Path.EndsWith(".xeto", StringComparison.OrdinalIgnoreCase) && !IsJson(file.Path))
-				return false;
 			if (fileOptions.TryGetValue("build_metadata.AdditionalFiles.XamlCodeGen", out var fileValue) && !string.IsNullOrEmpty(fileValue))
 				return IsTrue(fileValue);
 			return globalOptions.TryGetValue("build_property.EtoXamlCodeGen", out var value) && IsTrue(value);
@@ -47,13 +56,18 @@ namespace Eto.Serialization.Xaml.Generator
 		protected override void ConfigureOptions(XamlCodeGenOptions options, AdditionalText file, AnalyzerConfigOptions fileOptions, AnalyzerConfigOptions globalOptions)
 		{
 			base.ConfigureOptions(options, file, fileOptions, globalOptions);
+			ConfigureEtoOptions(options, file, globalOptions);
+		}
+
+		internal static void ConfigureEtoOptions(XamlCodeGenOptions options, AdditionalText file, AnalyzerConfigOptions globalOptions)
+		{
 			options.MethodName = MethodName;
 			options.MethodModifiers = "private";
-			// XamlReader only sets members that exist in the code-behind
-			options.GenerateFields = false;
 			options.Namespaces[string.Empty] = EtoFormsNamespace;
 			options.Namespaces["x"] = XamlLanguage.Xaml2006Namespace;
 			options.IgnoredNamespaces.Add(DesignNamespace);
+			globalOptions.TryGetValue("build_property.EtoXamlFieldModifier", out var fieldModifier);
+			options.DefaultFieldModifier = string.IsNullOrWhiteSpace(fieldModifier) ? "private" : fieldModifier.Trim().ToLowerInvariant();
 
 			if (options.RootClassName == null)
 				options.RootClassName = GetResourceClassName(file.Path, globalOptions);
@@ -80,6 +94,89 @@ namespace Eto.Serialization.Xaml.Generator
 		}
 
 		protected override XamlCodeGenerator CreateCodeGenerator(Compilation compilation) => new EtoXamlCodeGenerator(compilation);
+
+		readonly EtoXamlFieldWriter _fieldWriter = new EtoXamlFieldWriter();
+
+		// keeps the fields of a file that fails to compile, so the code-behind doesn't break while it is being edited
+		protected override void AfterGenerate(SourceProductionContext context, Compilation compilation, IReadOnlyList<XamlSourceFile> files)
+		{
+			EtoXamlCodeGenerator generator = null;
+			var hintNames = new HashSet<string>();
+			foreach (var file in files)
+			{
+				if (file.Result == null)
+					continue;
+				if (file.Result.Success)
+				{
+					_fieldWriter.Remember(file.File.Path, file.Text);
+					continue;
+				}
+				generator = generator ?? (EtoXamlCodeGenerator)CreateCodeGenerator(compilation);
+				_fieldWriter.Write(context, generator, file.File.Path, file.Text, file.Options, hintNames);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Declares fields for the named objects in .xeto and .jeto files that aren't compiled, which <c>XamlReader</c> sets when it parses them.
+	/// </summary>
+	[Generator(LanguageNames.CSharp)]
+	public class EtoXamlFieldGenerator : IIncrementalGenerator
+	{
+		readonly EtoXamlFieldWriter _fieldWriter = new EtoXamlFieldWriter();
+
+		public void Initialize(IncrementalGeneratorInitializationContext context)
+		{
+			var files = context.AdditionalTextsProvider
+				.Combine(context.AnalyzerConfigOptionsProvider)
+				.Where(pair => EtoXamlSourceGenerator.IsXamlFile(pair.Left.Path) && !EtoXamlSourceGenerator.IsCompiled(pair.Right.GetOptions(pair.Left), pair.Right.GlobalOptions))
+				.Select((pair, token) =>
+				{
+					var options = new XamlCodeGenOptions { FilePath = pair.Left.Path };
+					EtoXamlSourceGenerator.ConfigureEtoOptions(options, pair.Left, pair.Right.GlobalOptions);
+					return (path: pair.Left.Path, text: pair.Left.GetText(token)?.ToString(), options);
+				});
+
+			context.RegisterSourceOutput(files.Collect().Combine(context.CompilationProvider), (spc, data) =>
+			{
+				if (data.Left.IsDefaultOrEmpty)
+					return;
+				var generator = new EtoXamlCodeGenerator(data.Right);
+				var hintNames = new HashSet<string>();
+				foreach (var file in data.Left)
+				{
+					spc.CancellationToken.ThrowIfCancellationRequested();
+					if (file.text != null)
+						_fieldWriter.Write(spc, generator, file.path, file.text, file.options, hintNames);
+				}
+			});
+		}
+	}
+
+	/// <summary>Adds the fields-only source for a file, from the last version that could be read when it can't be now.</summary>
+	class EtoXamlFieldWriter
+	{
+		// the IDE runs generators on every edit, so a file that can't be read yet keeps the fields from when it last could
+		readonly ConcurrentDictionary<string, string> _lastReadable = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+		public void Remember(string path, string text) => _lastReadable[path] = text;
+
+		public void Write(SourceProductionContext context, EtoXamlCodeGenerator generator, string path, string text, XamlCodeGenOptions options, HashSet<string> hintNames)
+		{
+			var fields = generator.GenerateFields(text, options);
+			if (fields.source != null)
+				Remember(path, text);
+			else if (_lastReadable.TryGetValue(path, out var lastText))
+				fields = generator.GenerateFields(lastText, options);
+			if (fields.source == null)
+				return;
+
+			var baseName = fields.rootClass.ToDisplayString().Replace('<', '[').Replace('>', ']');
+			var hintName = baseName;
+			for (int i = 1; !hintNames.Add(hintName); i++)
+				hintName = baseName + i;
+			context.AddSource(hintName + ".xaml.fields.g.cs", SourceText.From(fields.source, Encoding.UTF8));
+		}
 	}
 
 	class EtoXamlCodeGenerator : XamlCodeGenerator
@@ -122,6 +219,109 @@ namespace Eto.Serialization.Xaml.Generator
 			var idx = rootClassName?.LastIndexOf('.') ?? -1;
 			if (idx > 0 && !options.Namespaces.ContainsKey("local"))
 				options.Namespaces["local"] = "clr-namespace:" + rootClassName.Substring(0, idx);
+		}
+
+		/// <summary>Declares fields for the named objects in the file, without the method that creates them, or null when it can't be read.</summary>
+		public (INamedTypeSymbol rootClass, string source) GenerateFields(string text, XamlCodeGenOptions options)
+		{
+			XamlObjectNode root;
+			try
+			{
+				PrepareOptions(options);
+				root = Read(text, options);
+			}
+			catch (Exception)
+			{
+				return default;
+			}
+			var rootClass = options.RootClassName != null ? Compilation.GetTypeByMetadataName(options.RootClassName) : null;
+			if (root == null || rootClass == null || !IsPartial(rootClass))
+				return default;
+
+			var fields = new List<string>();
+			AddFields(root, rootClass, true, new HashSet<string>(), fields, options);
+			return (rootClass, BuildFieldsSource(rootClass, fields));
+		}
+
+		// matches the fields XamlCodeEmitter declares, skipping objects whose type isn't known yet
+		void AddFields(XamlObjectNode node, INamedTypeSymbol rootClass, bool isRoot, HashSet<string> names, List<string> fields, XamlCodeGenOptions options)
+		{
+			if (node.Type != null && !isRoot && !node.Type.IsMarkupExtension)
+			{
+				var alias = node.Type.GetAliasedProperty(XamlLanguage.Name);
+				var name = node.GetText(XamlLanguage.Name) ?? (alias != null ? node.GetText(alias) : null);
+				var type = SchemaContext.GetSymbol(node.Type);
+				if (name != null && type != null && SyntaxFacts.IsValidIdentifier(name) && names.Add(name) && !HasMember(rootClass, name))
+				{
+					var modifier = node.GetText(XamlLanguage.FieldModifier);
+					if (modifier == null)
+						modifier = options.DefaultFieldModifier;
+					else if (string.Equals(modifier, "NotPublic", StringComparison.OrdinalIgnoreCase))
+						modifier = "internal";
+					else
+						modifier = modifier.ToLowerInvariant();
+					fields.Add($"{modifier} {XamlCodeEmitter.TypeName(type)} {Identifier(name)};");
+				}
+			}
+			foreach (var member in node.Members)
+				foreach (var value in member.Values)
+					if (value.Object != null)
+						AddFields(value.Object, rootClass, false, names, fields, options);
+		}
+
+		bool HasMember(INamedTypeSymbol rootClass, string name)
+		{
+			for (ITypeSymbol type = rootClass; type != null; type = type.BaseType)
+				if (type.GetMembers(name).Any(m => !m.IsStatic && (m is IFieldSymbol || m is IPropertySymbol) && Compilation.IsSymbolAccessibleWithin(m, rootClass)))
+					return true;
+			return false;
+		}
+
+		static bool IsPartial(INamedTypeSymbol type)
+		{
+			for (var t = type; t != null; t = t.ContainingType)
+				if (!t.DeclaringSyntaxReferences.Any(r => r.GetSyntax() is TypeDeclarationSyntax syntax && syntax.Modifiers.Any(SyntaxKind.PartialKeyword)))
+					return false;
+			return true;
+		}
+
+		static string Identifier(string name) => SyntaxFacts.GetKeywordKind(name) != SyntaxKind.None ? "@" + name : name;
+
+		static string BuildFieldsSource(INamedTypeSymbol rootClass, List<string> fields)
+		{
+			var types = new List<INamedTypeSymbol>();
+			for (var t = rootClass; t != null; t = t.ContainingType)
+				types.Insert(0, t);
+
+			var sb = new StringBuilder();
+			sb.AppendLine("// <auto-generated/>");
+			sb.AppendLine("#pragma warning disable");
+			sb.AppendLine("#nullable disable");
+			sb.AppendLine();
+			var indent = string.Empty;
+			var ns = rootClass.ContainingNamespace;
+			if (ns != null && !ns.IsGlobalNamespace)
+			{
+				sb.AppendLine($"namespace {ns.ToDisplayString()}");
+				sb.AppendLine("{");
+				indent += "\t";
+			}
+			foreach (var type in types)
+			{
+				var kind = type.IsRecord ? "record" : type.TypeKind == TypeKind.Struct ? "struct" : "class";
+				var typeParameters = type.TypeParameters.Length > 0 ? "<" + string.Join(", ", type.TypeParameters.Select(r => r.Name)) + ">" : string.Empty;
+				sb.AppendLine($"{indent}partial {kind} {type.Name}{typeParameters}");
+				sb.AppendLine($"{indent}{{");
+				indent += "\t";
+			}
+			foreach (var field in fields)
+				sb.AppendLine(indent + field);
+			while (indent.Length > 0)
+			{
+				indent = indent.Substring(1);
+				sb.AppendLine($"{indent}}}");
+			}
+			return sb.ToString();
 		}
 
 		static string GetMetadataName(INamedTypeSymbol type)

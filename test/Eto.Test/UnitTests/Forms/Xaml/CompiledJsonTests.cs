@@ -78,6 +78,8 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 					Assert.That(panel.ModeLabel?.ID, Is.EqualTo("ModeLabel"), "$name should set the member and ID");
 					Assert.That(panel.CheckBox?.Checked, Is.True);
 					Assert.That(panel.BoundTextBox, Is.Not.Null, "ID should set a field");
+					var layoutField = typeof(CompiledJsonPanel).GetField("Layout", BindingFlags.Instance | BindingFlags.NonPublic);
+					Assert.That(layoutField?.GetValue(panel), Is.SameAs(panel.Content), "$name without a member should generate a field");
 
 					panel.ClickButton.PerformClick();
 					Assert.That(panel.Clicks, Is.EqualTo(1));

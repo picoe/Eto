@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Panel>
+	<StackLayout>
+		<Label x:Name="NameLabel" Text="Name" />
+		<TextBox ID="NameTextBox" x:FieldModifier="public" />
+	</StackLayout>
+</Panel>
