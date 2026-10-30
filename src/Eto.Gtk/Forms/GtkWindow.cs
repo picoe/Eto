@@ -861,8 +861,6 @@ namespace Eto.GtkSharp.Forms
 
 		public Rectangle Bounds
 		{
-			// GTK positions (gtk_window_move) and sizes (gtk_window_resize) windows with separate
-			// calls, so there is no combined API - set size then location.
 			get => new Rectangle(Location, Size);
 			set
 			{
@@ -870,6 +868,16 @@ namespace Eto.GtkSharp.Forms
 				{
 					var size = Size;
 					UserPreferredSize = value.Size;
+					// Wayland popups require separate resize and positioning operations.
+					if (!IsWaylandDisplay)
+					{
+						var gdkWindow = Control.GetWindow();
+						if (value.Size != size)
+							gdkWindow.MoveResize(value.X, value.Y, value.Width, value.Height);
+						else
+							gdkWindow.Move(value.X, value.Y);
+						return;
+					}
 					if (value.Size != size)
 					{
 						// if the size is different, resize the window and wait for the size to be applied
