@@ -7,6 +7,8 @@ namespace Eto.GtkSharp.Forms
 	public class LinuxTrayIndicatorHandler : WidgetHandler<GLib.Object, TrayIndicator, TrayIndicator.ICallback>, TrayIndicator.IHandler
 	{
 		const string libappindicator = "libappindicator3.so.1";
+		const string libgio = "libgio-2.0.so.0";
+		const int SessionBus = 2;
 		Image image;
 		string imagePath;
 		ContextMenu menu;
@@ -34,6 +36,23 @@ namespace Eto.GtkSharp.Forms
 
 		[DllImport(libappindicator, CallingConvention = CallingConvention.Cdecl)]
 		public extern static void app_indicator_dispose(IntPtr gobject);
+
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_bus_get_sync(int busType, IntPtr cancellable, IntPtr error);
+
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern IntPtr g_dbus_connection_call_sync(IntPtr connection, string busName, string objectPath,
+			string interfaceName, string methodName, IntPtr parameters, IntPtr replyType, int flags,
+			int timeoutMs, IntPtr cancellable, ref IntPtr error);
+
+		[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+		static extern int g_dbus_error_quark();
+
+		[DllImport("libglib-2.0.so.0", CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_variant_unref(IntPtr value);
+
+		[DllImport("libgobject-2.0.so.0", CallingConvention = CallingConvention.Cdecl)]
+		static extern void g_object_unref(IntPtr obj);
 
 		static uint Id = 0;
 
@@ -71,6 +90,47 @@ namespace Eto.GtkSharp.Forms
 			app_indicator_set_menu(Control.Handle, (new Gtk.Menu()).Handle);
 
 			Id++;
+
+			// Connecting to the session bus must not block the UI thread.
+			Task.Run(EnsureStatusNotifierWatcher);
+		}
+
+		static void EnsureStatusNotifierWatcher()
+		{
+			var connection = IntPtr.Zero;
+			try
+			{
+				connection = g_bus_get_sync(SessionBus, IntPtr.Zero, IntPtr.Zero);
+				if (connection == IntPtr.Zero)
+					return;
+
+				// Cinnamon's activatable name differs from the standard watcher name.
+				foreach (var busName in new[] { "org.kde.StatusNotifierWatcher", "org.x.StatusNotifierWatcher" })
+				{
+					var error = IntPtr.Zero;
+					var reply = g_dbus_connection_call_sync(connection, busName, "/StatusNotifierWatcher",
+						"org.freedesktop.DBus.Peer", "Ping", IntPtr.Zero, IntPtr.Zero, 0, 5000, IntPtr.Zero, ref error);
+					if (reply != IntPtr.Zero)
+					{
+						g_variant_unref(reply);
+						return;
+					}
+					if (error == IntPtr.Zero)
+						return;
+					var failure = new GLib.GException(error);
+					if (failure.Domain != g_dbus_error_quark() || failure.Code != (int)GLib.DBusError.ServiceUnknown)
+						return;
+				}
+			}
+			catch
+			{
+				// Watcher activation is optional; retain libappindicator's existing fallback.
+			}
+			finally
+			{
+				if (connection != IntPtr.Zero)
+					g_object_unref(connection);
+			}
 		}
 
 		void RemoveTempImage()
