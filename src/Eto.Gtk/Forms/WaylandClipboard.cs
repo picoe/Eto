@@ -391,7 +391,8 @@ namespace Eto.GtkSharp.Forms
 				wl_proxy_add_listener(device, deviceVtable, IntPtr.Zero);
 
 				// second roundtrip: receive the initial selection offer
-				wl_display_roundtrip(display);
+				if (wl_display_roundtrip(display) < 0)
+					return false;
 
 				// dedicated dispatch thread + wakeup pipe for clean shutdown
 				wakePipe = new int[2];
@@ -723,6 +724,16 @@ namespace Eto.GtkSharp.Forms
 				try { onSelectionChanged?.Invoke(); } catch { }
 			}
 
+			// Only the regular clipboard is exposed; release primary-selection offers.
+			void OnDevicePrimarySelection(IntPtr data, IntPtr dev, IntPtr offer)
+			{
+				lock (stateLock)
+				{
+					if (offer != IntPtr.Zero && pendingOffers.Remove(offer))
+						wl_proxy_marshal_array_flags(offer, 1, IntPtr.Zero, 0, WL_MARSHAL_FLAG_DESTROY, null);
+				}
+			}
+
 			void OnDeviceFinished(IntPtr data, IntPtr dev) { }
 
 			// Maximum time a single selection transfer may take before we give up. A consumer that stops
@@ -839,7 +850,8 @@ namespace Eto.GtkSharp.Forms
 				DeviceDataOffer ddo = OnDeviceDataOffer;
 				DeviceSelection ds = OnDeviceSelection;
 				DeviceFinished df = OnDeviceFinished;
-				deviceVtable = Vtable(ddo, ds, df);
+				DeviceSelection dps = OnDevicePrimarySelection;
+				deviceVtable = Vtable(ddo, ds, df, dps);
 
 				OfferOffer oo = OnOfferOffer;
 				offerVtable = Vtable(oo);
@@ -882,17 +894,19 @@ namespace Eto.GtkSharp.Forms
 				};
 				FillInterface(ifManager, p + "manager_v1", 1, mgrMethods, null);
 
-				// device: requests set_selection(?o), destroy(); events data_offer(n), selection(?o), finished()
+				// device: requests set_selection(?o), destroy()
 				var devMethods = new[]
 				{
 					Msg("set_selection", "?o", ifSource),
 					Msg("destroy", "", null)
 				};
+				// primary_selection is ext v1 / zwlr v2; older compositors also send it to zwlr v1 clients.
 				var devEvents = new[]
 				{
 					Msg("data_offer", "n", ifOffer),
 					Msg("selection", "?o", ifOffer),
-					Msg("finished", "", null)
+					Msg("finished", "", null),
+					Msg("primary_selection", ext ? "?o" : "2?o", ifOffer)
 				};
 				FillInterface(ifDevice, p + "device_v1", 1, devMethods, devEvents);
 
