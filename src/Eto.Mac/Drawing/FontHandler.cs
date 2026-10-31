@@ -247,6 +247,28 @@ namespace Eto.Mac.Drawing
 #endif
 		};
 
+#if OSX
+		NSDictionary _lineAttributes;
+		float? _lineBaseline;
+
+		/// <summary>
+		/// Offset from the top of a line to its baseline, matching where an NSLayoutManager places it.
+		/// </summary>
+#if MACOS_NET
+		internal float LineBaseline => _lineBaseline ?? (_lineBaseline = (float)SharedLayoutManager.GetDefaultBaselineOffset(Control)).Value;
+#else
+		internal float LineBaseline => _lineBaseline ?? (_lineBaseline = (float)SharedLayoutManager.DefaultBaselineOffsetForFont(Control)).Value;
+#endif
+
+		/// <summary>
+		/// Attributes for drawing a single line with CoreText, using the context's fill color for the text.
+		/// </summary>
+		internal NSDictionary LineAttributes => _lineAttributes ?? (_lineAttributes = NSDictionary.FromObjectsAndKeys(
+			new NSObject[] { Control, NSNumber.FromBoolean(true) },
+			new NSObject[] { attributeKeys[0], new NSString("CTForegroundColorFromContext") }
+		));
+
+#endif
 		NSDictionary CreateAttributes()
 		{
 			return NSDictionary.FromObjectsAndKeys(
