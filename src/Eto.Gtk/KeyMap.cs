@@ -171,6 +171,8 @@ namespace Eto.GtkSharp
 			keymap.Add(Gdk.Key.Alt_R, Keys.RightAlt);
 			keymap.Add(Gdk.Key.Meta_L, Keys.LeftApplication);
 			keymap.Add(Gdk.Key.Meta_R, Keys.RightApplication);
+			keymap.Add(Gdk.Key.Super_L, Keys.LeftApplication);
+			keymap.Add(Gdk.Key.Super_R, Keys.RightApplication);
 			keymap.Add(Gdk.Key.KP_Enter, Keys.Enter);
 			keymap.Add(Gdk.Key.KP_Up, Keys.Up);
 			keymap.Add(Gdk.Key.KP_Down, Keys.Down);
@@ -227,6 +229,9 @@ namespace Eto.GtkSharp
 				if (!inversekeymap.ContainsKey(val.Value))
 					inversekeymap.Add(val.Value, val.Key);
 			}
+			var useMeta = EtoEnvironment.Platform.IsWindows || EtoEnvironment.Platform.IsMac;
+			inversekeymap[Keys.LeftApplication] = useMeta ? Gdk.Key.Meta_L : Gdk.Key.Super_L;
+			inversekeymap[Keys.RightApplication] = useMeta ? Gdk.Key.Meta_R : Gdk.Key.Super_R;
 			return inversekeymap;
 		}
 	}
