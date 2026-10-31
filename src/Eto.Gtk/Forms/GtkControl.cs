@@ -1323,26 +1323,38 @@ namespace Eto.GtkSharp.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			var gdkWindow = EventControl.GetWindow();
-			if (gdkWindow != null)
-			{
-				int x, y;
-				gdkWindow.GetOrigin(out x, out y);
-				return new PointF(point.X - x, point.Y - y);
-			}
-			return point;
+			var origin = ScreenOrigin();
+			return new PointF(point.X - origin.X, point.Y - origin.Y);
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			var gdkWindow = EventControl.GetWindow();
-			if (gdkWindow != null)
+			var origin = ScreenOrigin();
+			return new PointF(point.X + origin.X, point.Y + origin.Y);
+		}
+
+		PointF ScreenOrigin()
+		{
+			var control = EventControl;
+			// Buttons report mouse coordinates relative to their input window.
+			if (control is Gtk.Button && control.GetWindow() is Gdk.Window eventWindow)
 			{
-				int x, y;
-				gdkWindow.GetOrigin(out x, out y);
-				return new PointF(point.X + x, point.Y + y);
+				eventWindow.GetOrigin(out var eventX, out var eventY);
+				return new PointF(eventX, eventY);
 			}
-			return point;
+
+			var toplevel = control.Toplevel;
+			if (!(toplevel?.GetWindow() is Gdk.Window toplevelWindow))
+				return PointF.Empty;
+
+			toplevelWindow.GetOrigin(out var originX, out var originY);
+
+			// A windowless widget's native window omits its allocation offset.
+			if (control.TranslateCoordinates(toplevel, 0, 0, out var offsetX, out var offsetY))
+				return new PointF(originX + offsetX, originY + offsetY);
+
+			// Until realization, only the toplevel origin is available.
+			return new PointF(originX, originY);
 		}
 
 		public Point Location
