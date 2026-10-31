@@ -565,6 +565,8 @@ namespace Eto.iOS.Drawing
 		{
 			if (disposing)
 			{
+				_formattedText?.Dispose();
+				_formattedText = null;
 				if (disposeContext && graphicsContext != null)
 					graphicsContext.FlushGraphics();
 				Reset();
