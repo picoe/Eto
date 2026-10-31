@@ -189,7 +189,7 @@ public class ThemeHandler : WidgetHandler<GtkThemeStyle?, Theme>, Theme.IHandler
 			case GtkThemeStyle.Dark:
 				settings.ApplicationPreferDarkTheme = true;
 				var darkName = GetDarkThemeName(settings.ThemeName);
-				if (darkName != settings.ThemeName && ThemeExists(darkName))
+				if (darkName != null && darkName != settings.ThemeName)
 					settings.ThemeName = darkName;
 				break;
 		}
