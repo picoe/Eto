@@ -570,9 +570,8 @@ namespace Eto.Mac.Forms
 			Control.WillResize = HandleWillResize;
 			Control.DidChangeScreen += HandleDidChangeScreen;
 
-#if MONOMAC
+			// so OnUnLoad always fires on close, not just when Closed is subscribed
 			HandleEvent(Window.ClosedEvent);
-#endif
 		}
 
 		private static CGSize HandleWillResize(NSWindow sender, CGSize toFrameSize)
