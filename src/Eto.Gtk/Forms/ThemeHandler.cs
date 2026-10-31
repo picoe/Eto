@@ -151,6 +151,8 @@ public class ThemeHandler : WidgetHandler<GtkThemeStyle?, Theme>, Theme.IHandler
 			return true;
 		if (Control == GtkThemeStyle.Light)
 			return false;
+		if (Control == GtkThemeStyle.System && Gtk.Settings.Default.ApplicationPreferDarkTheme)
+			return true;
 		string themeName;
 		if (Control == GtkThemeStyle.System)
 			themeName = Gtk.Settings.Default.ThemeName;
