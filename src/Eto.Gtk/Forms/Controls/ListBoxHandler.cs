@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.Forms.Controls
 		readonly Gtk.ScrolledWindow scroll;
 		GtkEnumerableModel<object> model;
 		CollectionHandler collection;
+		int suppressSelectionChanged;
 		public static Size MaxImageSize = new Size(16, 16);
 
 		public override Gtk.Widget ContainerControl
@@ -55,6 +56,8 @@ namespace Eto.GtkSharp.Forms.Controls
 
 			public void HandleSelectionChanged(object sender, EventArgs e)
 			{
+				if (Handler?.suppressSelectionChanged > 0)
+					return;
 				Handler?.Callback.OnSelectedIndexChanged(Handler.Widget, EventArgs.Empty);
 			}
 
@@ -128,12 +131,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			protected override void OnRegisterCollection(EventArgs e)
 			{
 				Handler.model = new GtkEnumerableModel<object> { Handler = Handler, Count = Count };
-				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
+				Handler.SetModel(new Gtk.TreeModelAdapter(Handler.model));
 			}
 
 			protected override void OnUnregisterCollection(EventArgs e)
 			{
-				Handler.Control.Model = null;
+				Handler.SetModel(null);
 			}
 
 			public override void AddItem(object item)
@@ -163,8 +166,19 @@ namespace Eto.GtkSharp.Forms.Controls
 			public override void RemoveAllItems()
 			{
 				Handler.model = new GtkEnumerableModel<object> { Handler = Handler };
-				Handler.Control.Model = new Gtk.TreeModelAdapter(Handler.model);
+				Handler.SetModel(new Gtk.TreeModelAdapter(Handler.model));
 			}
+		}
+
+		void SetModel(Gtk.ITreeModel newModel)
+		{
+			// GTK reports a selection change whenever the model is replaced, even if nothing was selected
+			var hadSelection = Control.Selection.CountSelectedRows() > 0;
+			suppressSelectionChanged++;
+			Control.Model = newModel;
+			suppressSelectionChanged--;
+			if (hadSelection)
+				Callback.OnSelectedIndexChanged(Widget, EventArgs.Empty);
 		}
 
 		public IEnumerable<object> DataStore
