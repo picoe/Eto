@@ -57,6 +57,36 @@ namespace Eto.Test.UnitTests.Drawing
 				Is.EquivalentTo(sizes.Select(size => new Size(size, size))));
 		}
 
+		[Test]
+		public void IconFromDisposedStreamShouldProvideFrames()
+		{
+			Icon icon;
+			using (var ms = new MemoryStream())
+			{
+				using (var source = GetType().Assembly.GetManifestResourceStream("Eto.Test.Images.TestIcon.ico"))
+					source.CopyTo(ms);
+				ms.Position = 0;
+				icon = new Icon(ms);
+			}
+			// Frames are first read after the stream is gone, so the handler must keep its own copy of the data.
+			using (icon)
+			using (var expected = TestIcons.TestIcon)
+			{
+				Assert.That(icon.Size, Is.EqualTo(expected.Size), "#1");
+				Assert.That(icon.Frames.Select(r => r.PixelSize), Is.EquivalentTo(expected.Frames.Select(r => r.PixelSize)), "#2");
+			}
+		}
+
+		[Test]
+		public void DisposedIconShouldNotExposeFrames()
+		{
+			// Nothing reads Frames before Dispose, so this also covers an icon whose frames were never loaded.
+			var icon = TestIcons.TestIcon;
+			icon.Dispose();
+			Assert.That(icon.IsDisposed, Is.True, "#1");
+			Assert.Throws<ObjectDisposedException>(() => icon.Frames.Count(), "#2");
+		}
+
 		[TestCase(.50f, 64, null)]
 		[TestCase(.25f, 32, null)]
 		[TestCase(1, 128, null)]
