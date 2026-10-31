@@ -794,7 +794,13 @@ namespace Eto.GtkSharp.Forms
 					handler.Callback.OnMouseDoubleClick(handler.Widget, mouseArgs);
 				}
 				if (!mouseArgs.Handled && handler.EventControl.CanFocus && !handler.EventControl.HasFocus)
-					handler.EventControl.GrabFocus();
+				{
+					// Preserve child focus only when the mouse event bubbles from a descendant.
+					var focus = (handler.EventControl.Toplevel as Gtk.Window)?.Focus;
+					if (focus == null || !focus.IsAncestor(handler.EventControl)
+						|| Gtk.Global.GetEventWidget(args.Event)?.IsAncestor(handler.EventControl) != true)
+						handler.EventControl.GrabFocus();
+				}
 				if (args.RetVal != null && (bool)args.RetVal == true)
 					return;
 				if (mouseArgs.Handled && GtkControl.ShouldCaptureMouse)
