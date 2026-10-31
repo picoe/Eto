@@ -423,9 +423,10 @@ namespace Eto.GtkSharp.Drawing
 			var r = (uint)(byte)(argb);
 			if (a > 0)
 			{
-				b = b * 255 / a;
-				g = g * 255 / a;
-				r = r * 255 / a;
+				// Round to preserve Cairo's premultiplied channels across conversions.
+				b = (b * 255 + a / 2) / a;
+				g = (g * 255 + a / 2) / a;
+				r = (r * 255 + a / 2) / a;
 			}
 			return unchecked((int)((a << 24) | (b << 16) | (g << 8) | (r)));
 		}
