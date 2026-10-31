@@ -145,7 +145,7 @@ namespace Eto.GtkSharp.Forms
 
 		public virtual Size Size
 		{
-			get => ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : UserPreferredSize;
+			get => ContainerControl.Visible && ContainerControl.IsRealized ? ContainerControl.Allocation.Size.ToEto() : UserPreferredSize;
 			set
 			{
 				var userPreferredSize = UserPreferredSize;
@@ -393,6 +393,9 @@ namespace Eto.GtkSharp.Forms
 		protected override void Initialize()
 		{
 			base.Initialize();
+			// Controls are visible by default on other platforms; windows are shown explicitly.
+			if (!(ContainerControl is Gtk.Window))
+				ContainerControl.Show();
 			DragControl.DragDataReceived += Connector.HandleDragDataReceived;
 			DragControl.DragDataGet += Connector.HandleDragDataGet;
 			HandleEvent(Eto.Forms.Control.SizeChangedEvent);

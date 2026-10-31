@@ -29,7 +29,7 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Size ClientSize {
 			get {
-				if (Control.Visible && Control.Child != null)
+				if (Control.IsRealized && Control.Child != null)
 					return Control.Child.Allocation.Size.ToEto ();
 				else {
 					var label = Control.LabelWidget;
