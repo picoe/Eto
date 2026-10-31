@@ -38,6 +38,7 @@
 						Control.Menu = menu.ToNS();
 
 						Control.Button.Image = image.ToNS((int)Math.Ceiling(NSStatusBar.SystemStatusBar.Thickness));
+						Control.Button.ToolTip = title ?? string.Empty;
 						Control.Button.Activated += Button_Activated;
 
 					}
