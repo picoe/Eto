@@ -112,6 +112,9 @@ namespace Eto.GtkSharp
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_object_unref(IntPtr instance);
+
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_web_view_new();
 
@@ -299,6 +302,10 @@ namespace Eto.GtkSharp
 			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_context_load_font(IntPtr context, IntPtr description);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_font_describe(IntPtr font);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_cairo_font_map_new();
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -366,6 +373,9 @@ namespace Eto.GtkSharp
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_object_unref(IntPtr instance);
+
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_web_view_new();
 
@@ -553,6 +563,10 @@ namespace Eto.GtkSharp
 			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_context_load_font(IntPtr context, IntPtr description);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_font_describe(IntPtr font);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_cairo_font_map_new();
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -620,6 +634,9 @@ namespace Eto.GtkSharp
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_object_unref(IntPtr instance);
+
 			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr webkit_web_view_new();
 
@@ -807,6 +824,10 @@ namespace Eto.GtkSharp
 			public extern static void gdk_window_move_to_rect(IntPtr window, ref GdkRect rect, Gravity rect_anchor, Gravity window_anchor, AnchorHint anchor_hints, int rect_anchor_dx, int rect_anchor_dy);
 			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
 			public extern static bool pango_font_has_char(IntPtr font, int wc);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_context_load_font(IntPtr context, IntPtr description);
+			[DllImport(libpango, CallingConvention = CallingConvention.Cdecl)]
+			public extern static IntPtr pango_font_describe(IntPtr font);
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
 			public extern static IntPtr pango_cairo_font_map_new();
 			[DllImport(libpangocairo, CallingConvention = CallingConvention.Cdecl)]
@@ -849,6 +870,16 @@ namespace Eto.GtkSharp
 				NMMac.g_signal_stop_emission_by_name(instance, name);
 			else
 				NMWindows.g_signal_stop_emission_by_name(instance, name);
+		}
+
+		public static void g_object_unref(IntPtr instance)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.g_object_unref(instance);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.g_object_unref(instance);
+			else
+				NMWindows.g_object_unref(instance);
 		}
 
 		public static bool gtk_clipboard_wait_for_targets(IntPtr cp, out IntPtr atoms, out int number)
@@ -1479,6 +1510,26 @@ namespace Eto.GtkSharp
 				return NMMac.pango_font_has_char(font, wc);
 			else
 				return NMWindows.pango_font_has_char(font, wc);
+		}
+
+		public static IntPtr pango_context_load_font(IntPtr context, IntPtr description)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.pango_context_load_font(context, description);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.pango_context_load_font(context, description);
+			else
+				return NMWindows.pango_context_load_font(context, description);
+		}
+
+		public static IntPtr pango_font_describe(IntPtr font)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				return NMLinux.pango_font_describe(font);
+			else if (EtoEnvironment.Platform.IsMac)
+				return NMMac.pango_font_describe(font);
+			else
+				return NMWindows.pango_font_describe(font);
 		}
 
 		public static IntPtr pango_cairo_font_map_new()
