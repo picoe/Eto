@@ -588,15 +588,16 @@ namespace Eto.GtkSharp.Drawing
 				if (bounds == null)
 				{
 					var rect = new Gdk.Rectangle();
+					// already in user space
 					if (GetClipRectangle(Control, ref rect))
-						bounds = rect.ToEto();
-					else
-						bounds = widget?.Allocation.ToEto() ?? RectangleF.Empty;
+						return rect.ToEto();
+					bounds = widget?.Allocation.ToEto() ?? RectangleF.Empty;
 				}
-				var matrix = Control.Matrix;
-				if (matrix.IsIdentity())
+				// only undo our own transforms; the context's base matrix can include an offset
+				// (e.g. client side decorations on Wayland) that isn't part of the drawable's coordinates
+				if (currentTransform.IsIdentity())
 					return bounds.Value;
-				var etoMatrix = matrix.ToEto();
+				var etoMatrix = currentTransform.ToEto();
 				etoMatrix.Invert();
 				return etoMatrix.TransformRectangle(bounds.Value);
 #endif
