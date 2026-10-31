@@ -11,83 +11,104 @@ namespace Eto.GtkSharp.Drawing
 
 		public void Create(Stream stream)
 		{
-			using (var ms = new MemoryStream())
+			using var ms = new MemoryStream();
+			stream.CopyTo(ms);
+			var pixbufs = SplitIcon(ms);
+			frames = new List<IconFrame>(pixbufs.Length);
+			var largest = pixbufs[0];
+			foreach (var pb in pixbufs)
 			{
-				stream.CopyTo(ms);
-				ms.Position = 0;
-				Pixbuf = new Gdk.Pixbuf(ms);
-				Control = new Gtk.IconSet(Pixbuf);
-				ms.Position = 0;
-				CreateFrames(ms);
+				frames.Add(IconFrame.FromControlObject(1, new Bitmap(new BitmapHandler(pb))));
+				if ((long)pb.Width * pb.Height > (long)largest.Width * largest.Height)
+					largest = pb;
 			}
+			ms.Position = 0;
+			try
+			{
+				Pixbuf = new Gdk.Pixbuf(ms);
+			}
+			catch (GLib.GException)
+			{
+				// GDK cannot choose a primary image when every frame is PNG-compressed.
+				Pixbuf = largest.Copy();
+			}
+			Control = new Gtk.IconSet(Pixbuf);
 		}
 
 		public void Create(string fileName)
 		{
-			using (var fs = File.OpenRead(fileName))
-			using (var ms = new MemoryStream())
-			{
-				fs.CopyTo(ms);
-				ms.Position = 0;
-				Pixbuf = new Gdk.Pixbuf(ms);
-				Control = new Gtk.IconSet(Pixbuf);
-				ms.Position = 0;
-				CreateFrames(ms);
-			}
+			using var fs = File.OpenRead(fileName);
+			Create(fs);
 		}
 
 		const int sICONDIR = 6;            // sizeof(ICONDIR) 
 		const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
+		static readonly byte[] pngSignature = { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
 
 		public Gdk.Pixbuf[] SplitIcon(MemoryStream input)
 		{
-			// Get multiple .ico file image.
 			byte[] srcBuf = input.ToArray();
+			if (srcBuf.Length < sICONDIR)
+				throw new InvalidDataException("Icon not a valid format");
 
-			var splitIcons = new List<Gdk.Pixbuf> ();
-			int count = BitConverter.ToInt16 (srcBuf, 4); // ICONDIR.idCount
+			var type = BitConverter.ToUInt16(srcBuf, 2);
+			int count = BitConverter.ToUInt16(srcBuf, 4); // ICONDIR.idCount
+			int directoryEnd = sICONDIR + sICONDIRENTRY * count;
+			if (BitConverter.ToUInt16(srcBuf, 0) != 0 || (type != 1 && type != 2)
+				|| count == 0 || directoryEnd > srcBuf.Length)
+				throw new InvalidDataException("Icon not a valid format");
 
-			for (int i = 0; i < count; i++) {
-				using (var destStream = new MemoryStream ())
-				using (var writer = new BinaryWriter (destStream)) {
-					// Copy ICONDIR and ICONDIRENTRY.
-					int pos = 0;
-					writer.Write (srcBuf, pos, sICONDIR - 2);
-					writer.Write ((short)1);    // ICONDIR.idCount == 1;
-
-					pos += sICONDIR;
-					pos += sICONDIRENTRY * i;
-
-					writer.Write (srcBuf, pos, sICONDIRENTRY - 4); // write out icon info (minus old offset)
-					writer.Write (sICONDIR + sICONDIRENTRY);    // write offset of icon data
-					pos += 8;
-
-					// Copy picture and mask data.
-					int imgSize = BitConverter.ToInt32 (srcBuf, pos);       // ICONDIRENTRY.dwBytesInRes
-					pos += 4;
-					int imgOffset = BitConverter.ToInt32 (srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
-					if (imgOffset + imgSize > srcBuf.Length)
+			var splitIcons = new Gdk.Pixbuf[count];
+			try
+			{
+				for (int i = 0; i < count; i++)
+				{
+					int entryOffset = sICONDIR + sICONDIRENTRY * i;
+					int imgSize = BitConverter.ToInt32(srcBuf, entryOffset + 8); // ICONDIRENTRY.dwBytesInRes
+					int imgOffset = BitConverter.ToInt32(srcBuf, entryOffset + 12); // ICONDIRENTRY.dwImageOffset
+					if (imgOffset < directoryEnd || imgSize <= 0 || imgOffset > srcBuf.Length - imgSize)
 						throw new InvalidDataException("Icon not a valid format");
-					writer.Write (srcBuf, imgOffset, imgSize);
-					writer.Flush ();
 
-					// Create new icon.
-					destStream.Seek (0, SeekOrigin.Begin);
-					splitIcons.Add (new Gdk.Pixbuf(destStream));
+					// PNG frames are complete images; DIB frames need a single-frame ICO header.
+					var isPng = HasPngSignature(srcBuf, imgOffset, imgSize);
+					using var imageStream = isPng
+						? new MemoryStream(srcBuf, imgOffset, imgSize, false)
+						: new MemoryStream();
+					if (!isPng)
+					{
+						using var writer = new BinaryWriter(imageStream, Encoding.UTF8, leaveOpen: true);
+						writer.Write(srcBuf, 0, sICONDIR - 2);
+						writer.Write((short)1);
+						writer.Write(srcBuf, entryOffset, sICONDIRENTRY - 4);
+						writer.Write(sICONDIR + sICONDIRENTRY);
+						writer.Write(srcBuf, imgOffset, imgSize);
+					}
+					imageStream.Position = 0;
+					var pixbuf = new Gdk.Pixbuf(imageStream);
+					splitIcons[i] = pixbuf;
+					var width = srcBuf[entryOffset] == 0 ? 256 : srcBuf[entryOffset];
+					var height = srcBuf[entryOffset + 1] == 0 ? 256 : srcBuf[entryOffset + 1];
+					if (pixbuf.Width != width || pixbuf.Height != height)
+						throw new InvalidDataException("Icon not a valid format");
 				}
+				return splitIcons;
 			}
-
-			return splitIcons.ToArray ();
+			catch
+			{
+				foreach (var pixbuf in splitIcons)
+					pixbuf?.Dispose();
+				throw;
+			}
 		}
 
-
-		void CreateFrames(MemoryStream input)
+		static bool HasPngSignature(byte[] buffer, int offset, int length)
 		{
-			frames = new List<IconFrame>();
-			foreach (var pb in SplitIcon(input))
-			{
-				frames.Add(IconFrame.FromControlObject(1, new Bitmap(new BitmapHandler(pb))));
-			}
+			if (length < pngSignature.Length)
+				return false;
+			for (int i = 0; i < pngSignature.Length; i++)
+				if (buffer[offset + i] != pngSignature[i])
+					return false;
+			return true;
 		}
 
 		#endregion
