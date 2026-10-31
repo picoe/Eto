@@ -13,7 +13,8 @@ var extalt = new[] { ".dll", ".so.1", ".dylib" };
 
 var giomethods = new[]
 {
-	"void g_signal_stop_emission_by_name(IntPtr instance, string name)"
+	"void g_signal_stop_emission_by_name(IntPtr instance, string name)",
+	"void g_object_unref(IntPtr instance)"
 };
 
 var webkitmethods = new[]
@@ -96,7 +97,9 @@ var gdkmethods = new[]
 
 var pangomethods = new[]
 {
-	"bool pango_font_has_char(IntPtr font, int wc)"
+	"bool pango_font_has_char(IntPtr font, int wc)",
+	"IntPtr pango_context_load_font(IntPtr context, IntPtr description)",
+	"IntPtr pango_font_describe(IntPtr font)"
 };
 
 var pangocairomethods = new []
