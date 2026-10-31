@@ -375,8 +375,6 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (_settingTheme)
 				return;
-			// OS theme changed externally, reset cached theme so it's re-read
-			_currentTheme = null;
 			Callback.OnThemeChanged(Widget, EventArgs.Empty);
 		}
 
