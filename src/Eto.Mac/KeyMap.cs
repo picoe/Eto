@@ -144,11 +144,7 @@
 			keymap.Add(64, Keys.F17);
 			keymap.Add(79, Keys.F18);
 			keymap.Add(80, Keys.F19);
-			// keymap.Add(80, Keys.F20);
-			// keymap.Add(80, Keys.F21);
-			// keymap.Add(80, Keys.F22);
-			// keymap.Add(80, Keys.F23);
-			// keymap.Add(80, Keys.F24);
+			keymap.Add(90, Keys.F20);
 			keymap.Add(18, Keys.D1);
 			keymap.Add(19, Keys.D2);
 			keymap.Add(20, Keys.D3);
@@ -287,6 +283,18 @@
 			inverse.Add(Keys.F10, "\xF70D");
 			inverse.Add(Keys.F11, "\xF70E");
 			inverse.Add(Keys.F12, "\xF70F");
+			inverse.Add(Keys.F13, "\xF710");
+			inverse.Add(Keys.F14, "\xF711");
+			inverse.Add(Keys.F15, "\xF712");
+			inverse.Add(Keys.F16, "\xF713");
+			inverse.Add(Keys.F17, "\xF714");
+			inverse.Add(Keys.F18, "\xF715");
+			inverse.Add(Keys.F19, "\xF716");
+			inverse.Add(Keys.F20, "\xF717");
+			inverse.Add(Keys.F21, "\xF718");
+			inverse.Add(Keys.F22, "\xF719");
+			inverse.Add(Keys.F23, "\xF71A");
+			inverse.Add(Keys.F24, "\xF71B");
 			return inverse;
 		}
 
