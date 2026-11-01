@@ -90,9 +90,14 @@ namespace Eto.GtkSharp.Forms
 			set
 			{
 				RemoveTempImage();
-				imagePath = Path.GetTempFileName();
-
 				image = value;
+				if (image == null)
+				{
+					app_indicator_set_icon(Control.Handle, "");
+					return;
+				}
+
+				imagePath = Path.GetTempFileName();
 				image.ToGdk()?.Save(imagePath, "png");
 
 				app_indicator_set_icon(Control.Handle, imagePath);
