@@ -127,6 +127,49 @@ namespace Eto.Test.Mac.UnitTests
 		static bool IsGroupRow(NSOutlineView outlineView, int row) => outlineView.GetRowView(row, true)?.GroupRowStyle == true;
 
 		[Test]
+		public void NestedCollapseShouldNotSuppressSelectionChanges()
+		{
+			var child = new TreeGridItem("Child");
+			var parent = new TreeGridItem(new[] { child }, "Parent") { Expanded = true };
+			var other = new TreeGridItem(new[] { new TreeGridItem("Other child") }, "Other") { Expanded = true };
+			Shown(form =>
+			{
+				var tree = new TreeGridView { DataStore = new TreeGridItemCollection { parent, other } };
+				tree.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
+				form.Content = tree;
+				return tree;
+			}, tree =>
+			{
+				tree.SelectedItem = child;
+				var changes = new List<object>();
+				var selectionChanges = 0;
+				tree.SelectedItemChanged += (_, _) => changes.Add(tree.SelectedItem);
+				tree.SelectionChanged += (_, _) => selectionChanges++;
+				var handler = (TreeGridViewHandler)tree.Handler;
+				var nativeParent = handler.Control.ItemAtRow(0);
+				var outlineDelegate = (TreeGridViewHandler.EtoOutlineDelegate)handler.Control.Delegate;
+				tree.Collapsed += (_, e) =>
+				{
+					if (ReferenceEquals(e.Item, parent))
+					{
+						var nativeOther = handler.Control.ItemAtRow(1);
+						outlineDelegate.ShouldCollapseItem(handler.Control, nativeOther);
+						handler.Control.CollapseItem(nativeOther, false);
+					}
+				};
+				// Programmatic collapse can bypass AppKit's permission callback.
+				Assert.That(outlineDelegate.ShouldCollapseItem(handler.Control, nativeParent), Is.True);
+				handler.Control.CollapseItem(nativeParent, false);
+				Assert.That(tree.SelectedItem, Is.SameAs(parent));
+				Assert.That(changes, Is.EqualTo(new[] { parent }));
+				Assert.That(selectionChanges, Is.EqualTo(1));
+				tree.SelectedItem = other;
+				Assert.That(changes, Is.EqualTo(new[] { parent, other }));
+				Assert.That(selectionChanges, Is.EqualTo(2));
+			});
+		}
+
+		[Test]
 		public void ShowGroupsShouldApplyWhenToggled()
 		{
 			TreeGridViewHandler handler = null;
