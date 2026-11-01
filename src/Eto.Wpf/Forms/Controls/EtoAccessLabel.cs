@@ -188,17 +188,17 @@ public class EtoAccessLabel : swc.Label
 		if (AlwaysShowMnemonic || EnableMnemonic)
 		{
 			var mnemonicText = _text.Replace("_", "__");
-			Match match = Conversions.PlatformMnemonic.Match(mnemonicText);
-			if (match.Success)
+			var index = Conversions.FindMnemonic(mnemonicText, '&');
+			if (index >= 0)
 			{
 				var sb = new StringBuilder(mnemonicText);
-				sb[match.Index] = '_';
-				char? ch = match.Index < sb.Length - 1 ? sb[match.Index + 1] : null;
+				sb[index] = '_';
+				char? ch = index < sb.Length - 1 ? sb[index + 1] : null;
 				sb.Replace("&&", "&");
 				if (AlwaysShowMnemonic)
 				{
-					sb.Remove(match.Index, 1);
-					var textBlock = UnderlineCharacter(sb.ToString(), match.Index);
+					sb.Remove(index, 1);
+					var textBlock = UnderlineCharacter(sb.ToString(), index);
 					textBlock.TextWrapping = _textWrapping;
 					textBlock.TextTrimming = _textTrimming;
 					textBlock.TextAlignment = _textAlignment;
