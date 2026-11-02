@@ -224,10 +224,16 @@ namespace Eto.GtkSharp.Drawing
 			Control = new Gtk.IconSet();
 			foreach (var frame in frameList)
 			{
-				Control.AddSource(new Gtk.IconSource { Pixbuf = frame.Bitmap.ToGdk() });
+				using (var source = new Gtk.IconSource { Pixbuf = frame.Bitmap.ToGdk() })
+					Control.AddSource(source);
 			}
-			Pixbuf = frameList.FirstOrDefault(r => r.Scale == 1)?.Bitmap.ToGdk();
-			if (Pixbuf == null)
+			var primary = frameList.FirstOrDefault(r => r.Scale == 1)?.Bitmap.ToGdk();
+			if (primary != null)
+			{
+				// Own a view so disposal cannot invalidate the caller's bitmap.
+				Pixbuf = new Gdk.Pixbuf(primary, 0, 0, primary.Width, primary.Height);
+			}
+			else
 			{
 				var frame = frameList.OrderByDescending(r => r.Scale).FirstOrDefault();
 				Pixbuf = frame?.Bitmap.ToGdk().ScaleSimple(frame.Size.Width, frame.Size.Height, Gdk.InterpType.Bilinear);
