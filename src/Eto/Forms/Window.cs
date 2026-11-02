@@ -16,7 +16,11 @@ public enum WindowState
 	/// <summary>
 	/// Window is minimized to the dock/taskbar/etc.
 	/// </summary>
-	Minimized
+	Minimized,
+	/// <summary>
+	/// Window is in full screen mode
+	/// </summary>
+	FullScreen
 }
 
 /// <summary>
