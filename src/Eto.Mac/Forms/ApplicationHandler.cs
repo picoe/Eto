@@ -3,7 +3,7 @@ using Eto.Mac.Drawing;
 using System.Runtime.CompilerServices;
 namespace Eto.Mac.Forms
 {
-	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler
+	public class ApplicationHandler : MacObject<NSApplication, Application, Application.ICallback>, Application.IHandler, Application.IActivateHandler
 	{
 		bool _attached;
 		bool? _activateOnStartup;
@@ -371,14 +371,20 @@ namespace Eto.Mac.Forms
 			if (!showActivated)
 				return;
 
-			// taking activation from whatever app has it is only for callers that opted in, and has to be done
-			// for every window since another app can take it back at any point during a run
-			if (ActivateIgnoringOtherApps)
-				Control.ActivateIgnoringOtherApps(true);
-			// otherwise only ask for it as the app gets its first window, which is all macOS will grant anyway
-			else if (showInTaskbar && wasProhibited)
-				Control.Activate();
+			// Later shows should not take activation unless explicitly opted in.
+			if (ActivateIgnoringOtherApps || showInTaskbar && wasProhibited)
+				RequestActivation(false);
 		}
+
+		void RequestActivation(bool explicitlyRequested)
+		{
+			if (MacVersion.IsAtLeast(14, 0) && !ActivateIgnoringOtherApps)
+				Control.Activate();
+			else
+				Control.ActivateIgnoringOtherApps(explicitlyRequested || ActivateIgnoringOtherApps);
+		}
+
+		public void Activate() => RequestActivation(true);
 
 		public Keys CommonModifier => Keys.Application;
 
