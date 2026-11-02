@@ -7,6 +7,8 @@ namespace Eto.GtkSharp.Forms.Controls
 	{
 		List<Gtk.TextTag> insertTags = new List<Gtk.TextTag>();
 		List<Gtk.TextTag> removeTags = new List<Gtk.TextTag>();
+		List<string> tagNames;
+		Gtk.TextTagTable tagTable;
 
 		const string WeightTagPrefix = "w-";
 		const string StyleTagPrefix = "s-";
@@ -23,8 +25,40 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			tagTable = Control.Buffer.TagTable;
+			tagTable.TagAdded += Connector.HandleTagTableChanged;
+			tagTable.TagRemoved += Connector.HandleTagTableChanged;
 			Control.Buffer.InsertText += Connector.HandleInsertText;
 			Widget.SelectionChanged += HandleSelectionChanged;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && tagTable != null)
+			{
+				tagTable.TagAdded -= Connector.HandleTagTableChanged;
+				tagTable.TagRemoved -= Connector.HandleTagTableChanged;
+				tagTable = null;
+			}
+			base.Dispose(disposing);
+		}
+
+		List<string> GetTagNames(Gtk.TextTagTable table)
+		{
+			// Only the original table has our invalidation handlers.
+			var names = table == tagTable ? tagNames : null;
+			if (names == null)
+			{
+				names = new List<string>();
+				table.Foreach(tag =>
+				{
+					if (tag.Name is string name)
+						names.Add(name);
+				});
+				if (table == tagTable)
+					tagNames = names;
+			}
+			return names;
 		}
 
 		void HandleSelectionChanged(object sender, EventArgs e)
@@ -73,11 +107,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			else
 			{
 				// nothing selected, set insertion formatting
-				buffer.TagTable.Foreach(t =>
+				foreach (var name in GetTagNames(buffer.TagTable))
 				{
-					if (t.Name != null && t.Name != tagName && t.Name.StartsWith(prefix, StringComparison.Ordinal) && !removeTags.Contains(t))
-						removeTags.Add(t);
-				});
+					if (name != tagName && name.StartsWith(prefix, StringComparison.Ordinal)
+						&& buffer.TagTable.Lookup(name) is Gtk.TextTag removeTag && !removeTags.Contains(removeTag))
+						removeTags.Add(removeTag);
+				}
 				insertTags.RemoveAll(removeTags.Contains);
 				removeTags.RemoveAll(r => r.Name == tagName);
 
@@ -96,15 +131,10 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			var buffer = Control.Buffer;
 			var tagName = prefix + variation;
-			var tagsToRemove = new List<Gtk.TextTag>();
-			buffer.TagTable.Foreach(t =>
+			foreach (var name in GetTagNames(buffer.TagTable))
 			{
-				if (t.Name != null && t.Name.StartsWith(prefix, StringComparison.Ordinal))
-					tagsToRemove.Add(t);
-			});
-			foreach (var removeTag in tagsToRemove)
-			{
-				buffer.RemoveTag(removeTag, start, end);
+				if (name.StartsWith(prefix, StringComparison.Ordinal) && buffer.TagTable.Lookup(name) is Gtk.TextTag removeTag)
+					buffer.RemoveTag(removeTag, start, end);
 			}
 
 			var tag = buffer.TagTable.Lookup(tagName);
@@ -603,6 +633,9 @@ namespace Eto.GtkSharp.Forms.Controls
 			public new RichTextAreaHandler Handler => (RichTextAreaHandler)base.Handler;
 
 			public virtual void HandleInsertText(object o, InsertTextArgs args) => Handler?.HandleInsertText(o, args);
+
+			[GLib.ConnectBefore]
+			public void HandleTagTableChanged(object sender, EventArgs args) => Handler?.tagNames = null;
 		}
 	}
 }
