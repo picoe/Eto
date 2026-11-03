@@ -27,15 +27,17 @@ https://github.com/picoe/Eto/wiki
     <ProjectReference Include="..\Eto\Eto.csproj" />
   </ItemGroup>
   
-  <!-- ship the .xeto source generator, with the assemblies it loads, in the package's analyzers folder -->
-  <ItemGroup>
-    <ProjectReference Include="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
-  </ItemGroup>
+  <!-- ship the .xeto source generator, with the assemblies it loads, in the package's analyzers folder.
+       Built only when packing (not a ProjectReference) so consumers' solutions needn't include the generator. -->
   <PropertyGroup>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludeXamlGeneratorInPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
   <Target Name="IncludeXamlGeneratorInPackage">
-    <MSBuild Projects="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)">
+    <!-- the extra property forces a fresh evaluation, so Build sees the restore's output -->
+    <MSBuild Projects="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" Targets="Restore" Properties="Configuration=$(Configuration);_XamlGeneratorRestore=true" RemoveProperties="TargetFramework" />
+    <MSBuild Projects="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" Targets="Build" Properties="Configuration=$(Configuration)" RemoveProperties="TargetFramework" />
+    <!-- GetTargetPath also returns the Portable.Xaml dependencies the generator needs beside it -->
+    <MSBuild Projects="..\Eto.Serialization.Xaml.Generator\Eto.Serialization.Xaml.Generator.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration)" RemoveProperties="TargetFramework">
       <Output TaskParameter="TargetOutputs" ItemName="_XamlGeneratorFile" />
     </MSBuild>
     <ItemGroup>
