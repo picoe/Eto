@@ -6,19 +6,6 @@
 	/// </summary>
 	public static partial class Conversions
 	{
-		static Regex _etoMnemonic;
-		static Regex _platformMnemonic;
-
-		/// <summary>
-		/// The regex for mnemonic strings to be converted to Eto
-		/// </summary>
-		internal static Regex EtoMnemonic => _etoMnemonic ?? (_etoMnemonic = new Regex(@"(?<=([^_](?:[_]{2})*)|^)[_](?![_])", RegexOptions.Compiled));
-
-		/// <summary>
-		/// The regex for mnemonic strings to be converted to a platform
-		/// </summary>
-		internal static Regex PlatformMnemonic => _platformMnemonic ?? (_platformMnemonic = new Regex(@"(?<=([^&](?:[&]{2})*)|^)[&](?![&])", RegexOptions.Compiled));
-
 		/// <summary>
 		/// Translates degrees to radians.
 		/// </summary>
@@ -39,11 +26,11 @@
 
 			value = value.Replace("_", "__");
 
-			Match match = PlatformMnemonic.Match(value);
-			if (match.Success)
+			var index = FindMnemonic(value, '&');
+			if (index >= 0)
 			{
 				var sb = new StringBuilder(value);
-				sb[match.Index] = '_';
+				sb[index] = '_';
 				sb.Replace("&&", "&");
 				return sb.ToString();
 			}
@@ -60,16 +47,30 @@
 			if (value == null)
 				return null;
 
-			Match match = EtoMnemonic.Match(value);
-			if (match.Success)
+			var index = FindMnemonic(value, '_');
+			if (index >= 0)
 			{
 				var sb = new StringBuilder(value);
-				sb[match.Index] = '&';
+				sb[index] = '&';
 				sb.Replace("__", "_");
 				return sb.ToString();
 			}
 
 			return value.Replace("__", "_");
+		}
+
+		internal static int FindMnemonic(string value, char marker)
+		{
+			for (int i = value.IndexOf(marker); i >= 0; i = value.IndexOf(marker, i + 1))
+			{
+				var start = i;
+				while (i + 1 < value.Length && value[i + 1] == marker)
+					i++;
+				// A leading run containing escaped pairs remains literal for compatibility.
+				if ((i - start) % 2 == 0 && (start > 0 || i == 0))
+					return i;
+			}
+			return -1;
 		}
 
 	}
