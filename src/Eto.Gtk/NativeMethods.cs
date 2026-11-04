@@ -110,6 +110,9 @@ namespace Eto.GtkSharp
 			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_signal_connect_data(IntPtr instance, string name, Delegate callback, IntPtr data, IntPtr destroy_data, int flags);
+
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -369,6 +372,9 @@ namespace Eto.GtkSharp
 			const string libfontconfig = "libfontconfig" + extalt;
 			const string libwebkit = "libwebkit2gtk-4.0.so.37";
 			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
+
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_signal_connect_data(IntPtr instance, string name, Delegate callback, IntPtr data, IntPtr destroy_data, int flags);
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
@@ -632,6 +638,9 @@ namespace Eto.GtkSharp
 			const string libjavascriptcore = "libjavascriptcoregtk-4.1.so.0";
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
+			public extern static void g_signal_connect_data(IntPtr instance, string name, Delegate callback, IntPtr data, IntPtr destroy_data, int flags);
+
+			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
 			public extern static void g_signal_stop_emission_by_name(IntPtr instance, string name);
 
 			[DllImport(libgobject, CallingConvention = CallingConvention.Cdecl)]
@@ -860,6 +869,16 @@ namespace Eto.GtkSharp
 			var bytes = new byte[len];
 			Marshal.Copy(handle, bytes, 0, bytes.Length);
 			return Encoding.UTF8.GetString(bytes);
+		}
+
+		public static void g_signal_connect_data(IntPtr instance, string name, Delegate callback, IntPtr data, IntPtr destroy_data, int flags)
+		{
+			if (EtoEnvironment.Platform.IsLinux)
+				NMLinux.g_signal_connect_data(instance, name, callback, data, destroy_data, flags);
+			else if (EtoEnvironment.Platform.IsMac)
+				NMMac.g_signal_connect_data(instance, name, callback, data, destroy_data, flags);
+			else
+				NMWindows.g_signal_connect_data(instance, name, callback, data, destroy_data, flags);
 		}
 
 		public static void g_signal_stop_emission_by_name(IntPtr instance, string name)

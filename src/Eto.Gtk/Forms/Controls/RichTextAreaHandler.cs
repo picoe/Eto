@@ -8,7 +8,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		List<Gtk.TextTag> insertTags = new List<Gtk.TextTag>();
 		List<Gtk.TextTag> removeTags = new List<Gtk.TextTag>();
 		List<string> tagNames;
+		int tagNamesVersion;
 		Gtk.TextTagTable tagTable;
+
+		// GtkSharp's TagAdded and TagRemoved events would keep the table alive in its static closure registry.
+		// This native connection holds nothing and is freed with the table; its version is shared by all tables.
+		static int tagTableVersion;
+		static readonly TagTableChanged tagTableChanged = (table, tag, data) => tagTableVersion++;
+
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate void TagTableChanged(IntPtr table, IntPtr tag, IntPtr data);
 
 		const string WeightTagPrefix = "w-";
 		const string StyleTagPrefix = "s-";
@@ -26,27 +35,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			base.Initialize();
 			tagTable = Control.Buffer.TagTable;
-			tagTable.TagAdded += Connector.HandleTagTableChanged;
-			tagTable.TagRemoved += Connector.HandleTagTableChanged;
+			NativeMethods.g_signal_connect_data(tagTable.Handle, "tag-added", tagTableChanged, IntPtr.Zero, IntPtr.Zero, 0);
+			NativeMethods.g_signal_connect_data(tagTable.Handle, "tag-removed", tagTableChanged, IntPtr.Zero, IntPtr.Zero, 0);
 			Control.Buffer.InsertText += Connector.HandleInsertText;
 			Widget.SelectionChanged += HandleSelectionChanged;
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing && tagTable != null)
-			{
-				tagTable.TagAdded -= Connector.HandleTagTableChanged;
-				tagTable.TagRemoved -= Connector.HandleTagTableChanged;
-				tagTable = null;
-			}
-			base.Dispose(disposing);
 		}
 
 		List<string> GetTagNames(Gtk.TextTagTable table)
 		{
 			// Only the original table has our invalidation handlers.
-			var names = table == tagTable ? tagNames : null;
+			var names = table == tagTable && tagNamesVersion == tagTableVersion ? tagNames : null;
 			if (names == null)
 			{
 				names = new List<string>();
@@ -56,7 +54,10 @@ namespace Eto.GtkSharp.Forms.Controls
 						names.Add(name);
 				});
 				if (table == tagTable)
+				{
 					tagNames = names;
+					tagNamesVersion = tagTableVersion;
+				}
 			}
 			return names;
 		}
@@ -633,9 +634,6 @@ namespace Eto.GtkSharp.Forms.Controls
 			public new RichTextAreaHandler Handler => (RichTextAreaHandler)base.Handler;
 
 			public virtual void HandleInsertText(object o, InsertTextArgs args) => Handler?.HandleInsertText(o, args);
-
-			[GLib.ConnectBefore]
-			public void HandleTagTableChanged(object sender, EventArgs args) => Handler?.tagNames = null;
 		}
 	}
 }
