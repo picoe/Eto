@@ -13,12 +13,7 @@ namespace Eto.Test.Gtk.UnitTests
 		public void TagTableShouldBeCollectibleWithoutHandlerDisposal() => Async(async () =>
 		{
 			var table = CreateAbandonedTagTable();
-			for (var i = 0; i < 80 && table.IsAlive; i++)
-			{
-				GC.Collect();
-				GC.WaitForPendingFinalizers();
-				await Task.Delay(25);
-			}
+			await TextAreaTests.WaitForCollection(table);
 			Assert.That(table.IsAlive, Is.False);
 		});
 
@@ -27,14 +22,8 @@ namespace Eto.Test.Gtk.UnitTests
 		{
 			var richText = new RichTextArea();
 			var view = (g.TextView)richText.ControlObject;
-			var buffer = view.Buffer;
-			var table = new WeakReference(buffer.TagTable);
-			using (var replacement = new g.TextBuffer(null))
-				view.Buffer = replacement;
-			// Release the existing buffer subscription without disposing the Eto handler.
-			buffer.Dispose();
+			var table = new WeakReference(view.Buffer.TagTable);
 			view.Destroy();
-			view.Dispose();
 			return table;
 		}
 
