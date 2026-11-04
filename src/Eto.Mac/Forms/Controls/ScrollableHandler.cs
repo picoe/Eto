@@ -70,11 +70,25 @@ namespace Eto.Mac.Forms.Controls
 
 		protected override NSScrollView CreateControl() => new EtoScrollView(this);
 
+		// TEMP experiment: opt out of responsive scrolling, which lets the scroll view take whole trackpad gestures
+		// without them going through the window, so controls in it never get a chance to claim them
+		static readonly MarshalDelegates.Func_IntPtr_IntPtr_bool IsCompatibleWithResponsiveScrolling_Delegate = (self, sel) => false;
+		static bool s_responsiveScrollingDisabled;
+
+		static void DisableResponsiveScrolling()
+		{
+			if (s_responsiveScrollingDisabled)
+				return;
+			s_responsiveScrollingDisabled = true;
+			var metaClass = ObjCExtensions.GetMetaClass(new Class(typeof(EtoDocumentView)).Name);
+			var added = metaClass.AddMethod(Selector.GetHandle("isCompatibleWithResponsiveScrolling"), IsCompatibleWithResponsiveScrolling_Delegate, "B@:");
+			Eto.Mac.Forms.MacView.WheelLog($"responsive scrolling disabled: {added}");
+		}
+
 		protected override void Initialize()
 		{
 			base.Initialize();
-			// so trackpad gestures latched to the scroll view still reach the controls under the pointer
-			HandleEvent(Eto.Forms.Control.MouseWheelEvent);
+			DisableResponsiveScrolling(); // TEMP experiment
 			if (!ContentControl.IsFlipped)
 				// need to keep the scroll position as it scrolls instead of calculating
 				HandleEvent(Scrollable.ScrollEvent);

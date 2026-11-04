@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Eto.Mac.Forms.Controls;
 using Eto.Mac.Forms.Menu;
 using Eto.Mac.Forms.Printing;
@@ -356,75 +357,92 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		static double s_lastMouseWheelTimestamp;
-		static WeakReference<IMacViewHandler> s_mouseWheelGestureOwner;
+		enum WheelGestureState
+		{
+			None,
+			Pending,
+			Claimed,
+			Declined
+		}
+
+		class WheelGesture
+		{
+			public WheelGestureState State;
+			public readonly List<NSEvent> HeldEvents = new List<NSEvent>();
+		}
+
+		static readonly ConditionalWeakTable<IMacViewHandler, WheelGesture> s_wheelGestures = new ConditionalWeakTable<IMacViewHandler, WheelGesture>();
 
 		internal static MarshalDelegates.Action_IntPtr_IntPtr_IntPtr TriggerMouseWheel_Delegate = TriggerMouseWheel;
 		static void TriggerMouseWheel(IntPtr sender, IntPtr sel, IntPtr e)
 		{
-			var theEvent = Messaging.GetNSObject<NSEvent>(e);
-			// if no Eto view has seen this event yet, AppKit sent it straight here, skipping the views under the pointer.
-			// compared by timestamp as event objects are often reallocated at the same address
-			var isFirstToSee = theEvent != null && s_lastMouseWheelTimestamp != theEvent.Timestamp;
-			if (isFirstToSee)
-			{
-				s_lastMouseWheelTimestamp = theEvent.Timestamp;
-				if (!IsContinuingGesture(theEvent))
-					s_mouseWheelGestureOwner = null;
-			}
-
 			var obj = Runtime.GetNSObject(sender);
 			if (MacBase.GetHandler(obj) is IMacViewHandler handler && handler.Enabled)
 			{
 				if (handler.Widget?.IsDisposed != false) return;
-
-				// whoever takes the first movement of a gesture gets the rest of it (including momentum),
-				// so it doesn't both scroll and change a control as the content moves under the pointer
-				var owner = GetMouseWheelGestureOwner();
-				if (owner != null && owner != handler)
-				{
-					if (obj is NSScrollView ownerScrollView && owner.ContainerControl?.IsDescendantOf(ownerScrollView) == true)
-					{
-						if (isFirstToSee)
-							RaiseMouseWheel(owner, theEvent);
-						return;
-					}
-					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
-					return;
-				}
-
-				var scrollView = obj as NSScrollView;
-				if (owner == null && isFirstToSee && scrollView != null && TriggerMouseWheelUnderPointer(scrollView, theEvent))
-					return;
-
+				var theEvent = Messaging.GetNSObject<NSEvent>(e);
 				if (TriggerScrollWheelGestures(handler, theEvent))
 					return;
 
-				if (!RaiseMouseWheel(handler, theEvent))
+				var phase = theEvent.Phase;
+				if (TEMP_NoHold || (phase == NSEventPhase.None && theEvent.MomentumPhase == NSEventPhase.None))
 				{
-					if (owner == null && scrollView != null && IsGesture(theEvent))
-					{
-						// controls aren't offered events whose movement hasn't added up to a delta yet, so don't let those decide the owner
-						if (theEvent.GetWheelDelta().IsZero)
-							return;
-						s_mouseWheelGestureOwner = new WeakReference<IMacViewHandler>(handler);
-					}
-					Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+					// regular mouse wheel
+					s_wheelGestures.Remove(handler);
+					var tempHandled = RaiseMouseWheel(handler, theEvent);
+					if (TEMP_NoHold) WheelLog($"  view {handler.Widget?.ID} phase={phase} momentum={theEvent.MomentumPhase} delta={theEvent.GetWheelDelta()} handled={tempHandled}"); // TEMP wheel log
+					if (!tempHandled)
+						Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+					return;
 				}
+
+				var gesture = s_wheelGestures.GetOrCreateValue(handler);
+				if (phase.HasFlag(NSEventPhase.MayBegin) || (phase.HasFlag(NSEventPhase.Began) && gesture.State != WheelGestureState.Pending))
+				{
+					gesture.State = WheelGestureState.Pending;
+					gesture.HeldEvents.Clear();
+				}
+
+				var stateBefore = gesture.State; // TEMP wheel log
+				try { // TEMP wheel log
+				switch (gesture.State)
+				{
+					case WheelGestureState.Pending:
+						// like a nested scroll view, decide whether to take the gesture on its first movement, holding back
+						// the events before it so an enclosing scroll view doesn't latch onto the gesture in the meantime
+						gesture.HeldEvents.Add(theEvent);
+						var handled = RaiseMouseWheel(handler, theEvent);
+						var isEnd = phase.HasFlag(NSEventPhase.Ended) || phase.HasFlag(NSEventPhase.Cancelled);
+						if (!handled && theEvent.GetWheelDelta().IsZero && !isEnd)
+							return;
+						gesture.State = handled ? WheelGestureState.Claimed : WheelGestureState.Declined;
+						if (!handled)
+						{
+							foreach (var heldEvent in gesture.HeldEvents)
+								Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, heldEvent.Handle);
+						}
+						gesture.HeldEvents.Clear();
+						break;
+					case WheelGestureState.Claimed:
+						// keep the rest of the gesture (and its momentum) even when it isn't handled, so it doesn't start scrolling part way through
+						RaiseMouseWheel(handler, theEvent);
+						break;
+					default:
+						// declined, or joined part way through
+						Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
+						break;
+				}
+				} finally { WheelLog($"  view {handler.Widget?.ID ?? handler.Widget?.GetType().Name} {handler.GetHashCode():x} phase={phase} momentum={theEvent.MomentumPhase} delta={theEvent.GetWheelDelta()} state {stateBefore} -> {gesture.State} held={gesture.HeldEvents.Count}"); } // TEMP wheel log
 			}
 			else
 				Messaging.void_objc_msgSendSuper_IntPtr(obj.SuperHandle, sel, e);
 		}
 
-		static bool IsGesture(NSEvent theEvent) => theEvent.Phase != NSEventPhase.None || theEvent.MomentumPhase != NSEventPhase.None;
+		// TEMP experiment: skip holding back the start of a gesture, to see whether it is still needed
+		const bool TEMP_NoHold = true;
 
-		static bool IsContinuingGesture(NSEvent theEvent)
-		{
-			var phase = theEvent.Phase;
-			if (phase.HasFlag(NSEventPhase.Began) || phase.HasFlag(NSEventPhase.MayBegin))
-				return false;
-			return IsGesture(theEvent);
-		}
+		// TEMP wheel log
+		internal static void WheelLog(string text) => System.IO.File.AppendAllText("/private/tmp/claude-501/-Users-curtis-Projects-McNeel-rhino9-src4-DotNetSDK-Eto/a5e87495-cf21-4954-9be3-1ed51de26068/scratchpad/wheel.log", $"{DateTime.Now:HH:mm:ss.fff} {text}\n");
 
 		static bool RaiseMouseWheel(IMacViewHandler handler, NSEvent theEvent)
 		{
@@ -433,43 +451,7 @@ namespace Eto.Mac.Forms
 			{
 				handler.Callback.OnMouseWheel(handler.Widget, args);
 			}
-			if (args.Handled && s_mouseWheelGestureOwner == null && IsGesture(theEvent))
-				s_mouseWheelGestureOwner = new WeakReference<IMacViewHandler>(handler);
 			return args.Handled;
-		}
-
-		static IMacViewHandler GetMouseWheelGestureOwner()
-		{
-			if (s_mouseWheelGestureOwner == null || !s_mouseWheelGestureOwner.TryGetTarget(out var owner))
-				return null;
-			return owner.Enabled && owner.Widget?.IsDisposed == false ? owner : null;
-		}
-
-		// AppKit latches trackpad gestures to a scroll view, so give the controls under the pointer first refusal
-		// as they would get with a regular mouse wheel.
-		static bool TriggerMouseWheelUnderPointer(NSScrollView scrollView, NSEvent theEvent)
-		{
-			return false;
-			var window = theEvent.Window;
-			if (window == null || scrollView.Window != window)
-				return false;
-			var root = window.ContentView?.Superview ?? window.ContentView;
-			var view = root?.HitTest(theEvent.LocationInWindow);
-			if (view == null || !view.IsDescendantOf(scrollView))
-				return false;
-			IMacViewHandler lastHandler = null;
-			// stop at a nested scroll view, which handles its own content
-			while (view != null && !(view is NSScrollView))
-			{
-				if (MacBase.GetHandler(view) is IMacViewHandler handler && handler != lastHandler)
-				{
-					lastHandler = handler;
-					if (handler.Enabled && handler.Widget?.IsDisposed == false && RaiseMouseWheel(handler, theEvent))
-						return true;
-				}
-				view = view.Superview;
-			}
-			return false;
 		}
 
 		static bool TriggerScrollWheelGestures(IMacViewHandler handler, NSEvent theEvent)
