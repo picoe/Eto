@@ -252,6 +252,14 @@ namespace Eto.Wpf.Forms.Controls
 			((dynamic)WebBrowser2.Document).execCommand("Print", true, null);
 		}
 		// Note that this does not work for WPF
+		public bool SupportsResourceHandlers => false;
+
+		public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler) => null;
+
+		public void RemoveResourceHandler(string host)
+		{
+		}
+
 		public bool BrowserContextMenuEnabled
 		{
 			get;

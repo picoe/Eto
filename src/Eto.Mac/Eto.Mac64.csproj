@@ -59,6 +59,9 @@ You do not need to use any of the classes of this assembly (unless customizing t
     <Compile Include="..\Shared\MutableCellEventArgs.cs">
       <Link>Forms\Cells\MutableCellEventArgs.cs</Link>
     </Compile>
+    <Compile Include="..\Shared\WebViewHtmlServer.cs">
+      <Link>Forms\Controls\WebViewHtmlServer.cs</Link>
+    </Compile>
     <Compile Include="..\Shared\BaseBitmapData.cs">
       <Link>Drawing\BaseBitmapData.cs</Link>
     </Compile>

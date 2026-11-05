@@ -217,6 +217,14 @@ namespace Eto.WinForms.Forms.Controls
 			Control.ShowPrintDialog();
 		}
 
+		public bool SupportsResourceHandlers => false;
+
+		public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler) => null;
+
+		public void RemoveResourceHandler(string host)
+		{
+		}
+
 		public bool BrowserContextMenuEnabled
 		{
 			get { return Control.IsWebBrowserContextMenuEnabled; }
