@@ -48,6 +48,7 @@ jobs:
         name: nuget-win
         path: artifacts/nuget/${{ env.BuildConfiguration }}/*.nupkg
 
+    # The installers go in their own artifact, so leave them (and the builds behind them) out of this one.
     - name: Upload test artifacts
       uses: actions/upload-artifact@v7
       with:
@@ -55,6 +56,17 @@ jobs:
         path: |
           artifacts/test/*/${{ env.BuildConfiguration }}/**/*
           !artifacts/test/Eto.Test.Mac64/**/*
+          !artifacts/test/Eto.Test.Wpf/**/win-*/**/*
+          !artifacts/test/Eto.Test.Wpf/**/*.msi
+          !artifacts/test/Eto.Test.Wpf/**/*-Setup.exe
+
+    - name: Upload package artifacts
+      uses: actions/upload-artifact@v7
+      with:
+        name: test-win-packages
+        path: |
+          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msi
+          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*-Setup.exe
 
     - name: Upload sample artifacts
       uses: actions/upload-artifact@v7

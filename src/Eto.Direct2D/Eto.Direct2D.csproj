@@ -43,6 +43,11 @@ You do not need to use any of the classes of this assembly (unless customizing t
     </Compile>
     <Compile Include="..\Shared\GradientHelper.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Shared\build\*" Exclude="..\Shared\build\Windows.targets" Pack="True" PackagePath="build" Link="build\%(Filename)%(Extension)" />
+    <None Include="..\Shared\build\Windows.targets" Pack="True" PackagePath="build\$(PackageId).targets" Link="build\Windows.targets" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Eto.WinForms\Eto.WinForms.csproj" />
