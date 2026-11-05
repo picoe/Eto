@@ -402,6 +402,15 @@ namespace Eto.GtkSharp.Forms.Controls
 			UpdateColumns();
 		}
 
+		protected override void RealizedSetup()
+		{
+			base.RealizedSetup();
+			// Rows measured before the cells were added (e.g. by a preferred size request) keep that height,
+			// as GTK ignores resize requests until realized. With some themes (e.g. Breeze) that's too short.
+			foreach (var column in Control.Columns)
+				column.QueueResize();
+		}
+
 		void SetupColumnEvents()
 		{
 			if (!Widget.Loaded)
