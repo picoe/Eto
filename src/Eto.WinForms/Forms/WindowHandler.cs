@@ -393,9 +393,8 @@ namespace Eto.WinForms.Forms
 			var args = new CancelEventArgs(e.Cancel);
 			Callback.OnClosing(Widget, args);
 
-			if (!e.Cancel && swf.Application.OpenForms.Count <= 1
-				|| e.CloseReason == swf.CloseReason.ApplicationExitCall
-				|| e.CloseReason == swf.CloseReason.WindowsShutDown)
+			// Application.QuitMode handles everything else, but the OS can end the session without asking us
+			if (!args.Cancel && e.CloseReason == swf.CloseReason.WindowsShutDown)
 			{
 				var app = ((ApplicationHandler)Application.Instance.Handler);
 				app.Callback.OnTerminating(app.Widget, args);

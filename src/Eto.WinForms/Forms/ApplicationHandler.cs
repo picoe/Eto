@@ -227,15 +227,28 @@ namespace Eto.WinForms.Forms
 			SetOptions();
 		}
 
+		// Eto decides when to quit (see Application.QuitMode), so the context never gets a MainForm to exit with
 		public void OnMainFormChanged()
 		{
-			applicationContext.MainForm = (swf.Form)Widget.MainForm.ControlObject;
 		}
 
 		public void Quit()
 		{
+			// the main form's Closing asks to terminate when it is open, like other platforms
+			var mainForm = Widget.MainForm;
+			if (mainForm == null || !Widget.Windows.Contains(mainForm))
+			{
+				var args = new CancelEventArgs();
+				Callback.OnTerminating(Widget, args);
+				if (args.Cancel)
+					return;
+			}
+
+			var exitArgs = new CancelEventArgs();
+			swf.Application.Exit(exitArgs);
+			if (exitArgs.Cancel)
+				return;
 			quitting = true;
-			swf.Application.Exit();
 			if (IsEventHandled(Application.UnhandledExceptionEvent))
 			{
 				swf.Application.ThreadException -= OnUnhandledThreadException;
