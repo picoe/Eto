@@ -414,6 +414,15 @@ public abstract class Window : Panel
 		Handler.Close();
 	}
 
+	/// <inheritdoc/>
+	protected override void Dispose(bool disposing)
+	{
+		// A window disposed without closing never raises Closed, so it would otherwise stay in Application.Windows.
+		if (disposing)
+			Application.Instance?.RemoveWindow(this);
+		base.Dispose(disposing);
+	}
+
 	static readonly object OwnerKey = new object();
 
 	/// <summary>
