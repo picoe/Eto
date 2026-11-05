@@ -569,6 +569,8 @@ namespace Eto.Mac.Forms
 			Control.WillMiniaturize += HandleWillMiniaturize;
 			Control.WillResize = HandleWillResize;
 			Control.DidChangeScreen += HandleDidChangeScreen;
+			// Application.QuitMode needs to know when the close button is used, even without a Closing handler
+			HandleEvent(Window.ClosingEvent);
 
 #if MONOMAC
 			HandleEvent(Window.ClosedEvent);
