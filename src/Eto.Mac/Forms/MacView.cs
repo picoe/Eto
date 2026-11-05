@@ -152,6 +152,7 @@ namespace Eto.Mac.Forms
 		CGPoint GetAlignmentPointForFramePoint(CGPoint point);
 		CGRect GetAlignmentRectForFrame(CGRect frame);
 		bool OnAcceptsFirstMouse(NSEvent theEvent);
+		event EventHandler<MouseEventArgs> AcceptsFirstMouse;
 		bool TriggerMouseCallback(NSEvent theEvent = null, bool includeMouseDown = true);
 		MouseEventArgs TriggerMouseDown(NSObject obj, IntPtr sel, NSEvent theEvent);
 		MouseEventArgs TriggerMouseUp(NSObject obj, IntPtr sel, NSEvent theEvent);

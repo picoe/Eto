@@ -184,7 +184,25 @@ namespace Eto.GtkSharp.Drawing
 			{
 				if (family == null)
 				{
-					family = new FontFamily(familyName ?? Control.Family);
+					var name = familyName ?? Control.Family;
+					if (FontFamilyHandler.FindCorrectedFamily(name) == null)
+					{
+						// GtkSharp's LoadFont cannot reliably wrap Pango's backend fonts.
+						var font = NativeMethods.pango_context_load_font(FontsHandler.Context.Handle, Control.Handle);
+						if (font != IntPtr.Zero)
+						{
+							try
+							{
+								using var description = new Pango.FontDescription(NativeMethods.pango_font_describe(font)) { Owned = true };
+								name = description.Family;
+							}
+							finally
+							{
+								NativeMethods.g_object_unref(font);
+							}
+						}
+					}
+					family = new FontFamily(name);
 				}
 				return family;
 			}

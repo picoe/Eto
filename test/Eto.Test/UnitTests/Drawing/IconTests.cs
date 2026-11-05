@@ -4,6 +4,17 @@ namespace Eto.Test.UnitTests.Drawing
 	[TestFixture]
 	public class IconTests : TestBase
 	{
+		[Test]
+		public void DisposingIconShouldPreserveSourceBitmap() => Invoke(() =>
+		{
+			using var bitmap = new Bitmap(20, 20, PixelFormat.Format32bppRgba);
+			using var icon = new Icon(1, bitmap);
+			icon.Dispose();
+			Assert.That(bitmap.Size, Is.EqualTo(new Size(20, 20)));
+			bitmap.SetPixel(0, 0, Colors.Red);
+			Assert.That(bitmap.GetPixel(0, 0), Is.EqualTo(Colors.Red));
+		});
+
 		[TestCase(.25f, .5f)]
 		[TestCase(1f, 1f)]
 		[TestCase(1.5f, 1.5f)]
@@ -45,6 +56,46 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.That(icon.Frames.Select(r => r.PixelSize), Is.EquivalentTo(sizes), "#3");
 
 			Assert.That(icon.Frames.All(r => r.Scale == 1), Is.True, "#4");
+		}
+
+		[TestCase("TestIconPng.ico", new[] { 256 })]
+		[TestCase("TestIconMixed.ico", new[] { 16, 256 })]
+		public void IconFromIcoShouldSupportPngCompressedFrames(string resourceName, int[] sizes)
+		{
+			using var stream = GetType().Assembly.GetManifestResourceStream($"Eto.Test.Images.{resourceName}");
+			using var icon = new Icon(stream);
+			Assert.That(icon.Frames.Select(r => r.PixelSize),
+				Is.EquivalentTo(sizes.Select(size => new Size(size, size))));
+		}
+
+		[Test]
+		public void IconFromDisposedStreamShouldProvideFrames()
+		{
+			Icon icon;
+			using (var ms = new MemoryStream())
+			{
+				using (var source = GetType().Assembly.GetManifestResourceStream("Eto.Test.Images.TestIcon.ico"))
+					source.CopyTo(ms);
+				ms.Position = 0;
+				icon = new Icon(ms);
+			}
+			// Frames are first read after the stream is gone, so the handler must keep its own copy of the data.
+			using (icon)
+			using (var expected = TestIcons.TestIcon)
+			{
+				Assert.That(icon.Size, Is.EqualTo(expected.Size), "#1");
+				Assert.That(icon.Frames.Select(r => r.PixelSize), Is.EquivalentTo(expected.Frames.Select(r => r.PixelSize)), "#2");
+			}
+		}
+
+		[Test]
+		public void DisposedIconShouldNotExposeFrames()
+		{
+			// Nothing reads Frames before Dispose, so this also covers an icon whose frames were never loaded.
+			var icon = TestIcons.TestIcon;
+			icon.Dispose();
+			Assert.That(icon.IsDisposed, Is.True, "#1");
+			Assert.Throws<ObjectDisposedException>(() => icon.Frames.Count(), "#2");
 		}
 
 		[TestCase(.50f, 64, null)]

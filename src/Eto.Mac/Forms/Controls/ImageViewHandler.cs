@@ -22,6 +22,11 @@ namespace Eto.Mac.Forms.Controls
 			{
 				ImageScaling = NSImageScale.ProportionallyUpOrDown;
 			}
+
+			public override bool AcceptsFirstMouse(NSEvent theEvent)
+			{
+				return (WeakHandler?.Target as IMacViewHandler)?.OnAcceptsFirstMouse(theEvent) ?? base.AcceptsFirstMouse(theEvent);
+			}
 		}
 
 		protected override NSImageView CreateControl()

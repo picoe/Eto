@@ -5,6 +5,28 @@ namespace Eto.Test.UnitTests.Forms.Behaviors
 	[TestFixture]
 	public class MouseTests : TestBase
 	{
+		[Test]
+		public void PositionShouldBeReadableFromBackgroundThread() => Async(async () =>
+		{
+			if (!Mouse.IsSupported)
+				Assert.Ignore("Mouse functions are not supported by this platform.");
+			if (Platform.Instance.IsGtk)
+				Assert.Ignore("GTK requires mouse position to be read on the UI thread.");
+
+			await Task.Run(() => Mouse.Position);
+		});
+
+		[Test]
+		public void ButtonsShouldBeReadableFromBackgroundThread() => Async(async () =>
+		{
+			if (!Mouse.IsSupported)
+				Assert.Ignore("Mouse functions are not supported by this platform.");
+			if (Platform.Instance.IsGtk)
+				Assert.Ignore("GTK requires mouse buttons to be read on the UI thread.");
+
+			await Task.Run(() => Mouse.Buttons);
+		});
+
 		[Test, ManualTest]
 		public void EventsFromParentShouldWorkWhenChildRemoved()
 		{

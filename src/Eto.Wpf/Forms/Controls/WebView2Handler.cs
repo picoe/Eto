@@ -490,6 +490,43 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	}
 
 	/// <summary>
+	/// Set to true when every environment the app supplies (with <see cref="Environment"/>, <see cref="CoreWebView2Environment"/>,
+	/// <see cref="GetCoreWebView2Environment"/> or by overriding <see cref="OnInitializeWebView2Async"/>) was created with options
+	/// registering <see cref="CreateResourceSchemeRegistration"/>, so <see cref="WebView.AddResourceHandler"/> serves eto:// like other platforms instead of https://.
+	/// </summary>
+	public static bool CustomEnvironmentsHaveResourceScheme { get; set; }
+
+	/// <summary>
+	/// Creates the registration for the eto:// scheme served by <see cref="WebView.AddResourceHandler"/>, for an environment the app creates itself.
+	/// </summary>
+	/// <remarks>
+	/// Pass it in the options' <c>customSchemeRegistrations</c>, e.g.
+	/// <c>new CoreWebView2EnvironmentOptions(customSchemeRegistrations: new() { WebView2Handler.CreateResourceSchemeRegistration() })</c>.
+	/// Also set <see cref="CustomEnvironmentsHaveResourceScheme"/> to true so web views use it.
+	/// </remarks>
+	public static CoreWebView2CustomSchemeRegistration CreateResourceSchemeRegistration() => new CoreWebView2CustomSchemeRegistration(ResourceScheme)
+	{
+		TreatAsSecure = true,
+		HasAuthorityComponent = true
+	};
+
+	// Schemes can only be registered when an environment is created, so Eto creates the default one itself.
+	static Task<CoreWebView2Environment> s_defaultEnvironment;
+
+	static Task<CoreWebView2Environment> GetDefaultEnvironmentAsync()
+	{
+		if (s_defaultEnvironment == null)
+		{
+			var options = new CoreWebView2EnvironmentOptions(customSchemeRegistrations: new List<CoreWebView2CustomSchemeRegistration> { CreateResourceSchemeRegistration() });
+			// same browser and data folder WebView2 picks when given no environment
+			s_defaultEnvironment = CoreWebView2Environment.CreateAsync(null, null, options);
+		}
+		return s_defaultEnvironment;
+	}
+
+	bool UsesDefaultEnvironment => Environment == null && GetCoreWebView2Environment == null && Control.CreationProperties == null;
+
+	/// <summary>
 	/// Override to use your own WebView2 initialization, if necessary
 	/// </summary>
 	/// <returns>Task</returns>
@@ -499,6 +536,10 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		if (env == null && GetCoreWebView2Environment != null)
 		{
 			env = CoreWebView2Environment = await GetCoreWebView2Environment();
+		}
+		else if (UsesDefaultEnvironment)
+		{
+			env = await GetDefaultEnvironmentAsync();
 		}
 
 		await Control.EnsureCoreWebView2Async(env);
@@ -543,6 +584,14 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 				return;
 
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
+		}
+
+		// Hosts must be intercepted before the control navigates to a Url set while it was initializing.
+		var initializedCoreWebView2 = TryGetCoreWebView2();
+		if (initializedCoreWebView2 != null && resourceHandlers != null)
+		{
+			foreach (var host in resourceHandlers.Keys)
+				UpdateResourceFilter(initializedCoreWebView2, host);
 		}
 
 		// can't actually do anything here, so execute them in the main loop
@@ -803,7 +852,9 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 
 	public bool CanGoForward => Control.CanGoForward;
 
-	HttpServer server;
+	Dictionary<string, Func<WebViewResourceRequest, WebViewResourceResponse>> resourceHandlers;
+	HashSet<string> filteredHosts;
+	bool resourceRequestsHooked;
 
 	public void LoadHtml(string html, Uri baseUri)
 	{
@@ -812,18 +863,120 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 			RunWhenReady(() => LoadHtml(html, baseUri));
 			return;
 		}
-		if (baseUri != null)
+		if (baseUri == null)
 		{
-			if (server == null)
-				server = new HttpServer();
-			server.SetHtml(html, baseUri != null ? baseUri.LocalPath : null);
-			Control.Source = server.Url;
-		}
-		else
-		{
-			Control.NavigateToString(html);
+			try
+			{
+				Control.NavigateToString(html);
+				return;
+			}
+			catch (ArgumentException)
+			{
+				// NavigateToString rejects pages over 2 MB, so serve those from memory instead.
+			}
 		}
 
+		var baseDirectory = baseUri != null && baseUri.IsFile ? baseUri.LocalPath : null;
+		var htmlUri = AddResourceHandler(WebViewHtmlServer.Host, request => WebViewHtmlServer.Serve(html, baseDirectory, request));
+		// Navigate rather than setting Source, so loading new html at the same address still reloads.
+		CoreWebView2.Navigate(htmlUri.AbsoluteUri);
+	}
+
+	public bool SupportsResourceHandlers => true;
+
+	public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler)
+	{
+		resourceHandlers ??= new Dictionary<string, Func<WebViewResourceRequest, WebViewResourceResponse>>(StringComparer.OrdinalIgnoreCase);
+		resourceHandlers[host] = handler;
+		// Before initialization, Control_CoreWebView2Ready adds the filter instead.
+		var coreWebView2 = TryGetCoreWebView2();
+		if (coreWebView2 != null)
+			UpdateResourceFilter(coreWebView2, host);
+		return new Uri(GetResourceRoot(host));
+	}
+
+	public void RemoveResourceHandler(string host)
+	{
+		if (resourceHandlers == null || !resourceHandlers.Remove(host))
+			return;
+		var coreWebView2 = TryGetCoreWebView2();
+		if (coreWebView2 != null)
+			UpdateResourceFilter(coreWebView2, host);
+	}
+
+	CoreWebView2 TryGetCoreWebView2()
+	{
+		try
+		{
+			return Control.CoreWebView2;
+		}
+		catch (InvalidOperationException)
+		{
+			// the browser process has gone away
+			return null;
+		}
+	}
+
+	const string ResourceScheme = "eto";
+	bool? usesResourceScheme;
+
+	// Decided once, so every address already handed out keeps working.
+	string GetResourceRoot(string host)
+	{
+		usesResourceScheme ??= UsesDefaultEnvironment || CustomEnvironmentsHaveResourceScheme;
+		return (usesResourceScheme.Value ? ResourceScheme : "https") + "://" + host.ToLowerInvariant() + "/";
+	}
+
+	// Only hosts with a handler are intercepted, so other requests never pay for the round trip.
+	void UpdateResourceFilter(CoreWebView2 coreWebView2, string host)
+	{
+		if (!resourceRequestsHooked)
+		{
+			coreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
+			resourceRequestsHooked = true;
+		}
+		filteredHosts ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		var filter = GetResourceRoot(host) + "*";
+		var hasHandler = resourceHandlers != null && resourceHandlers.ContainsKey(host);
+		if (hasHandler && filteredHosts.Add(host))
+			coreWebView2.AddWebResourceRequestedFilter(filter, CoreWebView2WebResourceContext.All);
+		else if (!hasHandler && filteredHosts.Remove(host))
+			coreWebView2.RemoveWebResourceRequestedFilter(filter, CoreWebView2WebResourceContext.All);
+	}
+
+	private void CoreWebView2_WebResourceRequested(object sender, CoreWebView2WebResourceRequestedEventArgs e)
+	{
+		var uri = new Uri(e.Request.Uri);
+		if (resourceHandlers == null || !resourceHandlers.TryGetValue(uri.Host, out var handler))
+			return;
+
+		var environment = ((CoreWebView2)sender).Environment;
+		WebViewResourceResponse response;
+		try
+		{
+			response = handler(new WebViewResourceRequest(uri, e.Request.Method));
+		}
+		catch (Exception ex)
+		{
+			// Letting this escape the WebView2 callback would crash the application.
+			Debug.WriteLine("WebView resource handler failed for " + uri + ":\n" + ex);
+			e.Response = environment.CreateWebResourceResponse(null, (int)HttpStatusCode.InternalServerError, "Internal Server Error", string.Empty);
+			return;
+		}
+
+		if (response == null)
+		{
+			e.Response = environment.CreateWebResourceResponse(null, (int)HttpStatusCode.NotFound, "Not Found", string.Empty);
+			return;
+		}
+
+		var headers = new List<string>();
+		if (!string.IsNullOrEmpty(response.ContentType))
+			headers.Add("Content-Type: " + response.ContentType);
+		foreach (var header in response.Headers)
+			headers.Add(header.Key + ": " + header.Value);
+		var reasonPhrase = Enum.IsDefined(typeof(HttpStatusCode), response.StatusCode) ? ((HttpStatusCode)response.StatusCode).ToString() : string.Empty;
+		e.Response = environment.CreateWebResourceResponse(response.Content, response.StatusCode, reasonPhrase, string.Join("\r\n", headers));
 	}
 
 	protected Microsoft.Web.WebView2.Core.CoreWebView2 CoreWebView2

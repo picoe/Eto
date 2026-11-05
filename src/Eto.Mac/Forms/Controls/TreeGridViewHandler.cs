@@ -139,7 +139,7 @@ namespace Eto.Mac.Forms.Controls
 				if (h == null)
 					return;
 
-				if (h.skipSelectionChanged > 0)
+				if (h.skipSelectionChanged > 0 || collapsedItemIsSelected == true)
 					return;
 
 				// didn't start a drag (when this was set), so clear this out when the selection changes
@@ -168,19 +168,27 @@ namespace Eto.Mac.Forms.Controls
 			
 			public override void ItemDidCollapse(NSNotification notification)
 			{
+				var reselect = collapsedItemIsSelected == true;
+				collapsedItemIsSelected = null;
 				var h = Handler;
 				if (h == null || h.suppressExpandCollapseEvents > 0)
 					return;
 				var myitem = h.GetEtoItem(notification.UserInfo[(NSString)"NSObject"]);
 				if (myitem != null)
 				{
-					myitem.Expanded = false;
-					h.Callback.OnCollapsed(h.Widget, new TreeGridViewItemEventArgs(myitem));
-					if (collapsedItemIsSelected == true)
+					if (reselect)
+						h.skipSelectionChanged++;
+					try
 					{
-						h.SelectedItem = myitem;
-						collapsedItemIsSelected = null;
-						h.skipSelectionChanged = 0;
+						myitem.Expanded = false;
+						h.Callback.OnCollapsed(h.Widget, new TreeGridViewItemEventArgs(myitem));
+						if (reselect)
+							h.SelectedItem = myitem;
+					}
+					finally
+					{
+						if (reselect)
+							h.skipSelectionChanged--;
 					}
 				}
 			}
@@ -211,11 +219,7 @@ namespace Eto.Mac.Forms.Controls
 					var args = new TreeGridViewItemCancelEventArgs(myitem);
 					h.Callback.OnCollapsing(h.Widget, args);
 					if (!args.Cancel && !h.AllowMultipleSelection)
-					{
 						collapsedItemIsSelected = h.ChildIsSelected(myitem);
-						if (collapsedItemIsSelected == true)
-							h.skipSelectionChanged = 1;
-					}
 					else
 						collapsedItemIsSelected = null;
 					return !args.Cancel;

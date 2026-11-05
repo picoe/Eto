@@ -50,7 +50,8 @@ namespace Eto.Mac.Forms.Controls
 			if (BetterBackgroundColor != null)
 			{
 				BetterBackgroundColor.SetFill();
-				NSGraphics.RectFill(cellFrame);
+				var handler = MacBase.GetHandler(inView) as IMacViewHandler;
+				NSGraphics.RectFill(handler?.GetAlignmentRectForFrame(cellFrame) ?? cellFrame);
 			}
 			base.DrawWithFrame(cellFrame, inView);
 		}

@@ -61,10 +61,15 @@ namespace Eto.GtkSharp.Forms
 
 		public static void Init()
 		{
+			if (init)
+				return;
+
 			try
 			{
-				notify_init(Assembly.GetExecutingAssembly().FullName);
+				if (!notify_init(Assembly.GetExecutingAssembly().FullName))
+					return;
 
+				allowactions = false;
 				var list = new GLib.List(notify_get_server_caps(), typeof(string));
 				foreach (var item in list)
 				{
@@ -97,7 +102,10 @@ namespace Eto.GtkSharp.Forms
 		public static void DeInit()
 		{
 			if (init)
+			{
 				notify_uninit();
+				init = false;
+			}
 		}
 
 		Image _contentImage;
@@ -142,6 +150,9 @@ namespace Eto.GtkSharp.Forms
 
 		public void Show(TrayIndicator indicator = null)
 		{
+			// Capability queries can block while the notification service starts.
+			Init();
+
 			if (!init)
 				return;
 

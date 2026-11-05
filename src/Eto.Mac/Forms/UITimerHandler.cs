@@ -41,7 +41,7 @@ namespace Eto.Mac.Forms
 		public void Start ()
 		{
 			Stop();
-			NSRunLoop.Current.AddTimer(Control, NSRunLoopMode.Default);
+			NSRunLoop.Current.AddTimer(Control, NSRunLoopMode.Common);
 		}
 
 		public void Stop ()

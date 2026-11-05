@@ -126,20 +126,26 @@ namespace Eto.Mac.Forms.Controls
 			if (Control.ShouldChangeTextNew(range, null))
 			{
 				Control.TextStorage.BeginEditing();
-				var current = range;
-				var left = current.Length;
-				while (left > 0)
+				try
 				{
-					var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
-					attribs = UpdateFontAttributes(attribs, enabled, updateFont);
-					var span = effectiveRange.Location + effectiveRange.Length - current.Location;
-					var newRange = new NSRange(current.Location, (nint)Math.Min(span, current.Length));
-					Control.TextStorage.AddAttributes(attribs, newRange);
-					current.Location += span;
-					current.Length -= span;
-					left -= span;
+					var current = range;
+					var left = current.Length;
+					while (left > 0)
+					{
+						var attribs = Control.TextStorage.GetAttributes(current.Location, out effectiveRange, current);
+						attribs = UpdateFontAttributes(attribs, enabled, updateFont);
+						var span = effectiveRange.Location + effectiveRange.Length - current.Location;
+						var newRange = new NSRange(current.Location, (nint)Math.Min(span, current.Length));
+						Control.TextStorage.AddAttributes(attribs, newRange);
+						current.Location += span;
+						current.Length -= span;
+						left -= span;
+					}
 				}
-				Control.TextStorage.EndEditing();
+				finally
+				{
+					Control.TextStorage.EndEditing();
+				}
 				Control.DidChangeText();
 			}
 		}

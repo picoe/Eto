@@ -43,9 +43,10 @@ namespace Eto.GtkSharp.Forms
 
 		public void RunIteration()
 		{
-			var start = DateTime.Now;
-		    while (Gtk.Application.EventsPending() && (DateTime.Now - start).TotalMilliseconds < 100)
-				Gtk.Application.RunIteration();
+			var timeoutTicks = Stopwatch.Frequency / 10; // 100 ms
+			var start = Stopwatch.GetTimestamp();
+			while (Gtk.Application.EventsPending() && Stopwatch.GetTimestamp() - start < timeoutTicks)
+				Gtk.Application.RunIteration(false);
 		}
 
 		public void Restart()
@@ -282,8 +283,6 @@ namespace Eto.GtkSharp.Forms
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 
-			if (EtoEnvironment.Platform.IsLinux)
-				LinuxNotificationHandler.Init();
 			Callback.OnInitialized(Widget, EventArgs.Empty);
 			if (!attached)
 			{
@@ -375,8 +374,6 @@ namespace Eto.GtkSharp.Forms
 		{
 			if (_settingTheme)
 				return;
-			// OS theme changed externally, reset cached theme so it's re-read
-			_currentTheme = null;
 			Callback.OnThemeChanged(Widget, EventArgs.Empty);
 		}
 

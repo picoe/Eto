@@ -12,37 +12,54 @@ namespace Eto.Mac.Forms
 		[DllImport(Constants.CoreGraphicsLibrary)]
  		static extern int CGWarpMouseCursorPosition(CGPoint point);
 
+		[DllImport(Constants.CoreGraphicsLibrary)]
+		static extern IntPtr CGEventCreate(IntPtr source);
+
+		[DllImport(Constants.CoreGraphicsLibrary)]
+		static extern CGPoint CGEventGetLocation(IntPtr handle);
+
+		[DllImport(Constants.CoreFoundationLibrary)]
+		static extern void CFRelease(IntPtr handle);
+
+		const int kCGEventSourceStateCombinedSessionState = 0;
+
+		[DllImport(Constants.CoreGraphicsLibrary)]
+		[return: MarshalAs(UnmanagedType.I1)]
+		static extern bool CGEventSourceButtonState(int stateID, uint button);
+
 		public void SetCursor(Cursor cursor) => cursor.ToNS().Set();
 
 		public Eto.Drawing.PointF Position
 		{
 			get
 			{
-				var mouseLocation = NSEvent.CurrentMouseLocation;
-				var origin = NSScreen.Screens[0].Frame.Bottom;
-				mouseLocation.Y = origin - mouseLocation.Y;
-				return mouseLocation.ToEto();
+				// Avoid AppKit's main-thread requirement when reading the cursor position.
+				var handle = CGEventCreate(IntPtr.Zero);
+				if (handle == IntPtr.Zero)
+					throw new InvalidOperationException("Could not get the current mouse position.");
+				try
+				{
+					return CGEventGetLocation(handle).ToEto();
+				}
+				finally
+				{
+					CFRelease(handle);
+				}
 			}
-			set
-			{
-				var origin = NSScreen.Screens[0].Frame.Bottom;
-				var mouseLocation = value.ToNS();
-				//mouseLocation.Y = origin - mouseLocation.Y;
-				CGWarpMouseCursorPosition(mouseLocation);
-			}
+			set => CGWarpMouseCursorPosition(value.ToNS());
 		}
 
 		public MouseButtons Buttons
 		{
 			get
 			{
-				var current = NSEvent.CurrentPressedMouseButtons;
+				// Avoid AppKit's main-thread requirement when reading the button state.
 				var buttons = MouseButtons.None;
-				if ((current & 1) != 0)
+				if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, 0))
 					buttons |= MouseButtons.Primary;
-				if ((current & 2) != 0)
+				if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, 1))
 					buttons |= MouseButtons.Alternate;
-				if ((current & 4) != 0)
+				if (CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState, 2))
 					buttons |= MouseButtons.Middle;
 				return buttons;
 			}

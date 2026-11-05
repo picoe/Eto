@@ -118,51 +118,7 @@ namespace Eto.CustomControls
 
 				response.ContentLength64 = entity.Length;
 
-				switch (Path.GetExtension(request.Url.AbsolutePath).ToLowerInvariant())
-				{
-					//images
-					case ".gif":
-						response.ContentType = MediaTypeNames.Image.Gif;
-						break;
-					case ".jpg":
-					case ".jpeg":
-						response.ContentType = MediaTypeNames.Image.Jpeg;
-						break;
-					case ".tiff":
-						response.ContentType = MediaTypeNames.Image.Tiff;
-						break;
-					case ".png":
-						response.ContentType = "image/png";
-						break;
-					case ".svg":
-						response.ContentType = "image/svg+xml";
-						break;
-
-					// application
-					case ".pdf":
-						response.ContentType = MediaTypeNames.Application.Pdf;
-						break;
-					case ".zip":
-						response.ContentType = MediaTypeNames.Application.Zip;
-						break;
-
-					// text
-					case ".htm":
-					case ".html":
-						response.ContentType = MediaTypeNames.Text.Html;
-						break;
-					case ".txt":
-						response.ContentType = MediaTypeNames.Text.Plain;
-						break;
-					case ".xml":
-						response.ContentType = MediaTypeNames.Text.Xml;
-						break;
-
-					// let the user agent work it out
-					default:
-						response.ContentType = MediaTypeNames.Application.Octet;
-						break;
-				}
+				response.ContentType = WebViewHtmlServer.GetContentType(request.Url.AbsolutePath);
 
 				response.OutputStream.Write(entity, 0, entity.Length);
 			}

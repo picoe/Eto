@@ -151,6 +151,8 @@ public class ThemeHandler : WidgetHandler<GtkThemeStyle?, Theme>, Theme.IHandler
 			return true;
 		if (Control == GtkThemeStyle.Light)
 			return false;
+		if (Control == GtkThemeStyle.System && Gtk.Settings.Default.ApplicationPreferDarkTheme)
+			return true;
 		string themeName;
 		if (Control == GtkThemeStyle.System)
 			themeName = Gtk.Settings.Default.ThemeName;
@@ -189,7 +191,7 @@ public class ThemeHandler : WidgetHandler<GtkThemeStyle?, Theme>, Theme.IHandler
 			case GtkThemeStyle.Dark:
 				settings.ApplicationPreferDarkTheme = true;
 				var darkName = GetDarkThemeName(settings.ThemeName);
-				if (darkName != settings.ThemeName && ThemeExists(darkName))
+				if (darkName != null && darkName != settings.ThemeName)
 					settings.ThemeName = darkName;
 				break;
 		}

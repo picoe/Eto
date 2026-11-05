@@ -300,10 +300,20 @@ namespace Eto.Mac.Forms.Controls
 			const string wrapper = @"window.eto = { postMessage: function(message) { window.webkit.messageHandlers.__eto__.postMessage(message); } };";
 			contentController.AddUserScript(new wk.WKUserScript(new NSString(wrapper), wk.WKUserScriptInjectionTime.AtDocumentStart, false));
 
-			return new wk.WKWebViewConfiguration()
+			var configuration = new wk.WKWebViewConfiguration()
 			{
 				UserContentController = contentController
 			};
+
+			// Scheme handlers can only be set before the web view is created, so always register ours (10.13+).
+			if (configuration.RespondsToSelector(s_selSetUrlSchemeHandler))
+			{
+				resourceSchemeHandler = new ResourceSchemeHandler(this);
+				using var scheme = new NSString(ResourceScheme);
+				Messaging.void_objc_msgSend_IntPtr_IntPtr(configuration.Handle, s_selSetUrlSchemeHandler.Handle, resourceSchemeHandler.Handle, scheme.Handle);
+			}
+
+			return configuration;
 		}
 
 		static void TitleChangedObserver(ObserverActionEventArgs obj)
@@ -343,6 +353,15 @@ namespace Eto.Mac.Forms.Controls
 
 		public void LoadHtml(string html, Uri baseUri)
 		{
+			// WebKit only reads files beside the page after loading their folder first, so serve them ourselves.
+			if (baseUri != null && baseUri.IsFile && SupportsResourceHandlers)
+			{
+				var baseDirectory = baseUri.LocalPath;
+				var htmlUri = AddResourceHandler(WebViewHtmlServer.Host, request => WebViewHtmlServer.Serve(html, baseDirectory, request));
+				Control.LoadRequest(new NSUrlRequest(htmlUri.ToNS()));
+				return;
+			}
+
 			var baseNSUrl = baseUri.ToNS();
 			if (baseNSUrl != null)
 				Control.LoadFileUrl(baseNSUrl, baseNSUrl);
@@ -412,6 +431,104 @@ namespace Eto.Mac.Forms.Controls
 				Success = success;
 				Done?.Invoke();
 			}
+		}
+
+		// WebKit only lets custom schemes be intercepted, so hosts are served from eto://host/ rather than https.
+		const string ResourceScheme = "eto";
+		static readonly Selector s_selSetUrlSchemeHandler = new Selector("setURLSchemeHandler:forURLScheme:");
+		static readonly Selector s_selRequest = new Selector("request");
+		static readonly Selector s_selDidReceiveResponse = new Selector("didReceiveResponse:");
+		static readonly Selector s_selDidReceiveData = new Selector("didReceiveData:");
+		static readonly Selector s_selDidFinish = new Selector("didFinish");
+
+		ResourceSchemeHandler resourceSchemeHandler;
+		Dictionary<string, Func<WebViewResourceRequest, WebViewResourceResponse>> resourceHandlers;
+
+		public bool SupportsResourceHandlers => resourceSchemeHandler != null;
+
+		public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler)
+		{
+			resourceHandlers ??= new Dictionary<string, Func<WebViewResourceRequest, WebViewResourceResponse>>(StringComparer.OrdinalIgnoreCase);
+			resourceHandlers[host] = handler;
+			return new Uri(ResourceScheme + "://" + host.ToLowerInvariant() + "/");
+		}
+
+		public void RemoveResourceHandler(string host) => resourceHandlers?.Remove(host);
+
+		// Bound by hand since MonoMac has no usable WKURLSchemeHandler binding.
+		[Adopts("WKURLSchemeHandler")]
+		class ResourceSchemeHandler : NSObject
+		{
+			// The configuration retains this, and the handler owns the configuration.
+			readonly WeakReference handler;
+
+			public ResourceSchemeHandler(WKWebViewHandler handler)
+			{
+				this.handler = new WeakReference(handler);
+			}
+
+			[Export("webView:startURLSchemeTask:")]
+			public void StartUrlSchemeTask(IntPtr webView, IntPtr task)
+			{
+				var h = handler.Target as WKWebViewHandler;
+				RespondToResourceTask(h?.resourceHandlers, task);
+			}
+
+			[Export("webView:stopURLSchemeTask:")]
+			public void StopUrlSchemeTask(IntPtr webView, IntPtr task)
+			{
+				// Tasks are answered as soon as they start, so there is never one to stop.
+			}
+		}
+
+		static void RespondToResourceTask(Dictionary<string, Func<WebViewResourceRequest, WebViewResourceResponse>> handlers, IntPtr task)
+		{
+			var request = Runtime.GetNSObject<NSUrlRequest>(Messaging.IntPtr_objc_msgSend(task, s_selRequest.Handle));
+			var url = request.Url;
+			var uri = new Uri(url.AbsoluteString);
+
+			var statusCode = 404;
+			var headers = new NSMutableDictionary();
+			byte[] content = null;
+			if (handlers != null && handlers.TryGetValue(uri.Host, out var handler))
+			{
+				try
+				{
+					var response = handler(new WebViewResourceRequest(uri, request.HttpMethod ?? "GET"));
+					if (response != null)
+					{
+						if (response.Content != null)
+						{
+							using var stream = new MemoryStream();
+							response.Content.CopyTo(stream);
+							response.Content.Dispose();
+							content = stream.ToArray();
+						}
+						statusCode = response.StatusCode;
+						if (!string.IsNullOrEmpty(response.ContentType))
+							headers[(NSString)"Content-Type"] = (NSString)response.ContentType;
+						foreach (var header in response.Headers)
+							headers[(NSString)header.Key] = (NSString)header.Value;
+					}
+				}
+				catch (Exception ex)
+				{
+					// Letting this escape the WebKit callback would crash the application.
+					Debug.WriteLine("WebView resource handler failed for " + uri + ":\n" + ex);
+					statusCode = 500;
+					headers.Clear();
+					content = null;
+				}
+			}
+
+			using var httpResponse = new NSHttpUrlResponse(url, statusCode, "HTTP/1.1", headers);
+			Messaging.void_objc_msgSend_IntPtr(task, s_selDidReceiveResponse.Handle, httpResponse.Handle);
+			if (content?.Length > 0)
+			{
+				using var data = NSData.FromArray(content);
+				Messaging.void_objc_msgSend_IntPtr(task, s_selDidReceiveData.Handle, data.Handle);
+			}
+			Messaging.void_objc_msgSend(task, s_selDidFinish.Handle);
 		}
 
 		static readonly object BrowserContextMenuEnabled_Key = new object();

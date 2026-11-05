@@ -88,7 +88,8 @@ namespace Eto.GtkSharp.Forms.Controls
 					apply(tag);
 					buffer.TagTable.Add(tag);
 				}
-				insertTags.Add(tag);
+				if (!insertTags.Contains(tag))
+					insertTags.Add(tag);
 			}
 		}
 
