@@ -353,6 +353,24 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
+		[Test]
+		public void ScreenConversionsShouldIncludeChildLayoutOffset()
+		{
+			PixelLayout child = null;
+			Shown(form =>
+			{
+				child = new PixelLayout { Size = new Size(80, 60) };
+				var layout = new PixelLayout();
+				layout.Add(child, 96, 96);
+				return layout;
+			}, layout =>
+			{
+				var origin = layout.PointToScreen(new PointF(96, 96));
+				Assert.That(Point.Round(child.PointToScreen(PointF.Empty) - origin), Is.EqualTo(Point.Empty));
+				Assert.That(Point.Round(child.PointFromScreen(origin)), Is.EqualTo(Point.Empty));
+			});
+		}
+
 		[Test, ManualTest]
 		public void PointToScreenShouldWorkOnSecondaryScreen()
 		{
