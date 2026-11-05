@@ -22,7 +22,27 @@ namespace Eto.Test.Wpf
 				RoutedEvent = previewEvent
 			};
 			swi.InputManager.Current.ProcessInput(args);
+
+			// WPF only types text from WM_CHAR, which faked key events never produce
+			var text = previewEvent == swi.Keyboard.PreviewKeyDownEvent ? GetText(key) : null;
+			if (text != null && swi.Keyboard.FocusedElement is sw.IInputElement focused)
+				swi.TextCompositionManager.StartComposition(new swi.TextComposition(swi.InputManager.Current, focused, text));
 			return Task.CompletedTask;
+		}
+
+		static string GetText(Keys key)
+		{
+			var code = key & Keys.KeyMask;
+			var shift = key.HasFlag(Keys.Shift);
+			if (code >= Keys.A && code <= Keys.Z)
+				return ((char)((shift ? 'A' : 'a') + (code - Keys.A))).ToString();
+			if (code >= Keys.D0 && code <= Keys.D9 && !shift)
+				return ((char)('0' + (code - Keys.D0))).ToString();
+			if (code >= Keys.Keypad0 && code <= Keys.Keypad9)
+				return ((char)('0' + (code - Keys.Keypad0))).ToString();
+			if (code == Keys.Space)
+				return " ";
+			return null;
 		}
 
 		public bool IsWindowFocusedItself(Window window)

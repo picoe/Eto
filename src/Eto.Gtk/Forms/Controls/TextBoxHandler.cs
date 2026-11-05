@@ -280,7 +280,12 @@ namespace Eto.GtkSharp.Forms.Controls
 						cancel = tie.Cancel;
 					}
 					if (cancel)
+					{
 						NativeMethods.g_signal_stop_emission_by_name(handler.Control.Handle, "insert-text");
+						// GtkEntry moves the caret to this position once the signal returns, which would
+						// undo any caret change a handler made (e.g. MaskedTextBox advancing past literals).
+						args.Position = handler.CaretIndex;
+					}
 				}
 				finally
 				{

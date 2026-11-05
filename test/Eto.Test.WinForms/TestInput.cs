@@ -31,7 +31,9 @@ namespace Eto.Test.WinForms
 			if (target == IntPtr.Zero)
 				target = form.Handle;
 
-			PostMessage(target, msg, (IntPtr)(int)key.ToSWF(), IntPtr.Zero);
+			// key-up needs its transition flags, or TranslateMessage types the character a second time
+			var lParam = msg == WM_KEYUP ? unchecked((IntPtr)(int)0xC0000001) : (IntPtr)1;
+			PostMessage(target, msg, (IntPtr)(int)key.ToSWF(), lParam);
 
 			// the message has to go around the message loop before WinForms delivers it, which is also
 			// what gives Form.KeyPreview a chance to see it first
