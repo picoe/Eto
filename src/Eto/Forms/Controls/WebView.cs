@@ -116,6 +116,80 @@ public class WebViewMessageEventArgs : EventArgs
 }
 
 /// <summary>
+/// A request from the <see cref="WebView"/> for content served by a handler added with <see cref="WebView.AddResourceHandler"/>.
+/// </summary>
+public class WebViewResourceRequest
+{
+	/// <summary>
+	/// Gets the full address requested, e.g. https://myapp.example/index.html.
+	/// </summary>
+	public Uri Uri { get; }
+
+	/// <summary>
+	/// Gets the HTTP method of the request, e.g. GET or POST.
+	/// </summary>
+	public string Method { get; }
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="WebViewResourceRequest"/> class.
+	/// </summary>
+	/// <param name="uri">Address requested.</param>
+	/// <param name="method">HTTP method of the request.</param>
+	public WebViewResourceRequest(Uri uri, string method)
+	{
+		Uri = uri;
+		Method = method;
+	}
+}
+
+/// <summary>
+/// Content to return to the <see cref="WebView"/> from a handler added with <see cref="WebView.AddResourceHandler"/>.
+/// </summary>
+public class WebViewResourceResponse
+{
+	/// <summary>
+	/// Gets the content to send. The web view reads it after the handler returns, so don't dispose it.
+	/// </summary>
+	public Stream Content { get; }
+
+	/// <summary>
+	/// Gets the MIME type of the content, e.g. text/html; charset=utf-8.
+	/// </summary>
+	public string ContentType { get; }
+
+	/// <summary>
+	/// Gets or sets the HTTP status code, 200 by default.
+	/// </summary>
+	public int StatusCode { get; set; } = 200;
+
+	/// <summary>
+	/// Gets extra HTTP headers to send, e.g. Cache-Control.
+	/// </summary>
+	public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+	/// <summary>
+	/// Initializes a new response with the specified content.
+	/// </summary>
+	/// <param name="content">Content to send.</param>
+	/// <param name="contentType">MIME type of the content.</param>
+	public WebViewResourceResponse(Stream content, string contentType)
+	{
+		Content = content;
+		ContentType = contentType;
+	}
+
+	/// <summary>
+	/// Initializes a new response with text content, sent as UTF-8.
+	/// </summary>
+	/// <param name="content">Text to send.</param>
+	/// <param name="contentType">MIME type of the content without a charset, e.g. text/html.</param>
+	public WebViewResourceResponse(string content, string contentType)
+		: this(new MemoryStream(Encoding.UTF8.GetBytes(content ?? string.Empty)), contentType + "; charset=utf-8")
+	{
+	}
+}
+
+/// <summary>
 /// Control to show a browser control that can display html and execute javascript.
 /// </summary>
 /// <remarks>
@@ -432,6 +506,52 @@ public class WebView : Control
 	}
 
 	/// <summary>
+	/// Gets a value indicating whether the current platform supports <see cref="AddResourceHandler"/>.
+	/// </summary>
+	public bool SupportsResourceHandlers => Handler.SupportsResourceHandlers;
+
+	/// <summary>
+	/// Serves every request to <paramref name="host"/> from <paramref name="handler"/> instead of the network.
+	/// </summary>
+	/// <remarks>
+	/// Navigate to the returned address with <see cref="Url"/>, e.g. <c>webView.Url = webView.AddResourceHandler("myapp.example", handler)</c>.
+	/// It is eto://myapp.example/, except with WebView2 using an environment the app created without the eto scheme, where it is https://myapp.example/.
+	/// The handler runs on the UI thread; return null to respond with 404 Not Found.
+	/// Adding a host again replaces its handler. Use a host under the reserved .example domain so it can never be a real site.
+	/// </remarks>
+	/// <param name="host">Host name to serve, e.g. myapp.example.</param>
+	/// <param name="handler">Returns the content for each request.</param>
+	/// <returns>The root address of the host, e.g. https://myapp.example/.</returns>
+	/// <exception cref="NotSupportedException">The platform doesn't support it. Check <see cref="SupportsResourceHandlers"/> first.</exception>
+	public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler)
+	{
+		if (handler == null)
+			throw new ArgumentNullException(nameof(handler));
+		ValidateResourceHost(host);
+		return Handler.AddResourceHandler(host, handler);
+	}
+
+	/// <summary>
+	/// Stops serving requests to a host added with <see cref="AddResourceHandler"/>.
+	/// </summary>
+	/// <param name="host">Host name to stop serving.</param>
+	public void RemoveResourceHandler(string host)
+	{
+		ValidateResourceHost(host);
+		Handler.RemoveResourceHandler(host);
+	}
+
+	void ValidateResourceHost(string host)
+	{
+		if (string.IsNullOrEmpty(host))
+			throw new ArgumentNullException(nameof(host));
+		if (Uri.CheckHostName(host) != UriHostNameType.Dns)
+			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "'{0}' is not a valid host name", host), nameof(host));
+		if (!Handler.SupportsResourceHandlers)
+			throw new NotSupportedException("This platform does not support serving content to the WebView directly");
+	}
+
+	/// <summary>
 	/// Callback interface for the <see cref="WebView"/>.
 	/// </summary>
 	public new interface ICallback : Control.ICallback
@@ -637,5 +757,27 @@ public class WebView : Control
 		/// </remarks>
 		/// <value><c>true</c> if the context menu is enabled; otherwise, <c>false</c>.</value>
 		bool BrowserContextMenuEnabled { get; set; }
+
+#if NET
+		// Defaults let existing handlers compile unchanged.
+
+		/// <inheritdoc cref="WebView.SupportsResourceHandlers"/>
+		bool SupportsResourceHandlers => false;
+
+		/// <inheritdoc cref="WebView.AddResourceHandler"/>
+		Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler) => null;
+
+		/// <inheritdoc cref="WebView.RemoveResourceHandler"/>
+		void RemoveResourceHandler(string host) { }
+#else
+		/// <inheritdoc cref="WebView.SupportsResourceHandlers"/>
+		bool SupportsResourceHandlers { get; }
+
+		/// <inheritdoc cref="WebView.AddResourceHandler"/>
+		Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler);
+
+		/// <inheritdoc cref="WebView.RemoveResourceHandler"/>
+		void RemoveResourceHandler(string host);
+#endif
 	}
 }

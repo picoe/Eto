@@ -46,6 +46,42 @@ var webkitmethods = new[]
 	"IntPtr webkit_user_script_new(string source, WebKitUserContentInjectedFrames injected_frames, WebKitUserScriptInjectionTime injection_time, string whitelist, string blacklist)",
 	"IntPtr webkit_javascript_result_get_type()",
 	"IntPtr webkit_javascript_result_get_js_value(IntPtr js_result)",
+	"IntPtr webkit_web_view_get_context(IntPtr web_view)",
+	"void webkit_web_context_register_uri_scheme(IntPtr context, string scheme, Delegate callback, IntPtr user_data, IntPtr user_data_destroy_func)",
+	"IntPtr webkit_web_context_get_security_manager(IntPtr context)",
+	"void webkit_security_manager_register_uri_scheme_as_secure(IntPtr security_manager, string scheme)",
+	"void webkit_security_manager_register_uri_scheme_as_cors_enabled(IntPtr security_manager, string scheme)",
+	"IntPtr webkit_uri_scheme_request_get_web_view(IntPtr request)",
+	"string webkit_uri_scheme_request_get_uri(IntPtr request)",
+	"string webkit_uri_scheme_request_get_http_method(IntPtr request)",
+	"void webkit_uri_scheme_request_finish(IntPtr request, IntPtr stream, long stream_length, string content_type)",
+	"void webkit_uri_scheme_request_finish_error(IntPtr request, IntPtr error)",
+	"void webkit_uri_scheme_request_finish_with_response(IntPtr request, IntPtr response)",
+	"IntPtr webkit_uri_scheme_response_new(IntPtr input_stream, long stream_length)",
+	"void webkit_uri_scheme_response_set_status(IntPtr response, uint status_code, string reason_phrase)",
+	"void webkit_uri_scheme_response_set_content_type(IntPtr response, string content_type)",
+	"void webkit_uri_scheme_response_set_http_headers(IntPtr response, IntPtr headers)",
+};
+
+// libsoup is 2.4 or 3.0 depending on which webkit2gtk loaded, so these resolve through libwebkit's dependencies.
+var soupmethods = new[]
+{
+	"IntPtr soup_message_headers_new(int type)",
+	"void soup_message_headers_append(IntPtr hdrs, string name, string value)",
+};
+
+var glibmethods = new[]
+{
+	"IntPtr g_bytes_new(byte[] data, IntPtr size)",
+	"void g_bytes_unref(IntPtr bytes)",
+	"uint g_quark_from_string(string str)",
+	"IntPtr g_error_new_literal(uint domain, int code, string message)",
+	"void g_error_free(IntPtr error)",
+};
+
+var giolibmethods = new[]
+{
+	"IntPtr g_memory_input_stream_new_from_bytes(IntPtr bytes)",
 };
 
 var javascriptcoremethods = new[]
@@ -124,8 +160,11 @@ var fontconfigmethods = new []
 };
 
 var methods = giomethods
+	.Concat(glibmethods)
+	.Concat(giolibmethods)
 	.Concat(gtkmethods)
 	.Concat(webkitmethods)
+	.Concat(soupmethods)
 	.Concat(javascriptcoremethods)
 	.Concat(gdkmethods)
 	.Concat(pangomethods)
@@ -240,6 +279,8 @@ namespace Eto.GtkSharp
 			const string ext = "<#= ext[i] #>";
 			const string extalt = "<#= extalt[i] #>";
 			const string libgobject = "libgobject-2.0" + ext;
+			const string libglib = "libglib-2.0" + ext;
+			const string libgio = "libgio-2.0" + ext;
 			const string libgtk = "libgtk-" + plat + ver + ext;
 			const string libgdk = "libgdk-" + plat + ver + ext;
 			const string libpango = "libpango-1.0" + ext;
@@ -259,7 +300,37 @@ namespace Eto.GtkSharp
 		}
 #>
 <#
+		foreach (var method in glibmethods)
+		{
+#>
+
+			[DllImport(libglib, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in giolibmethods)
+		{
+#>
+
+			[DllImport(libgio, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
 		foreach (var method in webkitmethods)
+		{
+#>
+
+			[DllImport(libwebkit, CallingConvention = CallingConvention.Cdecl)]
+			public extern static <#= method.StartsWith("string") ? "IntPtr" + method.Substring(6) : method #>;
+<#
+		}
+#>
+<#
+		foreach (var method in soupmethods)
 		{
 #>
 

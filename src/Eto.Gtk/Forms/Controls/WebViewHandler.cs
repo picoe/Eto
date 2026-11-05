@@ -279,6 +279,14 @@ namespace Eto.GtkSharp.Forms.Controls
 			Control.ExecuteScript("print();");
 		}
 
+		public bool SupportsResourceHandlers => false;
+
+		public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler) => null;
+
+		public void RemoveResourceHandler(string host)
+		{
+		}
+
 		public bool BrowserContextMenuEnabled
 		{
 			get;
