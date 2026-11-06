@@ -91,7 +91,7 @@ namespace Eto.GtkSharp.Forms.Menu
 			set
 			{
 				text = value;
-				label.TextWithMnemonic = value;
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 			}
 		}
 
