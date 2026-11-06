@@ -3,6 +3,7 @@ namespace Eto.Forms;
 /// <summary>
 /// Event arguments for determining if two gestures can be recognized simultaneously.
 /// </summary>
+/// <since>2.12</since>
 public class GestureRecognitionEventArgs : EventArgs
 {
 	/// <summary>
@@ -30,6 +31,7 @@ public class GestureRecognitionEventArgs : EventArgs
 /// <summary>
 /// Base class for platform gestures that can be attached to a <see cref="Control"/>.
 /// </summary>
+/// <since>2.12</since>
 [Handler(typeof(IHandler))]
 public abstract class Gesture : Widget
 {
@@ -203,6 +205,7 @@ public abstract class Gesture : Widget
 	/// <summary>
 	/// Handler interface for <see cref="Gesture"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface IHandler : Widget.IHandler
 	{
 		/// <summary>
@@ -217,6 +220,7 @@ public abstract class Gesture : Widget
 	/// <summary>
 	/// Callback interface for <see cref="Gesture"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface ICallback : Widget.ICallback
 	{
 		/// <summary>

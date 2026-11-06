@@ -283,6 +283,7 @@ public class Application : Widget
 	/// Note that not all platforms fully support changing themes at runtime, in particular WinForms.
 	/// In this case, you need to set the theme before creating any controls.
 	/// </remarks>
+	/// <since>2.12</since>
 	public Theme Theme
 	{
 		get => Handler.Theme;
@@ -292,11 +293,13 @@ public class Application : Widget
 	/// <summary>
 	/// Identifier for the <see cref="ThemeChanged"/> event.
 	/// </summary>
+	/// <since>2.12</since>
 	public const string ThemeChangedEvent = "Application.ThemeChanged";
 
 	/// <summary>
 	/// Occurs when the <see cref="Theme"/> has changed.
 	/// </summary>
+	/// <since>2.12</since>
 	public event EventHandler<EventArgs> ThemeChanged
 	{
 		add { Properties.AddHandlerEvent(ThemeChangedEvent, value); }
@@ -307,6 +310,7 @@ public class Application : Widget
 	/// Raises the <see cref="ThemeChanged"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
+	/// <since>2.12</since>
 	protected virtual void OnThemeChanged(EventArgs e) => Properties.TriggerEvent(ThemeChangedEvent, this, e);
 
 	static Application()
@@ -393,6 +397,7 @@ public class Application : Widget
 	/// <summary>
 	/// Gets a value indicating that the current thread is on the UI thread for this Application instance.
 	/// </summary>
+	/// <since>2.10</since>
 	public bool IsUIThread => mainThreadId == Thread.CurrentThread.ManagedThreadId;
 
 	/// <summary>
@@ -655,6 +660,7 @@ public class Application : Widget
 		/// <summary>
 		/// Raises the <see cref="Application.ThemeChanged"/> event.
 		/// </summary>
+		/// <since>2.12</since>
 		void OnThemeChanged(Application widget, EventArgs e);
 
 	}
@@ -711,6 +717,7 @@ public class Application : Widget
 		/// <summary>
 		/// Raises the <see cref="Application.ThemeChanged"/> event.
 		/// </summary>
+		/// <since>2.12</since>
 		public void OnThemeChanged(Application widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -828,6 +835,7 @@ public class Application : Widget
 		/// <summary>
 		/// Gets or sets the current visual theme of the application.
 		/// </summary>
+		/// <since>2.12</since>
 		Theme Theme { get; set; }
 	}
 }

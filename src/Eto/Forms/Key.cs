@@ -374,6 +374,7 @@ public static class KeysExtensions
 	/// </summary>
 	/// <param name="shortcutString">The shortcut string to parse</param>
 	/// <returns>The key equivalent, or Keys.None if not found</returns>
+	/// <since>2.11</since>
 	public static Keys FromShortcutString(string shortcutString)
 	{
 		if (string.IsNullOrEmpty(shortcutString))

@@ -104,6 +104,7 @@ public class RadioButton : TextControl, IMnemonicControl
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool UseMnemonic
 	{
 		get => Handler.UseMnemonic;
@@ -111,6 +112,7 @@ public class RadioButton : TextControl, IMnemonicControl
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool AlwaysShowMnemonic
 	{
 		get => Handler.AlwaysShowMnemonic;

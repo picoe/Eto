@@ -60,11 +60,13 @@ public class Drawable : Panel
 	/// <summary>
 	/// Event identifier for handlers when attaching the <see cref="TextComposition"/> event.
 	/// </summary>
+	/// <since>2.12</since>
 	public const string TextCompositionEvent = "Drawable.TextComposition";
 
 	/// <summary>
 	/// Event identifier for handlers when attaching the <see cref="TextInsertionBoundsRequested"/> event.
 	/// </summary>
+	/// <since>2.12</since>
 	public const string TextInsertionBoundsRequestedEvent = "Drawable.TextInsertionBoundsRequested";
 
 	/// <summary>
@@ -82,6 +84,7 @@ public class Drawable : Panel
 	/// The composition text is not committed text, and should not be treated as such.  The completed text will 
 	/// be provided in the <see cref="Control.TextInput"/> event when the composition is committed.
 	/// </remarks>
+	/// <since>2.12</since>
 	public event EventHandler<TextCompositionEventArgs> TextComposition
 	{
 		add => Properties.AddHandlerEvent(TextCompositionEvent, value);
@@ -96,6 +99,7 @@ public class Drawable : Panel
 	/// Platforms can query this whenever they need to position text-related UI such as composition, candidate,
 	/// or emoji panels.
 	/// </remarks>
+	/// <since>2.12</since>
 	public event EventHandler<TextInsertionBoundsEventArgs> TextInsertionBoundsRequested
 	{
 		add => Properties.AddHandlerEvent(TextInsertionBoundsRequestedEvent, value);
@@ -152,6 +156,7 @@ public class Drawable : Panel
 	/// Raises the <see cref="TextComposition"/> event.
 	/// </summary>
 	/// <param name="e">Composition event arguments.</param>
+	/// <since>2.12</since>
 	protected virtual void OnTextComposition(TextCompositionEventArgs e)
 	{
 		Properties.TriggerEvent(TextCompositionEvent, this, e);
@@ -161,6 +166,7 @@ public class Drawable : Panel
 	/// Raises the <see cref="TextInsertionBoundsRequested"/> event.
 	/// </summary>
 	/// <param name="e">Text insertion bounds event arguments.</param>
+	/// <since>2.12</since>
 	protected virtual void OnTextInsertionBoundsRequested(TextInsertionBoundsEventArgs e)
 	{
 		Properties.TriggerEvent(TextInsertionBoundsRequestedEvent, this, e);
@@ -222,6 +228,7 @@ public class Drawable : Panel
 	/// This can be used when the insertion point changes while an input method editor (IME) composition
 	/// is active, such as when clicking to move the caret.
 	/// </remarks>
+	/// <since>2.12</since>
 	public void CancelTextComposition()
 	{
 		Handler.CancelTextComposition();
@@ -234,6 +241,7 @@ public class Drawable : Panel
 	/// This finalizes the current input method editor (IME) composition and raises the resulting text
 	/// through the normal <see cref="Control.TextInput"/> flow.
 	/// </remarks>
+	/// <since>2.12</since>
 	public void CommitTextComposition()
 	{
 		Handler.CommitTextComposition();
@@ -259,11 +267,13 @@ public class Drawable : Panel
 		/// <summary>
 		/// Raises the live text composition event.
 		/// </summary>
+		/// <since>2.12</since>
 		void OnTextComposition(Drawable widget, TextCompositionEventArgs e);
 
 		/// <summary>
 		/// Raises the text insertion bounds requested event.
 		/// </summary>
+		/// <since>2.12</since>
 		void OnTextInsertionBoundsRequested(Drawable widget, TextInsertionBoundsEventArgs e);
 	}
 
@@ -284,6 +294,7 @@ public class Drawable : Panel
 		/// <summary>
 		/// Raises the live text composition event.
 		/// </summary>
+		/// <since>2.12</since>
 		public void OnTextComposition(Drawable widget, TextCompositionEventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -293,6 +304,7 @@ public class Drawable : Panel
 		/// <summary>
 		/// Raises the text insertion bounds requested event.
 		/// </summary>
+		/// <since>2.12</since>
 		public void OnTextInsertionBoundsRequested(Drawable widget, TextInsertionBoundsEventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -368,11 +380,13 @@ public class Drawable : Panel
 		/// <summary>
 		/// Cancels any active text composition associated with this drawable.
 		/// </summary>
+		/// <since>2.12</since>
 		void CancelTextComposition();
 
 		/// <summary>
 		/// Commits any active text composition associated with this drawable.
 		/// </summary>
+		/// <since>2.12</since>
 		void CommitTextComposition();
 
 	}

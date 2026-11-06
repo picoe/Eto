@@ -18,6 +18,7 @@ public abstract class Menu : BindableWidget
 	/// Initializes a new instance of the <see cref="Eto.Forms.Menu"/> class with a specified handler.
 	/// </summary>
 	/// <param name="handler">The handler for the menu.</param>
+	/// <since>2.10</since>
 	public Menu(IHandler handler)
 		: base(handler)
 	{

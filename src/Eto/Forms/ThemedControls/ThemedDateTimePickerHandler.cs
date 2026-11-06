@@ -4,6 +4,7 @@ namespace Eto.Forms.ThemedControls;
 /// Themed implementation of the <see cref="DateTimePicker"/> control using a <see cref="MaskedTextStepper{T}"/>
 /// and a culture-aware fixed format provider.
 /// </summary>
+/// <since>2.12</since>
 public class ThemedDateTimePickerHandler : ThemedControlHandler<DateTimeMaskedTextStepper, DateTimePicker, DateTimePicker.ICallback>, DateTimePicker.IHandler
 {
 	/// <summary>

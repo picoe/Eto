@@ -3,6 +3,7 @@ namespace Eto.Forms.ThemedControls;
 /// <summary>
 /// Themed implementation of the <see cref="NumericStepper"/> control using a <see cref="NumericMaskedTextStepper{T}"/>.
 /// </summary>
+/// <since>2.12</since>
 public class ThemedNumericStepperHandler : ThemedControlHandler<NumericMaskedTextStepper<double>, NumericStepper, NumericStepper.ICallback>, NumericStepper.IHandler
 {
 

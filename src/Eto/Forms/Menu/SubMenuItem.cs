@@ -103,6 +103,7 @@ public class SubMenuItem : ButtonMenuItem, ISubmenu, IBindableWidgetContainer
 	/// </summary>
 	/// <param name="handler">The handler for the submenu item.</param>
 	/// <param name="items">Initial items in the submenu</param>
+	/// <since>2.10</since>
 	public SubMenuItem(IHandler handler, IEnumerable<MenuItem> items = null)
 		: base(handler, items)
 	{

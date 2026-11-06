@@ -13,6 +13,7 @@ namespace Eto.Serialization.Xaml.Design
 	/// The type also tells the editor which properties <c>{Binding}</c> can use.
 	/// Returns null outside of <see cref="Control.IsDesignMode"/>, or when the type has no parameterless constructor.
 	/// </remarks>
+	/// <since>2.13</since>
 	[MarkupExtensionReturnType(typeof(object))]
 	public class DesignInstanceExtension : MarkupExtension
 	{

@@ -6,6 +6,7 @@ namespace Eto.Forms;
 /// <remarks>
 /// The date/time masking, parsing, and stepping logic is provided by <see cref="DateTimeMaskedTextProvider"/>.
 /// </remarks>
+/// <since>2.12</since>
 public class DateTimeMaskedTextStepper : MaskedTextStepper<DateTime?>
 {
 	readonly DateTimeMaskedTextProvider provider;

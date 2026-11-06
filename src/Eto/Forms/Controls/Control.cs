@@ -16,6 +16,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <remarks>
 	/// Set by the designer when it starts; applications should not need to set this.
 	/// </remarks>
+	/// <since>2.13</since>
 	public static bool IsDesignMode { get; set; }
 
 	// shared by the xaml and json readers so a user control in either format inherits its parent's design data
@@ -47,6 +48,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <summary>
 	/// Gets the gestures attached to this control.
 	/// </summary>
+	/// <since>2.12</since>
 	public Collection<Gesture> Gestures => Properties.Create(GesturesKey, () => new GestureCollection(this));
 
 	class GestureCollection : Collection<Gesture>
@@ -553,12 +555,14 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <summary>
 	/// Event identifier for handlers when attaching the <see cref="Control.ThemeChanged"/> event
 	/// </summary>
+	/// <since>2.12</since>
 	public const string ThemeChangedEvent = "Control.ThemeChanged";
 
 	/// <summary>
 	/// Occurs when the control's theme changes either due to a system theme change 
 	/// or when Application.Instance.CurrentTheme is set.
 	/// </summary>
+	/// <since>2.12</since>
 	public event EventHandler<EventArgs> ThemeChanged
 	{
 		add { Properties.AddHandlerEvent(ThemeChangedEvent, value); }
@@ -569,6 +573,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// Raises the <see cref="ThemeChanged"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments</param>
+	/// <since>2.12</since>
 	protected virtual void OnThemeChanged(EventArgs e)
 	{
 		Properties.TriggerEvent(ThemeChangedEvent, this, e);
@@ -1466,6 +1471,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// will report <c>false</c>. On iOS and Android this has no effect.
 	/// </remarks>
 	/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+	/// <since>2.12</since>
 	[sc.DefaultValue(true)]
 	public virtual bool TabStop
 	{
@@ -1581,6 +1587,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// right clicking on a TextBox or TextArea will keep the selection visible, whereas this would not be the case if you showed
 	/// the context menu manually.
 	/// </remarks>
+	/// <since>2.10</since>
 	public ContextMenu ContextMenu
 	{
 		get { return Handler.ContextMenu; }
@@ -1725,6 +1732,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// <summary>
 		/// Raises the ThemeChanged event.
 		/// </summary>
+		/// <since>2.12</since>
 		void OnThemeChanged(Control widget, EventArgs e);
 	}
 
@@ -1903,6 +1911,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// <summary>
 		/// Raises the ThemeChanged event.
 		/// </summary>
+		/// <since>2.12</since>
 		public void OnThemeChanged(Control widget, EventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -2166,6 +2175,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// this has no effect.
 		/// </remarks>
 		/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+		/// <since>2.12</since>
 		bool TabStop { get; set; }
 
 		/// <summary>
@@ -2244,15 +2254,18 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// Adds a gesture to the control.
 		/// </summary>
 		/// <param name="item">Gesture to add.</param>
+		/// <since>2.12</since>
 		void AddGesture(Gesture item);
 		/// <summary>
 		/// Removes all gestures from the control.
 		/// </summary>
+		/// <since>2.12</since>
 		void ClearGestures();
 		/// <summary>
 		/// Removes a gesture from the control.
 		/// </summary>
 		/// <param name="item">Gesture to remove.</param>
+		/// <since>2.12</since>
 		void RemoveGesture(Gesture item);
 	}
 	#endregion

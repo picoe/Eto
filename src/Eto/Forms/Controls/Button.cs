@@ -131,6 +131,7 @@ public class Button : TextControl, IMnemonicControl
 	/// Not supported on all platforms, in which case the image stays aligned to the edge of the button.
 	/// </remarks>
 	/// <value><c>true</c> to keep the image next to the text; <c>false</c> to align the image to the edge of the button. Default is <c>false</c>.</value>
+	/// <since>2.12</since>
 	public bool ImageNextToText
 	{
 		get { return Handler.ImageNextToText; }
@@ -205,6 +206,7 @@ public class Button : TextControl, IMnemonicControl
 	}
 	
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool UseMnemonic
 	{
 		get => Handler.UseMnemonic;
@@ -212,6 +214,7 @@ public class Button : TextControl, IMnemonicControl
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool AlwaysShowMnemonic
 	{
 		get => Handler.AlwaysShowMnemonic;
@@ -308,6 +311,7 @@ public class Button : TextControl, IMnemonicControl
 		ButtonImagePosition ImagePosition { get; set; }
 
 		/// <inheritdoc cref="Button.ImageNextToText"/>
+		/// <since>2.12</since>
 		bool ImageNextToText { get; set; }
 
 		/// <inheritdoc cref="Button.MinimumSize"/>

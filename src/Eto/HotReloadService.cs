@@ -18,6 +18,7 @@ namespace Eto;
 /// <summary>
 /// Indicates that a class supports hot reload functionality
 /// </summary>
+/// <since>2.10</since>
 [AttributeUsage(AttributeTargets.Class)]
 public class HotReloadAttribute : Attribute
 {
@@ -39,6 +40,7 @@ public class HotReloadAttribute : Attribute
 /// <summary>
 /// Enables hot reload functionality in Eto
 /// </summary>
+/// <since>2.10</since>
 public static class HotReloadService
 {
 	/// <summary>

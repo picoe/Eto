@@ -261,6 +261,7 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 	/// refreshing the view.  After all of the update methods, <see cref="EndUpdates"/> is called to signal that they are done.
 	/// </remarks>
 	/// <seealso cref="EndUpdates"/>
+	/// <since>2.9</since>
 	protected virtual void BeginUpdates()
 	{
 	}
@@ -271,6 +272,7 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 	/// <remarks>
 	/// See <see cref="BeginUpdates"/> for details.
 	/// </remarks>
+	/// <since>2.9</since>
 	protected virtual void EndUpdates()
 	{
 	}
@@ -346,6 +348,7 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 	/// </remarks>
 	/// <param name="index">Index of the item to replace</param>
 	/// <param name="newItem">New item</param>
+	/// <since>2.9</since>
 	public virtual void ReplaceItem(int index, TItem newItem)
 	{
 		RemoveItem(index);
@@ -360,6 +363,7 @@ public abstract class CollectionChangedHandler<TItem, TCollection>
 	/// </remarks>
 	/// <param name="index">Index of the start of the range</param>
 	/// <param name="newItems">New items to replace the existing items at the same indexes</param>
+	/// <since>2.9</since>
 	public virtual void ReplaceRange(int index, IEnumerable<TItem> newItems)
 	{
 		foreach (var item in newItems)

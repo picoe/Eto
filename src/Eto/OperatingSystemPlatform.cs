@@ -21,6 +21,7 @@ public sealed class OperatingSystemPlatform
 	/// <summary>
 	/// Gets a value indicating that the current .NET runtime is .NET Core
 	/// </summary>
+	/// <since>2.9</since>
 	public bool IsNetFramework => _isNetFramework ??= GetIsNetFramework();
 
 	/// <summary>

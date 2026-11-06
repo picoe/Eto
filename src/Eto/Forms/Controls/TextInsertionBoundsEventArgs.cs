@@ -3,6 +3,7 @@ namespace Eto.Forms;
 /// <summary>
 /// Event arguments used to provide the current text insertion bounds for a drawable.
 /// </summary>
+/// <since>2.12</since>
 public class TextInsertionBoundsEventArgs : EventArgs
 {
 	/// <summary>

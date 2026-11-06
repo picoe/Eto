@@ -3,6 +3,7 @@ namespace Eto.Forms.ThemedControls;
 /// <summary>
 /// A themed handler for the <see cref="FontDialog"/> control.
 /// </summary>
+/// <since>2.12</since>
 public class ThemedFontDialogHandler : WidgetHandler<Widget, FontDialog, FontDialog.ICallback>, FontDialog.IHandler
 {
 	Font _font;

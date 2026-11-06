@@ -44,6 +44,7 @@ namespace Eto.Serialization.Json
 		/// <summary>
 		/// Gets or sets the assembly to find types in when a type name has no assembly
 		/// </summary>
+		/// <since>2.13</since>
 		public Assembly LocalAssembly { get; set; }
 		
 		public override Type BindToType (string assemblyName, string typeName)

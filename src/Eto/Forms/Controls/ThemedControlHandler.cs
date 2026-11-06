@@ -373,6 +373,7 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	/// Gets or sets a value indicating whether the user can get to this control using the tab key.
 	/// </summary>
 	/// <value><c>true</c> to include the control in the tab order (the default); <c>false</c> to skip it.</value>
+	/// <since>2.12</since>
 	public virtual bool TabStop
 	{
 		get { return FocusControl.TabStop; }
@@ -480,6 +481,7 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	public bool IsMouseCaptured => Control.IsMouseCaptured;
 
 	/// <inheritdoc />
+	/// <since>2.10</since>
 	public ContextMenu ContextMenu
 	{
 		get => Control.ContextMenu;
@@ -492,18 +494,21 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	public void ReleaseMouseCapture() => Control.ReleaseMouseCapture();
 
 	/// <inheritdoc />
+	/// <since>2.12</since>
 	public virtual void AddGesture(Gesture item)
 	{
 		Control.Gestures.Add(item);
 	}
 
 	/// <inheritdoc />
+	/// <since>2.12</since>
 	public virtual void ClearGestures()
 	{
 		Control.Gestures.Clear();
 	}
 
 	/// <inheritdoc />
+	/// <since>2.12</since>
 	public virtual void RemoveGesture(Gesture item)
 	{
 		Control.Gestures.Remove(item);

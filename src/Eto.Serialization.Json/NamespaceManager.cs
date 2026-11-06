@@ -12,6 +12,7 @@ namespace Eto.Serialization.Json
 		/// <remarks>
 		/// When null, the assembly of the object being loaded is used.
 		/// </remarks>
+		/// <since>2.13</since>
 		public Assembly LocalAssembly { get; set; }
 		
 		public IDictionary<string, NamespaceInfo> Namespaces 

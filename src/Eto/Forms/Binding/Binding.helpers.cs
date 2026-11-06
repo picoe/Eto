@@ -265,6 +265,7 @@ partial class Binding
 	/// <param name="propertyExpression">Expression for the property to remove the event handler for</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent{T,TProperty}(T,Expression{Func{T, TProperty}},EventHandler{EventArgs})"/>
+	/// <since>2.9</since>
 	public static void RemovePropertyEvent<T, TProperty>(T obj, Expression<Func<T, TProperty>> propertyExpression, EventHandler<EventArgs> eh)
 	{
 		var propertyInfo = propertyExpression.GetMemberInfo();
@@ -281,6 +282,7 @@ partial class Binding
 	/// <param name="propertyName">Name of the property to remove the event handler for</param>
 	/// <param name="eh">Event handler delegate to remove</param>
 	/// <seealso cref="AddPropertyEvent(object,string,EventHandler{EventArgs})"/>
+	/// <since>2.9</since>
 	public static void RemovePropertyEvent(object obj, string propertyName, EventHandler<EventArgs> eh)
 	{
 		if (obj is INotifyPropertyChanged notifyObject)

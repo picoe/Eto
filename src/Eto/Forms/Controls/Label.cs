@@ -71,6 +71,7 @@ public enum WrapMode
 /// implemented, so only the trimming applies there.</description></item>
 /// </list>
 /// </remarks>
+/// <since>2.12</since>
 public enum TextTrimming
 {
 	/// <summary>
@@ -128,6 +129,7 @@ public class Label : TextControl, IMnemonicControl
 	/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
 	/// </remarks>
 	/// <value>The trimming mode for the text.  The default is <see cref="TextTrimming.None"/>.</value>
+	/// <since>2.12</since>
 	[DefaultValue(TextTrimming.None)]
 	public TextTrimming Trimming
 	{
@@ -190,12 +192,14 @@ public class Label : TextControl, IMnemonicControl
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool UseMnemonic
 	{
 		get => Handler.UseMnemonic;
 		set => Handler.UseMnemonic = value;
 	}
 	/// <inheritdoc/>
+	/// <since>2.10</since>
 	public bool AlwaysShowMnemonic
 	{
 		get => Handler.AlwaysShowMnemonic;
@@ -249,6 +253,7 @@ public class Label : TextControl, IMnemonicControl
 		/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
 		/// </remarks>
 		/// <value>The trimming mode for the text.</value>
+		/// <since>2.12</since>
 		TextTrimming Trimming { get; set; }
 	}
 }

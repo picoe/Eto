@@ -37,6 +37,7 @@ public class ButtonMenuItem : MenuItem, ISubmenu, IBindableWidgetContainer
 	/// </summary>
 	/// <param name="handler">The handler for the button menu item.</param>
 	/// <param name="items">Initial items in the menu</param>
+	/// <since>2.10</since>
 	public ButtonMenuItem(IHandler handler, IEnumerable<MenuItem> items = null)
 		: base(handler)
 	{

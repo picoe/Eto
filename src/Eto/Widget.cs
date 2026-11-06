@@ -185,6 +185,7 @@ public abstract class Widget : IHandlerSource, IDisposable, ICallbackSource
 		/// <see cref="Eto.WidgetHandler{TWidget}.DetachEvent"/>, which is what to override.
 		/// </remarks>
 		/// <param name="id">ID of the event to stop handling</param>
+		/// <since>2.12</since>
 #if NET
 		void UnhandleEvent(string id) { }
 #else

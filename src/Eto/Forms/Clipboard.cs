@@ -17,11 +17,13 @@ public class Clipboard : Widget, IDataObject
 	/// <summary>
 	/// Identifier for handlers when attaching the <see cref="Changed"/> event.
 	/// </summary>
+	/// <since>2.12</since>
 	public const string ChangedEvent = "Clipboard.Changed";
 
 	/// <summary>
 	/// Occurs when the system clipboard contents have changed.
 	/// </summary>
+	/// <since>2.12</since>
 	public event EventHandler<EventArgs> Changed
 	{
 		add { Properties.AddHandlerEvent(ChangedEvent, value); }
@@ -32,6 +34,7 @@ public class Clipboard : Widget, IDataObject
 	/// Raises the <see cref="Changed"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
+	/// <since>2.12</since>
 	protected virtual void OnChanged(EventArgs e)
 	{
 		Properties.TriggerEvent(ChangedEvent, this, e);
@@ -339,6 +342,7 @@ public class Clipboard : Widget, IDataObject
 	/// <summary>
 	/// Callback interface for <see cref="Clipboard"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface ICallback : Widget.ICallback
 	{
 		/// <summary>
@@ -355,6 +359,7 @@ public class Clipboard : Widget, IDataObject
 	/// <summary>
 	/// Callback implementation for handlers of <see cref="Clipboard"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	protected class Callback : ICallback
 	{
 		/// <inheritdoc cref="ICallback.OnChanged"/>.

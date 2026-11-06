@@ -26,6 +26,7 @@ public class SeparatorMenuItem : MenuItem
 	/// Initializes a new instance of the <see cref="Eto.Forms.SeparatorMenuItem"/> class with the specified handler.
 	/// </summary>
 	/// <param name="handler">The handler for the separator menu item.</param>
+	/// <since>2.10</since>
 	public SeparatorMenuItem(IHandler handler)
 		: base(handler)
 	{

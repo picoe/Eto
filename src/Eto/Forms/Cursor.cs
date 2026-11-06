@@ -94,6 +94,7 @@ public enum CursorType
 	/// <summary>
 	/// Not allowed cursor
 	/// </summary>
+	/// <since>2.11</since>
 	NotAllowed
 }
 

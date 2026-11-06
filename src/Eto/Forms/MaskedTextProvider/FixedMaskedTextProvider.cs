@@ -160,6 +160,7 @@ public class FixedMaskedTextProvider : IMaskedTextProvider
 	/// </remarks>
 	/// <param name="text">Mask or text to normalize the whitespace of.</param>
 	/// <returns>The text with all of its whitespace characters turned into regular spaces.</returns>
+	/// <since>2.12</since>
 	public static string NormalizeWhitespace(string text)
 	{
 		if (string.IsNullOrEmpty(text))
@@ -334,6 +335,7 @@ public class FixedMaskedTextProvider : IMaskedTextProvider
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.12</since>
 	public virtual void CommitText()
 	{
 		handler.CommitText();

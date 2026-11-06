@@ -51,6 +51,7 @@ public class MouseEventArgs : EventArgs
 	/// <param name="delta">Delta of the scroll wheel.</param>
 	/// <param name="pressure">Pressure of a stylus or touch, if applicable. 1.0f for full pressure or not supported</param>
 	/// <param name="isDirectionInverted">Whether the <paramref name="delta"/> is inverted from the direction of the physical device.</param>
+	/// <since>2.12</since>
 	public MouseEventArgs(MouseButtons buttons, Keys modifiers, PointF location, SizeF? delta, float pressure, bool isDirectionInverted)
 	{
 		this.Modifiers = modifiers;
@@ -118,5 +119,6 @@ public class MouseEventArgs : EventArgs
 	/// </para>
 	/// </remarks>
 	/// <value><c>true</c> if the delta is inverted from the device; otherwise, <c>false</c>.</value>
+	/// <since>2.12</since>
 	public bool IsDirectionInverted { get; private set; }
 }

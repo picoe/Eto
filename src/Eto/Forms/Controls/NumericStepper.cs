@@ -214,6 +214,7 @@ public class NumericStepper : CommonControl
 	/// <summary>
 	/// Gets or sets the text alignment of the numeric value.
 	/// </summary>
+	/// <since>2.12</since>
 	public TextAlignment TextAlignment
 	{
 		get => Handler.TextAlignment;
@@ -390,6 +391,7 @@ public class NumericStepper : CommonControl
 		/// <summary>
 		/// Gets or sets the text alignment of the numeric value.
 		/// </summary>
+		/// <since>2.12</since>
 		TextAlignment TextAlignment { get; set; }
 	}
 }
