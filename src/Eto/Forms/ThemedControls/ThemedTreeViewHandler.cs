@@ -4,6 +4,7 @@ namespace Eto.Forms.ThemedControls;
 /// A themed handler for the deprecated <see cref="TreeView"/> control, implemented using a <see cref="TreeGridView"/>
 /// with a single image/text column.
 /// </summary>
+/// <since>2.12</since>
 [Obsolete("Since 2.4. TreeView is deprecated, please use TreeGridView instead.")]
 public class ThemedTreeViewHandler : ThemedControlHandler<TreeGridView, TreeView, TreeView.ICallback>, TreeView.IHandler
 {

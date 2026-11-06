@@ -294,6 +294,7 @@ public static class BindableExtensions
 	/// <param name="setValue">A function to set the value for each item.</param>
 	/// <param name="mixedValue">The default value to return if there are multiple different values.</param>
 	/// <returns>A binding that represents a single value extracted from the enumerable.</returns>
+	/// <since>2.11</since>
 	public static IndirectBinding<TValue> ManyToSingle<T, TValue>(this IndirectBinding<IEnumerable<T>> binding, Func<T, TValue> getValue, Action<T, TValue> setValue = null, TValue mixedValue = default)
 	{
 		return binding.Convert(c =>

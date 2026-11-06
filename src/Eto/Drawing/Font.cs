@@ -297,11 +297,13 @@ public class Font : Widget
 	/// <summary>
 	/// Gets the offset of the underline from the baseline
 	/// </summary>
+	/// <since>2.12</since>
 	public float UnderlinePosition => Handler.UnderlinePosition;
 	
 	/// <summary>
 	/// Gets the thickness of the underline
 	/// </summary>
+	/// <since>2.12</since>
 	public float UnderlineThickness => Handler.UnderlineThickness;
 
 	/// <summary>
@@ -448,11 +450,13 @@ public class Font : Widget
 		/// <summary>
 		/// Gets the offset of the underline from the baseline
 		/// </summary>
+		/// <since>2.12</since>
 		float UnderlinePosition { get; }
 		
 		/// <summary>
 		/// Gets the thickness of the underline
 		/// </summary>
+		/// <since>2.12</since>
 		float UnderlineThickness { get; }		
 
 		/// <summary>

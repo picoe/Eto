@@ -105,6 +105,7 @@ public struct Size : IEquatable<Size>
 	/// Initializes a new Size class with an identical width and height
 	/// </summary>
 	/// <param name="size">Initial width and height of the size</param>
+	/// <since>2.14</since>
 	public Size (int size)
 		: this()
 	{

@@ -366,6 +366,7 @@ public class Palette : ObservableCollection<Color>
 		/// Creates a clone of this palette
 		/// </summary>
 		/// <returns>A new instance of a palette with the same color entries as this instance</returns>
+		/// <since>2.10</since>
 		object ICloneable.Clone()
 		{
 			return Clone();

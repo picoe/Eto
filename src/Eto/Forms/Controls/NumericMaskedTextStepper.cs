@@ -73,6 +73,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets the number of decimal places to allow.  This will round the value to the specified number of decimal places when set.
 	/// </summary>
+	/// <since>2.12</since>
 	public int DecimalPlaces
 	{
 		get => Provider.DecimalPlaces;
@@ -91,6 +92,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets the maximum number of decimal places allowed.  This will round the value to the specified number of decimal places when set.
 	/// </summary>
+	/// <since>2.12</since>
 	public int MaximumDecimalPlaces
 	{
 		get => Provider.MaximumDecimalPlaces;
@@ -109,6 +111,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets the format string for the numeric value.
 	/// </summary>
+	/// <since>2.12</since>
 	public string FormatString
 	{
 		get => Provider.FormatString;
@@ -147,6 +150,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	}
 	
 	/// <inheritdoc/>
+	/// <since>2.12</since>
 	public T MinValue
 	{
 		get => _minValue;
@@ -163,6 +167,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets the maximum value allowed.  This will set the value to the maximum if the current value is greater than the new maximum.
 	/// </summary>
+	/// <since>2.12</since>
 	public T MaxValue
 	{
 		get => _maxValue;
@@ -191,6 +196,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets the increment value for stepping.  This will be added or subtracted from the current value when the stepper buttons are clicked.
 	/// </summary>
+	/// <since>2.12</since>
 	public T Increment
 	{
 		get => _increment;
@@ -204,6 +210,7 @@ public class NumericMaskedTextStepper<T> : MaskedTextStepper<T>
 	/// <summary>
 	/// Gets or sets whether the value should wrap when incrementing or decrementing past the minimum or maximum values.
 	/// </summary>
+	/// <since>2.12</since>
 	public bool Wrap
 	{
 		get => _wrap;

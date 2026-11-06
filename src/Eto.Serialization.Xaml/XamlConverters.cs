@@ -18,6 +18,7 @@ namespace Eto.Serialization.Xaml
 	/// <summary>
 	/// Parses attribute values for compiled xeto, giving the same results as each type's TypeConverter.
 	/// </summary>
+	/// <since>2.14</since>
 	public static class XamlConverters
 	{
 		static readonly char[] DimensionSplitter = { ',' };

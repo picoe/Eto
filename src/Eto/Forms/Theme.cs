@@ -8,6 +8,7 @@ namespace Eto.Forms;
 /// Use <see cref="Application.Theme"/> to get or set the active theme,
 /// and <see cref="Themes"/> to enumerate available themes.
 /// </remarks>
+/// <since>2.12</since>
 [Handler(typeof(IHandler))]
 public class Theme : Widget
 {
@@ -34,6 +35,7 @@ public class Theme : Widget
 	/// <summary>
 	/// Handler interface for the <see cref="Theme"/> class.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface IHandler : Widget.IHandler
 	{
 		/// <summary>
@@ -90,6 +92,7 @@ public class Theme : Widget
 /// <summary>
 /// Specifies the visual style category of a <see cref="Theme"/>.
 /// </summary>
+/// <since>2.12</since>
 public enum ThemeStyle
 {
 	/// <summary>
@@ -105,6 +108,7 @@ public enum ThemeStyle
 /// <summary>
 /// Provides access to the available themes for the current platform.
 /// </summary>
+/// <since>2.12</since>
 [Handler(typeof(IHandler))]
 public static class Themes
 {
@@ -133,6 +137,7 @@ public static class Themes
 	/// <summary>
 	/// Handler interface for the <see cref="Themes"/> class.
 	/// </summary>
+	/// <since>2.12</since>
 	public interface IHandler
 	{
 		/// <summary>

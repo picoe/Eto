@@ -4,6 +4,7 @@ namespace Eto.Forms.ThemedControls;
 /// A themed handler for the <see cref="ListBox"/> control, implemented using a <see cref="GridView"/>
 /// with a single image/text column.
 /// </summary>
+/// <since>2.12</since>
 public class ThemedListBoxHandler : ThemedControlHandler<GridView, ListBox, ListBox.ICallback>, ListBox.IHandler
 {
 	IEnumerable<object> _dataStore;

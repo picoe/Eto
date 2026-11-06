@@ -10,6 +10,7 @@ namespace Eto.Serialization.Xaml
 	/// Set <c>EtoXamlJeto</c> to true in your project to embed .jeto files, and <c>EtoXamlCodeGen</c> to compile them.
 	/// Use <see cref="XamlReader"/> for .xeto files.
 	/// </remarks>
+	/// <since>2.14</since>
 	public static class JetoReader
 	{
 		// in order of preference

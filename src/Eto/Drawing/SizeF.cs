@@ -79,6 +79,7 @@ public struct SizeF : IEquatable<SizeF>
 	/// Initializes a new SizeF class with an identical width and height
 	/// </summary>
 	/// <param name="size">Initial width and height of the size</param>
+	/// <since>2.14</since>
 	public SizeF (float size)
 		: this()
 	{

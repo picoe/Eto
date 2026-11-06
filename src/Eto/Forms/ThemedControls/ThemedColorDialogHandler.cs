@@ -6,6 +6,7 @@ using Eto.Drawing;
 /// A themed handler for the <see cref="ColorDialog"/> control that provides
 /// a color spectrum, hue strip, RGB/Alpha sliders, hex input, and color preview.
 /// </summary>
+/// <since>2.12</since>
 public class ThemedColorDialogHandler : WidgetHandler<Widget, ColorDialog, ColorDialog.ICallback>, ColorDialog.IHandler
 {
 	Color _color = Colors.White;

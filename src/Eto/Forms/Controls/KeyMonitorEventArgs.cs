@@ -9,6 +9,7 @@ namespace Eto.Forms;
 /// goes on to receive the key press. Use <see cref="Control.KeyDown"/> when you need to handle or
 /// suppress a key.
 /// </remarks>
+/// <since>2.12</since>
 public class KeyMonitorEventArgs : EventArgs
 {
 	/// <summary>

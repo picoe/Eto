@@ -101,12 +101,14 @@ public class TextBox : TextControl
 	/// <summary>
 	/// Event to handle when the <see cref="ReadOnly"/> property changes.
 	/// </summary>
+	/// <since>2.12</since>
 	public event EventHandler ReadOnlyChanged;
 	
 	/// <summary>
 	/// Raises the <see cref="ReadOnlyChanged"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments</param>
+	/// <since>2.12</since>
 	protected virtual void OnReadOnlyChanged(EventArgs e) => ReadOnlyChanged?.Invoke(this, e);
 
 	/// <summary>
@@ -242,6 +244,7 @@ public class TextBox : TextControl
 	/// <summary>
 	/// Gets or sets a value indicating whether to always show the selection in the text box, even if it does not have focus.
 	/// </summary>
+	/// <since>2.10</since>
 	public bool AlwaysShowSelection
 	{
 		get => Handler.AlwaysShowSelection;
@@ -253,6 +256,7 @@ public class TextBox : TextControl
 	/// </summary>
 	/// <param name="location">Location relative to the text box.</param>
 	/// <returns>The character index closest to <paramref name="location"/>.</returns>
+	/// <since>2.12</since>
 	public int GetCharacterIndex(PointF location) => Handler.GetCharacterIndex(location);
 
 	/// <summary>
@@ -339,6 +343,7 @@ public class TextBox : TextControl
 		/// <summary>
 		/// Gets or sets a value indicating whether to always show the selection in the text box, even if it does not have focus.
 		/// </summary>
+		/// <since>2.10</since>
 		bool AlwaysShowSelection { get; set; }
 
 		/// <summary>
@@ -346,6 +351,7 @@ public class TextBox : TextControl
 		/// </summary>
 		/// <param name="location">Location relative to the text box.</param>
 		/// <returns>The character index closest to <paramref name="location"/>.</returns>
+		/// <since>2.12</since>
 		int GetCharacterIndex(PointF location);
 	}
 

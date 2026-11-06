@@ -90,6 +90,7 @@ public interface IMaskedTextProvider
 	/// This allows the mask provider to update the display text after changes are made to the value, 
 	/// while still allowing the user to type in the text without it changing until they are done.
 	/// </remarks>
+	/// <since>2.12</since>
 	void CommitText();
 }
 

@@ -153,6 +153,7 @@ public class MaskedTextBox<T> : MaskedTextBox
 	/// Raises the <see cref="ValueChanged"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
+	/// <since>2.12</since>
 	protected virtual void OnValueChanged(EventArgs e)
 	{
 		ValueChanged?.Invoke(this, e);
@@ -310,6 +311,7 @@ public class MaskedTextBox : TextBox, IMaskedTextControl
 	/// When enabled, the control selects contiguous editable regions from the mask and allows the user
 	/// to move between them using the left and right arrow keys.
 	/// </remarks>
+	/// <since>2.12</since>
 	[DefaultValue(false)]
 	public bool AutoSelectEditableRanges
 	{
@@ -356,6 +358,7 @@ public class MaskedTextBox : TextBox, IMaskedTextControl
 	/// <summary>
 	/// Commits the text to the provider and updates the display text.
 	/// </summary>
+	/// <since>2.12</since>
 	protected virtual void CommitText() => _logic.CommitText();
 
 	/// <summary>
@@ -432,6 +435,7 @@ public class MaskedTextBox : TextBox, IMaskedTextControl
 	/// <param name="forward">Indicates the direction to move the selection.</param>
 	/// <param name="fallbackToFirstLast">Indicates whether to fallback to the first or last editable range if the index is out of bounds.</param>
 	/// <returns><c>true</c> if an editable range was selected; otherwise, <c>false</c>.</returns>
+	/// <since>2.12</since>
 	protected bool SelectEditableRangeAt(int index, bool forward, bool fallbackToFirstLast = true)
 		=> _logic.SelectEditableRangeAt(index, forward, fallbackToFirstLast);
 

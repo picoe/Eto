@@ -17,6 +17,7 @@ public interface IContextMenuHost
 /// <summary>
 /// Flags for the groups of system <see cref="ContextMenu"/> items
 /// </summary>
+/// <since>2.12</since>
 [Flags]
 public enum ContextMenuSystemItems
 {
@@ -84,6 +85,7 @@ public class ContextMenu : Menu, ISubmenu
 	/// </summary>
 	/// <param name="handler">The handler for the context menu.</param>
 	/// <param name="items">Items to populate the menu</param>
+	/// <since>2.10</since>
 	public ContextMenu(IHandler handler, IEnumerable<MenuItem> items = null)
 		: base(handler)
 	{
@@ -170,6 +172,7 @@ public class ContextMenu : Menu, ISubmenu
 	/// using <see cref="Control.ContextMenu"/>.
 	/// </remarks>
 	/// <value>The system items to include with the menu.  Defaults to <see cref="ContextMenuSystemItems.All"/></value>
+	/// <since>2.12</since>
 	[DefaultValue(ContextMenuSystemItems.All)]
 	public ContextMenuSystemItems IncludeSystemItems
 	{
@@ -356,6 +359,7 @@ public class ContextMenu : Menu, ISubmenu
 		/// <see cref="Show(Control, PointF?)"/>.
 		/// </remarks>
 		/// <value>The system items to include with the menu.  Defaults to <see cref="ContextMenuSystemItems.All"/></value>
+		/// <since>2.12</since>
 		ContextMenuSystemItems IncludeSystemItems { get; set; }
 	}
 }

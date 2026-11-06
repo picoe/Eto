@@ -1024,6 +1024,7 @@ public class FilterCollection<T> : IList<T>, IList, INotifyCollectionChanged
 	/// Gets the count of all items in the collection.
 	/// </summary>
 	/// <value>The total count of all items.</value>
+	/// <since>2.12</since>
 	public int TotalCount => items.Count;
 
 	/// <summary>

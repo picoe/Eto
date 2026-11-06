@@ -97,6 +97,7 @@ public class WebViewNewWindowEventArgs : WebViewLoadingEventArgs
 /// <summary>
 /// Event arguments for when a message is sent via javascript in the <see cref="WebView"/>
 /// </summary>
+/// <since>2.10</since>
 public class WebViewMessageEventArgs : EventArgs
 {
 	/// <summary>
@@ -118,6 +119,7 @@ public class WebViewMessageEventArgs : EventArgs
 /// <summary>
 /// A request from the <see cref="WebView"/> for content served by a handler added with <see cref="WebView.AddResourceHandler"/>.
 /// </summary>
+/// <since>2.14</since>
 public class WebViewResourceRequest
 {
 	/// <summary>
@@ -145,6 +147,7 @@ public class WebViewResourceRequest
 /// <summary>
 /// Content to return to the <see cref="WebView"/> from a handler added with <see cref="WebView.AddResourceHandler"/>.
 /// </summary>
+/// <since>2.14</since>
 public class WebViewResourceResponse
 {
 	/// <summary>
@@ -345,11 +348,13 @@ public class WebView : Control
 	/// <summary>
 	/// Identifier for handlers when attaching the <see cref="MessageReceived"/> event.
 	/// </summary>
+	/// <since>2.10</since>
 	public const string MessageReceivedEvent = "WebView.MessageReceived";
 
 	/// <summary>
 	/// Occurs when a message is received from a JS call to window.eto.postMessage(string).
 	/// </summary>
+	/// <since>2.10</since>
 	public event EventHandler<WebViewMessageEventArgs> MessageReceived
 	{
 		add { Properties.AddHandlerEvent(MessageReceivedEvent, value); }
@@ -360,6 +365,7 @@ public class WebView : Control
 	/// Raises the <see cref="MessageReceived"/> event.
 	/// </summary>
 	/// <param name="e">Event arguments.</param>
+	/// <since>2.10</since>
 	protected virtual void OnMessageReceived(WebViewMessageEventArgs e)
 	{
 		Properties.TriggerEvent(MessageReceivedEvent, this, e);
@@ -508,6 +514,7 @@ public class WebView : Control
 	/// <summary>
 	/// Gets a value indicating whether the current platform supports <see cref="AddResourceHandler"/>.
 	/// </summary>
+	/// <since>2.14</since>
 	public bool SupportsResourceHandlers => Handler.SupportsResourceHandlers;
 
 	/// <summary>
@@ -523,6 +530,7 @@ public class WebView : Control
 	/// <param name="handler">Returns the content for each request.</param>
 	/// <returns>The root address of the host, e.g. https://myapp.example/.</returns>
 	/// <exception cref="NotSupportedException">The platform doesn't support it. Check <see cref="SupportsResourceHandlers"/> first.</exception>
+	/// <since>2.14</since>
 	public Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler)
 	{
 		if (handler == null)
@@ -535,6 +543,7 @@ public class WebView : Control
 	/// Stops serving requests to a host added with <see cref="AddResourceHandler"/>.
 	/// </summary>
 	/// <param name="host">Host name to stop serving.</param>
+	/// <since>2.14</since>
 	public void RemoveResourceHandler(string host)
 	{
 		ValidateResourceHost(host);
@@ -584,6 +593,7 @@ public class WebView : Control
 		/// <summary>
 		/// Raises the message received event.
 		/// </summary>
+		/// <since>2.10</since>
 		void OnMessageReceived(WebView widget, WebViewMessageEventArgs e);
 	}
 
@@ -651,6 +661,7 @@ public class WebView : Control
 		/// <summary>
 		/// Raises the message received event.
 		/// </summary>
+		/// <since>2.10</since>
 		public void OnMessageReceived(WebView widget, WebViewMessageEventArgs e)
 		{
 			using (widget.Platform.Context)
@@ -762,21 +773,27 @@ public class WebView : Control
 		// Defaults let existing handlers compile unchanged.
 
 		/// <inheritdoc cref="WebView.SupportsResourceHandlers"/>
+		/// <since>2.14</since>
 		bool SupportsResourceHandlers => false;
 
 		/// <inheritdoc cref="WebView.AddResourceHandler"/>
+		/// <since>2.14</since>
 		Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler) => null;
 
 		/// <inheritdoc cref="WebView.RemoveResourceHandler"/>
+		/// <since>2.14</since>
 		void RemoveResourceHandler(string host) { }
 #else
 		/// <inheritdoc cref="WebView.SupportsResourceHandlers"/>
+		/// <since>2.14</since>
 		bool SupportsResourceHandlers { get; }
 
 		/// <inheritdoc cref="WebView.AddResourceHandler"/>
+		/// <since>2.14</since>
 		Uri AddResourceHandler(string host, Func<WebViewResourceRequest, WebViewResourceResponse> handler);
 
 		/// <inheritdoc cref="WebView.RemoveResourceHandler"/>
+		/// <since>2.14</since>
 		void RemoveResourceHandler(string host);
 #endif
 	}

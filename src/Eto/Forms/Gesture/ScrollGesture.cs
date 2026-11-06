@@ -3,6 +3,7 @@ namespace Eto.Forms;
 /// <summary>
 /// Gesture for multidimensional scrolling, such as with a mouse wheel or two finger trackpad scroll input.
 /// </summary>
+/// <since>2.12</since>
 [Handler(typeof(IHandler))]
 public class ScrollGesture : Gesture
 {
@@ -60,6 +61,7 @@ public class ScrollGesture : Gesture
 	/// <summary>
 	/// Handler interface for <see cref="ScrollGesture"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface IHandler : Gesture.IHandler
 	{
 		/// <summary>

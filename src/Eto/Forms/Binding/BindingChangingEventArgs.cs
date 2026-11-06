@@ -26,6 +26,7 @@ public class BindingChangingEventArgs : CancelEventArgs
 	/// Gets or sets the update mode for this change event
 	/// This is used to determine if the change is being set to the source or target of the binding
 	/// </summary>
+	/// <since>2.11</since>
 	public BindingUpdateMode? UpdateMode { get; internal set; }
 
 	/// <summary>
@@ -42,6 +43,7 @@ public class BindingChangingEventArgs : CancelEventArgs
 	/// </summary>
 	/// <param name="value">value that the binding is being set to</param>
 	/// <param name="updateMode">update mode for this change event</param>
+	/// <since>2.11</since>
 	public BindingChangingEventArgs(object value, BindingUpdateMode? updateMode)
 	{
 		Value = value;

@@ -159,6 +159,7 @@ public abstract class IndirectBinding<T> : Binding, IIndirectBinding<T>
 	/// <param name="getValue">Delegate to get the value from the original binding's type.</param>
 	/// <param name="setValue">Delegate to set the value to the original binding's type.</param>
 	/// <returns>A new binding that will be converted using the specified delegates.</returns>
+	/// <since>2.11</since>
 	public IndirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<T, TValue> setValue)
 	{
 		return new DelegateBinding<object, TValue>(

@@ -49,6 +49,7 @@ namespace Eto.Serialization.Json
 		/// <param name="fileName">Name of the file to watch, or null to use the default based on the class name</param>
 		/// <param name="sourcePath">Source path of the file to watch</param>
 		/// <returns>true if the file is being watched, false otherwise</returns>
+		/// <since>2.10</since>
 		public static bool Watch<T>(T control, string fileName = null, [CallerFilePath] string sourcePath = null)
 		{
 			if (control == null)

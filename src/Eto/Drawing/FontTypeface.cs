@@ -38,6 +38,7 @@ public class FontTypeface : Widget
 	/// The value of this property may be null if the platform does not support it, or if the font does not have a PostScript name.
 	/// In some implementations and as a fallback, this can be a combination of the family name and typeface name, but this is not guaranteed to be unique across all fonts.
 	/// </remarks>
+	/// <since>2.11</since>
 	public string PostScriptName => Handler.PostScriptName;
 
 	/// <summary>
@@ -224,6 +225,7 @@ public class FontTypeface : Widget
 		/// <summary>
 		/// Gets the PostScript name of this typeface, which is a unique name for this typeface that is used by the operating system to identify it.
 		/// </summary>
+		/// <since>2.11</since>
 		string PostScriptName { get; }
 
 		/// <summary>

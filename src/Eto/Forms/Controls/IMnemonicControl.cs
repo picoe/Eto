@@ -7,6 +7,7 @@ namespace Eto.Forms;
 /// Not all platforms support mnemonics, such as macOS.
 /// However, you can still show the mnemonic character in the text by using the &amp; character.
 /// </remarks>
+/// <since>2.10</since>
 public interface IMnemonicControl
 {
 	/// <summary>

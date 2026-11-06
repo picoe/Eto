@@ -17,6 +17,7 @@ namespace Eto.Serialization.Xaml
 	/// <summary>
 	/// Settings for reading Eto Xaml files
 	/// </summary>
+	/// <since>2.10</since>
 	public class XamlReaderSettings
 	{
 		/// <summary>
@@ -38,6 +39,7 @@ namespace Eto.Serialization.Xaml
 		/// <summary>
 		/// Xaml Namespace for designer-only attributes such as <c>d:DataContext</c>, only applied when <see cref="Control.IsDesignMode"/> is true
 		/// </summary>
+		/// <since>2.13</since>
 		public static readonly string DesignNamespace = EtoXamlSchemaContext.DesignNamespace;
 
 		static readonly Dictionary<Type, string> hotReloadFilePaths = new();
@@ -145,6 +147,7 @@ namespace Eto.Serialization.Xaml
 		/// <param name="fileName">Name of the file to watch, or null to use the default based on the class name</param>
 		/// <param name="sourcePath">Source path of the file to watch</param>
 		/// <returns>true if the file is being watched, false otherwise</returns>
+		/// <since>2.10</since>
 		public static bool Watch<T>(T control, string fileName = null, [CallerFilePath] string sourcePath = null)
 		{
 			if (control == null)
@@ -220,6 +223,7 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static void Load<T>(T instance) => Load<T>(instance, (XamlReaderSettings)null);
 
+		/// <since>2.10</since>
 		public static void Load<T>(T instance, XamlReaderSettings settings)
 		{
 			if (Equals(instance, null))
@@ -355,6 +359,7 @@ namespace Eto.Serialization.Xaml
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T>(Stream stream, T instance) => Load(stream, instance, null);
 
+		/// <since>2.10</since>
 		public static T Load<T>(Stream stream, T instance, XamlReaderSettings settings)
 		{
 			var readerSettings = CreateReaderSettings<T>(settings);

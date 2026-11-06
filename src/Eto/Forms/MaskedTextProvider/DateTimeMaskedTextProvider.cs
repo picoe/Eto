@@ -60,6 +60,7 @@ readonly struct DateTimePatternInfo
 /// The <see cref="DateTimeMaskedTextStepper"/> control wraps this provider with the appropriate 
 /// control configuration.
 /// </remarks>
+/// <since>2.12</since>
 public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 {
 	FixedMaskedTextProvider inner;

@@ -132,6 +132,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	/// <summary>
 	/// Gets or sets the minimum number of decimal places to include in the output.
 	/// </summary>
+	/// <since>2.12</since>
 	public int DecimalPlaces
 	{
 		get => _decimalPlaces;
@@ -151,6 +152,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	/// <summary>
 	/// Gets or sets the maximum number of decimal places to include in the output.
 	/// </summary>
+	/// <since>2.12</since>
 	public int MaximumDecimalPlaces
 	{
 		get => _maximumDecimalPlaces;
@@ -171,6 +173,7 @@ public class NumericMaskedTextProvider<T> : NumericMaskedTextProvider, IMaskedTe
 	/// Gets or sets the format string to use for formatting the value. 
 	/// If specified, this will override the <see cref="DecimalPlaces"/> and <see cref="MaximumDecimalPlaces"/> properties.
 	/// </summary>
+	/// <since>2.12</since>
 	public string FormatString
 	{
 		get => _formatString;

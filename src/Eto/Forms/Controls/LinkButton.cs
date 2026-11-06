@@ -48,6 +48,7 @@ public class LinkButton : TextControl
 	/// to the container or explicitly set the size.
 	/// </remarks>
 	/// <value>The wrapping mode for the text.</value>
+	/// <since>2.12</since>
 	[DefaultValue(WrapMode.Word)]
 	public WrapMode Wrap
 	{
@@ -67,6 +68,7 @@ public class LinkButton : TextControl
 	/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
 	/// </remarks>
 	/// <value>The trimming mode for the text.  The default is <see cref="TextTrimming.None"/>.</value>
+	/// <since>2.12</since>
 	[DefaultValue(TextTrimming.None)]
 	public TextTrimming Trimming
 	{
@@ -174,6 +176,7 @@ public class LinkButton : TextControl
 		/// Hard wraps can be placed in the text with newline characters.
 		/// </remarks>
 		/// <value>The wrapping mode for the text.</value>
+		/// <since>2.12</since>
 		WrapMode Wrap { get; set; }
 
 		/// <summary>
@@ -186,6 +189,7 @@ public class LinkButton : TextControl
 		/// fits.  Not every platform can wrap and trim at once; see <see cref="TextTrimming"/> for what each does.
 		/// </remarks>
 		/// <value>The trimming mode for the text.</value>
+		/// <since>2.12</since>
 		TextTrimming Trimming { get; set; }
 	}
 }

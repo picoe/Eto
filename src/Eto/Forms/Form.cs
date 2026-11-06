@@ -102,6 +102,7 @@ public class Form : Window
 	/// Shows the form with a task that can be awaited until it is closed
 	/// </summary>
 	/// <returns>Task that completes when the form is closed.</returns>
+	/// <since>2.9</since>
 	public Task ShowAsync()
 	{
 		var tcs = new TaskCompletionSource<bool>();

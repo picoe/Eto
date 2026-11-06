@@ -6,6 +6,7 @@ namespace Eto.Forms;
 /// <remarks>
 /// Scroll-wheel and trackpad scroll input is exposed through <see cref="ScrollGesture"/>.
 /// </remarks>
+/// <since>2.12</since>
 [Handler(typeof(IHandler))]
 public class PanGesture : Gesture
 {
@@ -42,6 +43,7 @@ public class PanGesture : Gesture
 	/// <summary>
 	/// Handler interface for <see cref="PanGesture"/>.
 	/// </summary>
+	/// <since>2.12</since>
 	public new interface IHandler : Gesture.IHandler
 	{
 		/// <summary>

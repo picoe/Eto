@@ -100,6 +100,7 @@ public class ListBox : ListControl
 	/// Gets or sets the border type
 	/// </summary>
 	/// <value>The border.</value>
+	/// <since>2.10</since>
 	public BorderType Border
 	{
 		get { return Handler.Border; }
@@ -148,11 +149,13 @@ public class ListBox : ListControl
 		/// <summary>
 		/// Gets or sets the border type
 		/// </summary>
+		/// <since>2.10</since>
 		BorderType Border { get; set; }
 		
 		/// <summary>
 		/// Gets or sets the binding for the Image of each item
 		/// </summary>
+		/// <since>2.12</since>
 		IIndirectBinding<Image> ItemImageBinding { get; set; }
 
 	}

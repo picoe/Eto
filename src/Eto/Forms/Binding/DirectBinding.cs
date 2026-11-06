@@ -95,6 +95,7 @@ public abstract class DirectBinding<T> : Binding
 	/// <param name="getValue">Delegate to get the value from the original binding's type.</param>
 	/// <param name="setValue">Delegate to set the value to the original binding's type.</param>
 	/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
+	/// <since>2.11</since>
 	public DirectBinding<TValue> Convert<TValue>(Func<T, TValue> getValue, Action<T, TValue> setValue)
 	{
 		return new DelegateBinding<TValue>(
@@ -114,6 +115,7 @@ public abstract class DirectBinding<T> : Binding
 	/// <param name="culture">An optional culture to use for the conversion.</param>
 	/// <returns>A new binding with the specified <typeparamref name="TValue"/> type.</returns>
 	/// <exception cref="ArgumentNullException"></exception>
+	/// <since>2.11</since>
 	public DirectBinding<TValue> Convert<TValue>(IValueConverter converter, object conveterParameter = null, CultureInfo culture = null)
 	{
 		if (converter == null)

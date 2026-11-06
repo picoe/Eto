@@ -3,6 +3,7 @@ namespace Eto.Forms;
 /// <summary>
 /// Event arguments for live text composition updates such as inline composition preview text.
 /// </summary>
+/// <since>2.12</since>
 public class TextCompositionEventArgs : HandledEventArgs
 {
 	/// <summary>

@@ -118,6 +118,7 @@ public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
 	/// overridden rather than <see cref="HandleEvent"/>.
 	/// </remarks>
 	/// <param name="id">ID of the event to stop handling</param>
+	/// <since>2.12</since>
 	public void UnhandleEvent(string id)
 	{
 		var instanceId = id + InstanceEventSuffix;
@@ -151,6 +152,7 @@ public abstract class WidgetHandler<TWidget> : Widget.IHandler, IDisposable
 	/// True if the event was detached, false if this platform can't detach it, in which case it
 	/// stays attached and won't be attached again on a later subscription.
 	/// </returns>
+	/// <since>2.12</since>
 	public virtual bool DetachEvent(string id) => false;
 
 	/// <summary>

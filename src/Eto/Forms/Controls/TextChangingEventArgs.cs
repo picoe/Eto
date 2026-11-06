@@ -3,6 +3,7 @@ namespace Eto.Forms;
 /// <summary>
 /// Identifies what initiated a text change in events such as <see cref="TextBox.TextChanging"/>.
 /// </summary>
+/// <since>2.12</since>
 public enum TextChangeSource
 {
 	/// <summary>
@@ -114,6 +115,7 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <remarks>
 	/// Some values are best-effort and platform dependent — see the <see cref="TextChangeSource"/> members.
 	/// </remarks>
+	/// <since>2.12</since>
 	public TextChangeSource Source { get; }
 
 	static TextChangeSource FromUserSource(bool fromUser) => fromUser ? TextChangeSource.Unknown : TextChangeSource.Programmatic;
@@ -135,6 +137,7 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <param name="text">Text to be replaced in the range.</param>
 	/// <param name="range">Range of text to be effected.</param>
 	/// <param name="source">Value indicating how the change was initiated.</param>
+	/// <since>2.12</since>
 	public TextChangingEventArgs(string text, Range<int> range, TextChangeSource source)
 	{
 		this.text = text ?? string.Empty;
@@ -161,6 +164,7 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <param name="range">Range of text to be effected.</param>
 	/// <param name="oldText">Current text in the control.</param>
 	/// <param name="source">Value indicating how the change was initiated.</param>
+	/// <since>2.12</since>
 	public TextChangingEventArgs(string text, Range<int> range, string oldText, TextChangeSource source)
 	{
 		this.text = text ?? string.Empty;
@@ -186,6 +190,7 @@ public class TextChangingEventArgs : CancelEventArgs
 	/// <param name="oldText">Old text for the control</param>
 	/// <param name="newText">New text for the control</param>
 	/// <param name="source">Value indicating how the change was initiated.</param>
+	/// <since>2.12</since>
 	public TextChangingEventArgs(string oldText, string newText, TextChangeSource source)
 	{
 		this.oldText = oldText ?? string.Empty;

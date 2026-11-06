@@ -96,6 +96,7 @@ public enum PlatformFeatures
 	/// 
 	/// Create
 	/// </summary>
+	/// <since>2.10</since>
 	MultiThreadedUI = 1 << 3,
 	/// <summary>
 	/// Specifies that the Platform supports mnemonics in controls, such as the &amp; character in text.
@@ -104,6 +105,7 @@ public enum PlatformFeatures
 	/// Even withoutout support, the platform will parse the &amp; character in text, but it will not
 	/// be activated by pressing the mnemonic key (e.g. Alt key on Windows).
 	/// </remarks>
+	/// <since>2.10</since>
 	Mnemonics = 1 << 4,
 }
 
@@ -519,6 +521,7 @@ public abstract class Platform
 	/// <param name="platform">Platform to copy, or null to copy the global (first) platform.</param>
 	/// <returns>A new copy of the platform instance</returns>
 	/// <exception cref="ArgumentNullException">Throws if platform is null, and, if the global instance has not been created.</exception>
+	/// <since>2.10</since>
 	public static Platform Copy(Platform platform = null)
 	{
 		platform ??= globalInstance;

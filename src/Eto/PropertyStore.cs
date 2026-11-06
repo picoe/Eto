@@ -218,6 +218,7 @@ public class PropertyStore : Dictionary<object, object>
 	/// </remarks>
 	/// <param name="key">Key of the event to remove</param>
 	/// <param name="value">Delegate to remove from the event</param>
+	/// <since>2.12</since>
 	public void RemoveHandlerEvent(string key, Delegate value)
 	{
 		var parentWidget = Parent as Widget;
@@ -481,6 +482,7 @@ public class PropertyStore : Dictionary<object, object>
 	/// cleanup of resources or state related to the command.
 	/// </remarks>
 	/// <param name="key">The key used to identify the command to be unbound. Cannot be null.</param>
+	/// <since>2.11</since>
 	public void UnbindCommand(object key)
 	{
 		var cmd = Get<CommandWrapper>(key);

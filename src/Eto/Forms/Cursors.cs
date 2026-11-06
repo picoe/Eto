@@ -137,5 +137,6 @@ public static class Cursors
 	/// <summary>
 	/// Cursor for not allowed actions
 	/// </summary>
+	/// <since>2.11</since>
 	public static Cursor NotAllowed => GetCursor(CursorType.NotAllowed);
 }

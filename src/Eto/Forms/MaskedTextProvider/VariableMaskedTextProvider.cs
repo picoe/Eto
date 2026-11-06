@@ -146,6 +146,7 @@ public abstract class VariableMaskedTextProvider : IMaskedTextProvider
 	}
 	
 	/// <inheritdoc/>
+	/// <since>2.12</since>
 	public virtual void CommitText()
 	{
 	}
