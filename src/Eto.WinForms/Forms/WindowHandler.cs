@@ -175,6 +175,8 @@ namespace Eto.WinForms.Forms
 
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
+			// so OnUnLoad always fires on close like other platforms, not just when Closed is subscribed
+			HandleEvent(Window.ClosedEvent);
 		}
 
 		void Control_Load(object sender, EventArgs e)
