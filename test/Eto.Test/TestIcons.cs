@@ -4,6 +4,8 @@ namespace Eto.Test
 	{
 		public static Icon TestIcon => Icon.FromResource("Eto.Test.Images.TestIcon.ico", typeof(TestIcons));
 
+		public static Icon EtoIcon => Icon.FromResource("Eto.Test.Images.EtoIcon.ico", typeof(TestIcons));
+
 		public static Bitmap TestImage => Platform.Instance.Supports<Bitmap>() ? Bitmap.FromResource("Eto.Test.Images.TestImage.png", typeof(TestIcons)) : null;
 
 		public static Bitmap Textures => Bitmap.FromResource("Eto.Test.Images.Textures.png", typeof(TestIcons));

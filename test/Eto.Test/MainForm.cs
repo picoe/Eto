@@ -55,7 +55,7 @@ namespace Eto.Test
 
 
 			if (Platform.Supports<Icon>())
-				this.Icon = TestIcons.TestIcon;
+				this.Icon = TestIcons.EtoIcon;
 
 			if (Platform.IsDesktop)
 				ClientSize = new Size(1024, 700);

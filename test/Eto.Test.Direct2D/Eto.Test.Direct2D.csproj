@@ -4,7 +4,7 @@
     <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <ApplicationIcon>..\Eto.Test\Images\TestIcon.ico</ApplicationIcon>
+    <ApplicationIcon>..\Eto.Test\Images\EtoIcon.ico</ApplicationIcon>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseWindowsForms>true</UseWindowsForms>
