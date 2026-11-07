@@ -11,7 +11,7 @@
   <!-- installer packages are only built (and uploaded by CI) from Linux builds -->
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform(Linux))">
     <LinuxPackageFormats>deb;rpm;tar.gz;appimage</LinuxPackageFormats>
-    <LinuxIcon>..\Eto.Test\Images\TestIcon.ico</LinuxIcon>
+    <LinuxIcon>..\Eto.Test\Images\EtoIcon.ico</LinuxIcon>
     <LinuxPackageLicense>BSD-3-Clause</LinuxPackageLicense>
     <LinuxPackageRuntimeIdentifiers>linux-x64;linux-arm64</LinuxPackageRuntimeIdentifiers>
   </PropertyGroup>

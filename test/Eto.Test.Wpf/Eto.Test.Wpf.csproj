@@ -4,7 +4,7 @@
     <TargetFrameworks>net10.0-windows;net48</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <ApplicationIcon>TestIcon.ico</ApplicationIcon>
+    <ApplicationIcon>..\Eto.Test\Images\EtoIcon.ico</ApplicationIcon>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Prefer32Bit>false</Prefer32Bit>
     <UseWPF>true</UseWPF>
@@ -30,10 +30,6 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Resource Include="TestIcon.ico" />
   </ItemGroup>
   
   <ItemGroup>
