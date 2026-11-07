@@ -108,5 +108,6 @@
   
   <Import Project="$(LocalEtoPath)\src\Eto.Mac\build\Mac.targets" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Mac64' OR $(BuildPlatform) == 'macOS' )" />
   <Import Project="$(LocalEtoPath)\src\Eto.Gtk\build\Gtk.targets" Condition="$(LocalEtoPath) != '' and $(BuildPlatform) == 'Gtk'" />
+  <Import Project="$(LocalEtoPath)\src\Shared\build\Windows.targets" Condition="$(LocalEtoPath) != '' and ( $(BuildPlatform) == 'Wpf' OR $(BuildPlatform) == 'Windows' OR $(BuildPlatform) == 'Direct2D' )" />
 
 </Project>
