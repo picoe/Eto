@@ -21,16 +21,19 @@ namespace Eto.Mac.Forms.Menu
 
 		public override void Activate()
 		{
-			if (radioGroup != null)
-			{
-				var checkedItem = radioGroup.FirstOrDefault(r => r.Checked);
-				if (checkedItem != null && !ReferenceEquals(checkedItem, Widget))
-				{
-					checkedItem.Checked = false;
-				}
-			}
 			Checked = true;
 			Callback.OnClick(Widget, EventArgs.Empty);
+		}
+
+		void UncheckGroup()
+		{
+			if (radioGroup == null)
+				return;
+			foreach (var item in radioGroup)
+			{
+				if (!ReferenceEquals(item, Widget))
+					item.Checked = false;
+			}
 		}
 
 		public void Create(RadioMenuItem controller)
@@ -77,6 +80,8 @@ namespace Eto.Mac.Forms.Menu
 			{ 
 				if (Checked != value)
 				{
+					if (value)
+						UncheckGroup();
 					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; 
 					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 				}
