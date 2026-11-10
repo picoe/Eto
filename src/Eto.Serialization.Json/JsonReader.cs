@@ -283,28 +283,37 @@ namespace Eto.Serialization.Json
 			if (localAssembly == typeof(Control).Assembly)
 				localAssembly = null;
 
-			// nested loads of user controls replace the binder, so it is put back afterwards
+			// nested loads of user controls replace the binder and names, so they are put back afterwards
 			var oldBinder = serializer.SerializationBinder;
+			var oldNames = serializer.ReferenceResolver;
 			serializer.SerializationBinder = new EtoBinder
 			{
 				NamespaceManager = namespaceManager ?? new DefaultNamespaceManager(),
 				Instance = instance,
 				LocalAssembly = localAssembly
 			};
+			var names = new NameScope { Instance = instance };
+			serializer.ReferenceResolver = names;
 
 			Control.BeginDesignLoad();
 			try
 			{
 				if (ReferenceEquals(instance, default(T)))
-					return (T)serializer.Deserialize(reader, typeof(T));
+				{
+					var result = (T)serializer.Deserialize(reader, typeof(T));
+					names.Complete();
+					return result;
+				}
 
 				serializer.Populate(reader, instance);
+				names.Complete();
 				return instance;
 			}
 			finally
 			{
 				Control.EndDesignLoad();
 				serializer.SerializationBinder = oldBinder;
+				serializer.ReferenceResolver = oldNames;
 			}
 		}
 	}

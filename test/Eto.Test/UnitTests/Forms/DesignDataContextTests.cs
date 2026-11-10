@@ -253,6 +253,47 @@ namespace Eto.Test.UnitTests.Forms
 			});
 		}
 
+		const string ConverterType = "Eto.Test.Sections.Serialization.Xaml.MyConverter, Eto.Test";
+
+		[Test]
+		public void JsonBindingsShouldUseConverterFromResources()
+		{
+			TestBase.Invoke(() =>
+			{
+				var panel = LoadJson(@"{
+					""Properties"": { ""myConverter"": { ""$type"": """ + ConverterType + @""" } },
+					""Content"": { ""$type"": ""StackLayout"", ""Items"": [
+						{ ""$type"": ""TextBox"", ""Text"": ""{Binding Name, Converter={StaticResource myConverter}}"" },
+						{ ""$type"": ""DropDown"", ""ItemTextBinding"": ""{Binding Path=Name, Converter={StaticResource myConverter} }"" }
+					]}
+				}");
+				Assert.That(panel.Properties["myConverter"], Is.InstanceOf<Eto.Test.Sections.Serialization.Xaml.MyConverter>());
+
+				var model = new TestDesignViewModel { Name = "Bound" };
+				panel.DataContext = model;
+
+				var items = ((StackLayout)panel.Content).Items.Select(r => r.Control).ToList();
+				var textBox = (TextBox)items[0];
+				Assert.That(textBox.Text, Is.EqualTo("Bound (converted)"));
+				Assert.That(((DropDown)items[1]).ItemTextBinding.GetValue(model), Is.EqualTo("Bound (converted)"));
+
+				textBox.Text = "Changed";
+				Assert.That(model.Name, Is.EqualTo("Changed (converted back)"));
+			});
+		}
+
+		[Test]
+		public void JsonBindingWithMissingResourceShouldThrow()
+		{
+			TestBase.Invoke(() =>
+			{
+				var ex = Assert.Throws<Newtonsoft.Json.JsonSerializationException>(() => LoadJson(@"{
+					""Content"": { ""$type"": ""TextBox"", ""Text"": ""{Binding Name, Converter={StaticResource missing}}"" }
+				}"));
+				Assert.That(ex.Message, Does.Contain("'missing'"));
+			});
+		}
+
 		[Test]
 		public void JsonTestSectionShouldStillLoad()
 		{
