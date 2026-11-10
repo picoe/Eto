@@ -9,7 +9,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 
-    <!-- <EnableDmgBuild>True</EnableDmgBuild> -->
+    <!-- <MacPackageFormats>dmg;pkg</MacPackageFormats> -->
     <!-- <LinuxPackageFormats>deb;rpm;tar.gz;appimage</LinuxPackageFormats> -->
     <!-- <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile> -->
     <!-- <EnableCodeSigning>True</EnableCodeSigning> -->

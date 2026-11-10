@@ -1,0 +1,82 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0" >
+
+  <PropertyGroup>
+    <!-- File Name of the .pkg -->
+    <PkgName Condition="$(PkgName) == ''">$(MacBundleName)</PkgName>
+    <!-- Where to put the .pkg. See Dmg.targets for why BaseOutputAppPath comes first -->
+    <PkgOutputPath Condition="$(PkgOutputPath) == ''">$(BaseOutputAppPath)</PkgOutputPath>
+    <PkgOutputPath Condition="$(PkgOutputPath) == ''">$(OutputPath)</PkgOutputPath>
+    <PkgOutputPath Condition="$(PkgOutputPath) != ''">$([MSBuild]::EnsureTrailingSlash('$(PkgOutputPath)'))</PkgOutputPath>
+
+    <!-- Folder the .app is installed into -->
+    <PkgInstallLocation Condition="$(PkgInstallLocation) == ''">/Applications</PkgInstallLocation>
+    <!-- Package identifier. Defaults to the CFBundleIdentifier of the .app -->
+    <PkgIdentifier Condition="$(PkgIdentifier) == ''"></PkgIdentifier>
+    <!-- Package version. Defaults to the CFBundleShortVersionString of the .app, then Version -->
+    <PkgVersion Condition="$(PkgVersion) == ''"></PkgVersion>
+    <!-- True to let the installer update the app wherever the user moved it, rather than always installing to PkgInstallLocation.
+         Off by default since it also finds copies in build output folders and silently installs over those instead. -->
+    <PkgBundleIsRelocatable Condition="$(PkgBundleIsRelocatable) == ''">False</PkgBundleIsRelocatable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_PkgPath>$(PkgOutputPath)$(PkgName).pkg</_PkgPath>
+  </PropertyGroup>
+
+  <Target Name="MacBuildPkg" AfterTargets="MacBuildAppBundle" DependsOnTargets="$(MacBuildPkgDependsOnTargets)">
+  </Target>
+
+  <!-- IntermediateOutputPath is still empty when this file is imported, so work these out once the build is running -->
+  <Target Name="MacInitPkg">
+    <PropertyGroup>
+      <_MacPkgTempPath>$(IntermediateOutputPath)macpkg\</_MacPkgTempPath>
+      <_MacPkgRootPath>$(_MacPkgTempPath)root\</_MacPkgRootPath>
+      <_MacPkgAppPath>$(_MacPkgRootPath)$(MacBundleName).app</_MacPkgAppPath>
+      <_MacPkgComponentPlist>$(_MacPkgTempPath)components.plist</_MacPkgComponentPlist>
+      <_MacPkgComponentPath>$(_MacPkgTempPath)$(PkgName).component.pkg</_MacPkgComponentPath>
+      <_MacPkgInfoPlist>$(OutputAppPath)Contents/Info.plist</_MacPkgInfoPlist>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="MacCreatePkg" DependsOnTargets="MacBuildAppBundle;MacInitPkg">
+    <Message Text="Creating $(PkgName).pkg" />
+
+    <MakeDir Directories="$(PkgOutputPath)" />
+    <RemoveDir Directories="$(_MacPkgTempPath)" />
+    <Delete Files="$(_PkgPath)" />
+    <MakeDir Directories="$(_MacPkgRootPath)" />
+
+    <Exec Condition="$(PkgIdentifier) == ''" Command="plutil -extract CFBundleIdentifier raw -o - '$(_MacPkgInfoPlist)'" ConsoleToMSBuild="True" StandardOutputImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="PkgIdentifier" />
+    </Exec>
+    <Exec Condition="$(PkgVersion) == ''" Command="plutil -extract CFBundleShortVersionString raw -o - '$(_MacPkgInfoPlist)' 2>/dev/null" ConsoleToMSBuild="True" IgnoreExitCode="True" IgnoreStandardErrorWarningFormat="True" StandardOutputImportance="low" StandardErrorImportance="low">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_MacPkgPlistVersion" />
+      <Output TaskParameter="ExitCode" PropertyName="_MacPkgPlistVersionExitCode" />
+    </Exec>
+    <PropertyGroup>
+      <PkgVersion Condition="$(PkgVersion) == '' AND $(_MacPkgPlistVersionExitCode) == '0'">$(_MacPkgPlistVersion)</PkgVersion>
+      <PkgVersion Condition="$(PkgVersion) == ''">$(Version)</PkgVersion>
+      <_MacPkgRelocatable Condition="$(PkgBundleIsRelocatable) == 'True'">YES</_MacPkgRelocatable>
+      <_MacPkgRelocatable Condition="$(PkgBundleIsRelocatable) != 'True'">NO</_MacPkgRelocatable>
+    </PropertyGroup>
+
+    <!-- ditto keeps symlinks and permissions intact so the app's signature stays valid -->
+    <Exec Command="ditto '$(OutputAppPath.TrimEnd('/').TrimEnd('\'))' '$(_MacPkgAppPath)'" />
+
+    <Exec Command="pkgbuild --analyze --root '$(_MacPkgRootPath)' '$(_MacPkgComponentPlist)'" StandardOutputImportance="low" />
+    <Exec Command="plutil -replace 0.BundleIsRelocatable -bool $(_MacPkgRelocatable) '$(_MacPkgComponentPlist)'" />
+
+    <Exec Command="pkgbuild --root '$(_MacPkgRootPath)' --component-plist '$(_MacPkgComponentPlist)' --identifier '$(PkgIdentifier)' --version '$(PkgVersion)' --install-location '$(PkgInstallLocation)' '$(_MacPkgComponentPath)'"
+          StandardOutputImportance="normal" />
+
+    <!-- wrap in a product archive, which is what Installer and notarization expect for distribution -->
+    <Exec Command="productbuild --package '$(_MacPkgComponentPath)' '$(_PkgPath)'" StandardOutputImportance="normal" />
+
+    <Message Text="$(MSBuildProjectName) -> $(_PkgPath)" Importance="high" />
+  </Target>
+
+  <Target Name="MacCleanPkg" AfterTargets="Clean" Condition="$(MacIsBuildingBundle) != 'True'">
+    <Delete Files="$(_PkgPath)" />
+  </Target>
+
+</Project>

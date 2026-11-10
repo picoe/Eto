@@ -283,12 +283,23 @@
   </Target>
 
   <Target Name="MacPackagingUnsupported" Condition="$(IsMac) != 'true'">
-    <Warning Text="You can only create dmg's, code sign, or notarize on macOS" />
+    <Warning Text="You can only create dmg's or pkg's, code sign, or notarize on macOS" />
   </Target>
+
+  <PropertyGroup>
+    <!-- MacPackageFormats: Semicolon separated installer packages to create, dmg and/or pkg.
+         See Dmg.targets and Pkg.targets for what else can be customized. -->
+    <!-- EnableDmgBuild is deprecated, use MacPackageFormats instead -->
+    <MacPackageFormats Condition="$(EnableDmgBuild) == 'True'">$(MacPackageFormats);dmg</MacPackageFormats>
+    <_MacPackageFormats>;$(MacPackageFormats.ToLowerInvariant().Replace(' ', ''));</_MacPackageFormats>
+    <_MacBuildDmg Condition="$(_MacPackageFormats.Contains(';dmg;'))">True</_MacBuildDmg>
+    <_MacBuildPkg Condition="$(_MacPackageFormats.Contains(';pkg;'))">True</_MacBuildPkg>
+  </PropertyGroup>
 
   <Import Project="BundleDotNetCore.targets" Condition="$(MacBuildBundle) == 'True'" />
 
-  <Import Project="Dmg.targets" Condition="$(EnableDmgBuild) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="Dmg.targets" Condition="$(_MacBuildDmg) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
+  <Import Project="Pkg.targets" Condition="$(_MacBuildPkg) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="CodeSign.targets" Condition="$(EnableCodeSigning) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
   <Import Project="Notarization.targets" Condition="$(EnableNotarization) == 'True' AND $(MacIsBuildingBundle) != 'True' AND $(MacBuildBundle) == 'True'" />
 

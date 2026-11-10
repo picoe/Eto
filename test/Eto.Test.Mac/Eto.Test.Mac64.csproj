@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOsPlatform(OSX)) AND $(Configuration) == 'Release'">
-    <EnableDmgBuild>True</EnableDmgBuild>
+    <MacPackageFormats>dmg</MacPackageFormats>
     <EnableCodeSigning Condition="$(EnableCodeSignBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableCodeSigning>
     <EnableNotarization Condition="$(EnableNotarizationBuild) == 'True' AND $(TargetFramework.StartsWith('net4')) == 'False'">True</EnableNotarization>
   </PropertyGroup>

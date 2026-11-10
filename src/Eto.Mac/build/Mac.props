@@ -21,14 +21,16 @@
   
   <PropertyGroup Condition="$(IsMac) == 'True'">
     <MacBuildDmgDependsOnTargets>MacCreateDmg;MacBeautifyDmg</MacBuildDmgDependsOnTargets>
-    <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg</MacCodeSignDependsOnTargets>
-    <MacNotarizeDependsOnTargets>MacNotarizeDmg;MacStapleDmg</MacNotarizeDependsOnTargets>
+    <MacBuildPkgDependsOnTargets>MacCreatePkg</MacBuildPkgDependsOnTargets>
+    <MacCodeSignDependsOnTargets>MacCodeSignApp;MacCodeSignDmg;MacCodeSignPkg</MacCodeSignDependsOnTargets>
+    <MacNotarizeDependsOnTargets>MacNotarizeDmg;MacStapleDmg;MacNotarizePkg;MacStaplePkg</MacNotarizeDependsOnTargets>
     
     <MacSelfContainedSpecified Condition="$(SelfContained) != ''">True</MacSelfContainedSpecified>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(IsMac) != 'True'">
     <MacBuildDmgDependsOnTargets>MacPackagingUnsupported</MacBuildDmgDependsOnTargets>
+    <MacBuildPkgDependsOnTargets>MacPackagingUnsupported</MacBuildPkgDependsOnTargets>
     <MacCodeSignDependsOnTargets>MacPackagingUnsupported</MacCodeSignDependsOnTargets>
     <MacNotarizeDependsOnTargets>MacPackagingUnsupported</MacNotarizeDependsOnTargets>
   </PropertyGroup>
