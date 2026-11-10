@@ -3,6 +3,7 @@ namespace Eto.Mac.Forms.Menu
 	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler, IMenuActionHandler
 	{
 		List<RadioMenuItem> radioGroup;
+		RadioMenuItem controller;
 
 		protected override NSMenuItem CreateControl()
 		{
@@ -36,18 +37,27 @@ namespace Eto.Mac.Forms.Menu
 			}
 		}
 
-		public void Create(RadioMenuItem controller)
+		public RadioMenuItem Controller
 		{
-			if (controller != null)
+			get => controller;
+			set
 			{
-				var controllerInner = (RadioMenuItemHandler)controller.Handler;
-				if (controllerInner.radioGroup == null)
+				controller = value;
+				var controllerInner = value?.Handler as RadioMenuItemHandler;
+				if (controllerInner?.radioGroup != null && ReferenceEquals(controllerInner.radioGroup, radioGroup))
+					return;
+
+				radioGroup?.Remove(Widget);
+				radioGroup = null;
+				if (controllerInner != null)
 				{
-					controllerInner.radioGroup = new List<RadioMenuItem>();
-					controllerInner.radioGroup.Add(controller);
+					controllerInner.radioGroup ??= new List<RadioMenuItem> { value };
+					radioGroup = controllerInner.radioGroup;
+					radioGroup.Add(Widget);
 				}
-				controllerInner.radioGroup.Add(Widget);
-				radioGroup = controllerInner.radioGroup;
+
+				if (Checked)
+					UncheckGroup();
 			}
 		}
 

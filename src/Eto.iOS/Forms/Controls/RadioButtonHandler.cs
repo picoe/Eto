@@ -4,21 +4,40 @@ namespace Eto.iOS.Forms.Controls
 	// TODO: use UISwitch instead with custom state images, better accessibility
 	public class RadioButtonHandler : IosButton<UIButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
-		RadioButtonHandler controller;
-		List<RadioButtonHandler> children;
+		List<RadioButtonHandler> group;
+		RadioButton controller;
 
 		public RadioButtonHandler()
 		{
 			Control = new UIButton(UIButtonType.RoundedRect);
+			group = new List<RadioButtonHandler> { this };
 		}
 
-		public void Create(RadioButton controller)
+		public RadioButton Controller
 		{
-			this.controller = (RadioButtonHandler)(controller != null ? controller.Handler : this);
-			if (this.controller != this)
-				this.controller.children.Add(this);
-			else
-				children = new List<RadioButtonHandler> { this };
+			get => controller;
+			set
+			{
+				controller = value;
+				var controllerHandler = value?.Handler as RadioButtonHandler;
+				if (controllerHandler != null && ReferenceEquals(controllerHandler.group, group))
+					return;
+
+				group.Remove(this);
+				group = controllerHandler?.group ?? new List<RadioButtonHandler>();
+				group.Add(this);
+
+				if (Checked)
+					UncheckOthers();
+			}
+		}
+
+		void UncheckOthers()
+		{
+			foreach (var b in group.Where(r => r != this))
+			{
+				b.Checked = false;
+			}
 		}
 
 		protected override void Initialize()
@@ -42,13 +61,8 @@ namespace Eto.iOS.Forms.Controls
 					Control.Selected = value;
 					if (!Platform.IsIos7)
 						Control.Highlighted = value;
-					if (value && controller != null)
-					{
-						foreach (var b in controller.children.Where(r => r != this))
-						{
-							b.Checked = false;
-						}
-					}
+					if (value)
+						UncheckOthers();
 					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 				}
 			}

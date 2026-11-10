@@ -1,4 +1,5 @@
 using Eto.Serialization.Json;
+using Eto.Serialization.Xaml;
 
 namespace Eto.Test.Sections.Serialization.Json
 {
@@ -9,7 +10,7 @@ namespace Eto.Test.Sections.Serialization.Json
 		protected TextArea MyTextArea { get; set; }
 
 		public Test()
-			: this(t => JsonReader.Load(t))
+			: this(t => JetoReader.Load(t))
 		{
 		}
 
