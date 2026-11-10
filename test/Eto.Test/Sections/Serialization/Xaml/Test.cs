@@ -54,20 +54,21 @@ namespace Eto.Test.Sections.Serialization.Xaml
 
 		public Test()
 		{
-			var sw = new Stopwatch();
-			sw.Start();
-
 			InitializeComponent();
-
-			sw.Stop();
-			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
 			DataContext = new MyModel { SomeText = "Text from data model" };
 		}
 
 		void InitializeComponent()
 		{
+			// only time the load, same as the Json section
+			var sw = new Stopwatch();
+			sw.Start();
+
 			XamlReader.Load(this);
+
+			sw.Stop();
+			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
 			var items = new List<MyItem>();
 			items.Add(new MyItem { MyText = "My Item 1" });
