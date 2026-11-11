@@ -69,8 +69,8 @@ namespace Eto.GtkSharp.Forms.Menu
 				if (text == value)
 					return;
 				text = value;
-				label.Text = value.ToPlatformMnemonic();
-				label.UseUnderline = true;
+				// One call: gtk_label_set_text clears use-underline, so a mirror of the label would read the marker as text.
+				label.TextWithMnemonic = value.ToPlatformMnemonic();
 			}
 		}
 
