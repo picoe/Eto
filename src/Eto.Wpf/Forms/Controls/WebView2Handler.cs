@@ -510,6 +510,54 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		HasAuthorityComponent = true
 	};
 
+	static string s_userDataFolder;
+
+	/// <summary>
+	/// Gets or sets the folder the default environment stores its browser data in.
+	/// </summary>
+	/// <remarks>
+	/// Defaults to <c>%LOCALAPPDATA%\&lt;Company&gt;\&lt;Product&gt;\WebView2</c>, using the version info of the running .exe.
+	/// Set before the first web view is created. The <c>WEBVIEW2_USER_DATA_FOLDER</c> environment variable still takes precedence.
+	/// </remarks>
+	public static string UserDataFolder
+	{
+		get => s_userDataFolder ??= GetDefaultUserDataFolder();
+		set => s_userDataFolder = value;
+	}
+
+	static string GetDefaultUserDataFolder()
+	{
+		try
+		{
+			// WebView2's own default is next to the .exe, which isn't writable for installed apps.
+			// The version resource works for native hosts too, where there is no entry assembly.
+			string exePath;
+			using (var process = Process.GetCurrentProcess())
+				exePath = process.MainModule.FileName;
+			var info = FileVersionInfo.GetVersionInfo(exePath);
+			var company = SanitizeFolderName(info.CompanyName);
+			var product = SanitizeFolderName(info.ProductName) ?? Path.GetFileNameWithoutExtension(exePath);
+			// SDK projects default Company to the assembly name, so avoid MyApp\MyApp.
+			var appFolder = company == null || company == product ? product : Path.Combine(company, product);
+			return Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), appFolder, "WebView2");
+		}
+		catch (Exception ex)
+		{
+			Debug.WriteLine($"Could not determine the WebView2 user data folder, using the WebView2 default: {ex}");
+			return null;
+		}
+	}
+
+	static string SanitizeFolderName(string name)
+	{
+		if (string.IsNullOrWhiteSpace(name))
+			return null;
+		foreach (var ch in Path.GetInvalidFileNameChars())
+			name = name.Replace(ch, '_');
+		name = name.Trim().TrimEnd('.');
+		return name.Length > 0 ? name : null;
+	}
+
 	// Schemes can only be registered when an environment is created, so Eto creates the default one itself.
 	static Task<CoreWebView2Environment> s_defaultEnvironment;
 
@@ -518,8 +566,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		if (s_defaultEnvironment == null)
 		{
 			var options = new CoreWebView2EnvironmentOptions(customSchemeRegistrations: new List<CoreWebView2CustomSchemeRegistration> { CreateResourceSchemeRegistration() });
-			// same browser and data folder WebView2 picks when given no environment
-			s_defaultEnvironment = CoreWebView2Environment.CreateAsync(null, null, options);
+			s_defaultEnvironment = CoreWebView2Environment.CreateAsync(null, UserDataFolder, options);
 		}
 		return s_defaultEnvironment;
 	}

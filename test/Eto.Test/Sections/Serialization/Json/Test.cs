@@ -1,21 +1,34 @@
 using Eto.Serialization.Json;
+using Eto.Serialization.Xaml;
 
 namespace Eto.Test.Sections.Serialization.Json
 {
+	[HotReload(nameof(InitializeComponent))]
 	public partial class Test : Panel
 	{
+		readonly Action<Test> load;
+
 		protected CheckBox MyCheckBox { get; set; }
 
 		protected TextArea MyTextArea { get; set; }
 
 		public Test()
-			: this(t => JsonReader.Load(t))
+			: this(t => JetoReader.Load(t))
 		{
 		}
 
 		/// <summary>Loads the .jeto another way, e.g. with Eto.Serialization.Xaml to compare.</summary>
 		internal Test(Action<Test> load)
 		{
+			this.load = load;
+			InitializeComponent();
+
+			DataContext = new Xaml.Test.MyModel { SomeText = "Text from data model" };
+		}
+
+		void InitializeComponent()
+		{
+			// only time the load, same as the Xaml section
 			var sw = new Stopwatch();
 			sw.Start();
 

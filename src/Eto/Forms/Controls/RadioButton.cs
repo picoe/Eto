@@ -8,7 +8,8 @@ namespace Eto.Forms;
 /// When a radio button is toggled on, all others that are linked together will be toggled off.
 /// 
 /// To link radio buttons together, use the <see cref="C:Eto.Forms.RadioButton(RadioButton)"/> constructor
-/// to specify the controller radio button, which can be created with the default constructor.
+/// to specify the controller radio button, which can be created with the default constructor,
+/// or set the <see cref="Controller"/> (e.g. with <c>{x:Reference name}</c> from xeto or jeto).
 /// </remarks>
 /// <seealso cref="RadioButtonList"/>
 [Handler(typeof(RadioButton.IHandler))]
@@ -79,8 +80,6 @@ public class RadioButton : TextControl, IMnemonicControl
 	/// </summary>
 	public RadioButton()
 	{
-		Handler.Create(null);
-		Initialize();
 	}
 
 	/// <summary>
@@ -89,8 +88,22 @@ public class RadioButton : TextControl, IMnemonicControl
 	/// <param name="controller">Controller radio button to link to, or null if no controller.</param>
 	public RadioButton(RadioButton controller = null)
 	{
-		Handler.Create(controller);
-		Initialize();
+		if (controller != null)
+			Controller = controller;
+	}
+
+	/// <summary>
+	/// Gets or sets the radio button to link this one with, e.g. with <c>{x:Reference name}</c> from xeto or jeto.
+	/// </summary>
+	/// <remarks>
+	/// Any other member of the group will do, and it can be set at any time.
+	/// Set to null to unlink this button from the others.
+	/// </remarks>
+	/// <since>2.14</since>
+	public RadioButton Controller
+	{
+		get => Handler.Controller;
+		set => Handler.Controller = value;
 	}
 
 	/// <summary>
@@ -175,17 +188,16 @@ public class RadioButton : TextControl, IMnemonicControl
 	/// <summary>
 	/// Handler interface for the <see cref="RadioButton"/>
 	/// </summary>
-	/// <remarks>
-	/// When using this handler, you must call <see cref="Eto.Widget.Initialize"/> in the constructor.
-	/// </remarks>
-	[AutoInitialize(false)]
 	public new interface IHandler : TextControl.IHandler, IMnemonicControl
 	{
 		/// <summary>
-		/// Used when creating a new instance of the RadioButton to specify the controller
+		/// Gets or sets the radio button to link this one with, or null for a group of its own.
 		/// </summary>
-		/// <param name="controller">Controller radio button to link to, or null if no controller.</param>
-		void Create(RadioButton controller);
+		/// <remarks>
+		/// Setting it moves this button into the controller's group. If this button is checked, it stays checked and the others in its new group are unchecked.
+		/// </remarks>
+		/// <since>2.14</since>
+		RadioButton Controller { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.RadioButton"/> is checked.

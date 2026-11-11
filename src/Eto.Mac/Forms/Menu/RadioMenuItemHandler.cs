@@ -3,6 +3,7 @@ namespace Eto.Mac.Forms.Menu
 	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler, IMenuActionHandler
 	{
 		List<RadioMenuItem> radioGroup;
+		RadioMenuItem controller;
 
 		protected override NSMenuItem CreateControl()
 		{
@@ -21,30 +22,42 @@ namespace Eto.Mac.Forms.Menu
 
 		public override void Activate()
 		{
-			if (radioGroup != null)
-			{
-				var checkedItem = radioGroup.FirstOrDefault(r => r.Checked);
-				if (checkedItem != null && !ReferenceEquals(checkedItem, Widget))
-				{
-					checkedItem.Checked = false;
-				}
-			}
 			Checked = true;
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
-		public void Create(RadioMenuItem controller)
+		void UncheckGroup()
 		{
-			if (controller != null)
+			if (radioGroup == null)
+				return;
+			foreach (var item in radioGroup)
 			{
-				var controllerInner = (RadioMenuItemHandler)controller.Handler;
-				if (controllerInner.radioGroup == null)
+				if (!ReferenceEquals(item, Widget))
+					item.Checked = false;
+			}
+		}
+
+		public RadioMenuItem Controller
+		{
+			get => controller;
+			set
+			{
+				controller = value;
+				var controllerInner = value?.Handler as RadioMenuItemHandler;
+				if (controllerInner?.radioGroup != null && ReferenceEquals(controllerInner.radioGroup, radioGroup))
+					return;
+
+				radioGroup?.Remove(Widget);
+				radioGroup = null;
+				if (controllerInner != null)
 				{
-					controllerInner.radioGroup = new List<RadioMenuItem>();
-					controllerInner.radioGroup.Add(controller);
+					controllerInner.radioGroup ??= new List<RadioMenuItem> { value };
+					radioGroup = controllerInner.radioGroup;
+					radioGroup.Add(Widget);
 				}
-				controllerInner.radioGroup.Add(Widget);
-				radioGroup = controllerInner.radioGroup;
+
+				if (Checked)
+					UncheckGroup();
 			}
 		}
 
@@ -77,6 +90,8 @@ namespace Eto.Mac.Forms.Menu
 			{ 
 				if (Checked != value)
 				{
+					if (value)
+						UncheckGroup();
 					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; 
 					Callback.OnCheckedChanged(Widget, EventArgs.Empty);
 				}

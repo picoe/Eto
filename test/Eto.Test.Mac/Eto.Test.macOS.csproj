@@ -40,7 +40,7 @@
     <PackageReference Include="NUnit" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestIcon.icns" />
+    <Content Include="EtoIcon.icns" />
     <None Include="Info.plist" />
   </ItemGroup>
 
