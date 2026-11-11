@@ -58,9 +58,16 @@
 			</TableLayout>
 		</TabPage>
 		<TabPage Text="Stack Layout">
-			<StackLayout>
+			<StackLayout Spacing="4" Padding="10">
 				<Label>Button that executes command from model:</Label>
 				<Button Command="{Binding ClickMe}">Click Me!</Button>
+				<StackLayoutItem>
+					<StackLayout Orientation="Horizontal">
+						<RadioButton x:Name="MyRadioButton" Text="Option 1" />
+						<RadioButton Text="Option 2" Controller="{x:Reference MyRadioButton}" />
+						<RadioButton Text="Option 3" Controller="{x:Reference MyRadioButton}" />
+					</StackLayout>
+				</StackLayoutItem>
 				<StackLayoutItem Expand="true" HorizontalAlignment="Stretch">
 					<TextArea />
 				</StackLayoutItem>

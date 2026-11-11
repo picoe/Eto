@@ -2,13 +2,10 @@ namespace Eto.Mac.Forms.Controls
 {
 	public class RadioButtonHandler : MacButton<NSButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
-		static readonly object RadioGroup_Key = new object();
+		RadioGroup _group;
+		RadioButton _controller;
 
-		RadioGroup Group
-		{
-			get { return Widget.Properties.Get<RadioGroup>(RadioGroup_Key); }
-			set { Widget.Properties[RadioGroup_Key] = value; }
-		}
+		RadioGroup Group => _group ??= new RadioGroup { this };
 
 		class RadioGroup : List<RadioButtonHandler>
 		{
@@ -131,12 +128,23 @@ namespace Eto.Mac.Forms.Controls
 				Control.Window?.MakeFirstResponder(Control);
 		}
 
-		public void Create(RadioButton controller)
+		public RadioButton Controller
 		{
-			var controllerHandler = controller?.Handler as RadioButtonHandler;
-			Group = controllerHandler?.Group ?? new RadioGroup();
+			get => _controller;
+			set
+			{
+				_controller = value;
+				var controllerHandler = value?.Handler as RadioButtonHandler;
+				if (controllerHandler != null && ReferenceEquals(controllerHandler.Group, Group))
+					return;
 
-			Group.Add(this);
+				Group.Remove(this);
+				_group = controllerHandler?.Group;
+				Group.Add(this);
+
+				if (Checked)
+					Group.SetButtonStates(this);
+			}
 		}
 
 		public bool Checked

@@ -11,25 +11,60 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Gtk.Widget ContainerControl => _box;
 
-		public void Create(RadioButton controller)
+		public RadioButtonHandler()
 		{
-			if (controller != null)
-				Control = new Gtk.RadioButton(RadioButtonHandler.GetControl(controller));
-			else
-			{
-				Control = new Gtk.RadioButton((Gtk.RadioButton)null);
-				// make gtk work like others in that no radio button is initially selected
-				var inactive = new Gtk.RadioButton(Control);
-				inactive.Active = true;
-			}
+			Control = new Gtk.RadioButton((Gtk.RadioButton)null);
+			AddInactiveButton();
 			_label = new Gtk.AccelLabel("");
 			_label.UseUnderline = true;
 			Control.Add(_label);
+			_box = new Gtk.EventBox();
+			_box.Child = Control;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			Control.Realized += Connector.Control_Realized;
 			Control.Clicked += Connector.HandleClick;
 			Control.Toggled += Connector.HandleCheckedChanged;
-			_box = new Gtk.EventBox();
-			_box.Child = Control;
+		}
+
+		// a hidden checked button so this one can be unchecked like on other platforms
+		void AddInactiveButton()
+		{
+			var inactive = new Gtk.RadioButton(Control);
+			inactive.Active = true;
+		}
+
+		bool _settingGroup;
+		RadioButton _controller;
+
+		public RadioButton Controller
+		{
+			get => _controller;
+			set
+			{
+				_controller = value;
+				var controllerControl = value != null ? GetControl(value) : null;
+				if (controllerControl != null && Array.IndexOf(controllerControl.Group, Control) >= 0)
+					return;
+
+				var wasChecked = Control.Active;
+				// joining a group toggles this button, which isn't a change the user should see
+				_settingGroup = true;
+				try
+				{
+					Control.JoinGroup(controllerControl);
+					if (controllerControl == null)
+						AddInactiveButton();
+					Control.Active = wasChecked;
+				}
+				finally
+				{
+					_settingGroup = false;
+				}
+			}
 		}
 
 		void UpdateLabel()
@@ -61,12 +96,16 @@ namespace Eto.GtkSharp.Forms.Controls
 		{
 			public new RadioButtonHandler Handler { get { return (RadioButtonHandler)base.Handler; } }
 
-			public void HandleCheckedChanged(object sender, EventArgs e) => Handler?.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
+			public void HandleCheckedChanged(object sender, EventArgs e)
+			{
+				if (Handler?._settingGroup == false)
+					Handler.Callback.OnCheckedChanged(Handler.Widget, EventArgs.Empty);
+			}
 
 			public void HandleClick(object sender, EventArgs e)
 			{
 				// GTK raises Clicked when other grouped radios are unchecked; only fire for the active (user-clicked) one.
-				if (Handler?.Control?.Active == true)
+				if (Handler?.Control?.Active == true && !Handler._settingGroup)
 					Handler.Callback.OnClick(Handler.Widget, EventArgs.Empty);
 			}
 

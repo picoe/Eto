@@ -11,6 +11,7 @@ namespace Eto.Android.Forms.Controls
 	public class RadioButtonHandler : AndroidCommonControl<aw.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
 		List<RadioButton> group;
+		RadioButton controller;
 
 		public RadioButtonHandler()
 		{
@@ -23,26 +24,42 @@ namespace Eto.Android.Forms.Controls
 			set { Control.Checked = value; }
 		}
 		
-		public void Create(RadioButton controller)
+		protected override void Initialize()
 		{
-			if (controller != null)
-			{
-				var controllerInner = (RadioButtonHandler)controller.Handler;
-				if (controllerInner.group == null)
-				{
-					controllerInner.group = new List<RadioButton>();
-					controllerInner.group.Add(controller);
-				}
-
-				group = controllerInner.group;
-				group.Add(Widget);
-			}
-			else
-			{
-				group = new List<RadioButton> { Widget };
-			}
-
+			base.Initialize();
+			group = new List<RadioButton> { Widget };
 			Control.Click += control_RadioSwitch;
+		}
+
+		public RadioButton Controller
+		{
+			get => controller;
+			set
+			{
+				controller = value;
+				var controllerInner = value?.Handler as RadioButtonHandler;
+				if (controllerInner != null && ReferenceEquals(controllerInner.group, group))
+					return;
+
+				group?.Remove(Widget);
+				if (controllerInner != null)
+				{
+					controllerInner.group ??= new List<RadioButton> { value };
+					group = controllerInner.group;
+					group.Add(Widget);
+				}
+				else
+					group = new List<RadioButton> { Widget };
+
+				if (Checked)
+				{
+					foreach (var item in group)
+					{
+						if (!ReferenceEquals(item, Widget))
+							item.Checked = false;
+					}
+				}
+			}
 		}
 
 		private void control_RadioSwitch(object sender, EventArgs e)

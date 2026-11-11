@@ -3,6 +3,7 @@ namespace Eto.Wpf.Forms.Menu
 	public class RadioMenuItemHandler : MenuItemHandler<swc.MenuItem, RadioMenuItem, RadioMenuItem.ICallback>, RadioMenuItem.IHandler
 	{
 		List<RadioMenuItem> group;
+		RadioMenuItem controller;
 
 		public RadioMenuItemHandler()
 		{
@@ -40,18 +41,27 @@ namespace Eto.Wpf.Forms.Menu
 			}
 		}
 
-		public void Create(RadioMenuItem controller)
+		public RadioMenuItem Controller
 		{
-			if (controller != null)
+			get => controller;
+			set
 			{
-				var controllerInner = (RadioMenuItemHandler)controller.Handler;
-				if (controllerInner.group == null)
+				controller = value;
+				var controllerInner = value?.Handler as RadioMenuItemHandler;
+				if (controllerInner?.group != null && ReferenceEquals(controllerInner.group, group))
+					return;
+
+				group?.Remove(Widget);
+				group = null;
+				if (controllerInner != null)
 				{
-					controllerInner.group = new List<RadioMenuItem>();
-					controllerInner.group.Add(controller);
+					controllerInner.group ??= new List<RadioMenuItem> { value };
+					group = controllerInner.group;
+					group.Add(Widget);
 				}
-				group = controllerInner.group;
-				group.Add(Widget);
+
+				if (Checked)
+					UncheckGroup();
 			}
 		}
 

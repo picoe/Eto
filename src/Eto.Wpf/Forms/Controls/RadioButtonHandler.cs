@@ -19,28 +19,59 @@ namespace Eto.Wpf.Forms.Controls
 
 		public override sw.FrameworkElement ContainerControl => _border;
 
-		public void Create(RadioButton controller)
+		public RadioButtonHandler()
 		{
 			Control = new EtoRadioButton
 			{
 				Handler = this,
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				VerticalContentAlignment = sw.VerticalAlignment.Center,
+				GroupName = Guid.NewGuid().ToString()
 			};
-			if (controller != null)
-			{
-				var parent = (swc.RadioButton)controller.ControlObject;
-				Control.GroupName = parent.GroupName;
-			}
-			else
-				Control.GroupName = Guid.NewGuid().ToString();
 
 			Control.Loaded += Control_Loaded;
-			Control.Checked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
-			Control.Unchecked += (sender, e) => Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+			Control.Checked += Control_CheckedChanged;
+			Control.Unchecked += Control_CheckedChanged;
 			Control.Click += (sender, e) => Callback.OnClick(Widget, EventArgs.Empty);
 
 			_border = new EtoBorder { Handler = this, Child = Control };
+		}
+
+		bool _settingGroup;
+		RadioButton _controller;
+
+		void Control_CheckedChanged(object sender, sw.RoutedEventArgs e)
+		{
+			if (!_settingGroup)
+				Callback.OnCheckedChanged(Widget, EventArgs.Empty);
+		}
+
+		public RadioButton Controller
+		{
+			get => _controller;
+			set
+			{
+				_controller = value;
+				var groupName = value != null ? ((swc.RadioButton)value.ControlObject).GroupName : Guid.NewGuid().ToString();
+				if (Control.GroupName == groupName)
+					return;
+
+				Control.GroupName = groupName;
+				if (Control.IsChecked == true)
+				{
+					// WPF only unchecks the rest of the group when a button becomes checked
+					_settingGroup = true;
+					try
+					{
+						Control.IsChecked = false;
+						Control.IsChecked = true;
+					}
+					finally
+					{
+						_settingGroup = false;
+					}
+				}
+			}
 		}
 
 		void Control_Loaded(object sender, sw.RoutedEventArgs e)

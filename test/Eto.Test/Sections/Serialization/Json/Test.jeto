@@ -39,9 +39,16 @@
 				Text: "Stack Layout",
 				Content: {
 					$type: "StackLayout",
+					Padding: "10",
+					Spacing: "4",
 					Items: [
-						"Some Text",
+						"Some Text!",
 						{ $type: "Button", Text: "Click Me!" },
+						{ Control: { $type: "StackLayout", Orientation: "Horizontal", Items: [
+							{ $type: "RadioButton", $name: "MyRadioButton", Text: "Option 1" },
+							{ $type: "RadioButton", Text: "Option 2", Controller: { $ref: "MyRadioButton" } },
+							{ $type: "RadioButton", Text: "Option 3", Controller: { $ref: "MyRadioButton" } }
+						] } },
 						{
 							HorizontalAlignment: "Stretch",
 							Expand: true,
@@ -52,6 +59,7 @@
 							Control: {
 								$type: "StackLayout",
 								Orientation: "Horizontal",
+								Spacing: "4",
 								Items: [
 									{ $type: "Button", Text: "OK" },
 									{ $type: "Button", Text: "C&ancel" }

@@ -3,6 +3,7 @@ namespace Eto.WinForms.Forms.Controls
 	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton, RadioButton.ICallback>, RadioButton.IHandler
 	{
 		List<RadioButtonHandler> group;
+		RadioButton controller;
 
 		public class EtoRadioButton : swf.RadioButton
 		{
@@ -31,18 +32,27 @@ namespace Eto.WinForms.Forms.Controls
 			Callback.OnClick(Widget, EventArgs.Empty);
 		}
 
-		public void Create(RadioButton controller)
+		public RadioButton Controller
 		{
-			var controllerHandler = controller?.Handler as RadioButtonHandler;
-			if (controllerHandler != null)
+			get => controller;
+			set
 			{
-				if (controllerHandler.group == null)
+				controller = value;
+				var controllerHandler = value?.Handler as RadioButtonHandler;
+				if (controllerHandler?.group != null && ReferenceEquals(controllerHandler.group, group))
+					return;
+
+				group?.Remove(this);
+				group = null;
+				if (controllerHandler != null)
 				{
-					controllerHandler.group = new List<RadioButtonHandler>();
-					controllerHandler.group.Add(controllerHandler);
+					controllerHandler.group ??= new List<RadioButtonHandler> { controllerHandler };
+					group = controllerHandler.group;
+					group.Add(this);
 				}
-				group = controllerHandler.group;
-				group.Add(this);
+
+				if (Checked)
+					SetChecked(true);
 			}
 		}
 
