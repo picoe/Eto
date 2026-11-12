@@ -19,8 +19,9 @@
   <PropertyGroup>
     <_WindowsPackageImported>True</_WindowsPackageImported>
 
-    <!-- Create the installers after each Release build. Set to False to only create them with -t:WindowsPackage -->
-    <WindowsPackageOnBuild Condition="'$(WindowsPackageOnBuild)' == '' AND '$(Configuration)' == 'Release'">True</WindowsPackageOnBuild>
+    <!-- Create the installers after each build. Set to False to only create them with -t:WindowsPackage,
+         or set WindowsPackageFormats only for some configurations, e.g. Condition="'$(Configuration)' == 'Release'" -->
+    <WindowsPackageOnBuild Condition="'$(WindowsPackageOnBuild)' == ''">True</WindowsPackageOnBuild>
 
     <!-- Start of the installers' file names. Defaults to the title without spaces -->
     <WindowsPackageName Condition="'$(WindowsPackageName)' == ''"></WindowsPackageName>

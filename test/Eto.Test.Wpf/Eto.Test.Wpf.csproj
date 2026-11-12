@@ -15,7 +15,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <WindowsPackageFormats>msi;setup</WindowsPackageFormats>
     <WindowsPackageRuntimeIdentifiers>win-x64;win-arm64</WindowsPackageRuntimeIdentifiers>
   </PropertyGroup>
