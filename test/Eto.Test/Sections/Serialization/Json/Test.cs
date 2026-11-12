@@ -12,8 +12,15 @@ namespace Eto.Test.Sections.Serialization.Json
 
 		protected TextArea MyTextArea { get; set; }
 
+		protected DropDown MyDropDown { get; set; }
+
+		class MyItem
+		{
+			public string MyText { get; set; }
+		}
+
 		public Test()
-			: this(t => JetoReader.Load(t))
+			: this(t => JsonReader.Load(t))
 		{
 		}
 
@@ -37,8 +44,17 @@ namespace Eto.Test.Sections.Serialization.Json
 			sw.Stop();
 			Log.Write(this, "loaded in {0} seconds", sw.Elapsed.TotalSeconds);
 
+			MyDropDown.DataStore = new List<MyItem>
+			{
+				new MyItem { MyText = "My Item 1" },
+				new MyItem { MyText = "My Item 2" },
+				new MyItem { MyText = "My Item 3" }
+			};
+
 			MyCheckBox.Checked = true;
 			MyTextArea.Text = "This form was created via json!";
+
+			DataContext = new Xaml.Test.MyModel { SomeText = "Text from data model" };
 		}
 
 		public void HandleButtonClick(object sender, EventArgs e)

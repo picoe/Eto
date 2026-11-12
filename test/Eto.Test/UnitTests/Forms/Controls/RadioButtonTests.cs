@@ -260,5 +260,17 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		{
 			Shown(form => Eto.Serialization.Xaml.JetoReader.Load<StackLayout>(new StringReader(ControllerJson(forward, "$name", reference)), null), AssertControllerGroups);
 		}
+
+		[TestCase(false, "$name", "'{{x:Reference {0}}}'")]
+		[TestCase(true, "$name", "'{{x:Reference {0}}}'")]
+		[TestCase(false, "$name", "{{ $ref: '{0}' }}")]
+		[TestCase(true, "$name", "{{ $ref: '{0}' }}")]
+		[TestCase(false, "$id", "{{ $ref: '{0}' }}")]
+		[TestCase(true, "$id", "{{ $ref: '{0}' }}")]
+		[TestCase(false, "ID", "{{ $ref: '{0}' }}")]
+		public void ControllerShouldWorkFromJson(bool forward, string name, string reference)
+		{
+			Shown(form => Eto.Serialization.Json.JsonReader.Load<StackLayout>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(ControllerJson(forward, name, reference)))), AssertControllerGroups);
+		}
 	}
 }

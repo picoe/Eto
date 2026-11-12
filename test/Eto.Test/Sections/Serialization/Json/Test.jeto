@@ -1,5 +1,8 @@
 {
 	/* $type can be specified if loading json directly (without existing instance), but when loading from a specific instance (like this example) you omit it */
+	Properties: {
+		myConverter: { $type: "Eto.Test.Sections.Serialization.Xaml.MyConverter, Eto.Test" }
+	},
 	Content: {
 		$type: "TabControl",
 		Pages: [
@@ -16,10 +19,11 @@
 					Padding: "10",
 					Spacing: "5, 5",
 					Rows: [
-						[ "Text Box", { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown" } ],
+						[ "Text Box with converter", { $type: "TextBox", TextChanged: "HandleTextChanged", KeyDown: "HandleKeyDown", Text: "{Binding SomeText, Converter={StaticResource myConverter}}" } ],
 						[ "Text Area", { $type: "TextArea", $name: "MyTextArea" } ],
 						[ { }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
 						[ "Drop Down", { $type: "DropDown", Items: [ "Item 1", "Item 2", "Item 3", "Item 4" ] } ],
+						[ "Drop down with converter", { $type: "DropDown", $name: "MyDropDown", ItemTextBinding: "{Binding Path=MyText, Converter={StaticResource myConverter}}" } ],
 						[ { $type: "Label", Text: "Image", VerticalAlignment: "Center" }, 
 							[ /* TableLayout */
 								[ /* TableRow */
@@ -42,8 +46,8 @@
 					Padding: "10",
 					Spacing: "4",
 					Items: [
-						"Some Text!",
-						{ $type: "Button", Text: "Click Me!" },
+						"Button that executes command from model:",
+						{ $type: "Button", Text: "Click Me!", Command: "{Binding ClickMe}" },
 						{ Control: { $type: "StackLayout", Orientation: "Horizontal", Items: [
 							{ $type: "RadioButton", $name: "MyRadioButton", Text: "Option 1" },
 							{ $type: "RadioButton", Text: "Option 2", Controller: { $ref: "MyRadioButton" } },

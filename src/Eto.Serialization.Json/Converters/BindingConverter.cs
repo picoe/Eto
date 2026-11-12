@@ -5,9 +5,10 @@ using Newtonsoft.Json.Serialization;
 namespace Eto.Serialization.Json.Converters
 {
 	/// <summary>
-	/// Reads <c>"{Binding Path, Mode=OneWay}"</c> values for a property, and anything else as usual.
+	/// Reads <c>"{Binding Path, Mode=OneWay, Converter={StaticResource key}, ConverterParameter=value}"</c> values for a property, references to named objects, and anything else as usual.
 	/// </summary>
 	/// <remarks>
+	/// References are <c>{ "$ref": "name" }</c> or <c>"{x:Reference name}"</c>, and can refer to an object later in the file.
 	/// Use <c>"{}{Binding}"</c> for text that should literally start with <c>{Binding</c>.
 	/// </remarks>
 	class BindingConverter : JsonConverter
@@ -28,10 +29,30 @@ namespace Eto.Serialization.Json.Converters
 				var info = BindingInfo.Parse(text);
 				if (info != null)
 				{
+					if (info.ConverterKey != null)
+					{
+						info.Converter = NameScope.Get(serializer).GetResource(info.ConverterKey, reader) as IValueConverter
+							?? throw new JsonSerializationException($"Resource '{info.ConverterKey}' is not an IValueConverter");
+					}
 					if (objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(IIndirectBinding<>))
-						return Activator.CreateInstance(typeof(PropertyBinding<>).MakeGenericType(objectType.GetGenericArguments()), info.Path, true);
+					{
+						var valueType = objectType.GetGenericArguments()[0];
+						if (info.Converter == null)
+							return Activator.CreateInstance(typeof(PropertyBinding<>).MakeGenericType(valueType), info.Path, true);
+						var convert = typeof(IndirectBinding<object>).GetMethods().First(r => r.Name == nameof(IndirectBinding<object>.Convert) && r.IsGenericMethod && r.GetParameters().FirstOrDefault()?.ParameterType == typeof(IValueConverter));
+						return convert.MakeGenericMethod(valueType).Invoke(Binding.Property<object>(info.Path), new[] { info.Converter, info.ConverterParameter, null });
+					}
 					return info;
 				}
+			}
+
+			var reference = ReferenceInfo.Read(reader, serializer, out var loaded);
+			if (reference != null)
+				return reference;
+			if (loaded != null)
+			{
+				reader = loaded.CreateReader();
+				reader.Read();
 			}
 
 			// match the default of filling in objects that already exist, e.g. a Menu's items
@@ -51,6 +72,34 @@ namespace Eto.Serialization.Json.Converters
 
 		public DualBindingMode Mode { get; set; } = DualBindingMode.TwoWay;
 
+		/// <summary>Key of the converter given as <c>{StaticResource key}</c></summary>
+		public string ConverterKey { get; set; }
+
+		public IValueConverter Converter { get; set; }
+
+		public object ConverterParameter { get; set; }
+
+		// splits on commas that aren't inside nested {}, e.g. Converter={StaticResource key}
+		static IEnumerable<string> SplitParts(string body)
+		{
+			var depth = 0;
+			var start = 0;
+			for (int i = 0; i < body.Length; i++)
+			{
+				var c = body[i];
+				if (c == '{')
+					depth++;
+				else if (c == '}')
+					depth--;
+				else if (c == ',' && depth == 0)
+				{
+					yield return body.Substring(start, i - start);
+					start = i + 1;
+				}
+			}
+			yield return body.Substring(start);
+		}
+
 		public static BindingInfo Parse(string text)
 		{
 			text = text.Trim();
@@ -62,7 +111,7 @@ namespace Eto.Serialization.Json.Converters
 
 			var info = new BindingInfo();
 			var first = true;
-			foreach (var part in body.Split(','))
+			foreach (var part in SplitParts(body))
 			{
 				var item = part.Trim();
 				var equals = item.IndexOf('=');
@@ -81,6 +130,15 @@ namespace Eto.Serialization.Json.Converters
 						info.Path = value;
 					else if (string.Equals(name, "Mode", StringComparison.OrdinalIgnoreCase))
 						info.Mode = (DualBindingMode)Enum.Parse(typeof(DualBindingMode), value, true);
+					else if (string.Equals(name, "Converter", StringComparison.OrdinalIgnoreCase))
+					{
+						const string prefix = "{StaticResource";
+						if (!value.StartsWith(prefix, StringComparison.Ordinal) || !value.EndsWith("}", StringComparison.Ordinal))
+							throw new JsonSerializationException($"Converter must be a {{StaticResource key}} in binding '{text}'");
+						info.ConverterKey = value.Substring(prefix.Length, value.Length - prefix.Length - 1).Trim();
+					}
+					else if (string.Equals(name, "ConverterParameter", StringComparison.OrdinalIgnoreCase))
+						info.ConverterParameter = value;
 					else
 						throw new JsonSerializationException($"Unknown binding option '{name}' in '{text}'");
 				}
@@ -91,17 +149,19 @@ namespace Eto.Serialization.Json.Converters
 	}
 
 	/// <summary>
-	/// Sets up a data context binding when given a <see cref="BindingInfo"/>, otherwise sets the value.
+	/// Sets up a data context binding when given a <see cref="BindingInfo"/>, the named object for a <see cref="ReferenceInfo"/>, otherwise sets the value.
 	/// </summary>
 	class BindingValueProvider : IValueProvider
 	{
 		readonly IValueProvider inner;
 		readonly string propertyName;
+		readonly Type propertyType;
 
-		public BindingValueProvider(IValueProvider inner, string propertyName)
+		public BindingValueProvider(IValueProvider inner, string propertyName, Type propertyType)
 		{
 			this.inner = inner;
 			this.propertyName = propertyName;
+			this.propertyType = propertyType;
 		}
 
 		public object GetValue(object target) => inner.GetValue(target);
@@ -110,8 +170,16 @@ namespace Eto.Serialization.Json.Converters
 		{
 			if (value is BindingInfo info && target is IBindable bindable)
 			{
-				var binding = bindable.BindDataContext(Binding.Property<object>(propertyName), Binding.Property<object>(info.Path), info.Mode);
+				var source = Binding.Property<object>(info.Path);
+				if (info.Converter != null)
+					source = source.Convert(info.Converter, propertyType, info.ConverterParameter);
+				var binding = bindable.BindDataContext(Binding.Property<object>(propertyName), source, info.Mode);
 				binding.Mode = info.Mode;
+				return;
+			}
+			if (value is ReferenceInfo reference)
+			{
+				reference.Scope.Resolve(reference, v => inner.SetValue(target, v));
 				return;
 			}
 			inner.SetValue(target, value);

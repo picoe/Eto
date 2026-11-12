@@ -19,6 +19,10 @@ namespace Eto.Serialization.Json.Converters
 			if (reader.ValueType == null)
 			{
 				var obj = JObject.Load(reader);
+				// only property values can wait for an object later in the file
+				var reference = ReferenceInfo.GetRef(obj);
+				if (reference != null)
+					return NameScope.Get(serializer).ResolveNow(reference, reader);
 				Type type = null;
 				var typeToken = obj["$type"];
 				if (typeToken != null)

@@ -1,5 +1,7 @@
 using NUnit.Framework;
+using Eto.Serialization.Json;
 using Eto.Serialization.Xaml;
+using System.Text;
 
 namespace Eto.Test.UnitTests.Forms
 {
@@ -122,6 +124,17 @@ namespace Eto.Test.UnitTests.Forms
 		public void ControllerShouldWorkFromJeto(bool forward, string reference)
 		{
 			var menu = JetoReader.Load<ContextMenu>(new StringReader(ControllerJson(forward, reference)), null);
+			AssertGroups(menu.Items.OfType<RadioMenuItem>().ToList());
+		}
+
+		[InvokeOnUI]
+		[TestCase(false, "'{{x:Reference {0}}}'")]
+		[TestCase(true, "'{{x:Reference {0}}}'")]
+		[TestCase(false, "{{ $ref: '{0}' }}")]
+		[TestCase(true, "{{ $ref: '{0}' }}")]
+		public void ControllerShouldWorkFromJson(bool forward, string reference)
+		{
+			var menu = JsonReader.Load<ContextMenu>(new MemoryStream(Encoding.UTF8.GetBytes(ControllerJson(forward, reference))));
 			AssertGroups(menu.Items.OfType<RadioMenuItem>().ToList());
 		}
 	}

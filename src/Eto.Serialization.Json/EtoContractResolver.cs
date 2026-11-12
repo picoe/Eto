@@ -31,7 +31,7 @@ namespace Eto.Serialization.Json
 					if (prop.Writable && !prop.Ignored && prop.Converter == null && prop.ValueProvider != null)
 					{
 						prop.Converter = bindingConverter;
-						prop.ValueProvider = new BindingValueProvider(prop.ValueProvider, prop.UnderlyingName);
+						prop.ValueProvider = new BindingValueProvider(prop.ValueProvider, prop.UnderlyingName, prop.PropertyType);
 					}
 				}
 			}
@@ -82,20 +82,16 @@ namespace Eto.Serialization.Json
 				{
 					list.Remove(idprop); // replaced with our own.
 
-					// allow for $name or ID.
-					var prop = CreateProperty(propertyInfo, memberSerialization);
-					prop.PropertyName = "$name";
-					prop.PropertyType = typeof(NameConverter.Info);
-					prop.Converter = new NameConverter();
-					prop.ValueProvider = new NameConverter.ValueProvider();
-					list.Add(prop);
-
-					prop = CreateProperty(propertyInfo, memberSerialization);
-					prop.PropertyName = "ID";
-					prop.PropertyType = typeof(NameConverter.Info);
-					prop.Converter = new NameConverter();
-					prop.ValueProvider = new NameConverter.ValueProvider();
-					list.Add(prop);
+					// allow for $name, ID, or Newtonsoft's $id (which it reads itself when it comes first)
+					foreach (var name in new[] { "$name", "ID", "$id" })
+					{
+						var prop = CreateProperty(propertyInfo, memberSerialization);
+						prop.PropertyName = name;
+						prop.PropertyType = typeof(NameConverter.Info);
+						prop.Converter = new NameConverter();
+						prop.ValueProvider = new NameConverter.ValueProvider();
+						list.Add(prop);
+					}
 				}
 			}
 

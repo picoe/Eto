@@ -15,6 +15,22 @@ namespace Eto.Serialization.Json.Converters
 			var store = (PropertyStore)existingValue;
 			var items = JToken.ReadFrom (reader);
 
+			// an object holds keyed resources, e.g. for {StaticResource key}
+			if (items is JObject resources)
+			{
+				var scope = NameScope.Get(serializer);
+				foreach (var resource in resources.Properties())
+				{
+					using (var resourceReader = resource.Value.CreateReader())
+					{
+						var value = serializer.Deserialize(resourceReader, typeof(object));
+						store[resource.Name] = value;
+						scope.AddResource(resource.Name, value);
+					}
+				}
+				return existingValue;
+			}
+
 			foreach (var item in items)
 			{
 				var typeName = (string)item["$type"];
