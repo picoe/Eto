@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -65,6 +67,334 @@ namespace Eto.Windows.Build
 		}
 
 		public static string Format(Guid guid) => guid.ToString("B").ToUpperInvariant();
+	}
+
+	/// <summary>
+	/// Converts license files to RTF, which is all an msi can show. The results are plain ASCII, so they fit any codepage.
+	/// </summary>
+	static class Rtf
+	{
+		const string Header = @"{\rtf1\ansi\ansicpg1252\deff0\uc1{\fonttbl{\f0\fswiss\fcharset0 Segoe UI;}{\f1\fmodern\fcharset0 Consolas;}}{\colortbl;\red160\green160\blue160;}\viewkind4\f0\fs18" + "\n";
+		// the installer's text box doesn't draw paragraph borders, so rules are a line of characters
+		static readonly string Rule = @"\pard\plain\sa120\f0\fs18\cf1 " + string.Concat(Enumerable.Repeat(@"\u9472?", 50)) + "\\par\n";
+		const string Paragraph = @"\pard\plain\sa120\f0\fs18 ";
+
+		static string Escape(string text)
+		{
+			var sb = new StringBuilder();
+			foreach (var c in text)
+			{
+				if (c == '\\' || c == '{' || c == '}')
+					sb.Append('\\').Append(c);
+				else if (c == '\t')
+					sb.Append(@"\tab ");
+				else if (c < 0x80)
+					sb.Append(c);
+				else
+					sb.Append(@"\u").Append((short)c).Append('?');
+			}
+			return sb.ToString();
+		}
+
+		/// <summary>Keeps the file as it is, apart from escaping characters outside ASCII.</summary>
+		public static string FromRtfFile(string path)
+		{
+			var bytes = File.ReadAllBytes(path);
+			var start = bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF ? 3 : 0;
+			var sb = new StringBuilder(bytes.Length);
+			for (int i = start; i < bytes.Length; i++)
+			{
+				var b = bytes[i];
+				if (b < 0x80)
+					sb.Append((char)b);
+				else
+					sb.Append(@"\'").Append(b.ToString("x2"));
+			}
+			return sb.ToString();
+		}
+
+		public static string FromText(string text)
+		{
+			var sb = new StringBuilder(Header);
+			sb.Append(@"\pard\f0\fs18 ");
+			foreach (var line in text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
+				sb.Append(Escape(line)).Append("\\par\n");
+			sb.Append('}');
+			return sb.ToString();
+		}
+
+		static readonly Regex InlinePattern = new Regex(
+			@"\\(?<escaped>[\\`*_{}\[\]()#+\-.!>])"
+			+ @"|`(?<code>[^`]+)`"
+			+ @"|\*\*(?<bold>.+?)\*\*|__(?<bold>.+?)__"
+			+ @"|\*(?!\s)(?<italic>.+?)(?<!\s)\*|(?<![A-Za-z0-9])_(?!\s)(?<italic>.+?)(?<!\s)_(?![A-Za-z0-9])"
+			+ @"|!?\[(?<text>[^\]]*)\]\((?<url>[^)\s]*)(?:\s+""[^""]*"")?\)"
+			+ @"|<(?<autolink>(?:https?://|mailto:)[^>\s]+)>");
+
+		static string Inline(string text)
+		{
+			var sb = new StringBuilder();
+			var index = 0;
+			foreach (Match match in InlinePattern.Matches(text))
+			{
+				sb.Append(Escape(text.Substring(index, match.Index - index)));
+				index = match.Index + match.Length;
+				if (match.Groups["escaped"].Success)
+					sb.Append(Escape(match.Groups["escaped"].Value));
+				else if (match.Groups["code"].Success)
+					sb.Append(@"{\f1 ").Append(Escape(match.Groups["code"].Value)).Append('}');
+				else if (match.Groups["bold"].Success)
+					sb.Append(@"{\b ").Append(Inline(match.Groups["bold"].Value)).Append('}');
+				else if (match.Groups["italic"].Success)
+					sb.Append(@"{\i ").Append(Inline(match.Groups["italic"].Value)).Append('}');
+				else if (match.Groups["autolink"].Success)
+					sb.Append(Escape(match.Groups["autolink"].Value));
+				else
+				{
+					// links can't be clicked in the installer, so show where they go
+					var linkText = match.Groups["text"].Value;
+					var url = match.Groups["url"].Value;
+					sb.Append(Inline(linkText));
+					if (url.Length > 0 && url != linkText && !url.StartsWith("#"))
+						sb.Append(" (").Append(Escape(url)).Append(')');
+				}
+			}
+			sb.Append(Escape(text.Substring(index)));
+			return sb.ToString();
+		}
+
+		/// <summary>Shows headings, paragraphs, lists, quotes, code, rules, bold, italic and links.</summary>
+		public static string FromMarkdown(string markdown)
+		{
+			var sb = new StringBuilder(Header);
+			var lines = new List<string>();
+			string prefix = null; // how the paragraph being collected starts, e.g. its bullet
+			var indent = 0;
+			var quote = false;
+			var inCode = false;
+
+			void Flush()
+			{
+				if (lines.Count == 0)
+					return;
+				sb.Append(Paragraph);
+				var left = indent + (quote ? 360 : 0);
+				if (prefix != null)
+					sb.Append($@"\sa60\fi-300\li{left + 300}\tx{left + 300} ").Append(prefix).Append(@"\tab ");
+				else if (left > 0)
+					sb.Append($@"\li{left} ");
+				if (quote)
+					sb.Append(@"\i ");
+				// a line ending in two spaces or a backslash continues on the next line
+				for (int i = 0; i < lines.Count; i++)
+				{
+					var line = lines[i];
+					var hardBreak = line.EndsWith("  ") || line.EndsWith("\\");
+					sb.Append(Inline(line.TrimEnd(' ', '\\').Trim()));
+					if (i < lines.Count - 1)
+						sb.Append(hardBreak ? @"\line " : " ");
+				}
+				sb.Append("\\par\n");
+				lines.Clear();
+				prefix = null;
+				indent = 0;
+				quote = false;
+			}
+
+			foreach (var raw in markdown.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n'))
+			{
+				var line = raw.Replace("\t", "    ");
+				if (inCode)
+				{
+					if (Regex.IsMatch(line, @"^\s*(```|~~~)"))
+					{
+						inCode = false;
+						// space after the block, like after a paragraph
+						sb.Append(@"\pard\plain\fs12\par").Append('\n');
+					}
+					else
+						sb.Append(@"\pard\plain\li360\f1\fs16 ").Append(Escape(line)).Append("\\par\n");
+					continue;
+				}
+				if (Regex.IsMatch(line, @"^\s*(```|~~~)"))
+				{
+					Flush();
+					inCode = true;
+					continue;
+				}
+				if (line.Trim().Length == 0)
+				{
+					Flush();
+					continue;
+				}
+				Match match;
+				// a line of = or - under a paragraph makes it a heading
+				if (lines.Count > 0 && prefix == null && !quote && (match = Regex.Match(line, @"^\s{0,3}(=+|-+)\s*$")).Success)
+				{
+					var text = string.Join(" ", lines.Select(r => r.Trim()));
+					lines.Clear();
+					AppendHeading(sb, match.Groups[1].Value[0] == '=' ? 1 : 2, text);
+					continue;
+				}
+				if ((match = Regex.Match(line, @"^\s{0,3}(#{1,6})\s+(.*?)(\s+#+)?\s*$")).Success)
+				{
+					Flush();
+					AppendHeading(sb, match.Groups[1].Length, match.Groups[2].Value);
+					continue;
+				}
+				if (Regex.IsMatch(line, @"^\s{0,3}([-*_])(\s*\1){2,}\s*$"))
+				{
+					Flush();
+					sb.Append(Rule);
+					continue;
+				}
+				if ((match = Regex.Match(line, @"^(\s*)([-*+]|\d{1,9}[.)])\s+(.*)$")).Success)
+				{
+					Flush();
+					var marker = match.Groups[2].Value;
+					prefix = char.IsDigit(marker[0]) ? Escape(marker.TrimEnd(')', '.') + ".") : @"\bullet";
+					indent = 360 * (match.Groups[1].Value.Length / 2);
+					lines.Add(match.Groups[3].Value);
+					continue;
+				}
+				if ((match = Regex.Match(line, @"^\s{0,3}>\s?(.*)$")).Success)
+				{
+					if (!quote)
+						Flush();
+					quote = true;
+					if (match.Groups[1].Value.Trim().Length == 0)
+						Flush();
+					else
+						lines.Add(match.Groups[1].Value);
+					continue;
+				}
+				lines.Add(line);
+			}
+			Flush();
+			sb.Append('}');
+			return sb.ToString();
+		}
+
+		static void AppendHeading(StringBuilder sb, int level, string text)
+		{
+			var size = level == 1 ? 28 : level == 2 ? 24 : level == 3 ? 20 : 18;
+			sb.Append($@"\pard\plain\keepn\sb120\sa60\f0\fs{size}\b ").Append(Inline(text.Trim())).Append("\\b0\\par\n");
+		}
+	}
+
+	class InstallerLanguage
+	{
+		public string Culture;
+		public int Lcid;
+		public int Codepage;
+		public readonly Dictionary<string, string> Strings = new Dictionary<string, string>(StringComparer.Ordinal);
+	}
+
+	/// <summary>
+	/// Reads the installers' text in each language from WindowsPackage.strings.xml and any files that change or add to it.
+	/// </summary>
+	static class InstallerStrings
+	{
+		const string Fallback = "en-US";
+
+		/// <summary>The languages to include, with the one shown when Windows' language isn't included first.</summary>
+		public static List<InstallerLanguage> Load(string file, ITaskItem[] extraFiles, string cultures, TaskLoggingHelper log)
+		{
+			var all = new List<InstallerLanguage>();
+			InstallerLanguage Find(string culture) => all.FirstOrDefault(r => string.Equals(r.Culture, culture, StringComparison.OrdinalIgnoreCase));
+
+			void Read(string path)
+			{
+				XDocument document;
+				try
+				{
+					document = XDocument.Load(path);
+				}
+				catch (Exception ex)
+				{
+					log.LogError("Reading {0} failed: {1}", path, ex.Message);
+					return;
+				}
+				foreach (var element in document.Root.Elements("Language"))
+				{
+					var culture = (string)element.Attribute("Culture");
+					if (string.IsNullOrEmpty(culture))
+					{
+						log.LogError("{0} has a Language without a Culture.", path);
+						continue;
+					}
+					var language = Find(culture);
+					if (language == null)
+						all.Add(language = new InstallerLanguage { Culture = culture });
+					if (int.TryParse((string)element.Attribute("Lcid"), out var lcid))
+						language.Lcid = lcid;
+					if (int.TryParse((string)element.Attribute("Codepage"), out var codepage))
+						language.Codepage = codepage;
+					foreach (var text in element.Elements("String"))
+					{
+						var id = (string)text.Attribute("Id");
+						if (!string.IsNullOrEmpty(id))
+							language.Strings[id] = text.Value;
+					}
+				}
+			}
+
+			Read(file);
+			foreach (var item in extraFiles ?? new ITaskItem[0])
+				Read(item.GetMetadata("FullPath"));
+
+			var fallback = Find(Fallback);
+			foreach (var language in all)
+			{
+				if (language.Lcid == 0 || language.Codepage == 0)
+				{
+					try
+					{
+						var info = new CultureInfo(language.Culture);
+						if (language.Lcid == 0)
+							language.Lcid = info.LCID;
+						if (language.Codepage == 0)
+							language.Codepage = info.TextInfo.ANSICodePage;
+					}
+					catch (CultureNotFoundException)
+					{
+					}
+					if (language.Lcid == 0 || language.Lcid == 4096 || language.Codepage == 0)
+						log.LogError("Windows doesn't know the culture {0}, so give its Lcid and Codepage.", language.Culture);
+				}
+				// strings a language doesn't have are shown in English
+				if (fallback != null && language != fallback)
+				{
+					foreach (var text in fallback.Strings)
+					{
+						if (!language.Strings.ContainsKey(text.Key))
+							language.Strings[text.Key] = text.Value;
+					}
+				}
+			}
+
+			var selected = new List<InstallerLanguage>();
+			var names = (cultures ?? string.Empty).Split(';').Select(r => r.Trim()).Where(r => r.Length > 0).ToList();
+			if (names.Count == 0)
+			{
+				if (fallback != null)
+					selected.Add(fallback);
+				selected.AddRange(all.Where(r => r != fallback));
+			}
+			foreach (var name in names)
+			{
+				var language = Find(name);
+				if (language == null)
+					log.LogError("There's no installer text for the language {0}. Add a WindowsPackageStrings file with it.", name);
+				else if (!selected.Contains(language))
+					selected.Add(language);
+			}
+			foreach (var duplicate in selected.GroupBy(r => r.Lcid).Where(r => r.Count() > 1))
+				log.LogError("The languages {0} have the same Lcid, {1}, so the installer can't tell them apart.", string.Join(", ", duplicate.Select(r => r.Culture)), duplicate.Key);
+			if (selected.Count == 0)
+				log.LogError("The installer has no languages to show.");
+			return selected;
+		}
 	}
 
 	/// <summary>
@@ -129,6 +459,12 @@ namespace Eto.Windows.Build
 		[Required]
 		public string MsiName { get; set; }
 		public ITaskItem[] Frameworks { get; set; }
+		[Required]
+		public string StringsFile { get; set; }
+		public ITaskItem[] ExtraStrings { get; set; }
+		/// <summary>Cultures the msi has (from WriteMsiPackage), the first used when Windows' language isn't one of them.</summary>
+		[Required]
+		public string Languages { get; set; }
 
 		static string Literal(string value) => "\"" + (value ?? string.Empty)
 			.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\r", "\\r").Replace("\n", "\\n") + "\"";
@@ -154,6 +490,20 @@ namespace Eto.Windows.Build
 			source.AppendLine($"\t\tpublic const string Architecture = {Literal(Architecture.ToLowerInvariant())};");
 			source.AppendLine($"\t\tpublic const string MsiName = {Literal(MsiName)};");
 			source.AppendLine($"\t\tpublic static readonly string[] Frameworks = {{ {string.Join(", ", frameworks)} }};");
+			// each language's culture, then pairs of id and text
+			source.AppendLine("\t\tpublic static readonly string[][] Languages =");
+			source.AppendLine("\t\t{");
+			foreach (var language in InstallerStrings.Load(StringsFile, ExtraStrings, Languages, Log))
+			{
+				var values = new List<string> { language.Culture };
+				foreach (var text in language.Strings.Where(r => r.Key.StartsWith("Setup", StringComparison.Ordinal) || r.Key == "CancelButton"))
+				{
+					values.Add(text.Key);
+					values.Add(text.Value);
+				}
+				source.AppendLine($"\t\t\tnew[] {{ {string.Join(", ", values.Select(Literal))} }},");
+			}
+			source.AppendLine("\t\t};");
 			source.AppendLine("\t}");
 			source.AppendLine("}");
 			Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
@@ -194,6 +544,15 @@ namespace Eto.Windows.Build
 		/// <summary>.ico for Installed apps; the executable's own icon is used without one.</summary>
 		public string IconFile { get; set; }
 		public bool DesktopShortcut { get; set; }
+		/// <summary>.rtf, .md or .txt file, or http(s) link, to accept in a wizard before installing.</summary>
+		public string License { get; set; }
+		/// <summary>The wizard's text in each language (WindowsPackage.strings.xml).</summary>
+		[Required]
+		public string StringsFile { get; set; }
+		/// <summary>Files in the same format that change the text or add languages.</summary>
+		public ITaskItem[] ExtraStrings { get; set; }
+		/// <summary>Cultures to include, the first used when Windows' language isn't one of them; all when empty.</summary>
+		public string Languages { get; set; }
 		/// <summary>Shared frameworks the app needs (from GetRuntimeFrameworks); installing stops when one is missing.</summary>
 		public ITaskItem[] Frameworks { get; set; }
 		[Required]
@@ -203,6 +562,9 @@ namespace Eto.Windows.Build
 
 		[Output]
 		public string ProductCode { get; set; }
+		/// <summary>Cultures the package can show, with its own first; others are left out when their codepage can't hold the app's name or files.</summary>
+		[Output]
+		public string IncludedLanguages { get; set; }
 
 		class TableDef
 		{
@@ -232,6 +594,13 @@ namespace Eto.Windows.Build
 			new TableDef { Name = "CustomAction", Columns = "`Action` CHAR(72) NOT NULL, `Type` SHORT NOT NULL, `Source` CHAR(72), `Target` CHAR(255), `ExtendedType` LONG", Keys = "`Action`" },
 			new TableDef { Name = "InstallExecuteSequence", Columns = "`Action` CHAR(72) NOT NULL, `Condition` CHAR(255), `Sequence` SHORT", Keys = "`Action`" },
 			new TableDef { Name = "InstallUISequence", Columns = "`Action` CHAR(72) NOT NULL, `Condition` CHAR(255), `Sequence` SHORT", Keys = "`Action`" },
+			new TableDef { Name = "TextStyle", Columns = "`TextStyle` CHAR(72) NOT NULL, `FaceName` CHAR(32) NOT NULL, `Size` SHORT NOT NULL, `Color` LONG, `StyleBits` SHORT", Keys = "`TextStyle`" },
+			new TableDef { Name = "Dialog", Columns = "`Dialog` CHAR(72) NOT NULL, `HCentering` SHORT NOT NULL, `VCentering` SHORT NOT NULL, `Width` SHORT NOT NULL, `Height` SHORT NOT NULL, `Attributes` LONG, `Title` CHAR(128) LOCALIZABLE, `Control_First` CHAR(50) NOT NULL, `Control_Default` CHAR(50), `Control_Cancel` CHAR(50)", Keys = "`Dialog`" },
+			new TableDef { Name = "Control", Columns = "`Dialog_` CHAR(72) NOT NULL, `Control` CHAR(50) NOT NULL, `Type` CHAR(20) NOT NULL, `X` SHORT NOT NULL, `Y` SHORT NOT NULL, `Width` SHORT NOT NULL, `Height` SHORT NOT NULL, `Attributes` LONG, `Property` CHAR(72), `Text` LONGCHAR LOCALIZABLE, `Control_Next` CHAR(50), `Help` CHAR(255) LOCALIZABLE", Keys = "`Dialog_`, `Control`" },
+			new TableDef { Name = "ControlEvent", Columns = "`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Event` CHAR(50) NOT NULL, `Argument` CHAR(255) NOT NULL, `Condition` CHAR(255), `Ordering` SHORT", Keys = "`Dialog_`, `Control_`, `Event`, `Argument`, `Condition`" },
+			new TableDef { Name = "ControlCondition", Columns = "`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Action` CHAR(50) NOT NULL, `Condition` CHAR(255) NOT NULL", Keys = "`Dialog_`, `Control_`, `Action`, `Condition`" },
+			new TableDef { Name = "EventMapping", Columns = "`Dialog_` CHAR(72) NOT NULL, `Control_` CHAR(50) NOT NULL, `Event` CHAR(50) NOT NULL, `Attribute` CHAR(50) NOT NULL", Keys = "`Dialog_`, `Control_`, `Event`" },
+			new TableDef { Name = "CheckBox", Columns = "`Property` CHAR(72) NOT NULL, `Value` CHAR(64)", Keys = "`Property`" },
 		};
 
 		// the file each framework always has, which AppSearch looks for to tell whether it's installed
@@ -290,20 +659,134 @@ namespace Eto.Windows.Build
 			return !Log.HasLoggedErrors;
 		}
 
+		// the same for each language's database
+		string version, architecture, platform, manufacturer, summary;
+		// the language the rows are being built in
+		InstallerLanguage language;
+
+		string T(string id) => language.Strings[id];
+
 		void Write()
 		{
-			var version = WindowsPackageHelper.ProductVersion(Version, Log);
+			version = WindowsPackageHelper.ProductVersion(Version, Log);
+			var languages = InstallerStrings.Load(StringsFile, ExtraStrings, Languages, Log);
 			if (Log.HasLoggedErrors)
 				return;
-			var architecture = Architecture.ToLowerInvariant();
+			architecture = Architecture.ToLowerInvariant();
+			platform = architecture == "x64" ? "x64" : architecture == "arm64" ? "Arm64" : "Intel";
+			ProductCode = WindowsPackageHelper.Format(Guid.NewGuid());
+			manufacturer = string.IsNullOrEmpty(Manufacturer) ? ProductName : Manufacturer;
+			summary = Regex.Replace((Description ?? string.Empty).Trim(), @"(?s)[\r\n].*", "");
+
+			language = languages[0];
+			var sorted = BuildRows();
+			if (sorted == null)
+				return;
+
+			Directory.CreateDirectory(WorkDirectory);
+			var cabinet = CreateCabinet(sorted);
+			if (cabinet == null)
+				return;
+
+			Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(OutputFile)));
+			if (File.Exists(OutputFile))
+				File.Delete(OutputFile);
+			var codepage = ChooseCodepage(language.Codepage);
+			if (codepage == null)
+			{
+				Log.LogWarning("The product name, file names or other text use characters that no single Windows codepage has, so some may not show correctly.");
+				codepage = 1252;
+			}
+			WriteDatabase(OutputFile, codepage.Value);
+
+			// other languages are transforms in the package, which Windows Installer applies to match the user's language
+			var included = new List<InstallerLanguage> { language };
+			var transforms = new List<KeyValuePair<int, string>>();
+			foreach (var other in languages.Skip(1))
+			{
+				language = other;
+				strings.Clear();
+				rows.Clear();
+				shortNames.Clear();
+				BuildRows();
+				var languageCodepage = ChooseCodepage(language.Codepage, onlyPreferred: true);
+				if (languageCodepage == null)
+				{
+					Log.LogWarning("The installer won't show {0}, as its text, or the app's name or files, use characters that codepage {1} doesn't have.", language.Culture, language.Codepage);
+					continue;
+				}
+				var database = Path.Combine(WorkDirectory, language.Lcid + ".msi");
+				var transform = Path.Combine(WorkDirectory, language.Lcid + ".mst");
+				WriteDatabase(database, languageCodepage.Value);
+				Database.GenerateTransform(database, OutputFile, transform);
+				transforms.Add(new KeyValuePair<int, string>(language.Lcid, transform));
+				included.Add(language);
+			}
+
+			using (var db = Database.Open(OutputFile))
+			{
+				db.Execute("INSERT INTO `_Streams` (`Name`, `Data`) VALUES (?, ?)", "app.cab", new StreamValue { Path = cabinet });
+				foreach (var transform in transforms)
+					db.Execute("INSERT INTO `_Storages` (`Name`, `Data`) VALUES (?, ?)", transform.Key.ToString(), new StreamValue { Path = transform.Value });
+				db.SetSummary(new Dictionary<int, object> { { 7, platform + ";" + string.Join(",", included.Select(r => r.Lcid)) } });
+				db.Commit();
+			}
+			IncludedLanguages = string.Join(";", included.Select(r => r.Culture));
+		}
+
+		/// <summary>Creates the database with the rows built so far, without the files.</summary>
+		void WriteDatabase(string path, int codepage)
+		{
+			if (File.Exists(path))
+				File.Delete(path);
+			using (var db = Database.Create(path))
+			{
+				db.SetCodepage(codepage, WorkDirectory);
+				foreach (var table in Tables)
+				{
+					db.Execute($"CREATE TABLE `{table.Name}` ({table.Columns} PRIMARY KEY {table.Keys})");
+					if (!rows.TryGetValue(table.Name, out var tableRows))
+						continue;
+					var columns = Regex.Matches(table.Columns, @"`(\w+)` [A-Z]").Cast<Match>().Select(r => "`" + r.Groups[1].Value + "`").ToList();
+					var query = $"INSERT INTO `{table.Name}` ({string.Join(", ", columns)}) VALUES ({string.Join(", ", columns.Select(r => "?"))})";
+					foreach (var row in tableRows)
+					{
+						if (row.Length != columns.Count)
+							throw new InvalidOperationException($"{table.Name} row has {row.Length} values instead of {columns.Count}.");
+						db.Execute(query, row);
+					}
+				}
+
+				var now = DateTime.Now;
+				db.SetSummary(new Dictionary<int, object>
+				{
+					{ 1, (short)codepage },
+					{ 2, "Installation Database" },
+					{ 3, ProductName },
+					{ 4, manufacturer },
+					{ 5, "Installer" },
+					{ 6, string.IsNullOrEmpty(summary) ? $"This installer database contains the logic and data required to install {ProductName}." : summary },
+					{ 7, platform + ";" + language.Lcid },
+					{ 9, WindowsPackageHelper.Format(Guid.NewGuid()) },
+					{ 12, now },
+					{ 13, now },
+					// Windows Installer 5, which Arm64 packages need
+					{ 14, 500 },
+					// compressed with long file names, and per-user packages don't need admin rights
+					{ 15, PerMachine ? 2 : 2 | 8 },
+					{ 18, "Eto.Forms" },
+					{ 19, 2 },
+				});
+				db.Commit();
+			}
+		}
+
+		/// <summary>Builds every table's rows in the current language, returning the files to install, or null when they can't be.</summary>
+		List<InstallFile> BuildRows()
+		{
 			var is64Bit = architecture != "x86";
-			var platform = architecture == "x64" ? "x64" : architecture == "arm64" ? "Arm64" : "Intel";
 			var upgradeCode = string.IsNullOrEmpty(UpgradeCode) ? WindowsPackageHelper.NameGuid("upgrade:" + AppId) : new Guid(UpgradeCode);
 			var scope = PerMachine ? "perMachine" : "perUser";
-			var productCode = Guid.NewGuid();
-			ProductCode = WindowsPackageHelper.Format(productCode);
-			var manufacturer = string.IsNullOrEmpty(Manufacturer) ? ProductName : Manufacturer;
-			var summary = Regex.Replace((Description ?? string.Empty).Trim(), @"(?s)[\r\n].*", "");
 
 			// directories
 			Add("Directory", "TARGETDIR", null, "SourceDir");
@@ -348,7 +831,7 @@ namespace Eto.Windows.Build
 			if (!files.ContainsKey(mainExecutable))
 			{
 				Log.LogError("The app's executable {0} wasn't published, so there's nothing for the shortcuts to start. Windows packages need UseAppHost to be on.", mainExecutable);
-				return;
+				return null;
 			}
 
 			var directories = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { string.Empty, "INSTALLFOLDER" } };
@@ -399,7 +882,7 @@ namespace Eto.Windows.Build
 			Add("Property", "ProductName", ProductName);
 			Add("Property", "ProductVersion", version);
 			Add("Property", "Manufacturer", manufacturer);
-			Add("Property", "ProductLanguage", "1033");
+			Add("Property", "ProductLanguage", language.Lcid.ToString());
 			Add("Property", "UpgradeCode", WindowsPackageHelper.Format(upgradeCode));
 			Add("Property", "ARPPRODUCTICON", iconName);
 			// there's no UI to change anything with
@@ -414,7 +897,7 @@ namespace Eto.Windows.Build
 			// a newer build replaces any older one (or another build of this version), but not a newer one
 			Add("Upgrade", WindowsPackageHelper.Format(upgradeCode), null, version, null, 512 /* VersionMaxInclusive */, null, "OLDERVERSIONFOUND");
 			Add("Upgrade", WindowsPackageHelper.Format(upgradeCode), version, null, null, 2 /* OnlyDetect */, null, "NEWERVERSIONFOUND");
-			Add("LaunchCondition", "Installed OR NOT NEWERVERSIONFOUND", "A newer version of [ProductName] is already installed.");
+			Add("LaunchCondition", "Installed OR NOT NEWERVERSIONFOUND", T("NewerVersion"));
 			var secureProperties = new List<string> { "OLDERVERSIONFOUND", "NEWERVERSIONFOUND" };
 
 			// stop when a runtime the app needs is missing, instead of installing an app that can't start
@@ -453,8 +936,10 @@ namespace Eto.Windows.Build
 					condition = $"Installed OR {property}X64 OR ({property} AND NOT (NATIVEARCHITECTURE ~= \"ARM64\"))";
 				}
 				var name = FrameworkNames.TryGetValue(framework.ItemSpec, out var n) ? n : framework.ItemSpec;
-				Add("LaunchCondition", condition,
-					EscapeFormatted($"{ProductName} needs the {name} {frameworkVersion.Major}.{Math.Max(0, frameworkVersion.Minor)} ({architecture}). Install it from https://dotnet.microsoft.com/download/dotnet/{frameworkVersion.Major}.{Math.Max(0, frameworkVersion.Minor)} and run this installer again."));
+				var runtimeVersion = $"{frameworkVersion.Major}.{Math.Max(0, frameworkVersion.Minor)}";
+				Add("LaunchCondition", condition, string.Format(T("RuntimeMissing"),
+					EscapeFormatted($"{name} {runtimeVersion} ({architecture})"),
+					EscapeFormatted($"https://dotnet.microsoft.com/download/dotnet/{runtimeVersion}")));
 			}
 			Add("Property", "SecureCustomProperties", string.Join(";", secureProperties));
 
@@ -489,7 +974,7 @@ namespace Eto.Windows.Build
 			Execute("PublishProduct", 6400);
 			Execute("InstallFinalize", 6600);
 
-			void UI(string action, int sequence) => Add("InstallUISequence", action, null, sequence);
+			void UI(string action, int sequence, string condition = null) => Add("InstallUISequence", action, condition, sequence);
 			UI("FindRelatedProducts", 25);
 			UI("AppSearch", 50);
 			UI("LaunchConditions", 100);
@@ -500,57 +985,127 @@ namespace Eto.Windows.Build
 			UI("MigrateFeatureStates", 1200);
 			UI("ExecuteAction", 1300);
 
-			Directory.CreateDirectory(WorkDirectory);
-			var cabinet = CreateCabinet(sorted);
-			if (cabinet == null)
-				return;
+			if (!AddWizard(main.DirectoryKey))
+				return null;
+			UI("FirstDialog", 1250, "NOT Installed");
+			UI("ProgressDialog", 1280);
+			UI("ExitDialog", -1);
+			UI("UserExitDialog", -2);
+			UI("FatalErrorDialog", -3);
+			return sorted;
+		}
 
-			Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(OutputFile)));
-			if (File.Exists(OutputFile))
-				File.Delete(OutputFile);
+		/// <summary>Adds a wizard that welcomes or asks to accept the license, then shows progress and the result.</summary>
+		bool AddWizard(string mainDirectory)
+		{
+			const int Visible = 1, Enabled = 2, Sunken = 4, NoPrefix = 0x20000, Progress95 = 0x10000, ElevationShield = 0x800000;
+			const int Modal = 2, Minimize = 4;
+			// text that isn't enabled is drawn greyed out
+			const int Label = Visible | Enabled | NoPrefix, Button = Visible | Enabled;
+			const int Width = 370, Height = 270;
 
-			var codepage = ChooseCodepage();
-			using (var db = Database.Create(OutputFile))
+			string licenseText = null, licenseUrl = null;
+			if (!string.IsNullOrEmpty(License) && Regex.IsMatch(License, "^https?://", RegexOptions.IgnoreCase))
+				licenseUrl = License;
+			else if (!string.IsNullOrEmpty(License))
 			{
-				db.SetCodepage(codepage, WorkDirectory);
-				foreach (var table in Tables)
+				if (!File.Exists(License))
 				{
-					db.Execute($"CREATE TABLE `{table.Name}` ({table.Columns} PRIMARY KEY {table.Keys})");
-					if (!rows.TryGetValue(table.Name, out var tableRows))
-						continue;
-					var columns = Regex.Matches(table.Columns, @"`(\w+)` [A-Z]").Cast<Match>().Select(r => "`" + r.Groups[1].Value + "`").ToList();
-					var query = $"INSERT INTO `{table.Name}` ({string.Join(", ", columns)}) VALUES ({string.Join(", ", columns.Select(r => "?"))})";
-					foreach (var row in tableRows)
-					{
-						if (row.Length != columns.Count)
-							throw new InvalidOperationException($"{table.Name} row has {row.Length} values instead of {columns.Count}.");
-						db.Execute(query, row);
-					}
+					Log.LogError("The license file {0} doesn't exist.", License);
+					return false;
 				}
-				db.Execute("INSERT INTO `_Streams` (`Name`, `Data`) VALUES (?, ?)", "app.cab", new StreamValue { Path = cabinet });
-
-				var now = DateTime.Now;
-				db.SetSummary(new Dictionary<int, object>
-				{
-					{ 1, (short)codepage },
-					{ 2, "Installation Database" },
-					{ 3, ProductName },
-					{ 4, manufacturer },
-					{ 5, "Installer" },
-					{ 6, string.IsNullOrEmpty(summary) ? $"This installer database contains the logic and data required to install {ProductName}." : summary },
-					{ 7, platform + ";1033" },
-					{ 9, WindowsPackageHelper.Format(Guid.NewGuid()) },
-					{ 12, now },
-					{ 13, now },
-					// Windows Installer 5, which Arm64 packages need
-					{ 14, 500 },
-					// compressed with long file names, and per-user packages don't need admin rights
-					{ 15, PerMachine ? 2 : 2 | 8 },
-					{ 18, "Eto.Forms" },
-					{ 19, 2 },
-				});
-				db.Commit();
+				var extension = Path.GetExtension(License).ToLowerInvariant();
+				if (extension == ".rtf")
+					licenseText = Rtf.FromRtfFile(License);
+				else if (extension == ".md" || extension == ".markdown")
+					licenseText = Rtf.FromMarkdown(File.ReadAllText(License));
+				else
+					licenseText = Rtf.FromText(File.ReadAllText(License));
 			}
+
+			Add("TextStyle", "EtoNormal", "Segoe UI", 9, null, 0);
+			Add("TextStyle", "EtoTitle", "Segoe UI", 12, null, 1 /* bold */);
+			Add("Property", "DefaultUIFont", "EtoNormal");
+			Add("CheckBox", "LicenseAccepted", "1");
+			Add("CheckBox", "LAUNCHAPP", "1");
+			Add("Property", "LAUNCHAPP", "1");
+			// started from the wizard's own process, so per-machine installs don't start it as administrator
+			Add("CustomAction", "LaunchApp", 34 | 192 /* exe in a folder, don't wait */, mainDirectory, "\"[#MainExecutable]\"", null);
+
+			void Dialog(string name, int attributes, string first, string defaultControl, string cancel, int width = Width, int height = Height)
+				=> Add("Dialog", name, 50, 50, width, height, attributes, T("SetupTitle"), first, defaultControl, cancel);
+			void Control(string dialog, string name, string type, int x, int y, int width, int height, int attributes, string text = null, string next = null, string property = null)
+				=> Add("Control", dialog, name, type, x, y, width, height, attributes, property, text, next, null);
+			void Event(string dialog, string control, string name, string argument, string condition = "1", int ordering = 1)
+				=> Add("ControlEvent", dialog, control, name, argument, condition, ordering);
+			void Header(string dialog, string title, string description)
+			{
+				Control(dialog, "Title", "Text", 15, 10, 340, 20, Label, "{\\EtoTitle}" + title);
+				if (description != null)
+					Control(dialog, "Description", "Text", 15, 31, 340, 26, Label, description);
+				Control(dialog, "HeaderLine", "Line", 0, 60, Width, 0, Visible);
+				Control(dialog, "FooterLine", "Line", 0, 234, Width, 0, Visible);
+			}
+
+			// welcome, or the license to accept, before installing
+			var hasLicense = licenseText != null || licenseUrl != null;
+			var first = licenseText != null ? "License" : licenseUrl != null ? "Link" : "Install";
+			Dialog("FirstDialog", Visible | Modal | Minimize, first, "Install", "Cancel");
+			if (!hasLicense)
+				Header("FirstDialog", T("WelcomeTitle"), T("WelcomeText"));
+			else
+			{
+				Header("FirstDialog", T("LicenseTitle"), T("LicenseText"));
+				if (licenseText != null)
+					Control("FirstDialog", "License", "ScrollableText", 15, 67, 340, 141, Visible | Enabled | Sunken, licenseText, "Accept");
+				else
+				{
+					Control("FirstDialog", "LinkLabel", "Text", 15, 70, 340, 15, Label, T("LicenseLink"));
+					Control("FirstDialog", "Link", "Hyperlink", 15, 88, 340, 15, Visible | Enabled, $"<a href=\"{licenseUrl}\">{licenseUrl}</a>", "Accept");
+				}
+				Control("FirstDialog", "Accept", "CheckBox", 15, 213, 340, 15, Button, T("LicenseAccept"), "Install", "LicenseAccepted");
+				Add("ControlCondition", "FirstDialog", "Install", "Disable", "LicenseAccepted <> \"1\"");
+				Add("ControlCondition", "FirstDialog", "Install", "Enable", "LicenseAccepted = \"1\"");
+			}
+			// per-machine installs ask to run as administrator after this
+			Control("FirstDialog", "Install", "PushButton", 232, 243, 60, 17, Button | (PerMachine ? ElevationShield : 0), T("InstallButton"), "Cancel");
+			Control("FirstDialog", "Cancel", "PushButton", 299, 243, 60, 17, Button, T("CancelButton"), first);
+			Event("FirstDialog", "Install", "EndDialog", "Return", hasLicense ? "LicenseAccepted = \"1\"" : "1");
+			Event("FirstDialog", "Cancel", "SpawnDialog", "CancelDialog");
+
+			// shown while the files are installed, and closed by the installer when done
+			Dialog("ProgressDialog", Visible | Minimize, "Cancel", null, "Cancel");
+			Header("ProgressDialog", T("ProgressTitle"), T("ProgressText"));
+			Control("ProgressDialog", "Action", "Text", 15, 70, 340, 15, Label);
+			Control("ProgressDialog", "Progress", "ProgressBar", 15, 90, 340, 12, Visible | Progress95, "Progress done");
+			Control("ProgressDialog", "Cancel", "PushButton", 299, 243, 60, 17, Button, T("CancelButton"));
+			Event("ProgressDialog", "Cancel", "SpawnDialog", "CancelDialog");
+			Add("EventMapping", "ProgressDialog", "Action", "ActionText", "Text");
+			Add("EventMapping", "ProgressDialog", "Progress", "SetProgress", "Progress");
+
+			Dialog("CancelDialog", Visible | Modal, "No", "No", "No", 260, 85);
+			Control("CancelDialog", "Text", "Text", 15, 15, 230, 30, Label, T("CancelQuestion"));
+			Control("CancelDialog", "Yes", "PushButton", 128, 57, 56, 17, Button, T("YesButton"), "No");
+			Control("CancelDialog", "No", "PushButton", 192, 57, 56, 17, Button, T("NoButton"), "Yes");
+			Event("CancelDialog", "Yes", "EndDialog", "Exit");
+			Event("CancelDialog", "No", "EndDialog", "Return");
+
+			void Finished(string dialog, string title, string description, string result, bool launch = false)
+			{
+				Dialog(dialog, Visible | Modal | Minimize, launch ? "Launch" : "Finish", "Finish", "Finish");
+				Header(dialog, title, description);
+				if (launch)
+				{
+					Control(dialog, "Launch", "CheckBox", 15, 70, 340, 15, Button, T("LaunchApp"), "Finish", "LAUNCHAPP");
+					Event(dialog, "Finish", "DoAction", "LaunchApp", "LAUNCHAPP = \"1\" AND NOT REMOVE ~= \"ALL\"", 1);
+				}
+				Control(dialog, "Finish", "PushButton", 299, 243, 60, 17, Button, T("FinishButton"), launch ? "Launch" : null);
+				Event(dialog, "Finish", "EndDialog", result, "1", 2);
+			}
+			Finished("ExitDialog", T("ExitTitle"), T("ExitText"), "Return", true);
+			Finished("UserExitDialog", T("UserExitTitle"), T("UserExitText"), "Exit");
+			Finished("FatalErrorDialog", T("FatalErrorTitle"), T("FatalErrorText"), "Exit");
+			return true;
 		}
 
 		string CreateCabinet(List<InstallFile> files)
@@ -642,7 +1197,8 @@ namespace Eto.Windows.Build
 			}
 		}
 
-		int ChooseCodepage()
+		/// <summary>The preferred codepage, or another with every character the package uses; null when none has them all.</summary>
+		int? ChooseCodepage(int preferred, bool onlyPreferred = false)
 		{
 			// strings are stored in the database's codepage, so pick one that has every character the package uses
 			try
@@ -655,7 +1211,8 @@ namespace Eto.Windows.Build
 			{
 			}
 			var text = string.Concat(strings.Where(r => r != null));
-			foreach (var codepage in new[] { 1252, 1250, 1251, 1253, 1254, 1255, 1256, 1257, 1258, 874, 932, 936, 949, 950 })
+			var candidates = onlyPreferred ? new[] { preferred } : new[] { preferred, 1252, 1250, 1251, 1253, 1254, 1255, 1256, 1257, 1258, 874, 932, 936, 949, 950 };
+			foreach (var codepage in candidates)
 			{
 				try
 				{
@@ -667,8 +1224,7 @@ namespace Eto.Windows.Build
 				{
 				}
 			}
-			Log.LogWarning("The product name, file names or other text use characters that no single Windows codepage has, so some may not show correctly.");
-			return 1252;
+			return null;
 		}
 
 		class Database : IDisposable
@@ -679,6 +1235,26 @@ namespace Eto.Windows.Build
 			{
 				Check(MsiOpenDatabaseW(path, (IntPtr)3 /* MSIDBOPEN_CREATE */, out var handle), "creating the database");
 				return new Database { handle = handle };
+			}
+
+			public static Database Open(string path, bool readOnly = false)
+			{
+				Check(MsiOpenDatabaseW(path, (IntPtr)(readOnly ? 0 /* MSIDBOPEN_READONLY */ : 1 /* MSIDBOPEN_TRANSACT */), out var handle), "opening the database");
+				return new Database { handle = handle };
+			}
+
+			/// <summary>Writes the changes that turn reference into database, which may use another codepage.</summary>
+			public static void GenerateTransform(string database, string reference, string transform)
+			{
+				if (File.Exists(transform))
+					File.Delete(transform);
+				using (var changed = Open(database, true))
+				using (var original = Open(reference, true))
+				{
+					Check(MsiDatabaseGenerateTransformW(changed.handle, original.handle, transform, 0, 0), "creating the language transform");
+					// a language transform changes the codepage, which is an error unless it's allowed
+					Check(MsiCreateTransformSummaryInfoW(changed.handle, original.handle, transform, 0x20 /* MSITRANSFORM_ERROR_CHANGECODEPAGE */, 0), "creating the language transform");
+				}
 			}
 
 			public void SetCodepage(int codepage, string folder)
@@ -819,6 +1395,10 @@ namespace Eto.Windows.Build
 			static extern uint MsiDatabaseCommit(uint hDatabase);
 			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
 			static extern uint MsiDatabaseImportW(uint hDatabase, string szFolderPath, string szFileName);
+			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+			static extern uint MsiDatabaseGenerateTransformW(uint hDatabase, uint hDatabaseReference, string szTransformFile, int iReserved1, int iReserved2);
+			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+			static extern uint MsiCreateTransformSummaryInfoW(uint hDatabase, uint hDatabaseReference, string szTransformFile, int iErrorConditions, int iValidation);
 			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
 			static extern uint MsiGetSummaryInformationW(uint hDatabase, string szDatabasePath, uint uiUpdateCount, out uint phSummaryInfo);
 			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]

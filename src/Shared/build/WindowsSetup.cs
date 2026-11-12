@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -24,7 +25,51 @@ namespace Eto.Setup
 		const int ErrorCancelled = 1602;
 		const int ErrorFailed = 1603;
 
-		internal static string Caption { get { return SetupInfo.Title + " Setup"; } }
+		internal static string Caption { get { return T("SetupTitle"); } }
+
+		static Dictionary<string, string> strings;
+
+		/// <summary>Text in Windows' language, or the msi's own when it doesn't have that one.</summary>
+		internal static string T(string id)
+		{
+			if (strings == null)
+			{
+				strings = new Dictionary<string, string>();
+				var language = FindLanguage(CultureInfo.CurrentUICulture) ?? SetupInfo.Languages[0];
+				for (int i = 1; i + 1 < language.Length; i += 2)
+					strings[language[i]] = language[i + 1];
+			}
+			string value;
+			if (!strings.TryGetValue(id, out value))
+				value = id;
+			return value.Replace("[ProductName]", SetupInfo.Title);
+		}
+
+		static string[] FindLanguage(CultureInfo ui)
+		{
+			// the culture itself, then its parents, so de-AT uses de-DE and zh-HK uses zh-TW
+			for (var culture = ui; !string.IsNullOrEmpty(culture.Name); culture = culture.Parent)
+			{
+				foreach (var language in SetupInfo.Languages)
+				{
+					CultureInfo candidate;
+					try
+					{
+						candidate = new CultureInfo(language[0]);
+					}
+					catch (ArgumentException)
+					{
+						continue;
+					}
+					for (; !string.IsNullOrEmpty(candidate.Name); candidate = candidate.Parent)
+					{
+						if (string.Equals(candidate.Name, culture.Name, StringComparison.OrdinalIgnoreCase))
+							return language;
+					}
+				}
+			}
+			return null;
+		}
 
 		[STAThread]
 		static int Main(string[] args)
@@ -77,7 +122,7 @@ namespace Eto.Setup
 				var names = string.Empty;
 				foreach (var framework in missing)
 					names += "\n" + framework.GetDisplayName(arch);
-				var message = string.Format("{0} needs the following to run, which will now be downloaded from Microsoft and installed:\n{1}", SetupInfo.Title, names);
+				var message = T("SetupRuntimeDownload") + "\n" + names;
 				if (MessageBox.Show(message, Caption, MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
 					return false;
 			}
@@ -88,7 +133,7 @@ namespace Eto.Setup
 			{
 				var url = framework.GetDownloadUrl(arch);
 				if (url == null)
-					throw new InvalidOperationException(string.Format("{0} needs {1}, which has to be installed separately.", SetupInfo.Title, framework.GetDisplayName(arch)));
+					throw new InvalidOperationException(string.Format(T("SetupRuntimeUnsupported"), framework.GetDisplayName(arch)));
 
 				var file = Path.Combine(Path.GetTempPath(), "EtoSetup-" + Guid.NewGuid().ToString("N") + ".exe");
 				try
@@ -98,10 +143,10 @@ namespace Eto.Setup
 						using (var client = new WebClient())
 							client.DownloadFile(url, file);
 					}
-					else if (!DownloadForm.Download(url, file, string.Format("Downloading {0}...", framework.GetDisplayName(arch))))
+					else if (!DownloadForm.Download(url, file, string.Format(T("SetupDownloading"), framework.GetDisplayName(arch))))
 						return false;
 
-					VerifyMicrosoftSignature(file);
+					VerifyMicrosoftSignature(file, framework.GetDisplayName(arch));
 
 					var start = new ProcessStartInfo(file, quiet ? "/install /quiet /norestart" : "/install /passive /norestart") { UseShellExecute = true };
 					Process process;
@@ -124,7 +169,7 @@ namespace Eto.Setup
 							return false;
 						// 3010 and 1641 ask for a restart, which can wait until the app is installed too
 						if (code != 0 && code != 3010 && code != 1641 && code != 1638)
-							throw new InvalidOperationException(string.Format("Installing {0} failed with error {1}.", framework.GetDisplayName(arch), code));
+							throw new InvalidOperationException(string.Format(T("SetupRuntimeFailed"), framework.GetDisplayName(arch), code));
 					}
 				}
 				finally
@@ -141,7 +186,7 @@ namespace Eto.Setup
 
 			missing = GetMissingFrameworks();
 			if (missing.Count > 0)
-				throw new InvalidOperationException(string.Format("{0} was installed, but still can't be found.", missing[0].GetDisplayName(arch)));
+				throw new InvalidOperationException(string.Format(T("SetupRuntimeNotFound"), missing[0].GetDisplayName(arch)));
 			return true;
 		}
 
@@ -156,6 +201,7 @@ namespace Eto.Setup
 				using (var file = File.Create(msi))
 					resource.CopyTo(file);
 
+				// Windows Installer applies the msi's transform for Windows' language itself, and fails if it's also given
 				var start = new ProcessStartInfo(Path.Combine(Environment.SystemDirectory, "msiexec.exe"), "/i \"" + msi + "\" " + GetArguments()) { UseShellExecute = false };
 				using (var process = Process.Start(start))
 				{
@@ -262,14 +308,14 @@ namespace Eto.Setup
 			return string.Equals(arch, "AMD64", StringComparison.OrdinalIgnoreCase) ? "x64" : string.Equals(arch, "ARM64", StringComparison.OrdinalIgnoreCase) ? "arm64" : "x86";
 		}
 
-		static void VerifyMicrosoftSignature(string file)
+		static void VerifyMicrosoftSignature(string file, string name)
 		{
 			var error = WinTrust.Verify(file);
 			if (error != 0)
-				throw new InvalidOperationException(string.Format("The downloaded runtime installer isn't signed correctly (error 0x{0:X8}), so it wasn't run.", error));
+				throw new InvalidOperationException(string.Format(T("SetupNotSigned"), name, "0x" + error.ToString("X8")));
 			var certificate = X509Certificate.CreateFromSignedFile(file);
 			if (certificate.Subject.IndexOf("O=Microsoft Corporation", StringComparison.OrdinalIgnoreCase) < 0)
-				throw new InvalidOperationException("The downloaded runtime installer isn't signed by Microsoft, so it wasn't run.");
+				throw new InvalidOperationException(string.Format(T("SetupNotMicrosoft"), name));
 		}
 
 		[DllImport("kernel32.dll", SetLastError = true)]
@@ -342,7 +388,7 @@ namespace Eto.Setup
 				form.Shown += delegate { form.client.DownloadFileAsync(new Uri(url), file); };
 				form.ShowDialog();
 				if (form.error != null)
-					throw new InvalidOperationException("Downloading " + url + " failed: " + form.error.Message, form.error);
+					throw new InvalidOperationException(string.Format(Program.T("SetupDownloadFailed"), url, form.error.Message), form.error);
 				return form.completed;
 			}
 		}
@@ -366,7 +412,7 @@ namespace Eto.Setup
 
 			var label = new Label { Text = text, Location = new Point(12, 12), AutoSize = true };
 			progress = new ProgressBar { Location = new Point(12, 40), Size = new Size(376, 20) };
-			var cancel = new Button { Text = "Cancel", Location = new Point(313, 74), Size = new Size(75, 24) };
+			var cancel = new Button { Text = Program.T("CancelButton"), Location = new Point(313, 74), Size = new Size(75, 24) };
 			cancel.Click += delegate { Close(); };
 			Controls.Add(label);
 			Controls.Add(progress);

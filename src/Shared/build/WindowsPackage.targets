@@ -4,8 +4,9 @@
     Creates Windows installers for the app, enabled by setting WindowsPackageFormats.
 
     Formats:
-      msi    Windows Installer package. Installs with a progress bar, adds a Start menu shortcut and an entry
-             in Installed apps, and replaces any older version. Stops if the .NET runtime the app needs is missing.
+      msi    Windows Installer package. Installs with a wizard that can show a license and launch the app when done,
+             adds a Start menu shortcut and an entry in Installed apps, and replaces any older version.
+             Stops if the .NET runtime the app needs is missing.
       setup  Setup.exe that downloads and installs the .NET runtime the app needs when it's missing, then
              installs the msi it contains. Arguments are passed on to msiexec, e.g. /quiet.
 
@@ -43,6 +44,12 @@
     <WindowsPackageInstallFolder Condition="'$(WindowsPackageInstallFolder)' == ''"></WindowsPackageInstallFolder>
     <!-- Add a desktop shortcut as well as the Start menu one -->
     <WindowsPackageDesktopShortcut Condition="'$(WindowsPackageDesktopShortcut)' == ''">False</WindowsPackageDesktopShortcut>
+    <!-- License to accept in the msi's wizard before installing: a .rtf, .md or .txt file, or an http(s) link to one.
+         /quiet and /passive installs skip the wizard -->
+    <WindowsPackageLicense Condition="'$(WindowsPackageLicense)' == ''"></WindowsPackageLicense>
+    <!-- Cultures the installers come in, e.g. en-US;de-DE;ja-JP, shown in Windows' display language.
+         The first is used for other languages. Defaults to all in WindowsPackage.strings.xml, with en-US first -->
+    <WindowsPackageLanguages Condition="'$(WindowsPackageLanguages)' == ''"></WindowsPackageLanguages>
     <!-- Where the installers are created. Defaults to the build output folder -->
     <WindowsPackageOutputPath Condition="'$(WindowsPackageOutputPath)' == ''"></WindowsPackageOutputPath>
     <!-- Include .pdb files in the installers -->
@@ -92,6 +99,8 @@
       and defaults to the file's RecursiveDir and name.
     WindowsPackageSignFile: Other published files to sign, relative to the install folder (no wildcards),
       e.g. your own libraries.
+    WindowsPackageStrings: Files in the format of WindowsPackage.strings.xml that change the installers' text
+      or add languages.
   -->
   <ItemGroup>
     <AvailableItemName Include="WindowsPackageContent" />
@@ -267,7 +276,11 @@
     </GetRuntimeFrameworks>
     <PropertyGroup>
       <_WindowsIconFile Condition="'$(WindowsIcon)' != '' AND $(WindowsIcon.ToLowerInvariant().EndsWith('.ico'))">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsIcon)'))</_WindowsIconFile>
+      <_WindowsLicense>$(WindowsPackageLicense.Trim())</_WindowsLicense>
+      <_WindowsLicenseIsUrl Condition="$(_WindowsLicense.ToLowerInvariant().StartsWith('http://')) OR $(_WindowsLicense.ToLowerInvariant().StartsWith('https://'))">True</_WindowsLicenseIsUrl>
+      <_WindowsLicense Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(_WindowsLicense)'))</_WindowsLicense>
     </PropertyGroup>
+    <Error Text="The license file $(_WindowsLicense) doesn't exist." Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True' AND !Exists('$(_WindowsLicense)')" />
     <ItemGroup>
       <_WindowsCheckFramework Include="@(_WindowsFramework)" Condition="'$(WindowsPackageCheckRuntime)' == 'True'" />
     </ItemGroup>
@@ -285,9 +298,15 @@
                      Architecture="$(_WindowsArch)"
                      IconFile="$(_WindowsIconFile)"
                      DesktopShortcut="$(WindowsPackageDesktopShortcut)"
+                     License="$(_WindowsLicense)"
+                     StringsFile="$(MSBuildThisFileDirectory)WindowsPackage.strings.xml"
+                     ExtraStrings="@(WindowsPackageStrings)"
+                     Languages="$(WindowsPackageLanguages)"
                      Frameworks="@(_WindowsCheckFramework)"
                      OutputFile="$(_WindowsMsiFile)"
-                     WorkDirectory="$(_WindowsWorkPath)msi" />
+                     WorkDirectory="$(_WindowsWorkPath)msi">
+      <Output TaskParameter="IncludedLanguages" PropertyName="_WindowsIncludedLanguages" />
+    </WriteMsiPackage>
     <Exec Condition="'$(_WindowsSign)' == 'True'" Command="$(_WindowsSignCommand) &quot;$(_WindowsMsiFile)&quot;" EchoOff="True" StandardOutputImportance="low" />
     <Message Text="$(MSBuildProjectName) -> $(_WindowsMsiFile)" Importance="high" Condition="'$(_WindowsBuildMsi)' == 'True'" />
   </Target>
@@ -308,7 +327,10 @@
                     InformationalVersion="$(InformationalVersion)"
                     Architecture="$(_WindowsArch)"
                     MsiName="$([System.IO.Path]::GetFileName('$(_WindowsMsiFile)'))"
-                    Frameworks="@(_WindowsFramework)" />
+                    Frameworks="@(_WindowsFramework)"
+                    StringsFile="$(MSBuildThisFileDirectory)WindowsPackage.strings.xml"
+                    ExtraStrings="@(WindowsPackageStrings)"
+                    Languages="$(_WindowsIncludedLanguages)" />
     <Delete Files="$(_WindowsSetupFile)" />
     <Exec Command="&quot;$(_WindowsCsc)&quot; /nologo /noconfig /target:winexe /platform:anycpu /optimize+ /utf8output /out:&quot;$(_WindowsSetupFile)&quot; /win32manifest:&quot;$(MSBuildThisFileDirectory)WindowsSetup.manifest&quot; $(_WindowsSetupIcon) /resource:&quot;$(_WindowsMsiFile)&quot;,Setup.msi /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll &quot;$(MSBuildThisFileDirectory)WindowsSetup.cs&quot; &quot;$(_WindowsSetupPath)SetupInfo.cs&quot;"
           StandardOutputImportance="low" />
