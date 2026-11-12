@@ -30,9 +30,9 @@ In order to run your Eto.Forms based application, you must also install one (or 
 - Eto.Platform.Mac64
 - Eto.Platform.MacOS
 
-To get more information about how to get started, read the wiki:
+To get more information about how to get started, read the documentation:
 
-https://github.com/picoe/Eto/wiki
+https://eto.picoe.ca
     </PackageDescription>
   </PropertyGroup>
   <ItemGroup>
