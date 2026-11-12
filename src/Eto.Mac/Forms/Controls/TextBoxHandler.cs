@@ -74,6 +74,33 @@ namespace Eto.Mac.Forms.Controls
 			var point = editor.ConvertPointFromView(location.ToNS(), control);
 			return (int)Messaging.nuint_objc_msgSend_CGPoint(editor.Handle, characterIndexForInsertionAtPointSelector, point);
 		}
+
+		// the field editor's default; text starts this far inside the cell's text area
+		const float DefaultLineFragmentPadding = 2;
+
+		public static PaddingF GetTextInset(NSTextField control)
+		{
+			var bounds = control.Bounds;
+			// not laid out yet, so measure against the cell's natural size as the inset doesn't depend on it
+			if (bounds.Width <= 0 || bounds.Height <= 0)
+				bounds = new CGRect(CGPoint.Empty, control.Cell.CellSize);
+
+			var text = control.Cell is NSSearchFieldCell searchCell
+				? searchCell.SearchTextRectForBounds(bounds)
+				: control.Cell.TitleRectForBounds(bounds);
+
+			var editor = control.CurrentEditor as NSTextView;
+			var padding = editor?.TextContainer?.LineFragmentPadding ?? DefaultLineFragmentPadding;
+
+			var top = control.IsFlipped ? text.Y - bounds.Y : bounds.GetMaxY() - text.GetMaxY();
+			var bottom = bounds.Height - text.Height - top;
+			return new PaddingF(
+				(float)(text.X - bounds.X + padding),
+				(float)top,
+				(float)(bounds.GetMaxX() - text.GetMaxX() + padding),
+				(float)bottom
+			);
+		}
 	}
 
 	public class EtoTextFieldCell : NSTextFieldCell, IColorizeCell
@@ -314,6 +341,8 @@ namespace Eto.Mac.Forms.Controls
 		{
 			return MacTextHitTest.GetCharacterIndex(Control, location);
 		}
+
+		public PaddingF TextInset => MacTextHitTest.GetTextInset(Control);
 
 		TextBox.ICallback IMacTextBoxHandler.Callback => Callback;
 

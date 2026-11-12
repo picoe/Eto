@@ -87,6 +87,22 @@ public class TextBoxHandler : WinUIControl<muc.TextBox, TextBox, TextBox.ICallba
 		return Math.Abs(location.X - GetInsertionX(left)) <= Math.Abs(GetInsertionX(right) - location.X) ? left : right;
 	}
 
+	// the text is laid out inside the border and padding of the default template
+	public PaddingF TextInset
+	{
+		get
+		{
+			var border = Control.BorderThickness;
+			var padding = Control.Padding;
+			return new PaddingF(
+				(float)(border.Left + padding.Left),
+				(float)(border.Top + padding.Top),
+				(float)(border.Right + padding.Right),
+				(float)(border.Bottom + padding.Bottom)
+			);
+		}
+	}
+
 	public void SelectAll() => Control.SelectAll();
 
 	double GetInsertionX(int index)

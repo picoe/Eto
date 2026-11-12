@@ -91,6 +91,46 @@ namespace Eto.Wpf.Forms.Controls
 
 		public int GetCharacterIndex(PointF location) => TextBox.GetCharacterIndexFromPoint(location.ToWpf(), true);
 
+		// WPF's text view keeps this much space either side of the text, inside the content host
+		const double DefaultTextViewPadding = 2;
+
+		public PaddingF TextInset
+		{
+			get
+			{
+				var textBox = TextBox;
+				var host = textBox.Template?.FindName("PART_ContentHost", textBox) as sw.FrameworkElement;
+				if (textBox.IsLoaded && host != null && host.IsArrangeValid && Control.IsArrangeValid)
+				{
+					// where the caret sits before the first character, ignoring any scrolling
+					var caret = textBox.GetRectFromCharacterIndex(0);
+					if (!caret.IsEmpty)
+					{
+						var start = textBox.TranslatePoint(new sw.Point(caret.X + textBox.HorizontalOffset, caret.Y + textBox.VerticalOffset), Control);
+						var hostLeft = host.TranslatePoint(new sw.Point(0, 0), Control).X;
+						var hostRight = hostLeft + host.ActualWidth;
+						var inner = start.X - hostLeft;
+						return new PaddingF(
+							(float)start.X,
+							(float)start.Y,
+							(float)(Control.ActualWidth - hostRight + inner),
+							(float)(Control.ActualHeight - start.Y - caret.Height)
+						);
+					}
+				}
+
+				// not laid out yet, so estimate from the border and padding
+				var border = textBox.BorderThickness;
+				var padding = textBox.Padding;
+				return new PaddingF(
+					(float)(border.Left + padding.Left + DefaultTextViewPadding),
+					(float)(border.Top + padding.Top),
+					(float)(border.Right + padding.Right + DefaultTextViewPadding),
+					(float)(border.Bottom + padding.Bottom)
+				);
+			}
+		}
+
 		public TextBoxHandler()
 		{
 		}

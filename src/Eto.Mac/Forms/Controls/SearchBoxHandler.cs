@@ -130,5 +130,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			return MacTextHitTest.GetCharacterIndex(Control, location);
 		}
+
+		public PaddingF TextInset => MacTextHitTest.GetTextInset(Control);
 	}
 }

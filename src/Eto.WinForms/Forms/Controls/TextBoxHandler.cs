@@ -263,6 +263,32 @@ namespace Eto.WinForms.Forms.Controls
 
 		public int GetCharacterIndex(PointF location) => SwfTextBox.GetCharIndexFromPosition(new sd.Point((int)location.X, (int)location.Y));
 
+		public PaddingF TextInset
+		{
+			get
+			{
+				var textBox = SwfTextBox;
+				var border = textBox.BorderStyle == swf.BorderStyle.Fixed3D ? swf.SystemInformation.Border3DSize
+					: textBox.BorderStyle == swf.BorderStyle.FixedSingle ? swf.SystemInformation.BorderSize
+					: sd.Size.Empty;
+
+				// creating the handle just to measure would have side effects, so estimate until it exists
+				if (!textBox.IsHandleCreated)
+					return new PaddingF(border.Width + 1, border.Height + 1, border.Width + 1, border.Height + 1);
+
+				// the formatting rectangle is where the edit control lays out its text, in its client area
+				var rect = new Win32.RECT();
+				Win32.SendMessage(textBox.Handle, Win32.WM.EM_GETRECT, IntPtr.Zero, ref rect);
+
+				// the text box can be inside another control (e.g. a stepper), so offset to the outer control's edges
+				var controlOrigin = Control.Parent != null ? Control.Parent.PointToScreen(Control.Location) : Control.PointToScreen(sd.Point.Empty);
+				var clientOrigin = textBox.PointToScreen(sd.Point.Empty);
+				var left = clientOrigin.X - controlOrigin.X + rect.left;
+				var top = clientOrigin.Y - controlOrigin.Y + rect.top;
+				return new PaddingF(left, top, Control.Width - (left + rect.width), Control.Height - (top + rect.height));
+			}
+		}
+
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);

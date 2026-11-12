@@ -193,6 +193,7 @@ namespace Eto
 			ECM_FIRST = 0x1500,
 			EM_SETCUEBANNER = ECM_FIRST + 1,
 			EM_SETMARGINS = 0xd3,
+			EM_GETRECT = 0xb2,
 
 			DPICHANGED = 0x02E0,
 			NCCREATE = 0x0081,
@@ -449,6 +450,9 @@ namespace Eto
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, ref sd.Point lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, ref RECT lParam);
 
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]

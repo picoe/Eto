@@ -135,6 +135,21 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	public int GetCharacterIndex(PointF location) => TextBox.GetCharacterIndex(location);
 
 	/// <summary>
+	/// Gets the space between each edge of the control and its text, such as where the first character starts.
+	/// </summary>
+	/// <since>2.14</since>
+	public PaddingF TextInset
+	{
+		get
+		{
+			// the stepper sits to the right of the text box
+			var inset = TextBox.TextInset;
+			inset.Right += Math.Max(0, Control.Width - TextBox.Width);
+			return inset;
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether to show the control's border.
 	/// </summary>
 	/// <remarks>

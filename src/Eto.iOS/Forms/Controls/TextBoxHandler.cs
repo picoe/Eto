@@ -131,6 +131,16 @@ namespace Eto.iOS.Forms.Controls
 			return position != null ? (int)Control.GetOffsetFromPosition(Control.BeginningOfDocument, position) : 0;
 		}
 
+		public PaddingF TextInset
+		{
+			get
+			{
+				var bounds = Control.Bounds;
+				var text = Control.TextRect(bounds);
+				return new PaddingF((float)(text.X - bounds.X), (float)(text.Y - bounds.Y), (float)(bounds.GetMaxX() - text.GetMaxX()), (float)(bounds.GetMaxY() - text.GetMaxY()));
+			}
+		}
+
 		public bool ShowBorder
 		{
 			get { return Control.BorderStyle != UITextBorderStyle.None; }

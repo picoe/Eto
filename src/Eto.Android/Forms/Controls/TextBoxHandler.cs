@@ -79,6 +79,8 @@ namespace Eto.Android.Forms.Controls
 			return layout.GetOffsetForHorizontal(line, x);
 		}
 
+		public PaddingF TextInset => new PaddingF(Control.TotalPaddingLeft, Control.TotalPaddingTop, Control.TotalPaddingRight, Control.TotalPaddingBottom);
+
 		public TextAlignment TextAlignment
 		{
 			get
