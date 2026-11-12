@@ -47,6 +47,9 @@
     <!-- License to accept in the msi's wizard before installing: a .rtf, .md or .txt file, or an http(s) link to one.
          /quiet and /passive installs skip the wizard -->
     <WindowsPackageLicense Condition="'$(WindowsPackageLicense)' == ''"></WindowsPackageLicense>
+    <!-- Square .ico or .png logo shown in the msi's wizard, small at the top and large on the welcome and finished pages.
+         256 pixels at most; under 128 it's only shown small. Defaults to WindowsIcon, where it has 48 and 128 pixel sizes -->
+    <WindowsPackageImage Condition="'$(WindowsPackageImage)' == ''"></WindowsPackageImage>
     <!-- Cultures the installers come in, e.g. en-US;de-DE;ja-JP, shown in Windows' display language.
          The first is used for other languages. Defaults to all in WindowsPackage.strings.xml, with en-US first -->
     <WindowsPackageLanguages Condition="'$(WindowsPackageLanguages)' == ''"></WindowsPackageLanguages>
@@ -280,6 +283,9 @@
       <_WindowsLicenseIsUrl Condition="$(_WindowsLicense.ToLowerInvariant().StartsWith('http://')) OR $(_WindowsLicense.ToLowerInvariant().StartsWith('https://'))">True</_WindowsLicenseIsUrl>
       <_WindowsLicense Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(_WindowsLicense)'))</_WindowsLicense>
     </PropertyGroup>
+    <PropertyGroup>
+      <_WindowsImage Condition="'$(WindowsPackageImage)' != ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsPackageImage)'))</_WindowsImage>
+    </PropertyGroup>
     <Error Text="The license file $(_WindowsLicense) doesn't exist." Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True' AND !Exists('$(_WindowsLicense)')" />
     <ItemGroup>
       <_WindowsCheckFramework Include="@(_WindowsFramework)" Condition="'$(WindowsPackageCheckRuntime)' == 'True'" />
@@ -299,6 +305,7 @@
                      IconFile="$(_WindowsIconFile)"
                      DesktopShortcut="$(WindowsPackageDesktopShortcut)"
                      License="$(_WindowsLicense)"
+                     Image="$(_WindowsImage)"
                      StringsFile="$(MSBuildThisFileDirectory)WindowsPackage.strings.xml"
                      ExtraStrings="@(WindowsPackageStrings)"
                      Languages="$(WindowsPackageLanguages)"

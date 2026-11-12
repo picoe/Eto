@@ -282,6 +282,81 @@ namespace Eto.Windows.Build
 		}
 	}
 
+	/// <summary>
+	/// Reads .ico and .png images for the wizard, which can only show icons.
+	/// </summary>
+	static class IconImage
+	{
+		static readonly byte[] PngSignature = { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+
+		/// <summary>The largest width in the image, or 0 when it isn't an .ico or .png.</summary>
+		public static int GetLargestSize(string path)
+		{
+			var data = File.ReadAllBytes(path);
+			if (IsPng(data))
+				return data.Length >= 24 ? ReadBigEndian(data, 16) : 0;
+			if (data.Length < 6 || BitConverter.ToUInt16(data, 0) != 0 || BitConverter.ToUInt16(data, 2) != 1)
+				return 0;
+			var largest = 0;
+			var count = BitConverter.ToUInt16(data, 4);
+			for (int i = 0; i < count && 6 + i * 16 + 16 <= data.Length; i++)
+			{
+				// 0 means 256
+				var width = data[6 + i * 16];
+				largest = Math.Max(largest, width == 0 ? 256 : width);
+			}
+			return largest;
+		}
+
+		/// <summary>Writes an .ico to folder with only the largest image, from an .ico or a .png.</summary>
+		/// <remarks>The wizard picks the image closest to the system icon size (e.g. 32 pixels) and stretches it, whatever size it's shown at.</remarks>
+		public static string ToIcon(string path, string folder)
+		{
+			var data = File.ReadAllBytes(path);
+			byte[] entry, image;
+			if (IsPng(data))
+			{
+				var width = ReadBigEndian(data, 16);
+				var height = ReadBigEndian(data, 20);
+				entry = new byte[16];
+				entry[0] = (byte)(width >= 256 ? 0 : width);
+				entry[1] = (byte)(height >= 256 ? 0 : height);
+				entry[4] = 1;
+				entry[6] = 32;
+				image = data;
+			}
+			else
+			{
+				var count = BitConverter.ToUInt16(data, 4);
+				var largest = Enumerable.Range(0, count)
+					.Where(i => 6 + i * 16 + 16 <= data.Length)
+					.OrderByDescending(i => data[6 + i * 16] == 0 ? 256 : data[6 + i * 16])
+					.ThenByDescending(i => BitConverter.ToUInt16(data, 6 + i * 16 + 6))
+					.First();
+				entry = data.Skip(6 + largest * 16).Take(16).ToArray();
+				var size = BitConverter.ToInt32(entry, 8);
+				var offset = BitConverter.ToInt32(entry, 12);
+				image = data.Skip(offset).Take(size).ToArray();
+			}
+			var icon = Path.Combine(folder, "WizardImage.ico");
+			using (var writer = new BinaryWriter(File.Create(icon)))
+			{
+				writer.Write((ushort)0);
+				writer.Write((ushort)1);
+				writer.Write((ushort)1);
+				writer.Write(entry, 0, 8);
+				writer.Write(image.Length);
+				writer.Write(22);
+				writer.Write(image);
+			}
+			return icon;
+		}
+
+		static bool IsPng(byte[] data) => data.Length >= PngSignature.Length && PngSignature.SequenceEqual(data.Take(PngSignature.Length));
+
+		static int ReadBigEndian(byte[] data, int offset) => data[offset] << 24 | data[offset + 1] << 16 | data[offset + 2] << 8 | data[offset + 3];
+	}
+
 	class InstallerLanguage
 	{
 		public string Culture;
@@ -546,6 +621,8 @@ namespace Eto.Windows.Build
 		public bool DesktopShortcut { get; set; }
 		/// <summary>.rtf, .md or .txt file, or http(s) link, to accept in a wizard before installing.</summary>
 		public string License { get; set; }
+		/// <summary>Square .ico or .png shown in the wizard; defaults to IconFile when it has large enough sizes.</summary>
+		public string Image { get; set; }
 		/// <summary>The wizard's text in each language (WindowsPackage.strings.xml).</summary>
 		[Required]
 		public string StringsFile { get; set; }
@@ -585,6 +662,7 @@ namespace Eto.Windows.Build
 			new TableDef { Name = "Media", Columns = "`DiskId` SHORT NOT NULL, `LastSequence` LONG NOT NULL, `DiskPrompt` CHAR(64) LOCALIZABLE, `Cabinet` CHAR(255), `VolumeLabel` CHAR(32), `Source` CHAR(72)", Keys = "`DiskId`" },
 			new TableDef { Name = "Shortcut", Columns = "`Shortcut` CHAR(72) NOT NULL, `Directory_` CHAR(72) NOT NULL, `Name` CHAR(128) NOT NULL LOCALIZABLE, `Component_` CHAR(72) NOT NULL, `Target` CHAR(72) NOT NULL, `Arguments` CHAR(255), `Description` CHAR(255) LOCALIZABLE, `Hotkey` SHORT, `Icon_` CHAR(72), `IconIndex` SHORT, `ShowCmd` SHORT, `WkDir` CHAR(72), `DisplayResourceDLL` CHAR(255), `DisplayResourceId` SHORT, `DescriptionResourceDLL` CHAR(255), `DescriptionResourceId` SHORT", Keys = "`Shortcut`" },
 			new TableDef { Name = "Icon", Columns = "`Name` CHAR(72) NOT NULL, `Data` OBJECT NOT NULL", Keys = "`Name`" },
+			new TableDef { Name = "Binary", Columns = "`Name` CHAR(72) NOT NULL, `Data` OBJECT NOT NULL", Keys = "`Name`" },
 			new TableDef { Name = "Upgrade", Columns = "`UpgradeCode` CHAR(38) NOT NULL, `VersionMin` CHAR(20), `VersionMax` CHAR(20), `Language` CHAR(255), `Attributes` LONG NOT NULL, `Remove` CHAR(255), `ActionProperty` CHAR(72) NOT NULL", Keys = "`UpgradeCode`, `VersionMin`, `VersionMax`, `Language`, `Attributes`" },
 			new TableDef { Name = "LaunchCondition", Columns = "`Condition` CHAR(255) NOT NULL, `Description` CHAR(255) NOT NULL LOCALIZABLE", Keys = "`Condition`" },
 			new TableDef { Name = "AppSearch", Columns = "`Property` CHAR(72) NOT NULL, `Signature_` CHAR(72) NOT NULL", Keys = "`Property`, `Signature_`" },
@@ -663,6 +741,54 @@ namespace Eto.Windows.Build
 		string version, architecture, platform, manufacturer, summary;
 		// the language the rows are being built in
 		InstallerLanguage language;
+		// .ico shown in the wizard's header, and large on its welcome and finished pages
+		string wizardImage;
+		bool headerImage, sideImage;
+
+		// pixels the image is shown at with 100% display scaling, which is 3/4 of its size in installer units
+		const int HeaderImagePixels = 48, SideImagePixels = 128;
+
+		bool LoadWizardImage()
+		{
+			var path = Image;
+			if (!string.IsNullOrEmpty(path))
+			{
+				if (!File.Exists(path))
+				{
+					Log.LogError("The wizard image {0} doesn't exist.", path);
+					return false;
+				}
+				var size = IconImage.GetLargestSize(path);
+				if (size == 0)
+				{
+					Log.LogError("The wizard image {0} must be an .ico or .png file.", path);
+					return false;
+				}
+				if (size > 256)
+				{
+					Log.LogError("The wizard image {0} is {1} pixels wide, but can be 256 at most.", path, size);
+					return false;
+				}
+				if (size < HeaderImagePixels)
+					Log.LogWarning("The wizard image {0} is {1} pixels wide, so it may look blurry. Use {2} or larger.", path, size, SideImagePixels);
+				else if (size < SideImagePixels)
+					Log.LogMessage(MessageImportance.High, "The wizard image {0} is {1} pixels wide, so it's only shown small. Use {2} or larger to show it large on the welcome and finished pages.", path, size, SideImagePixels);
+				// too small to show large, so the welcome and finished pages show it small like the others
+				headerImage = true;
+				sideImage = size >= SideImagePixels;
+			}
+			else if (!string.IsNullOrEmpty(IconFile) && File.Exists(IconFile))
+			{
+				// only where the icon has a size that won't look blurry
+				path = IconFile;
+				var size = IconImage.GetLargestSize(path);
+				headerImage = size >= HeaderImagePixels;
+				sideImage = size >= SideImagePixels;
+			}
+			if (headerImage || sideImage)
+				wizardImage = IconImage.ToIcon(path, WorkDirectory);
+			return true;
+		}
 
 		string T(string id) => language.Strings[id];
 
@@ -677,13 +803,15 @@ namespace Eto.Windows.Build
 			ProductCode = WindowsPackageHelper.Format(Guid.NewGuid());
 			manufacturer = string.IsNullOrEmpty(Manufacturer) ? ProductName : Manufacturer;
 			summary = Regex.Replace((Description ?? string.Empty).Trim(), @"(?s)[\r\n].*", "");
+			Directory.CreateDirectory(WorkDirectory);
+			if (!LoadWizardImage())
+				return;
 
 			language = languages[0];
 			var sorted = BuildRows();
 			if (sorted == null)
 				return;
 
-			Directory.CreateDirectory(WorkDirectory);
 			var cabinet = CreateCabinet(sorted);
 			if (cabinet == null)
 				return;
@@ -1038,12 +1166,28 @@ namespace Eto.Windows.Build
 				=> Add("Control", dialog, name, type, x, y, width, height, attributes, property, text, next, null);
 			void Event(string dialog, string control, string name, string argument, string condition = "1", int ordering = 1)
 				=> Add("ControlEvent", dialog, control, name, argument, condition, ordering);
+			if (wizardImage != null)
+				Add("Binary", "WizardImage", new StreamValue { Path = wizardImage });
+			// sized in installer units, so the icon picks the image closest to its size in pixels
+			const int HeaderImageSize = HeaderImagePixels * 3 / 4, SideImageSize = SideImagePixels * 3 / 4;
 			void Header(string dialog, string title, string description)
 			{
-				Control(dialog, "Title", "Text", 15, 10, 340, 20, Label, "{\\EtoTitle}" + title);
+				var textWidth = headerImage ? 340 - HeaderImageSize - 10 : 340;
+				Control(dialog, "Title", "Text", 15, 10, textWidth, 20, Label, "{\\EtoTitle}" + title);
 				if (description != null)
-					Control(dialog, "Description", "Text", 15, 31, 340, 26, Label, description);
+					Control(dialog, "Description", "Text", 15, 31, textWidth, 26, Label, description);
+				if (headerImage)
+					Control(dialog, "Image", "Icon", 355 - HeaderImageSize, (60 - HeaderImageSize) / 2, HeaderImageSize, HeaderImageSize, Visible, "WizardImage");
 				Control(dialog, "HeaderLine", "Line", 0, 60, Width, 0, Visible);
+				Control(dialog, "FooterLine", "Line", 0, 234, Width, 0, Visible);
+			}
+			// the large image on the left, with the text beside it and anything else below that
+			const int SideX = 15 + SideImageSize + 15, SideBottom = 112;
+			void Side(string dialog, string title, string description)
+			{
+				Control(dialog, "Image", "Icon", 15, 20, SideImageSize, SideImageSize, Visible, "WizardImage");
+				Control(dialog, "Title", "Text", SideX, 20, 355 - SideX, 34, Label, "{\\EtoTitle}" + title);
+				Control(dialog, "Description", "Text", SideX, 58, 355 - SideX, 50, Label, description);
 				Control(dialog, "FooterLine", "Line", 0, 234, Width, 0, Visible);
 			}
 
@@ -1051,7 +1195,9 @@ namespace Eto.Windows.Build
 			var hasLicense = licenseText != null || licenseUrl != null;
 			var first = licenseText != null ? "License" : licenseUrl != null ? "Link" : "Install";
 			Dialog("FirstDialog", Visible | Modal | Minimize, first, "Install", "Cancel");
-			if (!hasLicense)
+			if (!hasLicense && sideImage)
+				Side("FirstDialog", T("WelcomeTitle"), T("WelcomeText"));
+			else if (!hasLicense)
 				Header("FirstDialog", T("WelcomeTitle"), T("WelcomeText"));
 			else
 			{
@@ -1093,10 +1239,18 @@ namespace Eto.Windows.Build
 			void Finished(string dialog, string title, string description, string result, bool launch = false)
 			{
 				Dialog(dialog, Visible | Modal | Minimize, launch ? "Launch" : "Finish", "Finish", "Finish");
-				Header(dialog, title, description);
+				int launchX = 15, launchY = 70;
+				if (sideImage)
+				{
+					launchX = SideX;
+					launchY = SideBottom;
+					Side(dialog, title, description);
+				}
+				else
+					Header(dialog, title, description);
 				if (launch)
 				{
-					Control(dialog, "Launch", "CheckBox", 15, 70, 340, 15, Button, T("LaunchApp"), "Finish", "LAUNCHAPP");
+					Control(dialog, "Launch", "CheckBox", launchX, launchY, 355 - launchX, 15, Button, T("LaunchApp"), "Finish", "LAUNCHAPP");
 					Event(dialog, "Finish", "DoAction", "LaunchApp", "LAUNCHAPP = \"1\" AND NOT REMOVE ~= \"ALL\"", 1);
 				}
 				Control(dialog, "Finish", "PushButton", 299, 243, 60, 17, Button, T("FinishButton"), launch ? "Launch" : null);
