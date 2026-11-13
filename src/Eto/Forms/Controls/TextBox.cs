@@ -260,6 +260,16 @@ public class TextBox : TextControl
 	public int GetCharacterIndex(PointF location) => Handler.GetCharacterIndex(location);
 
 	/// <summary>
+	/// Gets the space between each edge of the control and its text, such as where the first character starts.
+	/// </summary>
+	/// <remarks>
+	/// Use this to line up other content with the text, for example a drop down of suggestions below the control.
+	/// </remarks>
+	/// <value>The distance from each edge of the control to its text.</value>
+	/// <since>2.14</since>
+	public PaddingF TextInset => Handler.TextInset;
+
+	/// <summary>
 	/// Handler interface for the <see cref="TextBox"/>.
 	/// </summary>
 	public new interface IHandler : TextControl.IHandler
@@ -353,6 +363,13 @@ public class TextBox : TextControl
 		/// <returns>The character index closest to <paramref name="location"/>.</returns>
 		/// <since>2.12</since>
 		int GetCharacterIndex(PointF location);
+
+		/// <summary>
+		/// Gets the space between each edge of the control and its text, such as where the first character starts.
+		/// </summary>
+		/// <value>The distance from each edge of the control to its text.</value>
+		/// <since>2.14</since>
+		PaddingF TextInset { get; }
 	}
 
 	#region Callback

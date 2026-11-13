@@ -306,6 +306,41 @@ namespace Eto.Test.UnitTests.Forms.Controls
 				Assert.That(textBox.Selection, Is.EqualTo(Range.FromLength(setText.Length, 0)), "#6");
 			});
 		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void TextInsetShouldBeWithinControl(bool showBorder)
+		{
+			Shown(form => new T { Text = "Hello", ShowBorder = showBorder }, textBox =>
+			{
+				var inset = textBox.TextInset;
+				Assert.That(inset.Left, Is.GreaterThanOrEqualTo(0), "#1.1");
+				Assert.That(inset.Top, Is.GreaterThanOrEqualTo(0), "#1.2");
+				Assert.That(inset.Right, Is.GreaterThanOrEqualTo(0), "#1.3");
+				Assert.That(inset.Bottom, Is.GreaterThanOrEqualTo(0), "#1.4");
+				Assert.That(inset.Horizontal, Is.LessThan(textBox.Width), "#2.1");
+				Assert.That(inset.Vertical, Is.LessThan(textBox.Height), "#2.2");
+
+				// just inside the inset is the start of the text
+				var start = new PointF(inset.Left + 1, inset.Top + (textBox.Height - inset.Vertical) / 2f);
+				Assert.That(textBox.GetCharacterIndex(start), Is.EqualTo(0), "#3");
+			});
+		}
+
+		[Test]
+		public void TextInsetShouldNotBeSmallerWithBorder()
+		{
+			TextBox bordered = null, borderless = null;
+			Shown(form =>
+			{
+				bordered = new T { Text = "Hello" };
+				borderless = new T { Text = "Hello", ShowBorder = false };
+				return new StackLayout { Items = { bordered, borderless } };
+			}, layout =>
+			{
+				Assert.That(bordered.TextInset.Left, Is.GreaterThanOrEqualTo(borderless.TextInset.Left));
+			});
+		}
 	}
 
 

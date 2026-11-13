@@ -87,6 +87,23 @@ namespace Eto.iOS.Forms.Controls
 			return position != null ? (int)textField.GetOffsetFromPosition(textField.BeginningOfDocument, position) : 0;
 		}
 
+		public PaddingF TextInset
+		{
+			get
+			{
+				var textField = UIDevice.CurrentDevice.CheckSystemVersion(13, 0)
+					? Control.SearchTextField
+					: Control.ValueForKey(new Foundation.NSString("searchField")) as UITextField;
+				if (textField == null)
+					return PaddingF.Empty;
+
+				// the text field sits inside the search bar, so measure its text area from the bar's edges
+				var bounds = Control.Bounds;
+				var text = textField.ConvertRectToView(textField.TextRect(textField.Bounds), Control);
+				return new PaddingF((float)(text.X - bounds.X), (float)(text.Y - bounds.Y), (float)(bounds.GetMaxX() - text.GetMaxX()), (float)(bounds.GetMaxY() - text.GetMaxY()));
+			}
+		}
+
 		public bool ShowBorder
 		{
 			get { throw new NotImplementedException(); }

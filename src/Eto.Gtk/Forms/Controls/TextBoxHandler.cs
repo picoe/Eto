@@ -566,6 +566,25 @@ namespace Eto.GtkSharp.Forms.Controls
 			return location.X <= layoutX ? 0 : text.Length;
 		}
 
+		public PaddingF TextInset
+		{
+			get
+			{
+#if GTK3
+				// the entry lays its text out inside its padding and border, which also works before it is allocated
+				var style = Control.StyleContext;
+				var padding = style.GetPadding(style.State);
+				var border = style.GetBorder(style.State);
+				return new PaddingF(padding.Left + border.Left, padding.Top + border.Top, padding.Right + border.Right, padding.Bottom + border.Bottom);
+#else
+				// the layout is offset by the alignment and scrolling, so this is only exact for left aligned text
+				Control.GetLayoutOffsets(out var layoutX, out var layoutY);
+				var x = layoutX + Control.ScrollOffset;
+				return new PaddingF(x, layoutY, x, layoutY);
+#endif
+			}
+		}
+
 		public TextAlignment TextAlignment
 		{
 			get => Control.Alignment < 0.5f ? TextAlignment.Left

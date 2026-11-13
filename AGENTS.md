@@ -295,3 +295,6 @@ Android, Direct2D). Solution: `src/Eto.slnx`.
 - **C# (`*.cs`) uses tabs, indent size 4** (per `.editorconfig`). Project/props files
   (`*.csproj`, `*.props`, `*.targets`, `*.slnx`) use 2-space.
 - Braces on their own line (`csharp_new_line_before_open_brace = all`).
+- **Every new public API in `src/Eto` gets `/// <since>X.Y</since>`** — including `IHandler` members and
+  public members of `ThemedControls` handlers. X.Y is the *next unreleased* version: the newest `git tag` is
+  already released, so use the one after it (match what other unreleased members already use).
