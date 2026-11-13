@@ -41,6 +41,7 @@ namespace Eto.Test
 			Title = $"Test Application [{Platform.ID}, {bitness}, {runtime}, {platform}]";
 			Style = "main";
 			MinimumSize = new Size(600, 500);
+			AllowFullScreenToggle = true;
 			topNodes = topNodes ?? TestSections.Get(TestApplication.DefaultTestAssemblies());
 
 			var nodes = topNodes.ToList();

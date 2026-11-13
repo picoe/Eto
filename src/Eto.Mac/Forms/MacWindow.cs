@@ -332,7 +332,37 @@ namespace Eto.Mac.Forms
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null)
 				return;
-			handler.RestoreBounds = handler.Widget.Bounds;
+			var fromFullScreen = handler.minimizingFromFullScreen;
+			handler.minimizingFromFullScreen = false;
+			// already saved when maximizing or entering full screen, and the frame can still be the full screen one when leaving it
+			if (!fromFullScreen && !handler.Control.IsZoomed)
+				handler.RestoreBounds = handler.Widget.Bounds;
+		}
+
+		static void HandleWillEnterFullScreen(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler == null)
+				return;
+			handler.enteringFullScreen = true;
+			// already saved when maximizing or minimizing
+			if (!handler.Control.IsZoomed && !handler.Control.IsMiniaturized)
+				handler.RestoreBounds = handler.Widget.Bounds;
+		}
+
+		static void HandleDidEnterFullScreen(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler == null)
+				return;
+			handler.enteringFullScreen = false;
+			handler.Callback.OnWindowStateChanged(handler.Widget, EventArgs.Empty);
+		}
+
+		static void HandleDidFailToEnterFullScreen(object sender, EventArgs e)
+		{
+			if (GetHandler(sender) is MacWindow<TControl, TWidget, TCallback> handler)
+				handler.enteringFullScreen = false;
 		}
 
 		static void HandleWillClose(object sender, EventArgs e)
@@ -371,6 +401,9 @@ namespace Eto.Mac.Forms
 		{
 			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
 			if (handler == null)
+				return;
+			// entering full screen from minimized deminiaturizes first, and its own event follows
+			if (handler.enteringFullScreen)
 				return;
 			handler.Callback.OnWindowStateChanged(handler.Widget, EventArgs.Empty);
 		}
@@ -569,6 +602,10 @@ namespace Eto.Mac.Forms
 			Control.WillMiniaturize += HandleWillMiniaturize;
 			Control.WillResize = HandleWillResize;
 			Control.DidChangeScreen += HandleDidChangeScreen;
+			Control.WillEnterFullScreen += HandleWillEnterFullScreen;
+			Control.DidEnterFullScreen += HandleDidEnterFullScreen;
+			Control.DidFailToEnterFullScreen += HandleDidFailToEnterFullScreen;
+			Control.DidExitFullScreen += HandleDidExitFullScreen;
 
 #if MONOMAC
 			HandleEvent(Window.ClosedEvent);
@@ -669,6 +706,81 @@ namespace Eto.Mac.Forms
 					SetButtonStates();
 				}
 			}
+		}
+
+		// null leaves the system default, which allows full screen for resizable windows
+		bool? allowFullScreenToggle;
+		bool enteringFullScreen;
+		bool minimizingFromFullScreen;
+
+		// state to switch to once the window has finished leaving full screen
+		WindowState? exitFullScreenState;
+
+		public bool AllowFullScreenToggle
+		{
+			get => allowFullScreenToggle ?? true;
+			set
+			{
+				allowFullScreenToggle = value;
+				SetFullScreenBehavior(value);
+			}
+		}
+
+		void SetFullScreenBehavior(bool allow)
+		{
+			var behavior = Control.CollectionBehavior & ~(NSWindowCollectionBehavior.FullScreenPrimary | NSWindowCollectionBehavior.FullScreenNone);
+			Control.CollectionBehavior = behavior | (allow ? NSWindowCollectionBehavior.FullScreenPrimary : NSWindowCollectionBehavior.FullScreenNone);
+		}
+
+		void EnterFullScreen()
+		{
+			if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+				return;
+			if (allowFullScreenToggle == false)
+			{
+				// the window can't go full screen otherwise, so allow it until it exits
+				SetFullScreenBehavior(true);
+			}
+			Control.ToggleFullScreen(Control);
+		}
+
+		static void HandleDidExitFullScreen(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<TControl, TWidget, TCallback>;
+			if (handler == null)
+				return;
+			if (handler.allowFullScreenToggle == false)
+				handler.SetFullScreenBehavior(false);
+
+			if (handler.exitFullScreenState == null)
+			{
+				handler.Callback.OnWindowStateChanged(handler.Widget, EventArgs.Empty);
+				return;
+			}
+			// AppKit sometimes ignores miniaturizing from within this notification
+			Application.Instance.AsyncInvoke(handler.ApplyExitFullScreenState);
+		}
+
+		void ApplyExitFullScreenState()
+		{
+			var state = exitFullScreenState;
+			if (state == null)
+				return; // went back to full screen
+			exitFullScreenState = null;
+			// zooming or minimizing raises its own state change, so only raise one here when there's nothing left to do
+			if (state != WindowState)
+			{
+				minimizingFromFullScreen = state == WindowState.Minimized;
+				// the frame can still be the full screen one on a slower machine, so it'd deminiaturize as zoomed
+				if (minimizingFromFullScreen && restoreBounds is Rectangle bounds && Widget.Bounds != bounds)
+				{
+					var mainFrame = NSScreen.Screens[0].Frame;
+					Control.SetFrame(new CGRect(bounds.X, mainFrame.Height - bounds.Y - bounds.Height, bounds.Width, bounds.Height), true, false);
+				}
+				WindowState = state.Value;
+			}
+			else
+				Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
 		}
 
 		// Defaults to true to match the documented behavior (and the Windows platform handler):
@@ -1088,6 +1200,10 @@ namespace Eto.Mac.Forms
 			{
 				if (initialState != null)
 					return initialState.Value;
+				if (exitFullScreenState != null)
+					return exitFullScreenState.Value;
+				if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+					return WindowState.FullScreen;
 				if (Control.IsMiniaturized)
 					return WindowState.Minimized;
 				if (Control.IsZoomed)
@@ -1099,6 +1215,28 @@ namespace Eto.Mac.Forms
 				if (!Widget.Loaded)
 				{
 					initialState = value;
+					Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+					return;
+				}
+				if (value == WindowState.FullScreen)
+				{
+					exitFullScreenState = null;
+					EnterFullScreen();
+					return;
+				}
+				if (exitFullScreenState != null)
+				{
+					// still leaving full screen, so apply the latest state once it's done
+					exitFullScreenState = value;
+					return;
+				}
+				if (Control.StyleMask.HasFlag(NSWindowStyle.FullScreenWindow))
+				{
+					// zooming during the exit animation raises a second state change, and minimizing gets undone by it
+					exitFullScreenState = value;
+					Control.ToggleFullScreen(Control);
+					if (value != WindowState.Minimized)
+						Application.Instance.AsyncInvoke(() => Control.OrderFront(Control));
 					return;
 				}
 				switch (value)

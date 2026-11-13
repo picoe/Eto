@@ -9,7 +9,7 @@ namespace Eto.Test.Commands
 				Image = TestIcons.TestIcon;
 			MenuText = "About Test Application";
 			ToolBarText = "About";
-			Shortcut = Keys.F11;
+			Shortcut = Keys.F1;
 		}
 
 		protected override void OnExecuted(EventArgs e)

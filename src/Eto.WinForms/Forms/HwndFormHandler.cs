@@ -326,6 +326,9 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		// full screen isn't supported for windows not created by Eto
+		public bool AllowFullScreenToggle { get; set; }
+
 		public bool Maximizable
 		{
 			get

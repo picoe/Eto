@@ -30,6 +30,7 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 	public Icon Icon { get; set; }
 	public bool Resizable { get; set; }
 	public bool Maximizable { get; set; }
+	public bool AllowFullScreenToggle { get; set; }
 	public bool Minimizable { get; set; }
 	public bool Closeable { get; set; }
 	public bool ShowInTaskbar { get; set; }

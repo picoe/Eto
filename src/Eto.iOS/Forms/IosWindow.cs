@@ -179,6 +179,8 @@ namespace Eto.iOS.Forms
 
 		public bool Maximizable { get { return false; } set { } }
 
+		public bool AllowFullScreenToggle { get { return false; } set { } }
+
 		public bool Minimizable { get { return false; } set { } }
 
 		public bool ShowInTaskbar { get { return false; } set { } }
