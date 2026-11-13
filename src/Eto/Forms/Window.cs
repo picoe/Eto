@@ -763,6 +763,7 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnClosed(e);
+			Application.Instance?.OnWindowClosed(widget);
 		}
 		/// <summary>
 		/// Raises the closing event.
@@ -771,6 +772,8 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnClosing(e);
+			// after the window's own handlers, so they can cancel first or open another window
+			Application.Instance?.OnWindowClosing(widget, e);
 		}
 		/// <summary>
 		/// Raises the location changed event.

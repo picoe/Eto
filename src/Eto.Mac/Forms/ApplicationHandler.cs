@@ -112,7 +112,8 @@ namespace Eto.Mac.Forms
 
 		public bool ShouldCloseForm(Window window, bool wasClosed)
 		{
-			if (ReferenceEquals(window, Widget.MainForm))
+			// only the platform default keeps the main form around to show again from the dock
+			if (ReferenceEquals(window, Widget.MainForm) && Widget.QuitMode == QuitMode.Default)
 			{
 				if (AllowClosingMainForm && wasClosed)
 					Widget.MainForm = null;
