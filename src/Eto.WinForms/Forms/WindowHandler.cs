@@ -261,7 +261,12 @@ namespace Eto.WinForms.Forms
 					};
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.Deactivate += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
+					// Closing and disposing a window in the same turn queues this after the dispose, so skip it then.
+					Control.Deactivate += (sender, e) => Application.Instance.AsyncInvoke(() =>
+					{
+						if (!Widget.IsDisposed)
+							Callback.OnLostFocus(Widget, EventArgs.Empty);
+					});
 					break;
 				case Window.WindowStateChangedEvent:
 					var oldState = Control.WindowState;

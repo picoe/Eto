@@ -166,6 +166,25 @@ public class FormTests : WindowTests<Form>
 		await tcs.Task;
 	});
 	
+	[Test]
+	public void LostFocusShouldNotFireAfterDispose() => Async(async () =>
+	{
+		// A popup closed and thrown away in one go must not get a late LostFocus, its handler can't touch a disposed window.
+		var form = new Form { ClientSize = new Size(200, 200) };
+		var lostFocusAfterDispose = false;
+		form.LostFocus += (sender, e) => lostFocusAfterDispose |= form.IsDisposed;
+		form.Show();
+		await WaitUntil(() => form.HasFocus);
+		Assert.That(form.HasFocus, Is.True, "Form must be active, or closing it won't take focus away");
+
+		form.Close();
+		form.Dispose();
+
+		// waiting for something that should not happen, so a fixed delay is the point
+		await Task.Delay(250);
+		Assert.That(lostFocusAfterDispose, Is.False, "LostFocus should not be raised on a disposed form");
+	});
+
 	class MyModel
 	{
 		public int IntValue { get; set; }

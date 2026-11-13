@@ -381,7 +381,12 @@ namespace Eto.Wpf.Forms
 				case Eto.Forms.Control.LostFocusEvent:
 					// Use AsyncInvoke here otherwise calling Close() during LostFocus does not work as expected
 					// and can lead to the z-order of windows not being correct.
-					Control.Deactivated += (sender, e) => Application.Instance.AsyncInvoke(() => Callback.OnLostFocus(Widget, EventArgs.Empty));
+					// Closing and disposing a window in the same turn queues this after the dispose, so skip it then.
+					Control.Deactivated += (sender, e) => Application.Instance.AsyncInvoke(() =>
+					{
+						if (!Widget.IsDisposed)
+							Callback.OnLostFocus(Widget, EventArgs.Empty);
+					});
 					break;
 				case Window.LocationChangedEvent:
 					Control.LocationChanged += (sender, e) => Callback.OnLocationChanged(Widget, EventArgs.Empty);
