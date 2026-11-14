@@ -36,7 +36,19 @@ namespace Eto.GtkSharp.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.Destroyed += Connector.HandleDestroyed;
 			Size = new Size(100, 60);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				Control.Destroyed -= Connector.HandleDestroyed;
+				Control.Buffer.Dispose();
+				scroll.Dispose();
+			}
+			base.Dispose(disposing);
 		}
 
 		public override void AttachEvent(string id)
@@ -116,6 +128,10 @@ namespace Eto.GtkSharp.Forms.Controls
 				var tag = handler.tag;
 				buffer.ApplyTag(tag, buffer.StartIter, buffer.EndIter);
 			}
+
+			// GtkSharp roots a buffer that has managed signal handlers until its wrapper is
+			// disposed, so the view dropping its native reference would not free it.
+			public void HandleDestroyed(object sender, EventArgs e) => ((Gtk.TextView)sender).Buffer.Dispose();
 		}
 
 		public override string Text
