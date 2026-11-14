@@ -11,7 +11,7 @@
 
     <!-- <EnableDmgBuild>True</EnableDmgBuild> -->
     <!-- <LinuxPackageFormats>deb;rpm;tar.gz;appimage</LinuxPackageFormats> -->
-    <!-- <WindowsPackageFormats>msi;setup</WindowsPackageFormats> -->
+    <!-- <WindowsPackageFormats>msi;setup;msix</WindowsPackageFormats> -->
     <!-- <EnableCompressionInSingleFile>True</EnableCompressionInSingleFile> -->
     <!-- <EnableCodeSigning>True</EnableCodeSigning> -->
     <!-- <EnableNotarization>True</EnableNotarization>     -->

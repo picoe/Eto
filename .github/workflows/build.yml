@@ -59,6 +59,8 @@ jobs:
           !artifacts/test/Eto.Test.Wpf/**/win-*/**/*
           !artifacts/test/Eto.Test.Wpf/**/*.msi
           !artifacts/test/Eto.Test.Wpf/**/*-Setup.exe
+          !artifacts/test/Eto.Test.Wpf/**/*.msix
+          !artifacts/test/Eto.Test.Wpf/**/*.msixbundle
 
     - name: Upload package artifacts
       uses: actions/upload-artifact@v7
@@ -67,6 +69,8 @@ jobs:
         path: |
           artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msi
           artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*-Setup.exe
+          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msix
+          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msixbundle
 
     - name: Upload sample artifacts
       uses: actions/upload-artifact@v7

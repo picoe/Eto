@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <WindowsPackageFormats>msi;setup</WindowsPackageFormats>
+    <WindowsPackageFormats>msi;setup;msix</WindowsPackageFormats>
     <WindowsPackageRuntimeIdentifiers>win-x64;win-arm64</WindowsPackageRuntimeIdentifiers>
   </PropertyGroup>
 

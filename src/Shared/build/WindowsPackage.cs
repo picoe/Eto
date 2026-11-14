@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using IStream = System.Runtime.InteropServices.ComTypes.IStream;
 
 namespace Eto.Windows.Build
 {
@@ -350,6 +352,155 @@ namespace Eto.Windows.Build
 				writer.Write(image);
 			}
 			return icon;
+		}
+
+		/// <summary>The largest image in an .ico or .png as a .png, or null when there's none that can be read.</summary>
+		public static byte[] ToPng(string path)
+		{
+			var data = File.ReadAllBytes(path);
+			if (IsPng(data))
+				return data;
+			if (data.Length < 6 || BitConverter.ToUInt16(data, 0) != 0 || BitConverter.ToUInt16(data, 2) != 1)
+				return null;
+			var count = BitConverter.ToUInt16(data, 4);
+			var frames = Enumerable.Range(0, count)
+				.Where(i => 6 + i * 16 + 16 <= data.Length)
+				.OrderByDescending(i => data[6 + i * 16] == 0 ? 256 : data[6 + i * 16])
+				.ThenByDescending(i => BitConverter.ToUInt16(data, 6 + i * 16 + 6));
+			foreach (var i in frames)
+			{
+				var size = BitConverter.ToInt32(data, 6 + i * 16 + 8);
+				var offset = BitConverter.ToInt32(data, 6 + i * 16 + 12);
+				if (size <= 0 || offset < 0 || offset + size > data.Length)
+					continue;
+				var image = data.Skip(offset).Take(size).ToArray();
+				var png = IsPng(image) ? image : DibToPng(image);
+				if (png != null)
+					return png;
+			}
+			return null;
+		}
+
+		/// <summary>A .png of a single color, for when there's no image to use.</summary>
+		public static byte[] SolidPng(int size, byte r, byte g, byte b)
+		{
+			var rgba = new byte[size * size * 4];
+			for (int i = 0; i < rgba.Length; i += 4)
+			{
+				rgba[i] = r;
+				rgba[i + 1] = g;
+				rgba[i + 2] = b;
+				rgba[i + 3] = 255;
+			}
+			return EncodePng(size, size, rgba);
+		}
+
+		// icons store their images as 24 or 32 bit bottom-up bitmaps followed by a transparency mask
+		static byte[] DibToPng(byte[] dib)
+		{
+			if (dib.Length < 40)
+				return null;
+			var headerSize = BitConverter.ToInt32(dib, 0);
+			var width = BitConverter.ToInt32(dib, 4);
+			var height = BitConverter.ToInt32(dib, 8) / 2;
+			var bits = BitConverter.ToUInt16(dib, 14);
+			var compression = BitConverter.ToInt32(dib, 16);
+			if ((bits != 32 && bits != 24) || compression != 0 || width <= 0 || height <= 0)
+				return null;
+			var stride = (width * bits / 8 + 3) & ~3;
+			var maskStride = (width + 31) / 32 * 4;
+			var maskOffset = headerSize + stride * height;
+			if (maskOffset > dib.Length)
+				return null;
+			var hasMask = maskOffset + maskStride * height <= dib.Length;
+			var rgba = new byte[width * height * 4];
+			var hasAlpha = false;
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					var src = headerSize + (height - 1 - y) * stride + x * bits / 8;
+					var dst = (y * width + x) * 4;
+					rgba[dst] = dib[src + 2];
+					rgba[dst + 1] = dib[src + 1];
+					rgba[dst + 2] = dib[src];
+					rgba[dst + 3] = bits == 32 ? dib[src + 3] : (byte)255;
+					hasAlpha |= bits == 32 && dib[src + 3] != 0;
+				}
+			}
+			// older icons leave the alpha empty and use only the mask
+			if (!hasAlpha)
+			{
+				for (int y = 0; y < height; y++)
+				{
+					for (int x = 0; x < width; x++)
+					{
+						var transparent = hasMask && (dib[maskOffset + (height - 1 - y) * maskStride + x / 8] >> (7 - x % 8) & 1) != 0;
+						rgba[(y * width + x) * 4 + 3] = transparent ? (byte)0 : (byte)255;
+					}
+				}
+			}
+			return EncodePng(width, height, rgba);
+		}
+
+		static byte[] EncodePng(int width, int height, byte[] rgba)
+		{
+			// zlib stream: header, deflated rows each starting with filter type 0, and the Adler-32 of the rows
+			var zlib = new MemoryStream();
+			zlib.WriteByte(0x78);
+			zlib.WriteByte(0x9C);
+			uint a = 1, b = 0;
+			using (var deflate = new System.IO.Compression.DeflateStream(zlib, System.IO.Compression.CompressionLevel.Optimal, true))
+			{
+				var row = new byte[width * 4 + 1];
+				for (int y = 0; y < height; y++)
+				{
+					Array.Copy(rgba, y * width * 4, row, 1, width * 4);
+					deflate.Write(row, 0, row.Length);
+					foreach (var value in row)
+					{
+						a = (a + value) % 65521;
+						b = (b + a) % 65521;
+					}
+				}
+			}
+			WriteBigEndian(zlib, b << 16 | a);
+
+			var png = new MemoryStream();
+			png.Write(PngSignature, 0, PngSignature.Length);
+			var header = new MemoryStream();
+			WriteBigEndian(header, (uint)width);
+			WriteBigEndian(header, (uint)height);
+			// 8 bits per channel, RGBA, default compression, filtering and no interlacing
+			header.Write(new byte[] { 8, 6, 0, 0, 0 }, 0, 5);
+			WriteChunk(png, "IHDR", header.ToArray());
+			WriteChunk(png, "IDAT", zlib.ToArray());
+			WriteChunk(png, "IEND", new byte[0]);
+			return png.ToArray();
+		}
+
+		static void WriteChunk(Stream stream, string type, byte[] data)
+		{
+			var typeBytes = Encoding.ASCII.GetBytes(type);
+			WriteBigEndian(stream, (uint)data.Length);
+			stream.Write(typeBytes, 0, 4);
+			stream.Write(data, 0, data.Length);
+			var crc = 0xFFFFFFFFu;
+			foreach (var value in typeBytes.Concat(data))
+			{
+				crc ^= value;
+				for (int k = 0; k < 8; k++)
+					crc = (crc & 1) != 0 ? 0xEDB88320 ^ (crc >> 1) : crc >> 1;
+			}
+			WriteBigEndian(stream, ~crc);
+		}
+
+		static void WriteBigEndian(Stream stream, uint value)
+		{
+			stream.WriteByte((byte)(value >> 24));
+			stream.WriteByte((byte)(value >> 16));
+			stream.WriteByte((byte)(value >> 8));
+			stream.WriteByte((byte)value);
 		}
 
 		static bool IsPng(byte[] data) => data.Length >= PngSignature.Length && PngSignature.SequenceEqual(data.Take(PngSignature.Length));
@@ -1563,6 +1714,374 @@ namespace Eto.Windows.Build
 			static extern uint MsiGetLastErrorRecord();
 			[DllImport("msi.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
 			static extern uint MsiFormatRecordW(uint hInstall, uint hRecord, StringBuilder szResultBuf, ref uint pcchResultBuf);
+		}
+	}
+
+	/// <summary>
+	/// The MSIX packaging API in appxpackaging.dll, which comes with Windows.
+	/// </summary>
+	static class Appx
+	{
+		// lets Windows install the package without a signature, e.g. Add-AppxPackage -AllowUnsigned
+		public const string UnsignedPublisherOid = "OID.2.25.311729368913984317654407730594956997722=1";
+
+		/// <summary>MSIX versions are major.minor.build.revision, each up to 65535.</summary>
+		public static string PackageVersion(string version, TaskLoggingHelper log)
+		{
+			var match = Regex.Match(version ?? string.Empty, @"^\s*(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?");
+			if (!match.Success)
+			{
+				log.LogWarning("'{0}' isn't a version number, so the msix uses 1.0.0.0.", version);
+				return "1.0.0.0";
+			}
+			var parts = Enumerable.Range(1, 4).Select(i => match.Groups[i].Success ? long.Parse(match.Groups[i].Value) : 0).ToArray();
+			if (parts.Any(r => r > 65535))
+				log.LogError("Version {0} can't be used by an msix, which allows at most 65535.65535.65535.65535. Set WindowsPackageVersion.", version);
+			return string.Join(".", parts);
+		}
+
+		public static ulong PackedVersion(string version) => version.Split('.').Aggregate(0UL, (all, part) => all << 16 | ulong.Parse(part));
+
+		/// <summary>Quotes a distinguished name's value when it has characters that would otherwise end it.</summary>
+		public static string QuoteName(string value) => Regex.IsMatch(value, "[,+=\"<>#;]") || value.Trim() != value
+			? "\"" + value.Replace("\"", "\"\"") + "\""
+			: value;
+
+		public static IStream OpenRead(string path) => SHCreateStreamOnFileEx(path, StgmRead | StgmShareDenyWrite, FileAttributeNormal, false, IntPtr.Zero);
+
+		public static IStream Create(string path) => SHCreateStreamOnFileEx(path, StgmCreate | StgmWrite | StgmShareExclusive, FileAttributeNormal, true, IntPtr.Zero);
+
+		public static IAppxFactory CreateFactory() => (IAppxFactory)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("5842a140-ff9f-4166-8f5c-62f5b7b0c781")));
+
+		public static IAppxBundleFactory CreateBundleFactory() => (IAppxBundleFactory)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("378E0446-5384-43B7-8877-E7DBDD883446")));
+
+		public static void Release(object com)
+		{
+			if (com != null)
+				Marshal.FinalReleaseComObject(com);
+		}
+
+		public static string Describe(Exception ex) => ex is COMException
+			? $"{ex.Message} (0x{ex.HResult:X8}). Event Viewer has the details, under Applications and Services Logs > Microsoft > Windows > AppxPackagingOM."
+			: ex.Message;
+
+		const uint StgmRead = 0, StgmWrite = 1, StgmShareExclusive = 0x10, StgmShareDenyWrite = 0x20, StgmCreate = 0x1000;
+		const uint FileAttributeNormal = 0x80;
+
+		[DllImport("shlwapi.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
+		static extern IStream SHCreateStreamOnFileEx(string pszFile, uint grfMode, uint dwAttributes, bool fCreate, IntPtr pstmTemplate);
+
+		[DllImport("urlmon.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
+		public static extern IntPtr CreateUri(string pwzURI, uint dwFlags, UIntPtr dwReserved);
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct PackageSettings
+		{
+			public int ForceZip32;
+			public IntPtr HashMethod;
+		}
+
+		// only the methods used are declared; the rest come after them in each interface
+		[ComImport, Guid("beb94909-e451-438b-b5a7-d79e767b75d8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IAppxFactory
+		{
+			IAppxPackageWriter CreatePackageWriter(IStream outputStream, ref PackageSettings settings);
+		}
+
+		[ComImport, Guid("9099e33b-246f-41e4-881a-008eb613f858"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IAppxPackageWriter
+		{
+			void AddPayloadFile([MarshalAs(UnmanagedType.LPWStr)] string fileName, [MarshalAs(UnmanagedType.LPWStr)] string contentType, int compressionOption, IStream inputStream);
+			void Close(IStream manifest);
+		}
+
+		[ComImport, Guid("BBA65864-965F-4A5F-855F-F074BDBF3A7B"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IAppxBundleFactory
+		{
+			IAppxBundleWriter CreateBundleWriter(IStream outputStream, ulong bundleVersion);
+		}
+
+		[ComImport, Guid("EC446FE8-BFEC-4C64-AB4F-49F038F0C6D2"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		public interface IAppxBundleWriter
+		{
+			void AddPayloadPackage([MarshalAs(UnmanagedType.LPWStr)] string fileName, IStream packageStream);
+			void Close();
+		}
+	}
+
+	/// <summary>
+	/// Creates an MSIX package with the packaging API that comes with Windows.
+	/// </summary>
+	public class WriteMsixPackage : Task
+	{
+		/// <summary>Files to install, with TargetPath relative to the package's root.</summary>
+		[Required]
+		public ITaskItem[] Files { get; set; }
+		/// <summary>Path of the app's executable relative to the package's root.</summary>
+		[Required]
+		public string MainExecutable { get; set; }
+		/// <summary>Package name that identifies the app; letters, numbers, periods and dashes.</summary>
+		[Required]
+		public string IdentityName { get; set; }
+		[Required]
+		public string DisplayName { get; set; }
+		public string PublisherDisplayName { get; set; }
+		public string Description { get; set; }
+		[Required]
+		public string Version { get; set; }
+		/// <summary>x86, x64, arm64 or neutral.</summary>
+		[Required]
+		public string Architecture { get; set; }
+		/// <summary>.ico or .png logo, used before IconFile.</summary>
+		public string Image { get; set; }
+		public string IconFile { get; set; }
+		/// <summary>Culture the package is in, e.g. en-US.</summary>
+		public string Language { get; set; }
+		/// <summary>Distinguished name that must match the signing certificate's subject; read from the certificate when empty.</summary>
+		public string Publisher { get; set; }
+		public string CertificateFile { get; set; }
+		public string CertificatePassword { get; set; }
+		public string CertificateThumbprint { get; set; }
+		/// <summary>Whether the package will be signed; without a publisher or certificate it then can't be created.</summary>
+		public bool Signed { get; set; }
+		[Required]
+		public string OutputFile { get; set; }
+		[Required]
+		public string WorkDirectory { get; set; }
+
+		const string LogoFile = "PackageLogo.png";
+
+		public override bool Execute()
+		{
+			var version = Appx.PackageVersion(Version, Log);
+			if (!Regex.IsMatch(IdentityName ?? string.Empty, @"^[A-Za-z0-9.-]{3,50}$") || IdentityName.EndsWith(".", StringComparison.Ordinal))
+				Log.LogError("'{0}' can't be used as the msix's name, which must be 3 to 50 letters, numbers, periods or dashes, not ending in a period. Set WindowsPackageIdentityName.", IdentityName);
+			var publisher = GetPublisher();
+			if (Log.HasLoggedErrors)
+				return false;
+
+			Directory.CreateDirectory(WorkDirectory);
+			var logo = Path.Combine(WorkDirectory, LogoFile);
+			File.WriteAllBytes(logo, LoadLogo());
+			var manifest = Path.Combine(WorkDirectory, "AppxManifest.xml");
+			WriteManifest(manifest, publisher, version);
+
+			var files = Files.Select(r => new { Source = r.GetMetadata("FullPath"), Target = r.GetMetadata("TargetPath").Replace('/', '\\') }).ToList();
+			if (files.Any(r => string.Equals(r.Target, LogoFile, StringComparison.OrdinalIgnoreCase)))
+				Log.LogError("The app has a file named {0}, which the msix uses for its logo.", LogoFile);
+			if (Log.HasLoggedErrors)
+				return false;
+			files.Add(new { Source = logo, Target = LogoFile });
+
+			Log.LogMessage("Creating msix with publisher {0}", publisher);
+			Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+			IStream output = null;
+			Appx.IAppxPackageWriter writer = null;
+			var hashMethod = IntPtr.Zero;
+			var succeeded = false;
+			try
+			{
+				hashMethod = Appx.CreateUri("http://www.w3.org/2001/04/xmlenc#sha256", 0, UIntPtr.Zero);
+				var settings = new Appx.PackageSettings { HashMethod = hashMethod };
+				output = Appx.Create(OutputFile);
+				writer = Appx.CreateFactory().CreatePackageWriter(output, ref settings);
+				foreach (var file in files)
+				{
+					var input = Appx.OpenRead(file.Source);
+					try
+					{
+						writer.AddPayloadFile(file.Target, "application/octet-stream", 1, input);
+					}
+					finally
+					{
+						Appx.Release(input);
+					}
+				}
+				var manifestStream = Appx.OpenRead(manifest);
+				try
+				{
+					writer.Close(manifestStream);
+				}
+				finally
+				{
+					Appx.Release(manifestStream);
+				}
+				succeeded = true;
+			}
+			catch (Exception ex)
+			{
+				Log.LogError("The msix couldn't be created: {0}", Appx.Describe(ex));
+			}
+			finally
+			{
+				// the file stays open until both are released
+				Appx.Release(writer);
+				Appx.Release(output);
+				if (hashMethod != IntPtr.Zero)
+					Marshal.Release(hashMethod);
+				if (!succeeded && File.Exists(OutputFile))
+					File.Delete(OutputFile);
+			}
+			return !Log.HasLoggedErrors;
+		}
+
+		string GetPublisher()
+		{
+			if (!string.IsNullOrWhiteSpace(Publisher))
+				return Publisher.Trim();
+			try
+			{
+				if (!string.IsNullOrEmpty(CertificateFile))
+				{
+					using (var certificate = new X509Certificate2(CertificateFile, CertificatePassword))
+						return certificate.Subject;
+				}
+				if (!string.IsNullOrEmpty(CertificateThumbprint))
+				{
+					var thumbprint = CertificateThumbprint.Replace(" ", "");
+					foreach (var location in new[] { StoreLocation.CurrentUser, StoreLocation.LocalMachine })
+					{
+						using (var store = new X509Store(StoreName.My, location))
+						{
+							store.Open(OpenFlags.ReadOnly);
+							var found = store.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+							if (found.Count > 0)
+								return found[0].Subject;
+						}
+					}
+					Log.LogError("The certificate with thumbprint {0} isn't in your certificate store, so the msix's publisher can't be read from it.", thumbprint);
+					return null;
+				}
+			}
+			catch (CryptographicException ex)
+			{
+				Log.LogError("The msix's publisher couldn't be read from the certificate: {0}", ex.Message);
+				return null;
+			}
+			if (Signed)
+			{
+				Log.LogError("Set WindowsPackagePublisher to the subject of the certificate WindowsSignCommand signs with, e.g. CN=My Company, O=My Company, C=US, as the msix's publisher must match it.");
+				return null;
+			}
+			var name = string.IsNullOrWhiteSpace(PublisherDisplayName) ? DisplayName : PublisherDisplayName.Trim();
+			return $"CN={Appx.QuoteName(name)}, {Appx.UnsignedPublisherOid}";
+		}
+
+		byte[] LoadLogo()
+		{
+			foreach (var path in new[] { Image, IconFile })
+			{
+				if (string.IsNullOrEmpty(path) || !File.Exists(path))
+					continue;
+				var png = IconImage.ToPng(path);
+				if (png != null)
+					return png;
+				Log.LogWarning("{0} has no image the msix can use as its logo. Use a .png, or an .ico with a 32 bit or .png image.", path);
+			}
+			Log.LogWarning("The msix has a plain logo. Set WindowsIcon or WindowsPackageImage to the app's icon.");
+			return IconImage.SolidPng(256, 0x60, 0x70, 0x80);
+		}
+
+		void WriteManifest(string path, string publisher, string version)
+		{
+			XNamespace ns = "http://schemas.microsoft.com/appx/manifest/foundation/windows10";
+			XNamespace uap = "http://schemas.microsoft.com/appx/manifest/uap/windows10";
+			XNamespace rescap = "http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities";
+			var summary = Regex.Replace((Description ?? string.Empty).Trim(), @"(?s)[\r\n].*", "");
+			var publisherDisplayName = string.IsNullOrWhiteSpace(PublisherDisplayName) ? DisplayName : PublisherDisplayName.Trim();
+			var language = (Language ?? string.Empty).Split(';').Select(r => r.Trim()).FirstOrDefault(r => r.Length > 0) ?? "en-US";
+			var document = new XDocument(
+				new XElement(ns + "Package",
+					new XAttribute(XNamespace.Xmlns + "uap", uap),
+					new XAttribute(XNamespace.Xmlns + "rescap", rescap),
+					new XAttribute("IgnorableNamespaces", "uap rescap"),
+					new XElement(ns + "Identity",
+						new XAttribute("Name", IdentityName),
+						new XAttribute("Publisher", publisher),
+						new XAttribute("Version", version),
+						new XAttribute("ProcessorArchitecture", Architecture.ToLowerInvariant())),
+					new XElement(ns + "Properties",
+						new XElement(ns + "DisplayName", DisplayName),
+						new XElement(ns + "PublisherDisplayName", publisherDisplayName),
+						summary.Length > 0 ? new XElement(ns + "Description", summary) : null,
+						new XElement(ns + "Logo", LogoFile)),
+					new XElement(ns + "Dependencies",
+						// Windows 10 1809, the first to install msix
+						new XElement(ns + "TargetDeviceFamily",
+							new XAttribute("Name", "Windows.Desktop"),
+							new XAttribute("MinVersion", "10.0.17763.0"),
+							new XAttribute("MaxVersionTested", "10.0.26100.0"))),
+					new XElement(ns + "Resources",
+						new XElement(ns + "Resource", new XAttribute("Language", language))),
+					new XElement(ns + "Applications",
+						new XElement(ns + "Application",
+							new XAttribute("Id", "App"),
+							new XAttribute("Executable", MainExecutable.Replace('/', '\\')),
+							new XAttribute("EntryPoint", "Windows.FullTrustApplication"),
+							new XElement(uap + "VisualElements",
+								new XAttribute("DisplayName", DisplayName),
+								new XAttribute("Description", summary.Length > 0 ? summary : DisplayName),
+								new XAttribute("BackgroundColor", "transparent"),
+								new XAttribute("Square150x150Logo", LogoFile),
+								new XAttribute("Square44x44Logo", LogoFile)))),
+					new XElement(ns + "Capabilities",
+						new XElement(rescap + "Capability", new XAttribute("Name", "runFullTrust")))));
+			document.Save(path);
+		}
+	}
+
+	/// <summary>
+	/// Combines MSIX packages for different architectures into one .msixbundle that installs the right one.
+	/// </summary>
+	public class WriteMsixBundle : Task
+	{
+		[Required]
+		public ITaskItem[] Packages { get; set; }
+		[Required]
+		public string Version { get; set; }
+		[Required]
+		public string OutputFile { get; set; }
+
+		public override bool Execute()
+		{
+			var version = Appx.PackedVersion(Appx.PackageVersion(Version, Log));
+			if (Log.HasLoggedErrors)
+				return false;
+			Directory.CreateDirectory(Path.GetDirectoryName(OutputFile));
+			IStream output = null;
+			Appx.IAppxBundleWriter writer = null;
+			var succeeded = false;
+			try
+			{
+				output = Appx.Create(OutputFile);
+				writer = Appx.CreateBundleFactory().CreateBundleWriter(output, version);
+				foreach (var package in Packages)
+				{
+					var input = Appx.OpenRead(package.GetMetadata("FullPath"));
+					try
+					{
+						writer.AddPayloadPackage(Path.GetFileName(package.ItemSpec), input);
+					}
+					finally
+					{
+						Appx.Release(input);
+					}
+				}
+				writer.Close();
+				succeeded = true;
+			}
+			catch (Exception ex)
+			{
+				Log.LogError("The msix bundle couldn't be created: {0}", Appx.Describe(ex));
+			}
+			finally
+			{
+				Appx.Release(writer);
+				Appx.Release(output);
+				if (!succeeded && File.Exists(OutputFile))
+					File.Delete(OutputFile);
+			}
+			return !Log.HasLoggedErrors;
 		}
 	}
 }
