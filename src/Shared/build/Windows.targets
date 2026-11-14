@@ -1,0 +1,13 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <!--
+    Properties you can set in your project file:
+
+    WindowsPackageFormats: Semicolon separated installers to create: msi, setup and/or msix.
+    See WindowsPackage.targets for everything else that can be customized.
+  -->
+
+  <!-- each Windows platform package includes this, so only import it once -->
+  <Import Project="WindowsPackage.targets" Condition="'$(WindowsPackageFormats)' != '' AND '$(_WindowsPackageImported)' != 'True'" />
+
+</Project>

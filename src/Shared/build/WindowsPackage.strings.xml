@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Text for the msi's wizard and Setup.exe, in each language they come in.
+
+  Add WindowsPackageStrings items with files in this format to change any text or add languages; strings left out
+  come from here, then from en-US. Lcid and Codepage are only needed for cultures Windows doesn't know.
+  [ProductName] is replaced with the app's title, and {0}, {1} with details such as a runtime's name.
+  Square brackets have a meaning to Windows Installer, so don't use them otherwise. & marks the access key.
+-->
+<WindowsPackageStrings>
+
+  <Language Culture="en-US" Lcid="1033" Codepage="1252">
+    <String Id="SetupTitle">[ProductName] Setup</String>
+    <String Id="WelcomeTitle">Welcome to [ProductName] Setup</String>
+    <String Id="WelcomeText">Click Install to install [ProductName] on your computer.</String>
+    <String Id="LicenseTitle">License Agreement</String>
+    <String Id="LicenseText">Please read the license agreement for [ProductName].</String>
+    <String Id="LicenseLink">The license agreement is available at:</String>
+    <String Id="LicenseAccept">I &amp;accept the terms of the license agreement</String>
+    <String Id="InstallButton">&amp;Install</String>
+    <String Id="CancelButton">Cancel</String>
+    <String Id="FinishButton">&amp;Finish</String>
+    <String Id="YesButton">&amp;Yes</String>
+    <String Id="NoButton">&amp;No</String>
+    <String Id="ProgressTitle">Installing [ProductName]</String>
+    <String Id="ProgressText">Please wait while [ProductName] is installed.</String>
+    <String Id="CancelQuestion">Are you sure you want to cancel installing [ProductName]?</String>
+    <String Id="ExitTitle">[ProductName] is installed</String>
+    <String Id="ExitText">You can also start [ProductName] from the Start menu.</String>
+    <String Id="LaunchApp">&amp;Launch [ProductName]</String>
+    <String Id="UserExitTitle">Installing was cancelled</String>
+    <String Id="UserExitText">[ProductName] wasn't installed. Nothing on your computer was changed.</String>
+    <String Id="FatalErrorTitle">Installing failed</String>
+    <String Id="FatalErrorText">[ProductName] couldn't be installed because of an error. Nothing on your computer was changed.</String>
+    <String Id="NewerVersion">A newer version of [ProductName] is already installed.</String>
+    <String Id="RuntimeMissing">[ProductName] needs the {0}. Install it from {1} and run this installer again.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] needs the following to run, which will now be downloaded from Microsoft and installed:</String>
+    <String Id="SetupDownloading">Downloading {0}...</String>
+    <String Id="SetupRuntimeFailed">Installing {0} failed with error {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} was installed, but still can't be found.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] needs {0}, which has to be installed separately.</String>
+    <String Id="SetupDownloadFailed">Downloading {0} failed: {1}</String>
+    <String Id="SetupNotSigned">The downloaded installer for {0} isn't signed correctly (error {1}), so it wasn't run.</String>
+    <String Id="SetupNotMicrosoft">The downloaded installer for {0} isn't signed by Microsoft, so it wasn't run.</String>
+  </Language>
+
+  <Language Culture="de-DE" Lcid="1031" Codepage="1252">
+    <String Id="SetupTitle">[ProductName] Setup</String>
+    <String Id="WelcomeTitle">Willkommen beim Setup von [ProductName]</String>
+    <String Id="WelcomeText">Klicken Sie auf „Installieren“, um [ProductName] auf Ihrem Computer zu installieren.</String>
+    <String Id="LicenseTitle">Lizenzvereinbarung</String>
+    <String Id="LicenseText">Bitte lesen Sie die Lizenzvereinbarung für [ProductName].</String>
+    <String Id="LicenseLink">Die Lizenzvereinbarung finden Sie unter:</String>
+    <String Id="LicenseAccept">Ich &amp;akzeptiere die Bedingungen der Lizenzvereinbarung</String>
+    <String Id="InstallButton">&amp;Installieren</String>
+    <String Id="CancelButton">Abbrechen</String>
+    <String Id="FinishButton">&amp;Fertig stellen</String>
+    <String Id="YesButton">&amp;Ja</String>
+    <String Id="NoButton">&amp;Nein</String>
+    <String Id="ProgressTitle">[ProductName] wird installiert</String>
+    <String Id="ProgressText">Bitte warten Sie, während [ProductName] installiert wird.</String>
+    <String Id="CancelQuestion">Möchten Sie die Installation von [ProductName] wirklich abbrechen?</String>
+    <String Id="ExitTitle">[ProductName] wurde installiert</String>
+    <String Id="ExitText">Sie können [ProductName] auch über das Startmenü starten.</String>
+    <String Id="LaunchApp">[ProductName] &amp;starten</String>
+    <String Id="UserExitTitle">Die Installation wurde abgebrochen</String>
+    <String Id="UserExitText">[ProductName] wurde nicht installiert. Auf Ihrem Computer wurde nichts geändert.</String>
+    <String Id="FatalErrorTitle">Die Installation ist fehlgeschlagen</String>
+    <String Id="FatalErrorText">[ProductName] konnte aufgrund eines Fehlers nicht installiert werden. Auf Ihrem Computer wurde nichts geändert.</String>
+    <String Id="NewerVersion">Eine neuere Version von [ProductName] ist bereits installiert.</String>
+    <String Id="RuntimeMissing">[ProductName] benötigt die {0}. Installieren Sie sie von {1}, und führen Sie dieses Installationsprogramm erneut aus.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] benötigt Folgendes, das jetzt von Microsoft heruntergeladen und installiert wird:</String>
+    <String Id="SetupDownloading">{0} wird heruntergeladen...</String>
+    <String Id="SetupRuntimeFailed">Die Installation von {0} ist mit Fehler {1} fehlgeschlagen.</String>
+    <String Id="SetupRuntimeNotFound">{0} wurde installiert, wird aber trotzdem nicht gefunden.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] benötigt {0}, das separat installiert werden muss.</String>
+    <String Id="SetupDownloadFailed">Das Herunterladen von {0} ist fehlgeschlagen: {1}</String>
+    <String Id="SetupNotSigned">Das heruntergeladene Installationsprogramm für {0} ist nicht korrekt signiert (Fehler {1}) und wurde daher nicht ausgeführt.</String>
+    <String Id="SetupNotMicrosoft">Das heruntergeladene Installationsprogramm für {0} ist nicht von Microsoft signiert und wurde daher nicht ausgeführt.</String>
+  </Language>
+
+  <Language Culture="fr-FR" Lcid="1036" Codepage="1252">
+    <String Id="SetupTitle">Installation de [ProductName]</String>
+    <String Id="WelcomeTitle">Bienvenue dans l'installation de [ProductName]</String>
+    <String Id="WelcomeText">Cliquez sur Installer pour installer [ProductName] sur votre ordinateur.</String>
+    <String Id="LicenseTitle">Contrat de licence</String>
+    <String Id="LicenseText">Veuillez lire le contrat de licence de [ProductName].</String>
+    <String Id="LicenseLink">Le contrat de licence est disponible à l'adresse :</String>
+    <String Id="LicenseAccept">J'&amp;accepte les termes du contrat de licence</String>
+    <String Id="InstallButton">&amp;Installer</String>
+    <String Id="CancelButton">Annuler</String>
+    <String Id="FinishButton">&amp;Terminer</String>
+    <String Id="YesButton">&amp;Oui</String>
+    <String Id="NoButton">&amp;Non</String>
+    <String Id="ProgressTitle">Installation de [ProductName]</String>
+    <String Id="ProgressText">Veuillez patienter pendant l'installation de [ProductName].</String>
+    <String Id="CancelQuestion">Voulez-vous vraiment annuler l'installation de [ProductName] ?</String>
+    <String Id="ExitTitle">[ProductName] est installé</String>
+    <String Id="ExitText">Vous pouvez aussi démarrer [ProductName] depuis le menu Démarrer.</String>
+    <String Id="LaunchApp">&amp;Lancer [ProductName]</String>
+    <String Id="UserExitTitle">L'installation a été annulée</String>
+    <String Id="UserExitText">[ProductName] n'a pas été installé. Aucune modification n'a été apportée à votre ordinateur.</String>
+    <String Id="FatalErrorTitle">L'installation a échoué</String>
+    <String Id="FatalErrorText">[ProductName] n'a pas pu être installé en raison d'une erreur. Aucune modification n'a été apportée à votre ordinateur.</String>
+    <String Id="NewerVersion">Une version plus récente de [ProductName] est déjà installée.</String>
+    <String Id="RuntimeMissing">[ProductName] nécessite le {0}. Installez-le depuis {1}, puis relancez ce programme d'installation.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] a besoin des éléments suivants, qui vont maintenant être téléchargés depuis Microsoft et installés :</String>
+    <String Id="SetupDownloading">Téléchargement de {0}...</String>
+    <String Id="SetupRuntimeFailed">L'installation de {0} a échoué avec l'erreur {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} a été installé, mais reste introuvable.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] nécessite {0}, qui doit être installé séparément.</String>
+    <String Id="SetupDownloadFailed">Le téléchargement de {0} a échoué : {1}</String>
+    <String Id="SetupNotSigned">Le programme d'installation téléchargé pour {0} n'est pas correctement signé (erreur {1}), il n'a donc pas été exécuté.</String>
+    <String Id="SetupNotMicrosoft">Le programme d'installation téléchargé pour {0} n'est pas signé par Microsoft, il n'a donc pas été exécuté.</String>
+  </Language>
+
+  <Language Culture="es-ES" Lcid="3082" Codepage="1252">
+    <String Id="SetupTitle">Instalación de [ProductName]</String>
+    <String Id="WelcomeTitle">Bienvenido a la instalación de [ProductName]</String>
+    <String Id="WelcomeText">Haga clic en Instalar para instalar [ProductName] en su equipo.</String>
+    <String Id="LicenseTitle">Contrato de licencia</String>
+    <String Id="LicenseText">Lea el contrato de licencia de [ProductName].</String>
+    <String Id="LicenseLink">El contrato de licencia está disponible en:</String>
+    <String Id="LicenseAccept">&amp;Acepto los términos del contrato de licencia</String>
+    <String Id="InstallButton">&amp;Instalar</String>
+    <String Id="CancelButton">Cancelar</String>
+    <String Id="FinishButton">&amp;Finalizar</String>
+    <String Id="YesButton">&amp;Sí</String>
+    <String Id="NoButton">&amp;No</String>
+    <String Id="ProgressTitle">Instalando [ProductName]</String>
+    <String Id="ProgressText">Espere mientras se instala [ProductName].</String>
+    <String Id="CancelQuestion">¿Seguro que desea cancelar la instalación de [ProductName]?</String>
+    <String Id="ExitTitle">[ProductName] está instalado</String>
+    <String Id="ExitText">También puede iniciar [ProductName] desde el menú Inicio.</String>
+    <String Id="LaunchApp">&amp;Iniciar [ProductName]</String>
+    <String Id="UserExitTitle">Se canceló la instalación</String>
+    <String Id="UserExitText">[ProductName] no se instaló. No se realizó ningún cambio en su equipo.</String>
+    <String Id="FatalErrorTitle">Error en la instalación</String>
+    <String Id="FatalErrorText">[ProductName] no se pudo instalar debido a un error. No se realizó ningún cambio en su equipo.</String>
+    <String Id="NewerVersion">Ya hay instalada una versión más reciente de [ProductName].</String>
+    <String Id="RuntimeMissing">[ProductName] necesita {0}. Instálelo desde {1} y vuelva a ejecutar este instalador.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] necesita lo siguiente para ejecutarse, que ahora se descargará de Microsoft y se instalará:</String>
+    <String Id="SetupDownloading">Descargando {0}...</String>
+    <String Id="SetupRuntimeFailed">Error {1} al instalar {0}.</String>
+    <String Id="SetupRuntimeNotFound">{0} se instaló, pero sigue sin encontrarse.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] necesita {0}, que debe instalarse por separado.</String>
+    <String Id="SetupDownloadFailed">Error al descargar {0}: {1}</String>
+    <String Id="SetupNotSigned">El instalador descargado de {0} no está firmado correctamente (error {1}), por lo que no se ejecutó.</String>
+    <String Id="SetupNotMicrosoft">El instalador descargado de {0} no está firmado por Microsoft, por lo que no se ejecutó.</String>
+  </Language>
+
+  <Language Culture="it-IT" Lcid="1040" Codepage="1252">
+    <String Id="SetupTitle">Installazione di [ProductName]</String>
+    <String Id="WelcomeTitle">Installazione di [ProductName]</String>
+    <String Id="WelcomeText">Fare clic su Installa per installare [ProductName] nel computer.</String>
+    <String Id="LicenseTitle">Contratto di licenza</String>
+    <String Id="LicenseText">Leggere il contratto di licenza di [ProductName].</String>
+    <String Id="LicenseLink">Il contratto di licenza è disponibile all'indirizzo:</String>
+    <String Id="LicenseAccept">&amp;Accetto i termini del contratto di licenza</String>
+    <String Id="InstallButton">&amp;Installa</String>
+    <String Id="CancelButton">Annulla</String>
+    <String Id="FinishButton">&amp;Fine</String>
+    <String Id="YesButton">&amp;Sì</String>
+    <String Id="NoButton">&amp;No</String>
+    <String Id="ProgressTitle">Installazione di [ProductName] in corso</String>
+    <String Id="ProgressText">Attendere il completamento dell'installazione di [ProductName].</String>
+    <String Id="CancelQuestion">Annullare l'installazione di [ProductName]?</String>
+    <String Id="ExitTitle">[ProductName] è stato installato</String>
+    <String Id="ExitText">È anche possibile avviare [ProductName] dal menu Start.</String>
+    <String Id="LaunchApp">A&amp;vvia [ProductName]</String>
+    <String Id="UserExitTitle">L'installazione è stata annullata</String>
+    <String Id="UserExitText">[ProductName] non è stato installato. Nel computer non è stato modificato nulla.</String>
+    <String Id="FatalErrorTitle">Installazione non riuscita</String>
+    <String Id="FatalErrorText">Impossibile installare [ProductName] a causa di un errore. Nel computer non è stato modificato nulla.</String>
+    <String Id="NewerVersion">È già installata una versione più recente di [ProductName].</String>
+    <String Id="RuntimeMissing">[ProductName] richiede {0}. Installarlo da {1} ed eseguire di nuovo questo programma di installazione.</String>
+    <String Id="SetupRuntimeDownload">Per l'esecuzione di [ProductName] sono necessari i componenti seguenti, che verranno ora scaricati da Microsoft e installati:</String>
+    <String Id="SetupDownloading">Download di {0} in corso...</String>
+    <String Id="SetupRuntimeFailed">Installazione di {0} non riuscita con errore {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} è stato installato, ma non è ancora possibile trovarlo.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] richiede {0}, che deve essere installato separatamente.</String>
+    <String Id="SetupDownloadFailed">Download di {0} non riuscito: {1}</String>
+    <String Id="SetupNotSigned">Il programma di installazione scaricato per {0} non è firmato correttamente (errore {1}), quindi non è stato eseguito.</String>
+    <String Id="SetupNotMicrosoft">Il programma di installazione scaricato per {0} non è firmato da Microsoft, quindi non è stato eseguito.</String>
+  </Language>
+
+  <Language Culture="pt-BR" Lcid="1046" Codepage="1252">
+    <String Id="SetupTitle">Instalação de [ProductName]</String>
+    <String Id="WelcomeTitle">Bem-vindo à instalação de [ProductName]</String>
+    <String Id="WelcomeText">Clique em Instalar para instalar [ProductName] no seu computador.</String>
+    <String Id="LicenseTitle">Contrato de Licença</String>
+    <String Id="LicenseText">Leia o contrato de licença de [ProductName].</String>
+    <String Id="LicenseLink">O contrato de licença está disponível em:</String>
+    <String Id="LicenseAccept">Eu &amp;aceito os termos do contrato de licença</String>
+    <String Id="InstallButton">&amp;Instalar</String>
+    <String Id="CancelButton">Cancelar</String>
+    <String Id="FinishButton">&amp;Concluir</String>
+    <String Id="YesButton">&amp;Sim</String>
+    <String Id="NoButton">&amp;Não</String>
+    <String Id="ProgressTitle">Instalando [ProductName]</String>
+    <String Id="ProgressText">Aguarde enquanto [ProductName] é instalado.</String>
+    <String Id="CancelQuestion">Tem certeza de que deseja cancelar a instalação de [ProductName]?</String>
+    <String Id="ExitTitle">[ProductName] foi instalado</String>
+    <String Id="ExitText">Você também pode iniciar [ProductName] pelo menu Iniciar.</String>
+    <String Id="LaunchApp">&amp;Iniciar [ProductName]</String>
+    <String Id="UserExitTitle">A instalação foi cancelada</String>
+    <String Id="UserExitText">[ProductName] não foi instalado. Nada foi alterado no seu computador.</String>
+    <String Id="FatalErrorTitle">Falha na instalação</String>
+    <String Id="FatalErrorText">Não foi possível instalar [ProductName] devido a um erro. Nada foi alterado no seu computador.</String>
+    <String Id="NewerVersion">Uma versão mais recente de [ProductName] já está instalada.</String>
+    <String Id="RuntimeMissing">[ProductName] precisa do {0}. Instale-o a partir de {1} e execute este instalador novamente.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] precisa dos seguintes itens para ser executado, que agora serão baixados da Microsoft e instalados:</String>
+    <String Id="SetupDownloading">Baixando {0}...</String>
+    <String Id="SetupRuntimeFailed">Falha ao instalar {0}, com o erro {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} foi instalado, mas ainda não foi encontrado.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] precisa do {0}, que deve ser instalado separadamente.</String>
+    <String Id="SetupDownloadFailed">Falha ao baixar {0}: {1}</String>
+    <String Id="SetupNotSigned">O instalador baixado de {0} não está assinado corretamente (erro {1}), por isso não foi executado.</String>
+    <String Id="SetupNotMicrosoft">O instalador baixado de {0} não está assinado pela Microsoft, por isso não foi executado.</String>
+  </Language>
+
+  <Language Culture="nl-NL" Lcid="1043" Codepage="1252">
+    <String Id="SetupTitle">Installatie van [ProductName]</String>
+    <String Id="WelcomeTitle">Welkom bij de installatie van [ProductName]</String>
+    <String Id="WelcomeText">Klik op Installeren om [ProductName] op uw computer te installeren.</String>
+    <String Id="LicenseTitle">Licentieovereenkomst</String>
+    <String Id="LicenseText">Lees de licentieovereenkomst voor [ProductName].</String>
+    <String Id="LicenseLink">De licentieovereenkomst is beschikbaar op:</String>
+    <String Id="LicenseAccept">Ik &amp;ga akkoord met de voorwaarden van de licentieovereenkomst</String>
+    <String Id="InstallButton">&amp;Installeren</String>
+    <String Id="CancelButton">Annuleren</String>
+    <String Id="FinishButton">&amp;Voltooien</String>
+    <String Id="YesButton">&amp;Ja</String>
+    <String Id="NoButton">&amp;Nee</String>
+    <String Id="ProgressTitle">[ProductName] wordt geïnstalleerd</String>
+    <String Id="ProgressText">Een ogenblik geduld terwijl [ProductName] wordt geïnstalleerd.</String>
+    <String Id="CancelQuestion">Weet u zeker dat u de installatie van [ProductName] wilt annuleren?</String>
+    <String Id="ExitTitle">[ProductName] is geïnstalleerd</String>
+    <String Id="ExitText">U kunt [ProductName] ook starten vanuit het menu Start.</String>
+    <String Id="LaunchApp">[ProductName] &amp;starten</String>
+    <String Id="UserExitTitle">De installatie is geannuleerd</String>
+    <String Id="UserExitText">[ProductName] is niet geïnstalleerd. Er is niets op uw computer gewijzigd.</String>
+    <String Id="FatalErrorTitle">De installatie is mislukt</String>
+    <String Id="FatalErrorText">[ProductName] kan niet worden geïnstalleerd vanwege een fout. Er is niets op uw computer gewijzigd.</String>
+    <String Id="NewerVersion">Er is al een nieuwere versie van [ProductName] geïnstalleerd.</String>
+    <String Id="RuntimeMissing">[ProductName] vereist de {0}. Installeer deze via {1} en voer dit installatieprogramma opnieuw uit.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] heeft het volgende nodig om te worden uitgevoerd. Dit wordt nu gedownload van Microsoft en geïnstalleerd:</String>
+    <String Id="SetupDownloading">{0} downloaden...</String>
+    <String Id="SetupRuntimeFailed">Het installeren van {0} is mislukt met fout {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} is geïnstalleerd, maar kan nog steeds niet worden gevonden.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] vereist {0}, dat afzonderlijk moet worden geïnstalleerd.</String>
+    <String Id="SetupDownloadFailed">Het downloaden van {0} is mislukt: {1}</String>
+    <String Id="SetupNotSigned">Het gedownloade installatieprogramma voor {0} is niet correct ondertekend (fout {1}) en is daarom niet uitgevoerd.</String>
+    <String Id="SetupNotMicrosoft">Het gedownloade installatieprogramma voor {0} is niet door Microsoft ondertekend en is daarom niet uitgevoerd.</String>
+  </Language>
+
+  <Language Culture="pl-PL" Lcid="1045" Codepage="1250">
+    <String Id="SetupTitle">Instalator programu [ProductName]</String>
+    <String Id="WelcomeTitle">Witamy w instalatorze programu [ProductName]</String>
+    <String Id="WelcomeText">Kliknij przycisk Zainstaluj, aby zainstalować program [ProductName] na komputerze.</String>
+    <String Id="LicenseTitle">Umowa licencyjna</String>
+    <String Id="LicenseText">Przeczytaj umowę licencyjną programu [ProductName].</String>
+    <String Id="LicenseLink">Umowa licencyjna jest dostępna pod adresem:</String>
+    <String Id="LicenseAccept">&amp;Akceptuję warunki umowy licencyjnej</String>
+    <String Id="InstallButton">&amp;Zainstaluj</String>
+    <String Id="CancelButton">Anuluj</String>
+    <String Id="FinishButton">Za&amp;kończ</String>
+    <String Id="YesButton">&amp;Tak</String>
+    <String Id="NoButton">&amp;Nie</String>
+    <String Id="ProgressTitle">Instalowanie programu [ProductName]</String>
+    <String Id="ProgressText">Poczekaj, aż program [ProductName] zostanie zainstalowany.</String>
+    <String Id="CancelQuestion">Czy na pewno chcesz anulować instalację programu [ProductName]?</String>
+    <String Id="ExitTitle">Program [ProductName] został zainstalowany</String>
+    <String Id="ExitText">Program [ProductName] możesz też uruchomić z menu Start.</String>
+    <String Id="LaunchApp">&amp;Uruchom program [ProductName]</String>
+    <String Id="UserExitTitle">Instalacja została anulowana</String>
+    <String Id="UserExitText">Program [ProductName] nie został zainstalowany. Na komputerze nic nie zostało zmienione.</String>
+    <String Id="FatalErrorTitle">Instalacja nie powiodła się</String>
+    <String Id="FatalErrorText">Nie można zainstalować programu [ProductName] z powodu błędu. Na komputerze nic nie zostało zmienione.</String>
+    <String Id="NewerVersion">Nowsza wersja programu [ProductName] jest już zainstalowana.</String>
+    <String Id="RuntimeMissing">Program [ProductName] wymaga składnika {0}. Zainstaluj go ze strony {1} i ponownie uruchom ten instalator.</String>
+    <String Id="SetupRuntimeDownload">Program [ProductName] wymaga do działania następujących składników, które zostaną teraz pobrane od firmy Microsoft i zainstalowane:</String>
+    <String Id="SetupDownloading">Pobieranie: {0}...</String>
+    <String Id="SetupRuntimeFailed">Instalacja składnika {0} nie powiodła się (błąd {1}).</String>
+    <String Id="SetupRuntimeNotFound">Składnik {0} został zainstalowany, ale nadal nie można go znaleźć.</String>
+    <String Id="SetupRuntimeUnsupported">Program [ProductName] wymaga składnika {0}, który trzeba zainstalować osobno.</String>
+    <String Id="SetupDownloadFailed">Nie można pobrać {0}: {1}</String>
+    <String Id="SetupNotSigned">Pobrany instalator składnika {0} nie jest poprawnie podpisany (błąd {1}), więc nie został uruchomiony.</String>
+    <String Id="SetupNotMicrosoft">Pobrany instalator składnika {0} nie jest podpisany przez firmę Microsoft, więc nie został uruchomiony.</String>
+  </Language>
+
+  <Language Culture="cs-CZ" Lcid="1029" Codepage="1250">
+    <String Id="SetupTitle">Instalace aplikace [ProductName]</String>
+    <String Id="WelcomeTitle">Vítá vás instalace aplikace [ProductName]</String>
+    <String Id="WelcomeText">Kliknutím na Nainstalovat nainstalujete aplikaci [ProductName] do počítače.</String>
+    <String Id="LicenseTitle">Licenční smlouva</String>
+    <String Id="LicenseText">Přečtěte si licenční smlouvu k aplikaci [ProductName].</String>
+    <String Id="LicenseLink">Licenční smlouva je k dispozici na adrese:</String>
+    <String Id="LicenseAccept">&amp;Souhlasím s podmínkami licenční smlouvy</String>
+    <String Id="InstallButton">&amp;Nainstalovat</String>
+    <String Id="CancelButton">Zrušit</String>
+    <String Id="FinishButton">&amp;Dokončit</String>
+    <String Id="YesButton">&amp;Ano</String>
+    <String Id="NoButton">&amp;Ne</String>
+    <String Id="ProgressTitle">Instalace aplikace [ProductName]</String>
+    <String Id="ProgressText">Počkejte prosím, než se aplikace [ProductName] nainstaluje.</String>
+    <String Id="CancelQuestion">Opravdu chcete zrušit instalaci aplikace [ProductName]?</String>
+    <String Id="ExitTitle">Aplikace [ProductName] je nainstalovaná</String>
+    <String Id="ExitText">Aplikaci [ProductName] můžete spustit také z nabídky Start.</String>
+    <String Id="LaunchApp">&amp;Spustit aplikaci [ProductName]</String>
+    <String Id="UserExitTitle">Instalace byla zrušena</String>
+    <String Id="UserExitText">Aplikace [ProductName] nebyla nainstalována. V počítači se nic nezměnilo.</String>
+    <String Id="FatalErrorTitle">Instalace se nezdařila</String>
+    <String Id="FatalErrorText">Aplikaci [ProductName] se kvůli chybě nepodařilo nainstalovat. V počítači se nic nezměnilo.</String>
+    <String Id="NewerVersion">Novější verze aplikace [ProductName] je už nainstalovaná.</String>
+    <String Id="RuntimeMissing">Aplikace [ProductName] vyžaduje {0}. Nainstalujte ho z adresy {1} a spusťte tento instalační program znovu.</String>
+    <String Id="SetupRuntimeDownload">Aplikace [ProductName] ke spuštění potřebuje následující součásti, které se teď stáhnou od společnosti Microsoft a nainstalují:</String>
+    <String Id="SetupDownloading">Stahování: {0}...</String>
+    <String Id="SetupRuntimeFailed">Instalace {0} se nezdařila s chybou {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} se nainstaloval, ale stále se nedá najít.</String>
+    <String Id="SetupRuntimeUnsupported">Aplikace [ProductName] vyžaduje {0}, který je potřeba nainstalovat samostatně.</String>
+    <String Id="SetupDownloadFailed">Stažení {0} se nezdařilo: {1}</String>
+    <String Id="SetupNotSigned">Stažený instalační program pro {0} není správně podepsaný (chyba {1}), proto nebyl spuštěn.</String>
+    <String Id="SetupNotMicrosoft">Stažený instalační program pro {0} není podepsaný společností Microsoft, proto nebyl spuštěn.</String>
+  </Language>
+
+  <Language Culture="ru-RU" Lcid="1049" Codepage="1251">
+    <String Id="SetupTitle">Установка [ProductName]</String>
+    <String Id="WelcomeTitle">Вас приветствует программа установки [ProductName]</String>
+    <String Id="WelcomeText">Нажмите «Установить», чтобы установить [ProductName] на этот компьютер.</String>
+    <String Id="LicenseTitle">Лицензионное соглашение</String>
+    <String Id="LicenseText">Прочтите лицензионное соглашение [ProductName].</String>
+    <String Id="LicenseLink">Лицензионное соглашение доступно по адресу:</String>
+    <String Id="LicenseAccept">Я &amp;принимаю условия лицензионного соглашения</String>
+    <String Id="InstallButton">&amp;Установить</String>
+    <String Id="CancelButton">Отмена</String>
+    <String Id="FinishButton">&amp;Готово</String>
+    <String Id="YesButton">&amp;Да</String>
+    <String Id="NoButton">&amp;Нет</String>
+    <String Id="ProgressTitle">Установка [ProductName]</String>
+    <String Id="ProgressText">Подождите, пока [ProductName] устанавливается.</String>
+    <String Id="CancelQuestion">Вы действительно хотите отменить установку [ProductName]?</String>
+    <String Id="ExitTitle">[ProductName] установлен</String>
+    <String Id="ExitText">[ProductName] также можно запустить из меню «Пуск».</String>
+    <String Id="LaunchApp">&amp;Запустить [ProductName]</String>
+    <String Id="UserExitTitle">Установка отменена</String>
+    <String Id="UserExitText">[ProductName] не был установлен. На компьютере ничего не изменено.</String>
+    <String Id="FatalErrorTitle">Сбой установки</String>
+    <String Id="FatalErrorText">Не удалось установить [ProductName] из-за ошибки. На компьютере ничего не изменено.</String>
+    <String Id="NewerVersion">Уже установлена более новая версия [ProductName].</String>
+    <String Id="RuntimeMissing">Для [ProductName] требуется {0}. Установите его со страницы {1} и снова запустите эту программу установки.</String>
+    <String Id="SetupRuntimeDownload">Для работы [ProductName] требуются следующие компоненты, которые сейчас будут загружены с сайта Microsoft и установлены:</String>
+    <String Id="SetupDownloading">Загрузка {0}...</String>
+    <String Id="SetupRuntimeFailed">Не удалось установить {0}, ошибка {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} установлен, но по-прежнему не найден.</String>
+    <String Id="SetupRuntimeUnsupported">Для [ProductName] требуется {0}, который нужно установить отдельно.</String>
+    <String Id="SetupDownloadFailed">Не удалось загрузить {0}: {1}</String>
+    <String Id="SetupNotSigned">Загруженный установщик {0} неправильно подписан (ошибка {1}), поэтому он не был запущен.</String>
+    <String Id="SetupNotMicrosoft">Загруженный установщик {0} не подписан корпорацией Майкрософт, поэтому он не был запущен.</String>
+  </Language>
+
+  <Language Culture="tr-TR" Lcid="1055" Codepage="1254">
+    <String Id="SetupTitle">[ProductName] Kurulumu</String>
+    <String Id="WelcomeTitle">[ProductName] Kurulumuna Hoş Geldiniz</String>
+    <String Id="WelcomeText">[ProductName] uygulamasını bilgisayarınıza yüklemek için Yükle'ye tıklayın.</String>
+    <String Id="LicenseTitle">Lisans Sözleşmesi</String>
+    <String Id="LicenseText">Lütfen [ProductName] lisans sözleşmesini okuyun.</String>
+    <String Id="LicenseLink">Lisans sözleşmesine şu adresten ulaşabilirsiniz:</String>
+    <String Id="LicenseAccept">Lisans sözleşmesinin koşullarını &amp;kabul ediyorum</String>
+    <String Id="InstallButton">&amp;Yükle</String>
+    <String Id="CancelButton">İptal</String>
+    <String Id="FinishButton">&amp;Son</String>
+    <String Id="YesButton">&amp;Evet</String>
+    <String Id="NoButton">&amp;Hayır</String>
+    <String Id="ProgressTitle">[ProductName] yükleniyor</String>
+    <String Id="ProgressText">[ProductName] yüklenirken lütfen bekleyin.</String>
+    <String Id="CancelQuestion">[ProductName] yüklemesini iptal etmek istediğinizden emin misiniz?</String>
+    <String Id="ExitTitle">[ProductName] yüklendi</String>
+    <String Id="ExitText">[ProductName] uygulamasını Başlat menüsünden de başlatabilirsiniz.</String>
+    <String Id="LaunchApp">[ProductName] uygulamasını &amp;başlat</String>
+    <String Id="UserExitTitle">Yükleme iptal edildi</String>
+    <String Id="UserExitText">[ProductName] yüklenmedi. Bilgisayarınızda hiçbir şey değiştirilmedi.</String>
+    <String Id="FatalErrorTitle">Yükleme başarısız oldu</String>
+    <String Id="FatalErrorText">Bir hata nedeniyle [ProductName] yüklenemedi. Bilgisayarınızda hiçbir şey değiştirilmedi.</String>
+    <String Id="NewerVersion">[ProductName] uygulamasının daha yeni bir sürümü zaten yüklü.</String>
+    <String Id="RuntimeMissing">[ProductName] için {0} gerekiyor. {1} adresinden yükleyin ve bu yükleyiciyi yeniden çalıştırın.</String>
+    <String Id="SetupRuntimeDownload">[ProductName] uygulamasının çalışması için aşağıdakiler gerekiyor. Bunlar şimdi Microsoft'tan indirilip yüklenecek:</String>
+    <String Id="SetupDownloading">{0} indiriliyor...</String>
+    <String Id="SetupRuntimeFailed">{0} yüklenemedi, hata {1}.</String>
+    <String Id="SetupRuntimeNotFound">{0} yüklendi ancak hâlâ bulunamıyor.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] için {0} gerekiyor ve bunun ayrıca yüklenmesi gerekir.</String>
+    <String Id="SetupDownloadFailed">{0} indirilemedi: {1}</String>
+    <String Id="SetupNotSigned">{0} için indirilen yükleyici doğru şekilde imzalanmamış (hata {1}), bu nedenle çalıştırılmadı.</String>
+    <String Id="SetupNotMicrosoft">{0} için indirilen yükleyici Microsoft tarafından imzalanmamış, bu nedenle çalıştırılmadı.</String>
+  </Language>
+
+  <Language Culture="ja-JP" Lcid="1041" Codepage="932">
+    <String Id="SetupTitle">[ProductName] セットアップ</String>
+    <String Id="WelcomeTitle">[ProductName] セットアップへようこそ</String>
+    <String Id="WelcomeText">「インストール」をクリックすると、[ProductName] がこのコンピューターにインストールされます。</String>
+    <String Id="LicenseTitle">使用許諾契約</String>
+    <String Id="LicenseText">[ProductName] の使用許諾契約をお読みください。</String>
+    <String Id="LicenseLink">使用許諾契約は次の場所で参照できます:</String>
+    <String Id="LicenseAccept">使用許諾契約の条項に同意します(&amp;A)</String>
+    <String Id="InstallButton">インストール(&amp;I)</String>
+    <String Id="CancelButton">キャンセル</String>
+    <String Id="FinishButton">完了(&amp;F)</String>
+    <String Id="YesButton">はい(&amp;Y)</String>
+    <String Id="NoButton">いいえ(&amp;N)</String>
+    <String Id="ProgressTitle">[ProductName] をインストールしています</String>
+    <String Id="ProgressText">[ProductName] のインストールが完了するまでお待ちください。</String>
+    <String Id="CancelQuestion">[ProductName] のインストールをキャンセルしてもよろしいですか?</String>
+    <String Id="ExitTitle">[ProductName] がインストールされました</String>
+    <String Id="ExitText">[ProductName] は「スタート」メニューからも起動できます。</String>
+    <String Id="LaunchApp">[ProductName] を起動する(&amp;L)</String>
+    <String Id="UserExitTitle">インストールはキャンセルされました</String>
+    <String Id="UserExitText">[ProductName] はインストールされませんでした。コンピューターは変更されていません。</String>
+    <String Id="FatalErrorTitle">インストールに失敗しました</String>
+    <String Id="FatalErrorText">エラーのため、[ProductName] をインストールできませんでした。コンピューターは変更されていません。</String>
+    <String Id="NewerVersion">[ProductName] の新しいバージョンが既にインストールされています。</String>
+    <String Id="RuntimeMissing">[ProductName] には {0} が必要です。{1} からインストールして、このインストーラーをもう一度実行してください。</String>
+    <String Id="SetupRuntimeDownload">[ProductName] の実行には次のものが必要です。Microsoft からダウンロードしてインストールします:</String>
+    <String Id="SetupDownloading">{0} をダウンロードしています...</String>
+    <String Id="SetupRuntimeFailed">{0} のインストールがエラー {1} で失敗しました。</String>
+    <String Id="SetupRuntimeNotFound">{0} はインストールされましたが、見つかりません。</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] には {0} が必要です。別途インストールしてください。</String>
+    <String Id="SetupDownloadFailed">{0} のダウンロードに失敗しました: {1}</String>
+    <String Id="SetupNotSigned">ダウンロードした {0} のインストーラーは正しく署名されていないため (エラー {1})、実行されませんでした。</String>
+    <String Id="SetupNotMicrosoft">ダウンロードした {0} のインストーラーは Microsoft によって署名されていないため、実行されませんでした。</String>
+  </Language>
+
+  <Language Culture="zh-CN" Lcid="2052" Codepage="936">
+    <String Id="SetupTitle">[ProductName] 安装程序</String>
+    <String Id="WelcomeTitle">欢迎使用 [ProductName] 安装程序</String>
+    <String Id="WelcomeText">单击“安装”将 [ProductName] 安装到你的计算机上。</String>
+    <String Id="LicenseTitle">许可协议</String>
+    <String Id="LicenseText">请阅读 [ProductName] 的许可协议。</String>
+    <String Id="LicenseLink">许可协议可在以下位置查看:</String>
+    <String Id="LicenseAccept">我接受许可协议中的条款(&amp;A)</String>
+    <String Id="InstallButton">安装(&amp;I)</String>
+    <String Id="CancelButton">取消</String>
+    <String Id="FinishButton">完成(&amp;F)</String>
+    <String Id="YesButton">是(&amp;Y)</String>
+    <String Id="NoButton">否(&amp;N)</String>
+    <String Id="ProgressTitle">正在安装 [ProductName]</String>
+    <String Id="ProgressText">请稍候,正在安装 [ProductName]。</String>
+    <String Id="CancelQuestion">确定要取消安装 [ProductName] 吗?</String>
+    <String Id="ExitTitle">[ProductName] 已安装</String>
+    <String Id="ExitText">你也可以从“开始”菜单启动 [ProductName]。</String>
+    <String Id="LaunchApp">启动 [ProductName](&amp;L)</String>
+    <String Id="UserExitTitle">安装已取消</String>
+    <String Id="UserExitText">[ProductName] 未安装。你的计算机未做任何更改。</String>
+    <String Id="FatalErrorTitle">安装失败</String>
+    <String Id="FatalErrorText">由于出现错误,无法安装 [ProductName]。你的计算机未做任何更改。</String>
+    <String Id="NewerVersion">已安装较新版本的 [ProductName]。</String>
+    <String Id="RuntimeMissing">[ProductName] 需要 {0}。请从 {1} 安装,然后再次运行此安装程序。</String>
+    <String Id="SetupRuntimeDownload">[ProductName] 需要以下组件才能运行,现在将从 Microsoft 下载并安装:</String>
+    <String Id="SetupDownloading">正在下载 {0}...</String>
+    <String Id="SetupRuntimeFailed">安装 {0} 失败,错误 {1}。</String>
+    <String Id="SetupRuntimeNotFound">{0} 已安装,但仍找不到。</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] 需要 {0},必须单独安装。</String>
+    <String Id="SetupDownloadFailed">下载 {0} 失败: {1}</String>
+    <String Id="SetupNotSigned">下载的 {0} 安装程序签名不正确(错误 {1}),因此未运行。</String>
+    <String Id="SetupNotMicrosoft">下载的 {0} 安装程序未经 Microsoft 签名,因此未运行。</String>
+  </Language>
+
+  <Language Culture="zh-TW" Lcid="1028" Codepage="950">
+    <String Id="SetupTitle">[ProductName] 安裝程式</String>
+    <String Id="WelcomeTitle">歡迎使用 [ProductName] 安裝程式</String>
+    <String Id="WelcomeText">按一下「安裝」即可將 [ProductName] 安裝到您的電腦。</String>
+    <String Id="LicenseTitle">授權合約</String>
+    <String Id="LicenseText">請閱讀 [ProductName] 的授權合約。</String>
+    <String Id="LicenseLink">授權合約位於:</String>
+    <String Id="LicenseAccept">我接受授權合約中的條款(&amp;A)</String>
+    <String Id="InstallButton">安裝(&amp;I)</String>
+    <String Id="CancelButton">取消</String>
+    <String Id="FinishButton">完成(&amp;F)</String>
+    <String Id="YesButton">是(&amp;Y)</String>
+    <String Id="NoButton">否(&amp;N)</String>
+    <String Id="ProgressTitle">正在安裝 [ProductName]</String>
+    <String Id="ProgressText">請稍候,正在安裝 [ProductName]。</String>
+    <String Id="CancelQuestion">確定要取消安裝 [ProductName] 嗎?</String>
+    <String Id="ExitTitle">[ProductName] 已安裝</String>
+    <String Id="ExitText">您也可以從「開始」功能表啟動 [ProductName]。</String>
+    <String Id="LaunchApp">啟動 [ProductName](&amp;L)</String>
+    <String Id="UserExitTitle">已取消安裝</String>
+    <String Id="UserExitText">[ProductName] 未安裝。您的電腦未做任何變更。</String>
+    <String Id="FatalErrorTitle">安裝失敗</String>
+    <String Id="FatalErrorText">發生錯誤,無法安裝 [ProductName]。您的電腦未做任何變更。</String>
+    <String Id="NewerVersion">已安裝較新版本的 [ProductName]。</String>
+    <String Id="RuntimeMissing">[ProductName] 需要 {0}。請從 {1} 安裝,然後再次執行此安裝程式。</String>
+    <String Id="SetupRuntimeDownload">[ProductName] 需要下列項目才能執行,現在將從 Microsoft 下載並安裝:</String>
+    <String Id="SetupDownloading">正在下載 {0}...</String>
+    <String Id="SetupRuntimeFailed">安裝 {0} 失敗,錯誤 {1}。</String>
+    <String Id="SetupRuntimeNotFound">已安裝 {0},但仍然找不到。</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName] 需要 {0},必須另外安裝。</String>
+    <String Id="SetupDownloadFailed">下載 {0} 失敗: {1}</String>
+    <String Id="SetupNotSigned">下載的 {0} 安裝程式簽章不正確 (錯誤 {1}),因此未執行。</String>
+    <String Id="SetupNotMicrosoft">下載的 {0} 安裝程式未經 Microsoft 簽署,因此未執行。</String>
+  </Language>
+
+  <Language Culture="ko-KR" Lcid="1042" Codepage="949">
+    <String Id="SetupTitle">[ProductName] 설치</String>
+    <String Id="WelcomeTitle">[ProductName] 설치를 시작합니다</String>
+    <String Id="WelcomeText">[ProductName]을(를) 이 컴퓨터에 설치하려면 ‘설치’를 클릭하세요.</String>
+    <String Id="LicenseTitle">사용권 계약</String>
+    <String Id="LicenseText">[ProductName] 사용권 계약을 읽어 주세요.</String>
+    <String Id="LicenseLink">사용권 계약은 다음 위치에서 볼 수 있습니다.</String>
+    <String Id="LicenseAccept">사용권 계약 조건에 동의합니다(&amp;A)</String>
+    <String Id="InstallButton">설치(&amp;I)</String>
+    <String Id="CancelButton">취소</String>
+    <String Id="FinishButton">마침(&amp;F)</String>
+    <String Id="YesButton">예(&amp;Y)</String>
+    <String Id="NoButton">아니요(&amp;N)</String>
+    <String Id="ProgressTitle">[ProductName] 설치 중</String>
+    <String Id="ProgressText">[ProductName]을(를) 설치하는 동안 기다려 주세요.</String>
+    <String Id="CancelQuestion">[ProductName] 설치를 취소하시겠습니까?</String>
+    <String Id="ExitTitle">[ProductName]이(가) 설치되었습니다</String>
+    <String Id="ExitText">시작 메뉴에서도 [ProductName]을(를) 시작할 수 있습니다.</String>
+    <String Id="LaunchApp">[ProductName] 실행(&amp;L)</String>
+    <String Id="UserExitTitle">설치가 취소되었습니다</String>
+    <String Id="UserExitText">[ProductName]이(가) 설치되지 않았습니다. 컴퓨터에서 변경된 내용은 없습니다.</String>
+    <String Id="FatalErrorTitle">설치하지 못했습니다</String>
+    <String Id="FatalErrorText">오류로 인해 [ProductName]을(를) 설치하지 못했습니다. 컴퓨터에서 변경된 내용은 없습니다.</String>
+    <String Id="NewerVersion">최신 버전의 [ProductName]이(가) 이미 설치되어 있습니다.</String>
+    <String Id="RuntimeMissing">[ProductName]을(를) 실행하려면 {0}이(가) 필요합니다. {1}에서 설치한 후 이 설치 프로그램을 다시 실행하세요.</String>
+    <String Id="SetupRuntimeDownload">[ProductName]을(를) 실행하려면 다음 항목이 필요합니다. 지금 Microsoft에서 다운로드하여 설치합니다.</String>
+    <String Id="SetupDownloading">{0} 다운로드 중...</String>
+    <String Id="SetupRuntimeFailed">{0}을(를) 설치하지 못했습니다(오류 {1}).</String>
+    <String Id="SetupRuntimeNotFound">{0}이(가) 설치되었지만 여전히 찾을 수 없습니다.</String>
+    <String Id="SetupRuntimeUnsupported">[ProductName]을(를) 실행하려면 {0}이(가) 필요하며, 이 항목은 따로 설치해야 합니다.</String>
+    <String Id="SetupDownloadFailed">{0}을(를) 다운로드하지 못했습니다. {1}</String>
+    <String Id="SetupNotSigned">다운로드한 {0} 설치 프로그램이 올바르게 서명되지 않아(오류 {1}) 실행하지 않았습니다.</String>
+    <String Id="SetupNotMicrosoft">다운로드한 {0} 설치 프로그램이 Microsoft에서 서명하지 않아 실행하지 않았습니다.</String>
+  </Language>
+
+</WindowsPackageStrings>

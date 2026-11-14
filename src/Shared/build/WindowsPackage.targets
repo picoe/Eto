@@ -1,0 +1,440 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+
+  <!--
+    Creates Windows installers for the app, enabled by setting WindowsPackageFormats.
+
+    Formats:
+      msi    Windows Installer package. Installs with a wizard that can show a license and launch the app when done,
+             adds a Start menu shortcut and an entry in Installed apps, and replaces any older version.
+             Stops if the .NET runtime the app needs is missing.
+      setup  Setup.exe that downloads and installs the .NET runtime the app needs when it's missing, then
+             installs the msi it contains. Arguments are passed on to msiexec, e.g. /quiet.
+      msix   MSIX package for Windows 10 1809 or later, which installs for the current user without a wizard and
+             uninstalls cleanly, can be submitted to the Microsoft Store, and only downloads what changed when updating.
+             The app's folder is read-only, and its AppData and registry changes are kept separately and removed with it.
+             It can't install .NET, so include it with WindowsPackageSelfContained. With more than one runtime
+             identifier the packages are combined into one .msixbundle that installs the right one.
+             Windows only installs it when it's signed with a certificate it trusts. Unsigned, it can be installed
+             for testing from an administrator PowerShell with Add-AppxPackage -AllowUnsigned.
+
+    All are created on Windows with tools that come with it, so nothing else needs installing.
+    Apps for .NET Framework, or that include .NET (WindowsPackageSelfContained), don't need setup.
+
+    Everything below is optional; most values come from the usual project properties.
+  -->
+
+  <PropertyGroup>
+    <_WindowsPackageImported>True</_WindowsPackageImported>
+
+    <!-- Create the installers after each build. Set to False to only create them with -t:WindowsPackage,
+         or set WindowsPackageFormats only for some configurations, e.g. Condition="'$(Configuration)' == 'Release'" -->
+    <WindowsPackageOnBuild Condition="'$(WindowsPackageOnBuild)' == ''">True</WindowsPackageOnBuild>
+
+    <!-- Start of the installers' file names. Defaults to the title without spaces -->
+    <WindowsPackageName Condition="'$(WindowsPackageName)' == ''"></WindowsPackageName>
+    <!-- Name shown in Installed apps and on the shortcuts. Defaults to Product -->
+    <WindowsPackageTitle Condition="'$(WindowsPackageTitle)' == ''"></WindowsPackageTitle>
+    <!-- Defaults to Version. Windows Installer only uses the first three numbers, up to 255.255.65535 -->
+    <WindowsPackageVersion Condition="'$(WindowsPackageVersion)' == ''"></WindowsPackageVersion>
+    <!-- Publisher shown in Installed apps. Defaults to Company, then Authors -->
+    <WindowsPackageManufacturer Condition="'$(WindowsPackageManufacturer)' == ''"></WindowsPackageManufacturer>
+    <!-- Defaults to Description. The first line is shown in Installed apps and on the shortcuts -->
+    <WindowsPackageDescription Condition="'$(WindowsPackageDescription)' == ''"></WindowsPackageDescription>
+    <!-- Defaults to PackageProjectUrl -->
+    <WindowsPackageHomepage Condition="'$(WindowsPackageHomepage)' == ''">$(PackageProjectUrl)</WindowsPackageHomepage>
+    <!-- GUID that identifies the app across versions, so installing a new one replaces the old.
+         Defaults to one made from the assembly name, so set it before renaming the assembly -->
+    <WindowsPackageUpgradeCode Condition="'$(WindowsPackageUpgradeCode)' == ''"></WindowsPackageUpgradeCode>
+    <!-- perUser installs to %LocalAppData%\Programs without asking for admin rights,
+         perMachine installs to Program Files for everyone -->
+    <WindowsPackageScope Condition="'$(WindowsPackageScope)' == ''">perUser</WindowsPackageScope>
+    <!-- Folder to install into under Programs or Program Files, e.g. My Company\My App. Defaults to the title -->
+    <WindowsPackageInstallFolder Condition="'$(WindowsPackageInstallFolder)' == ''"></WindowsPackageInstallFolder>
+    <!-- Add a desktop shortcut as well as the Start menu one -->
+    <WindowsPackageDesktopShortcut Condition="'$(WindowsPackageDesktopShortcut)' == ''">False</WindowsPackageDesktopShortcut>
+    <!-- License to accept in the msi's wizard before installing: a .rtf, .md or .txt file, or an http(s) link to one.
+         /quiet and /passive installs skip the wizard -->
+    <WindowsPackageLicense Condition="'$(WindowsPackageLicense)' == ''"></WindowsPackageLicense>
+    <!-- Square .ico or .png logo shown in the msi's wizard, small at the top and large on the welcome and finished pages,
+         and in the Start menu for the msix. 256 pixels at most; under 128 it's only shown small in the wizard.
+         Defaults to WindowsIcon, where it has 48 and 128 pixel sizes -->
+    <WindowsPackageImage Condition="'$(WindowsPackageImage)' == ''"></WindowsPackageImage>
+    <!-- Cultures the installers come in, e.g. en-US;de-DE;ja-JP, shown in Windows' display language.
+         The first is used for other languages. Defaults to all in WindowsPackage.strings.xml, with en-US first -->
+    <WindowsPackageLanguages Condition="'$(WindowsPackageLanguages)' == ''"></WindowsPackageLanguages>
+    <!-- Where the installers are created. Defaults to the build output folder -->
+    <WindowsPackageOutputPath Condition="'$(WindowsPackageOutputPath)' == ''"></WindowsPackageOutputPath>
+    <!-- Include .pdb files in the installers -->
+    <WindowsPackageIncludeSymbols Condition="'$(WindowsPackageIncludeSymbols)' == ''">False</WindowsPackageIncludeSymbols>
+    <!-- .ico shown in Installed apps and for Setup.exe. Defaults to ApplicationIcon, otherwise the app's own icon is used -->
+    <WindowsIcon Condition="'$(WindowsIcon)' == ''">$(ApplicationIcon)</WindowsIcon>
+
+    <!-- Include .NET in the installers instead of needing it installed. Defaults to SelfContained -->
+    <WindowsPackageSelfContained Condition="'$(WindowsPackageSelfContained)' == ''">$(SelfContained)</WindowsPackageSelfContained>
+    <WindowsPackageSelfContained Condition="'$(WindowsPackageSelfContained)' == ''">False</WindowsPackageSelfContained>
+    <!-- Runtime identifiers to create installers for .NET apps for, e.g. win-x64;win-arm64.
+         Defaults to RuntimeIdentifier when it's a Windows one, otherwise the architecture of the build machine -->
+    <WindowsPackageRuntimeIdentifiers Condition="'$(WindowsPackageRuntimeIdentifiers)' == '' AND $(RuntimeIdentifier.StartsWith('win-'))">$(RuntimeIdentifier)</WindowsPackageRuntimeIdentifiers>
+    <WindowsPackageRuntimeIdentifiers Condition="'$(WindowsPackageRuntimeIdentifiers)' == '' AND $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">win-arm64</WindowsPackageRuntimeIdentifiers>
+    <WindowsPackageRuntimeIdentifiers Condition="'$(WindowsPackageRuntimeIdentifiers)' == ''">win-x64</WindowsPackageRuntimeIdentifiers>
+    <!-- restored with the app, as restoring them while packaging would rewrite the restore results other target frameworks are building with -->
+    <RuntimeIdentifiers>$(RuntimeIdentifiers);$(WindowsPackageRuntimeIdentifiers)</RuntimeIdentifiers>
+    <!-- Stop the msi from installing when the .NET runtime the app needs is missing -->
+    <WindowsPackageCheckRuntime Condition="'$(WindowsPackageCheckRuntime)' == ''">True</WindowsPackageCheckRuntime>
+
+    <!-- Name that identifies the msix, using letters, numbers, periods and dashes. The Microsoft Store gives you one
+         to use. Defaults to WindowsPackageName -->
+    <WindowsPackageIdentityName Condition="'$(WindowsPackageIdentityName)' == ''"></WindowsPackageIdentityName>
+    <!-- Publisher of the msix, which must match the subject of the certificate it's signed with, e.g. CN=My Company.
+         Read from the certificate when there is one, so only needed with WindowsSignCommand, or for the
+         Microsoft Store, which gives you one to use. Unsigned packages get one made from the manufacturer -->
+    <WindowsPackagePublisher Condition="'$(WindowsPackagePublisher)' == ''"></WindowsPackagePublisher>
+  </PropertyGroup>
+
+  <!--
+    Code signing, done when a certificate or WindowsSignCommand is set. Signs the app's executable and assembly
+    before they're packaged, then the msi, then setup, so Windows shows who they're from instead of warning
+    about an unknown publisher.
+  -->
+  <PropertyGroup>
+    <!-- .pfx file with the certificate. Keep the password out of the project file, e.g. in an environment variable -->
+    <WindowsSignCertificateFile Condition="'$(WindowsSignCertificateFile)' == ''"></WindowsSignCertificateFile>
+    <WindowsSignCertificatePassword Condition="'$(WindowsSignCertificatePassword)' == ''"></WindowsSignCertificatePassword>
+    <!-- Or the thumbprint of a certificate installed in your certificate store, e.g. one on a hardware token -->
+    <WindowsSignCertificateThumbprint Condition="'$(WindowsSignCertificateThumbprint)' == ''"></WindowsSignCertificateThumbprint>
+    <!-- Server that adds the time of signing, so signatures stay valid after the certificate expires.
+         Your certificate's provider has one, e.g. http://timestamp.digicert.com -->
+    <WindowsSignTimestampUrl Condition="'$(WindowsSignTimestampUrl)' == ''"></WindowsSignTimestampUrl>
+    <!-- Or your own command that signs the files added to its end, e.g. for a cloud signing service:
+         signtool sign /v /fd SHA256 /tr http://timestamp.acs.microsoft.com /td SHA256 /dlib path\Azure.CodeSigning.Dlib.dll /dmdf metadata.json -->
+    <WindowsSignCommand Condition="'$(WindowsSignCommand)' == ''"></WindowsSignCommand>
+    <!-- signtool.exe, which comes with the Windows SDK. Defaults to the newest one installed -->
+    <WindowsSignToolPath Condition="'$(WindowsSignToolPath)' == ''"></WindowsSignToolPath>
+  </PropertyGroup>
+
+  <!--
+    Items you can add:
+
+    WindowsPackageContent: Extra files to install. TargetPath is relative to the install folder,
+      and defaults to the file's RecursiveDir and name.
+    WindowsPackageSignFile: Other published files to sign, relative to the install folder (no wildcards),
+      e.g. your own libraries.
+    WindowsPackageStrings: Files in the format of WindowsPackage.strings.xml that change the installers' text
+      or add languages.
+  -->
+  <ItemGroup>
+    <AvailableItemName Include="WindowsPackageContent" />
+  </ItemGroup>
+
+  <UsingTask TaskName="Eto.Windows.Build.WriteMsiPackage" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task><Code Type="Class" Source="$(MSBuildThisFileDirectory)WindowsPackage.cs" /></Task>
+  </UsingTask>
+  <UsingTask TaskName="Eto.Windows.Build.GetRuntimeFrameworks" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task><Code Type="Class" Source="$(MSBuildThisFileDirectory)WindowsPackage.cs" /></Task>
+  </UsingTask>
+  <UsingTask TaskName="Eto.Windows.Build.WriteSetupInfo" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task><Code Type="Class" Source="$(MSBuildThisFileDirectory)WindowsPackage.cs" /></Task>
+  </UsingTask>
+  <UsingTask TaskName="Eto.Windows.Build.WriteMsixPackage" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task><Code Type="Class" Source="$(MSBuildThisFileDirectory)WindowsPackage.cs" /></Task>
+  </UsingTask>
+  <UsingTask TaskName="Eto.Windows.Build.WriteMsixBundle" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <Task><Code Type="Class" Source="$(MSBuildThisFileDirectory)WindowsPackage.cs" /></Task>
+  </UsingTask>
+
+  <Target Name="_WindowsPackageOnBuild" AfterTargets="Build" DependsOnTargets="WindowsPackage"
+          Condition="'$(WindowsPackageOnBuild)' == 'True' AND '$(TargetFramework)' != '' AND '$(_WindowsIsPackaging)' != 'True' AND $([MSBuild]::IsOSPlatform(Windows)) AND ('$(OutputType)' == 'WinExe' OR '$(OutputType)' == 'Exe')" />
+
+  <!-- Creates the installers in WindowsPackageFormats -->
+  <Target Name="WindowsPackage" DependsOnTargets="_WindowsPackageInit;_WindowsPackageCreate;_WindowsPackagePerRuntime;_WindowsPackageMsixBundle" />
+
+  <!-- Paths aren't final when this file is imported, so work everything out once the build is running -->
+  <Target Name="_WindowsPackageInit">
+    <Error Text="Windows installers can only be created on Windows." Condition="!$([MSBuild]::IsOSPlatform(Windows))" />
+    <Error Text="Windows installers can only be created for .NET or .NET Framework apps, not $(TargetFramework)."
+           Condition="'$(TargetFrameworkIdentifier)' != '.NETCoreApp' AND '$(TargetFrameworkIdentifier)' != '.NETFramework'" />
+    <ItemGroup>
+      <_WindowsPackageFormat Include="$(WindowsPackageFormats)" />
+    </ItemGroup>
+    <Warning Text="Unknown Windows package format '%(_WindowsPackageFormat.Identity)'. Use msi, setup or msix."
+             Condition="!$([System.String]::Copy(';msi;setup;msix;').Contains(';$([System.String]::Copy('%(_WindowsPackageFormat.Identity)').Trim().ToLowerInvariant());'))" />
+    <Error Text="WindowsPackageScope must be perUser or perMachine, not $(WindowsPackageScope)."
+           Condition="'$(WindowsPackageScope)' != 'perUser' AND '$(WindowsPackageScope)' != 'perMachine'" />
+
+    <PropertyGroup>
+      <_WindowsFormats>;$(WindowsPackageFormats.ToLowerInvariant().Replace(' ', ''));</_WindowsFormats>
+      <_WindowsBuildMsi Condition="$(_WindowsFormats.Contains(';msi;'))">True</_WindowsBuildMsi>
+      <_WindowsBuildSetup Condition="$(_WindowsFormats.Contains(';setup;'))">True</_WindowsBuildSetup>
+      <_WindowsBuildMsix Condition="$(_WindowsFormats.Contains(';msix;'))">True</_WindowsBuildMsix>
+      <_WindowsIsNetCore Condition="'$(TargetFrameworkIdentifier)' == '.NETCoreApp'">True</_WindowsIsNetCore>
+
+      <_WindowsTitle>$(WindowsPackageTitle)</_WindowsTitle>
+      <_WindowsTitle Condition="'$(_WindowsTitle)' == ''">$(Product)</_WindowsTitle>
+      <_WindowsTitle Condition="'$(_WindowsTitle)' == ''">$(AssemblyName)</_WindowsTitle>
+      <_WindowsName>$(WindowsPackageName)</_WindowsName>
+      <_WindowsName Condition="'$(_WindowsName)' == ''">$(_WindowsTitle.Replace(' ', ''))</_WindowsName>
+      <_WindowsVersion>$(WindowsPackageVersion)</_WindowsVersion>
+      <_WindowsVersion Condition="'$(_WindowsVersion)' == ''">$(Version)</_WindowsVersion>
+      <_WindowsVersion Condition="'$(_WindowsVersion)' == ''">1.0.0</_WindowsVersion>
+      <_WindowsDescription>$(WindowsPackageDescription)</_WindowsDescription>
+      <_WindowsDescription Condition="'$(_WindowsDescription)' == '' AND '$(Description)' != 'Package Description'">$(Description)</_WindowsDescription>
+      <_WindowsManufacturer>$(WindowsPackageManufacturer)</_WindowsManufacturer>
+      <_WindowsManufacturer Condition="'$(_WindowsManufacturer)' == ''">$(Company)</_WindowsManufacturer>
+      <_WindowsManufacturer Condition="'$(_WindowsManufacturer)' == '' AND '$(Authors)' != '$(AssemblyName)'">$(Authors)</_WindowsManufacturer>
+      <_WindowsInstallFolder>$(WindowsPackageInstallFolder)</_WindowsInstallFolder>
+      <_WindowsInstallFolder Condition="'$(_WindowsInstallFolder)' == ''">$(_WindowsTitle)</_WindowsInstallFolder>
+      <_WindowsSelfContained>$(WindowsPackageSelfContained)</_WindowsSelfContained>
+      <_WindowsSelfContained Condition="'$(_WindowsIsNetCore)' != 'True'">False</_WindowsSelfContained>
+
+      <!-- .NET Framework apps are packaged here; .NET apps by an instance of this project for each runtime identifier -->
+      <_WindowsBuildHere Condition="'$(_WindowsIsNetCore)' != 'True'">True</_WindowsBuildHere>
+      <_WindowsBuildHere Condition="'$(_WindowsIsNetCore)' == 'True' AND '$(_WindowsRid)' != ''">True</_WindowsBuildHere>
+
+      <!-- a .NET Framework app runs as whatever it was built for, and AnyCPU as x64 on 64 bit Windows -->
+      <_WindowsArch Condition="'$(_WindowsRid)' == 'win-x64'">x64</_WindowsArch>
+      <_WindowsArch Condition="'$(_WindowsRid)' == 'win-arm64'">arm64</_WindowsArch>
+      <_WindowsArch Condition="'$(_WindowsRid)' == 'win-x86'">x86</_WindowsArch>
+      <_WindowsArch Condition="'$(_WindowsIsNetCore)' != 'True' AND '$(PlatformTarget)' == 'x86'">x86</_WindowsArch>
+      <_WindowsArch Condition="'$(_WindowsIsNetCore)' != 'True' AND '$(PlatformTarget)' == 'ARM64'">arm64</_WindowsArch>
+      <_WindowsArch Condition="'$(_WindowsIsNetCore)' != 'True' AND '$(_WindowsArch)' == ''">x64</_WindowsArch>
+      <_WindowsFileSuffix Condition="'$(_WindowsIsNetCore)' == 'True'">-$(_WindowsArch)</_WindowsFileSuffix>
+      <!-- an msix can say it runs anywhere, which suits a .NET Framework app built for AnyCPU -->
+      <_WindowsMsixArch>$(_WindowsArch)</_WindowsMsixArch>
+      <_WindowsMsixArch Condition="'$(_WindowsIsNetCore)' != 'True' AND '$(PlatformTarget)' != 'x86' AND '$(PlatformTarget)' != 'x64' AND '$(PlatformTarget)' != 'ARM64'">neutral</_WindowsMsixArch>
+
+      <_WindowsTempPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(IntermediateOutputPath)', 'winpkg'))</_WindowsTempPath>
+      <_WindowsWorkPath>$(_WindowsTempPath)</_WindowsWorkPath>
+      <_WindowsWorkPath Condition="'$(_WindowsRid)' != ''">$(_WindowsTempPath)$(_WindowsRid)\</_WindowsWorkPath>
+      <_WindowsOutputPath>$(WindowsPackageOutputPath)</_WindowsOutputPath>
+      <_WindowsOutputPath Condition="'$(_WindowsOutputPath)' == ''">$(OutputPath)</_WindowsOutputPath>
+      <_WindowsOutputPath>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '$(_WindowsOutputPath)'))</_WindowsOutputPath>
+
+      <_WindowsMsiFile>$(_WindowsOutputPath)$(_WindowsName)-$(_WindowsVersion)$(_WindowsFileSuffix).msi</_WindowsMsiFile>
+      <!-- setup on its own still needs an msi to contain -->
+      <_WindowsMsiFile Condition="'$(_WindowsBuildMsi)' != 'True'">$(_WindowsWorkPath)$(_WindowsName)-$(_WindowsVersion)$(_WindowsFileSuffix).msi</_WindowsMsiFile>
+      <_WindowsSetupFile>$(_WindowsOutputPath)$(_WindowsName)-$(_WindowsVersion)$(_WindowsFileSuffix)-Setup.exe</_WindowsSetupFile>
+      <_WindowsMsixFile>$(_WindowsOutputPath)$(_WindowsName)-$(_WindowsVersion)$(_WindowsFileSuffix).msix</_WindowsMsixFile>
+      <!-- packages going in a bundle are kept with the work files, which the main build collects from -->
+      <_WindowsMsixFile Condition="'$(_WindowsMsixBundle)' == 'True'">$(_WindowsWorkPath)$(_WindowsName)-$(_WindowsVersion)$(_WindowsFileSuffix).msix</_WindowsMsixFile>
+      <_WindowsMsixBundleFile>$(_WindowsOutputPath)$(_WindowsName)-$(_WindowsVersion).msixbundle</_WindowsMsixBundleFile>
+      <_WindowsIdentityName>$(WindowsPackageIdentityName)</_WindowsIdentityName>
+      <_WindowsIdentityName Condition="'$(_WindowsIdentityName)' == ''">$([System.Text.RegularExpressions.Regex]::Replace('$(_WindowsName)', '[^A-Za-z0-9.-]', ''))</_WindowsIdentityName>
+    </PropertyGroup>
+
+    <Error Text="Windows installers can't be created for $(_WindowsRid)." Condition="'$(_WindowsRid)' != '' AND '$(_WindowsArch)' == ''" />
+    <Warning Text="The msix can't install .NET, so it only runs where the .NET runtime is already installed. Set WindowsPackageSelfContained to True to include it."
+             Condition="'$(_WindowsBuildMsix)' == 'True' AND '$(_WindowsIsNetCore)' == 'True' AND '$(_WindowsSelfContained)' != 'True' AND '$(_WindowsRid)' == ''" />
+
+    <!-- each runtime's instance shares this folder with the main build -->
+    <RemoveDir Directories="$(_WindowsTempPath)" Condition="'$(_WindowsRid)' == ''" />
+    <MakeDir Directories="$(_WindowsOutputPath)" />
+  </Target>
+
+  <Target Name="_WindowsPackageCreate" Condition="'$(_WindowsBuildHere)' == 'True' AND ('$(_WindowsBuildMsi)' == 'True' OR '$(_WindowsBuildSetup)' == 'True' OR '$(_WindowsBuildMsix)' == 'True')"
+          DependsOnTargets="_WindowsPackageInit;_WindowsPublish;_WindowsPackageMsiAndSetup;_WindowsPackageMsix" />
+
+  <Target Name="_WindowsPackageMsiAndSetup" Condition="'$(_WindowsBuildMsi)' == 'True' OR '$(_WindowsBuildSetup)' == 'True'"
+          DependsOnTargets="_WindowsPackageMsi;_WindowsPackageSetup" />
+
+  <!-- Publishes the app: in process for .NET Framework, or for this instance's runtime identifier -->
+  <Target Name="_WindowsPublish" DependsOnTargets="_WindowsPackageInit">
+    <PropertyGroup>
+      <_WindowsPublishDir>$(_WindowsWorkPath)publish\</_WindowsPublishDir>
+      <_WindowsDotNet>$(DOTNET_HOST_PATH)</_WindowsDotNet>
+      <_WindowsDotNet Condition="'$(_WindowsDotNet)' == ''">dotnet</_WindowsDotNet>
+    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Condition="'$(_WindowsIsNetCore)' != 'True'"
+             Properties="_WindowsIsPackaging=True;Configuration=$(Configuration);TargetFramework=$(TargetFramework);PublishReferencesDocumentationFiles=False;PublishDir=$(_WindowsPublishDir)" />
+
+    <!-- A separate process, which doesn't get this build's global properties, so pass the ones that decide where the
+         already compiled referenced projects are and what version the app is. It doesn't restore, as the runtime
+         identifiers were restored with the app (see RuntimeIdentifiers above). -->
+    <Exec Condition="'$(_WindowsIsNetCore)' == 'True'" Command="&quot;$(_WindowsDotNet)&quot; publish &quot;$(MSBuildProjectFullPath)&quot; -nologo --no-restore --no-dependencies -c &quot;$(Configuration)&quot; -f &quot;$(TargetFramework)&quot; -r &quot;$(_WindowsRid)&quot; --self-contained $(_WindowsSelfContained.ToLowerInvariant()) -o &quot;$([System.IO.Path]::GetDirectoryName('$(_WindowsPublishDir)'))&quot; -p:BuildProjectReferences=False &quot;-p:Platform=$(Platform)&quot; -p:_WindowsIsPackaging=True -p:PublishReferencesDocumentationFiles=False &quot;-p:Version=$(Version)&quot; &quot;-p:AssemblyVersion=$(AssemblyVersion)&quot; &quot;-p:FileVersion=$(FileVersion)&quot; &quot;-p:InformationalVersion=$(InformationalVersion)&quot;" />
+    <ItemGroup>
+      <_WindowsPublished Include="$(_WindowsPublishDir)**\*" />
+      <_WindowsPublished Remove="$(_WindowsPublishDir)**\*.pdb" Condition="'$(WindowsPackageIncludeSymbols)' != 'True'" />
+      <_WindowsFiles Include="@(_WindowsPublished)" TargetPath="%(RecursiveDir)%(Filename)%(Extension)" />
+      <_WindowsFiles Include="@(WindowsPackageContent)" Condition="'%(WindowsPackageContent.TargetPath)' == ''" TargetPath="%(RecursiveDir)%(Filename)%(Extension)" />
+      <_WindowsFiles Include="@(WindowsPackageContent)" Condition="'%(WindowsPackageContent.TargetPath)' != ''" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Works out how to sign the files, when signing is set up -->
+  <Target Name="_WindowsSignInit" DependsOnTargets="_WindowsPackageInit">
+    <PropertyGroup>
+      <_WindowsSign Condition="'$(WindowsSignCertificateFile)' != '' OR '$(WindowsSignCertificateThumbprint)' != '' OR '$(WindowsSignCommand)' != ''">True</_WindowsSign>
+      <_WindowsSignToolArch>x64</_WindowsSignToolArch>
+      <_WindowsSignToolArch Condition="$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture) == 'Arm64'">arm64</_WindowsSignToolArch>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(_WindowsSign)' == 'True' AND '$(WindowsSignCommand)' == '' AND '$(WindowsSignToolPath)' == ''">
+      <_WindowsSignTool Include="$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.*\$(_WindowsSignToolArch)\signtool.exe" />
+      <_WindowsSignTool Include="$(MSBuildProgramFiles32)\Windows Kits\10\bin\10.*\x64\signtool.exe" Condition="'@(_WindowsSignTool)' == ''" />
+    </ItemGroup>
+    <PropertyGroup Condition="'@(_WindowsSignTool)' != ''">
+      <!-- the SDK folders are named by version, so the last one is the newest -->
+      <_WindowsFoundSignTool>%(_WindowsSignTool.FullPath)</_WindowsFoundSignTool>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(_WindowsSign)' == 'True' AND '$(WindowsSignCommand)' == ''">
+      <_WindowsSignToolPath>$(WindowsSignToolPath)</_WindowsSignToolPath>
+      <_WindowsSignToolPath Condition="'$(_WindowsSignToolPath)' == ''">$(_WindowsFoundSignTool)</_WindowsSignToolPath>
+      <_WindowsSignToolPath Condition="'$(_WindowsSignToolPath)' == ''">signtool.exe</_WindowsSignToolPath>
+      <_WindowsSignCommand>&quot;$(_WindowsSignToolPath)&quot; sign /fd SHA256</_WindowsSignCommand>
+      <_WindowsSignCommand Condition="'$(WindowsSignCertificateFile)' != ''">$(_WindowsSignCommand) /f &quot;$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsSignCertificateFile)'))&quot;</_WindowsSignCommand>
+      <_WindowsSignCommand Condition="'$(WindowsSignCertificatePassword)' != ''">$(_WindowsSignCommand) /p &quot;$(WindowsSignCertificatePassword)&quot;</_WindowsSignCommand>
+      <_WindowsSignCommand Condition="'$(WindowsSignCertificateThumbprint)' != ''">$(_WindowsSignCommand) /sha1 $(WindowsSignCertificateThumbprint.Replace(' ', ''))</_WindowsSignCommand>
+      <_WindowsSignCommand Condition="'$(WindowsSignTimestampUrl)' != ''">$(_WindowsSignCommand) /tr &quot;$(WindowsSignTimestampUrl)&quot; /td SHA256</_WindowsSignCommand>
+      <!-- shown as the program's name when Windows asks whether to install it -->
+      <_WindowsSignCommand>$(_WindowsSignCommand) /d &quot;$(_WindowsTitle)&quot;</_WindowsSignCommand>
+      <_WindowsSignCommand Condition="'$(WindowsPackageHomepage)' != ''">$(_WindowsSignCommand) /du &quot;$(WindowsPackageHomepage)&quot;</_WindowsSignCommand>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(WindowsSignCommand)' != ''">
+      <_WindowsSignCommand>$(WindowsSignCommand)</_WindowsSignCommand>
+    </PropertyGroup>
+    <Error Text="Set either WindowsSignCertificateFile or WindowsSignCertificateThumbprint, not both." Condition="'$(WindowsSignCertificateFile)' != '' AND '$(WindowsSignCertificateThumbprint)' != ''" />
+    <Error Text="signtool.exe wasn't found. Install the Windows SDK, or set WindowsSignToolPath." Condition="'$(_WindowsSign)' == 'True' AND '$(WindowsSignCommand)' == '' AND '$(_WindowsSignToolPath)' == 'signtool.exe' AND '$(WindowsSignToolPath)' == ''" />
+    <Warning Text="The installers will be signed without a timestamp, so their signatures stop being valid when the certificate expires. Set WindowsSignTimestampUrl."
+             Condition="'$(_WindowsSign)' == 'True' AND '$(WindowsSignCommand)' == '' AND '$(WindowsSignTimestampUrl)' == ''" />
+  </Target>
+
+  <!-- Signs the app before it's packaged, as changing the files afterwards would break the msi -->
+  <Target Name="_WindowsSignApp" Condition="'$(_WindowsSign)' == 'True'" DependsOnTargets="_WindowsPublish">
+    <ItemGroup>
+      <_WindowsSignAppFile Include="$(_WindowsPublishDir)$(AssemblyName).exe" />
+      <_WindowsSignAppFile Include="$(_WindowsPublishDir)$(TargetFileName)" Condition="'$(TargetFileName)' != '$(AssemblyName).exe'" />
+      <_WindowsSignAppFile Include="@(WindowsPackageSignFile->'$(_WindowsPublishDir)%(Identity)')" />
+      <_WindowsSignAppFile Remove="@(_WindowsSignAppFile)" Condition="!Exists('%(FullPath)')" />
+    </ItemGroup>
+    <Error Text="%(WindowsPackageSignFile.Identity) can't be signed, as it isn't in the published app." Condition="'@(WindowsPackageSignFile)' != '' AND !Exists('$(_WindowsPublishDir)%(WindowsPackageSignFile.Identity)')" />
+    <Message Text="Signing @(_WindowsSignAppFile->'%(Filename)%(Extension)', ', ')" Importance="high" />
+    <!-- the command can have a password in it, so don't log it -->
+    <Exec Command="$(_WindowsSignCommand) @(_WindowsSignAppFile->'&quot;%(FullPath)&quot;', ' ')" EchoOff="True" StandardOutputImportance="low" />
+  </Target>
+
+  <Target Name="_WindowsPackageMsi" DependsOnTargets="_WindowsPublish;_WindowsSignInit;_WindowsSignApp">
+    <GetRuntimeFrameworks Condition="'$(_WindowsIsNetCore)' == 'True' AND '$(_WindowsSelfContained)' != 'True'"
+                          RuntimeConfigFile="$(_WindowsPublishDir)$(AssemblyName).runtimeconfig.json">
+      <Output TaskParameter="Frameworks" ItemName="_WindowsFramework" />
+    </GetRuntimeFrameworks>
+    <PropertyGroup>
+      <_WindowsIconFile Condition="'$(WindowsIcon)' != '' AND $(WindowsIcon.ToLowerInvariant().EndsWith('.ico'))">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsIcon)'))</_WindowsIconFile>
+      <_WindowsLicense>$(WindowsPackageLicense.Trim())</_WindowsLicense>
+      <_WindowsLicenseIsUrl Condition="$(_WindowsLicense.ToLowerInvariant().StartsWith('http://')) OR $(_WindowsLicense.ToLowerInvariant().StartsWith('https://'))">True</_WindowsLicenseIsUrl>
+      <_WindowsLicense Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True'">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(_WindowsLicense)'))</_WindowsLicense>
+    </PropertyGroup>
+    <PropertyGroup>
+      <_WindowsImage Condition="'$(WindowsPackageImage)' != ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsPackageImage)'))</_WindowsImage>
+    </PropertyGroup>
+    <Error Text="The license file $(_WindowsLicense) doesn't exist." Condition="'$(_WindowsLicense)' != '' AND '$(_WindowsLicenseIsUrl)' != 'True' AND !Exists('$(_WindowsLicense)')" />
+    <ItemGroup>
+      <_WindowsCheckFramework Include="@(_WindowsFramework)" Condition="'$(WindowsPackageCheckRuntime)' == 'True'" />
+    </ItemGroup>
+    <WriteMsiPackage Files="@(_WindowsFiles)"
+                     MainExecutable="$(AssemblyName).exe"
+                     ProductName="$(_WindowsTitle)"
+                     Version="$(_WindowsVersion)"
+                     Manufacturer="$(_WindowsManufacturer)"
+                     Description="$(_WindowsDescription)"
+                     Homepage="$(WindowsPackageHomepage)"
+                     UpgradeCode="$(WindowsPackageUpgradeCode)"
+                     AppId="$(AssemblyName)"
+                     PerMachine="$([System.String]::Equals('$(WindowsPackageScope)', 'perMachine'))"
+                     InstallFolder="$(_WindowsInstallFolder)"
+                     Architecture="$(_WindowsArch)"
+                     IconFile="$(_WindowsIconFile)"
+                     DesktopShortcut="$(WindowsPackageDesktopShortcut)"
+                     License="$(_WindowsLicense)"
+                     Image="$(_WindowsImage)"
+                     StringsFile="$(MSBuildThisFileDirectory)WindowsPackage.strings.xml"
+                     ExtraStrings="@(WindowsPackageStrings)"
+                     Languages="$(WindowsPackageLanguages)"
+                     Frameworks="@(_WindowsCheckFramework)"
+                     OutputFile="$(_WindowsMsiFile)"
+                     WorkDirectory="$(_WindowsWorkPath)msi">
+      <Output TaskParameter="IncludedLanguages" PropertyName="_WindowsIncludedLanguages" />
+    </WriteMsiPackage>
+    <Exec Condition="'$(_WindowsSign)' == 'True'" Command="$(_WindowsSignCommand) &quot;$(_WindowsMsiFile)&quot;" EchoOff="True" StandardOutputImportance="low" />
+    <Message Text="$(MSBuildProjectName) -> $(_WindowsMsiFile)" Importance="high" Condition="'$(_WindowsBuildMsi)' == 'True'" />
+  </Target>
+
+  <!-- Compiled with the .NET Framework compiler in Windows, so it needs nothing else to build or run -->
+  <Target Name="_WindowsPackageSetup" Condition="'$(_WindowsBuildSetup)' == 'True'" DependsOnTargets="_WindowsPackageMsi">
+    <PropertyGroup>
+      <_WindowsSetupPath>$(_WindowsWorkPath)setup\</_WindowsSetupPath>
+      <_WindowsCsc>$(windir)\Microsoft.NET\Framework\v4.0.30319\csc.exe</_WindowsCsc>
+      <_WindowsSetupIcon Condition="'$(_WindowsIconFile)' != ''">/win32icon:&quot;$(_WindowsIconFile)&quot;</_WindowsSetupIcon>
+    </PropertyGroup>
+    <Error Text="The .NET Framework 4 C# compiler wasn't found at $(_WindowsCsc), which is needed to create setup." Condition="!Exists('$(_WindowsCsc)')" />
+    <WriteSetupInfo OutputFile="$(_WindowsSetupPath)SetupInfo.cs"
+                    Title="$(_WindowsTitle)"
+                    Manufacturer="$(_WindowsManufacturer)"
+                    Description="$(_WindowsDescription)"
+                    Version="$(_WindowsVersion)"
+                    InformationalVersion="$(InformationalVersion)"
+                    Architecture="$(_WindowsArch)"
+                    MsiName="$([System.IO.Path]::GetFileName('$(_WindowsMsiFile)'))"
+                    Frameworks="@(_WindowsFramework)"
+                    StringsFile="$(MSBuildThisFileDirectory)WindowsPackage.strings.xml"
+                    ExtraStrings="@(WindowsPackageStrings)"
+                    Languages="$(_WindowsIncludedLanguages)" />
+    <Delete Files="$(_WindowsSetupFile)" />
+    <Exec Command="&quot;$(_WindowsCsc)&quot; /nologo /noconfig /target:winexe /platform:anycpu /optimize+ /utf8output /out:&quot;$(_WindowsSetupFile)&quot; /win32manifest:&quot;$(MSBuildThisFileDirectory)WindowsSetup.manifest&quot; $(_WindowsSetupIcon) /resource:&quot;$(_WindowsMsiFile)&quot;,Setup.msi /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll &quot;$(MSBuildThisFileDirectory)WindowsSetup.cs&quot; &quot;$(_WindowsSetupPath)SetupInfo.cs&quot;"
+          StandardOutputImportance="low" />
+    <Exec Condition="'$(_WindowsSign)' == 'True'" Command="$(_WindowsSignCommand) &quot;$(_WindowsSetupFile)&quot;" EchoOff="True" StandardOutputImportance="low" />
+    <Message Text="$(MSBuildProjectName) -> $(_WindowsSetupFile)" Importance="high" />
+  </Target>
+
+  <Target Name="_WindowsPackageMsix" Condition="'$(_WindowsBuildMsix)' == 'True'" DependsOnTargets="_WindowsPublish;_WindowsSignInit;_WindowsSignApp">
+    <PropertyGroup>
+      <_WindowsIconFile Condition="'$(WindowsIcon)' != '' AND $(WindowsIcon.ToLowerInvariant().EndsWith('.ico'))">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsIcon)'))</_WindowsIconFile>
+      <_WindowsImage Condition="'$(WindowsPackageImage)' != ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsPackageImage)'))</_WindowsImage>
+      <_WindowsSignCertificateFile Condition="'$(WindowsSignCertificateFile)' != ''">$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(WindowsSignCertificateFile)'))</_WindowsSignCertificateFile>
+    </PropertyGroup>
+    <WriteMsixPackage Files="@(_WindowsFiles)"
+                      MainExecutable="$(AssemblyName).exe"
+                      IdentityName="$(_WindowsIdentityName)"
+                      DisplayName="$(_WindowsTitle)"
+                      PublisherDisplayName="$(_WindowsManufacturer)"
+                      Description="$(_WindowsDescription)"
+                      Version="$(_WindowsVersion)"
+                      Architecture="$(_WindowsMsixArch)"
+                      Image="$(_WindowsImage)"
+                      IconFile="$(_WindowsIconFile)"
+                      Language="$(WindowsPackageLanguages)"
+                      Publisher="$(WindowsPackagePublisher)"
+                      CertificateFile="$(_WindowsSignCertificateFile)"
+                      CertificatePassword="$(WindowsSignCertificatePassword)"
+                      CertificateThumbprint="$(WindowsSignCertificateThumbprint)"
+                      Signed="$([System.String]::Equals('$(_WindowsSign)', 'True'))"
+                      OutputFile="$(_WindowsMsixFile)"
+                      WorkDirectory="$(_WindowsWorkPath)msix" />
+    <!-- a bundle's packages don't need signing, only the bundle -->
+    <Exec Condition="'$(_WindowsSign)' == 'True' AND '$(_WindowsMsixBundle)' != 'True'" Command="$(_WindowsSignCommand) &quot;$(_WindowsMsixFile)&quot;" EchoOff="True" StandardOutputImportance="low" />
+    <Message Text="$(MSBuildProjectName) -> $(_WindowsMsixFile)" Importance="high" Condition="'$(_WindowsMsixBundle)' != 'True'" />
+  </Target>
+
+  <!-- .NET apps are packaged by an instance of this project for each runtime identifier -->
+  <Target Name="_WindowsPackagePerRuntime" DependsOnTargets="_WindowsPackageInit"
+          Condition="'$(_WindowsIsNetCore)' == 'True' AND '$(_WindowsRid)' == '' AND ('$(_WindowsBuildMsi)' == 'True' OR '$(_WindowsBuildSetup)' == 'True' OR '$(_WindowsBuildMsix)' == 'True')">
+    <ItemGroup>
+      <_WindowsPackageRid Include="$(WindowsPackageRuntimeIdentifiers)" />
+    </ItemGroup>
+    <PropertyGroup>
+      <_WindowsMsixBundle Condition="'$(_WindowsBuildMsix)' == 'True' AND @(_WindowsPackageRid->Distinct()->Count()) &gt; 1">True</_WindowsMsixBundle>
+    </PropertyGroup>
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="_WindowsPackageRuntime"
+             Properties="_WindowsRid=%(_WindowsPackageRid.Identity);_WindowsMsixBundle=$(_WindowsMsixBundle);_WindowsIsPackaging=True;Configuration=$(Configuration);TargetFramework=$(TargetFramework);WindowsPackageOnBuild=False" />
+  </Target>
+
+  <!-- Combines each runtime's msix into one bundle -->
+  <Target Name="_WindowsPackageMsixBundle" Condition="'$(_WindowsMsixBundle)' == 'True' AND '$(_WindowsRid)' == ''" DependsOnTargets="_WindowsPackagePerRuntime;_WindowsSignInit">
+    <ItemGroup>
+      <_WindowsMsixPackage Include="$(_WindowsTempPath)%(_WindowsPackageRid.Identity)\*.msix" />
+    </ItemGroup>
+    <WriteMsixBundle Packages="@(_WindowsMsixPackage)" Version="$(_WindowsVersion)" OutputFile="$(_WindowsMsixBundleFile)" />
+    <Exec Condition="'$(_WindowsSign)' == 'True'" Command="$(_WindowsSignCommand) &quot;$(_WindowsMsixBundleFile)&quot;" EchoOff="True" StandardOutputImportance="low" />
+    <Message Text="$(MSBuildProjectName) -> $(_WindowsMsixBundleFile)" Importance="high" />
+  </Target>
+
+  <Target Name="_WindowsPackageRuntime" DependsOnTargets="_WindowsPackageInit;_WindowsPackageCreate" />
+
+</Project>

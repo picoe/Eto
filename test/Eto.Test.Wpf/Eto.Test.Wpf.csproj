@@ -15,6 +15,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <WindowsPackageFormats>msi;setup;msix</WindowsPackageFormats>
+    <WindowsPackageRuntimeIdentifiers>win-x64;win-arm64</WindowsPackageRuntimeIdentifiers>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(TargetFramework)'=='net48'">
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -60,4 +65,5 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
 
+  <Import Project="..\..\src\Shared\build\Windows.targets" />
 </Project>
