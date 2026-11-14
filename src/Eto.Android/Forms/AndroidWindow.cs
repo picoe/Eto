@@ -134,6 +134,8 @@ namespace Eto.Android.Forms
 			set;
 		}
 
+		public bool AllowFullScreenToggle { get; set; }
+
 		public bool Minimizable
 		{
 			get;

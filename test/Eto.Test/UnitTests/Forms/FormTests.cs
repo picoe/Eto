@@ -113,6 +113,269 @@ public class FormTests : WindowTests<Form>
 		Assert.That(closed, Is.EqualTo(1), "Closed event should only fire once");
 	}
 
+	[Test]
+	public void AllowFullScreenToggleShouldDefaultToPlatformConvention()
+	{
+		Invoke(() =>
+		{
+			var form = new Form();
+			Assert.That(form.AllowFullScreenToggle, Is.EqualTo(Platform.Instance.IsMac), "Should only be allowed by default on macOS");
+		});
+	}
+
+	class KeyForm : Form
+	{
+		public bool SendKey(Keys key)
+		{
+			var args = new KeyEventArgs(key, KeyEventType.KeyDown);
+			OnKeyDown(args);
+			return args.Handled;
+		}
+	}
+
+	// skips when the window manager never changes the state at all, e.g. under Xvfb in CI which has none
+	class StateTracker
+	{
+		readonly Window window;
+		bool changed;
+
+		public StateTracker(Window window)
+		{
+			this.window = window;
+			window.WindowStateChanged += (sender, e) => changed = true;
+		}
+
+		public void AssertState(WindowState state)
+		{
+			if (!changed && window.WindowState != state)
+				Assert.Ignore($"The window manager did not change the window to {state}");
+			Assert.That(window.WindowState, Is.EqualTo(state), $"Should be {state}");
+		}
+	}
+
+	[TestCase(WindowState.Normal)]
+	[TestCase(WindowState.Maximized)]
+	public void F11ShouldToggleFullScreenWhenAllowed(WindowState initialState) => Async(20000, async () =>
+	{
+		if (Platform.Instance.IsMac)
+			Assert.Ignore("macOS uses the system full screen button and shortcut");
+
+		var form = new KeyForm { Content = "F11", ClientSize = new Size(300, 200) };
+		var shown = new TaskCompletionSource<bool>();
+		var states = new StateTracker(form);
+		form.Shown += (sender, e) => shown.TrySetResult(true);
+
+		async Task WaitForState(WindowState state)
+		{
+			for (int i = 0; i < 50 && form.WindowState != state; i++)
+				await Task.Delay(100);
+			states.AssertState(state);
+		}
+
+		try
+		{
+			form.Show();
+			await shown.Task;
+			form.WindowState = initialState;
+			await WaitForState(initialState);
+
+			Assert.That(form.SendKey(Keys.F11), Is.False, "F11 should not be handled when not allowed");
+			await Task.Delay(200);
+			Assert.That(form.WindowState, Is.EqualTo(initialState), "F11 should do nothing when not allowed");
+
+			form.AllowFullScreenToggle = true;
+			Assert.That(form.SendKey(Keys.F11 | Keys.Control), Is.False, "Only F11 without modifiers should toggle");
+			Assert.That(form.SendKey(Keys.F11), Is.True, "F11 should be handled");
+			await WaitForState(WindowState.FullScreen);
+			Assert.That(form.SendKey(Keys.F11), Is.True, "F11 should be handled");
+			await WaitForState(initialState);
+
+			form.AllowFullScreenToggle = false;
+			Assert.That(form.SendKey(Keys.F11), Is.False, "F11 should not be handled after disallowing");
+		}
+		finally
+		{
+			form.Close();
+		}
+	});
+
+	[TestCase(WindowState.Normal)]
+	[TestCase(WindowState.Maximized)]
+	[TestCase(WindowState.Minimized)]
+	public void FullScreenShouldCoverScreenAndRestore(WindowState exitState) => Async(20000, async () =>
+	{
+		var form = new Form
+		{
+			Content = "Full screen",
+			Location = new Point(100, 100),
+			ClientSize = new Size(300, 200)
+		};
+		var shown = new TaskCompletionSource<bool>();
+		var states = new StateTracker(form);
+		form.Shown += (sender, e) => shown.TrySetResult(true);
+		var stateChanges = new List<WindowState>();
+		form.WindowStateChanged += (sender, e) => stateChanges.Add(form.WindowState);
+
+		// some platforms animate the transition, so wait for it to settle
+		async Task SetState(WindowState state, Func<bool> settled = null)
+		{
+			form.WindowState = state;
+			for (int i = 0; i < 50 && (form.WindowState != state || settled?.Invoke() == false); i++)
+				await Task.Delay(100);
+			states.AssertState(state);
+		}
+
+		try
+		{
+			form.Show();
+			await shown.Task;
+			var normalBounds = form.Bounds;
+
+			// compared against a maximized window as some backends report screen bounds in different units
+			await SetState(WindowState.Maximized);
+			var maximizedBounds = form.Bounds;
+			await SetState(WindowState.Normal, () => form.Bounds == normalBounds);
+			stateChanges.Clear();
+
+			// macOS reports the state before the transition finishes, so also wait for the event
+			await SetState(WindowState.FullScreen, () => stateChanges.Count > 0 && form.Bounds.Height >= maximizedBounds.Height);
+			var fullScreenBounds = form.Bounds;
+			// full screen on a Mac with a notch stays below it, so is no taller than maximized when the dock isn't taking space
+			if (Platform.Instance.IsMac)
+				Assert.That(fullScreenBounds.Height, Is.GreaterThanOrEqualTo(maximizedBounds.Height), "Full screen should cover the dock");
+			else
+				Assert.That(fullScreenBounds.Height, Is.GreaterThan(maximizedBounds.Height), "Full screen should cover the taskbar/dock");
+			Assert.That(fullScreenBounds.Width, Is.GreaterThanOrEqualTo(maximizedBounds.Width - 20), "Full screen should cover the width of the screen");
+			Assert.That(form.WindowStyle, Is.EqualTo(WindowStyle.Default), "Style should still report the original value");
+			Assert.That(stateChanges, Is.EqualTo(new[] { WindowState.FullScreen }), "Should raise a single state change when entering full screen");
+
+			stateChanges.Clear();
+			// a minimized window's bounds are platform specific
+			await SetState(exitState, () => stateChanges.Count > 0 && (exitState == WindowState.Minimized || form.Bounds != fullScreenBounds));
+			// catch a duplicate event raised once the exit animation finishes
+			await Task.Delay(1000);
+			if (exitState == WindowState.Normal)
+				Assert.That(form.Bounds, Is.EqualTo(normalBounds), "Should restore the original bounds");
+			else if (exitState == WindowState.Maximized)
+				Assert.That(form.Bounds, Is.EqualTo(maximizedBounds), "Should be maximized with a border");
+			Assert.That(form.RestoreBounds, Is.EqualTo(normalBounds), "Restore bounds should be the original bounds");
+			Assert.That(stateChanges, Is.EqualTo(new[] { exitState }), "Should raise a single state change when leaving full screen");
+
+			if (exitState == WindowState.Minimized)
+			{
+				await SetState(WindowState.Normal, () => form.Bounds == normalBounds);
+				Assert.That(form.Bounds, Is.EqualTo(normalBounds), "Should restore the original bounds after minimizing");
+			}
+		}
+		finally
+		{
+			form.Close();
+		}
+	});
+
+	[Test]
+	public void RestoreBoundsShouldBeNormalBoundsWhileFullScreen() => Async(20000, async () =>
+	{
+		var form = new Form
+		{
+			Content = "Full screen",
+			Location = new Point(100, 100),
+			ClientSize = new Size(300, 200)
+		};
+		var shown = new TaskCompletionSource<bool>();
+		var states = new StateTracker(form);
+		form.Shown += (sender, e) => shown.TrySetResult(true);
+		// apps often save RestoreBounds when the state changes, so it should be correct during the event
+		var restoreBoundsInEvents = new List<Rectangle>();
+		form.WindowStateChanged += (sender, e) => restoreBoundsInEvents.Add(form.RestoreBounds);
+
+		async Task SetState(WindowState state)
+		{
+			restoreBoundsInEvents.Clear();
+			form.WindowState = state;
+			for (int i = 0; i < 50 && (form.WindowState != state || restoreBoundsInEvents.Count == 0); i++)
+				await Task.Delay(100);
+			await Task.Delay(500);
+			states.AssertState(state);
+		}
+
+		try
+		{
+			form.Show();
+			await shown.Task;
+			// let the window manager finish decorating the window
+			await Task.Delay(500);
+			var normalBounds = form.Bounds;
+
+			// entering full screen first, as decorations added after showing used to throw it off
+			await SetState(WindowState.FullScreen);
+			Assert.That(form.RestoreBounds, Is.EqualTo(normalBounds), "Restore bounds should be the normal bounds while full screen");
+			Assert.That(restoreBoundsInEvents, Is.All.EqualTo(normalBounds), "Restore bounds should be the normal bounds when entering full screen");
+
+			await SetState(WindowState.Normal);
+			Assert.That(restoreBoundsInEvents, Is.All.EqualTo(normalBounds), "Restore bounds should be the normal bounds when leaving full screen");
+			Assert.That(form.RestoreBounds, Is.EqualTo(normalBounds), "Restore bounds should be the normal bounds after leaving full screen");
+		}
+		finally
+		{
+			form.Close();
+		}
+	});
+
+	[TestCase(WindowState.Maximized, WindowState.Normal)]
+	[TestCase(WindowState.Minimized, WindowState.FullScreen)]
+	public void FullScreenShouldGoDirectlyToNewState(WindowState viaState, WindowState finalState) => Async(20000, async () =>
+	{
+		var form = new Form
+		{
+			Content = "Full screen",
+			Location = new Point(100, 100),
+			ClientSize = new Size(300, 200)
+		};
+		var shown = new TaskCompletionSource<bool>();
+		var states = new StateTracker(form);
+		form.Shown += (sender, e) => shown.TrySetResult(true);
+		var stateChanges = new List<WindowState>();
+		form.WindowStateChanged += (sender, e) => stateChanges.Add(form.WindowState);
+
+		async Task SetState(WindowState state)
+		{
+			stateChanges.Clear();
+			form.WindowState = state;
+			for (int i = 0; i < 50 && (form.WindowState != state || stateChanges.Count == 0); i++)
+				await Task.Delay(100);
+			// catch a transient or duplicate event raised once the transition finishes
+			await Task.Delay(1000);
+			states.AssertState(state);
+			Assert.That(stateChanges, Is.EqualTo(new[] { state }), $"Should raise a single state change when going to {state}");
+		}
+
+		try
+		{
+			form.Show();
+			await shown.Task;
+			var normalBounds = form.Bounds;
+
+			if (viaState == WindowState.Maximized)
+			{
+				await SetState(WindowState.Maximized);
+				await SetState(WindowState.FullScreen);
+			}
+			else
+			{
+				await SetState(WindowState.FullScreen);
+				await SetState(viaState);
+			}
+			await SetState(finalState);
+			if (finalState == WindowState.Normal)
+				Assert.That(form.Bounds, Is.EqualTo(normalBounds), "Should restore the original bounds");
+		}
+		finally
+		{
+			form.Close();
+		}
+	});
+
 	[TestCase(true)]
 	[TestCase(false)]
 	[ManualTest]

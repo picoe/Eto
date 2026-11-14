@@ -65,6 +65,7 @@ namespace Eto.GtkSharp.Forms
 		internal static readonly object AutoSize_Key = new object();
 		internal static readonly object Minimizable_Key = new object();
 		internal static readonly object Maximizable_Key = new object();
+		internal static readonly object AllowFullScreenToggle_Key = new object();
 	}
 
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
@@ -211,6 +212,36 @@ namespace Eto.GtkSharp.Forms
 				if (Widget.Properties.TrySet(GtkWindow.Maximizable_Key, value, true))
 					SetTypeHint();
 			}
+		}
+
+		public bool AllowFullScreenToggle
+		{
+			get => Widget.Properties.Get<bool>(GtkWindow.AllowFullScreenToggle_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(GtkWindow.AllowFullScreenToggle_Key, value))
+				{
+					if (value)
+						Widget.KeyDown += Widget_KeyDownFullScreen;
+					else
+						Widget.KeyDown -= Widget_KeyDownFullScreen;
+				}
+			}
+		}
+
+		void Widget_KeyDownFullScreen(object sender, KeyEventArgs e)
+		{
+			if (e.Handled || e.KeyData != Keys.F11)
+				return;
+			e.Handled = true;
+			if (WindowState == WindowState.FullScreen)
+			{
+				// GTK keeps the maximized flag while full screen, so this returns to the previous state
+				var wasMaximized = Control.GetWindow()?.State.HasFlag(Gdk.WindowState.Maximized) == true;
+				WindowState = wasMaximized ? WindowState.Maximized : WindowState.Normal;
+			}
+			else
+				WindowState = WindowState.FullScreen;
 		}
 
 		public bool ShowInTaskbar
@@ -523,6 +554,15 @@ namespace Eto.GtkSharp.Forms
 
 			public WindowState OldState { get; set; }
 
+			// the window manager can send in-between bounds before the state event when returning to normal, so wait for it
+			void UpdateRestoreBounds(GtkWindow<TControl, TWidget, TCallback> handler)
+			{
+				if (OldState == WindowState.Normal && handler.WindowState == WindowState.Normal)
+					handler.restoreBounds = handler.Widget.Bounds;
+			}
+
+			internal bool SkipMaximizedState { get; set; }
+
 			public new GtkWindow<TControl, TWidget, TCallback> Handler { get { return (GtkWindow<TControl, TWidget, TCallback>)base.Handler; } }
 
 			public void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
@@ -553,20 +593,11 @@ namespace Eto.GtkSharp.Forms
 				if (handler == null)
 					return;
 				var windowState = handler.WindowState;
-				if (windowState == WindowState.Normal)
+				if (SkipMaximizedState && windowState != WindowState.FullScreen)
 				{
-					if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Maximized) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Maximized))
-					{
-						handler.restoreBounds = handler.Widget.Bounds;
-					}
-					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Iconified) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Iconified))
-					{
-						handler.restoreBounds = handler.Widget.Bounds;
-					}
-					else if (args.Event.ChangedMask.HasFlag(Gdk.WindowState.Fullscreen) && !args.Event.NewWindowState.HasFlag(Gdk.WindowState.Fullscreen))
-					{
-						handler.restoreBounds = handler.Widget.Bounds;
-					}
+					SkipMaximizedState = false;
+					if (windowState == WindowState.Maximized)
+						return;
 				}
 
 				if (windowState != OldState)
@@ -622,14 +653,13 @@ namespace Eto.GtkSharp.Forms
 				var newSize = handler.Control.Allocation.Size.ToEto();
 				if (handler.Control.IsRealized && oldSize != newSize)
 				{
+					UpdateRestoreBounds(handler);
 					handler.Callback.OnSizeChanged(Handler.Widget, EventArgs.Empty);
 
 					// annoyingly, there's no way to tell if the user is resizing things
 					if (handler.AutoSizePerformed == 0 && handler.DisableAutoSizeUpdate == 0)
 						handler.AutoSize = false;
 
-					if (handler.WindowState == WindowState.Normal)
-						handler.restoreBounds = handler.Widget.Bounds;
 					oldSize = newSize;
 				}
 				if (handler.AutoSizePerformed > 0)
@@ -644,13 +674,18 @@ namespace Eto.GtkSharp.Forms
 				var handler = Handler;
 				if (handler == null)
 					return;
-				handler.currentLocation = new Point(args.Event.X, args.Event.Y);
-				if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
+				// the event can be for the client area below a server-side title bar, or include client-side shadows, so ask GTK
+				handler.Control.GetPosition(out var x, out var y);
+				handler.currentLocation = new Point(x, y);
+				if (handler.Control.IsRealized && handler.Widget.Loaded)
 				{
-					handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
-					if (handler.WindowState == WindowState.Normal)
-						handler.restoreBounds = handler.Widget.Bounds;
-					oldLocation = handler.currentLocation;
+					// also refresh when only the decorations change, e.g. the title bar being added after the window is mapped
+					UpdateRestoreBounds(handler);
+					if (oldLocation != handler.currentLocation)
+					{
+						handler.Callback.OnLocationChanged(handler.Widget, EventArgs.Empty);
+						oldLocation = handler.currentLocation;
+					}
 				}
 				handler.currentLocation = null;
 			}
@@ -939,11 +974,12 @@ namespace Eto.GtkSharp.Forms
 				if (gdkWindow == null)
 					return state;
 
+				// GTK keeps the full screen flag while minimized
 				if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
-				if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
-					return WindowState.Maximized;
 				if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+					return WindowState.FullScreen;
+				if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
 					return WindowState.Maximized;
 				return WindowState.Normal;
 			}
@@ -955,6 +991,17 @@ namespace Eto.GtkSharp.Forms
 					var gdkWindow = Control.GetWindow();
 					switch (value)
 					{
+						case WindowState.FullScreen:
+							if (gdkWindow != null)
+							{
+								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
+								{
+									Control.Deiconify();
+									Control.Present();
+								}
+							}
+							Control.Fullscreen();
+							break;
 						case WindowState.Maximized:
 							if (gdkWindow != null)
 							{
@@ -974,7 +1021,12 @@ namespace Eto.GtkSharp.Forms
 							if (gdkWindow != null)
 							{
 								if (gdkWindow.State.HasFlag(Gdk.WindowState.Fullscreen))
+								{
+									// GTK leaves full screen before unmaximizing, so don't report the brief Maximized state in between
+									if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
+										Connector.SkipMaximizedState = true;
 									Control.Unfullscreen();
+								}
 								if (gdkWindow.State.HasFlag(Gdk.WindowState.Maximized))
 									Control.Unmaximize();
 								if (gdkWindow.State.HasFlag(Gdk.WindowState.Iconified))
@@ -999,7 +1051,8 @@ namespace Eto.GtkSharp.Forms
 		{
 			get
 			{
-				return WindowState == WindowState.Normal ? Widget.Bounds : restoreBounds ?? Widget.Bounds;
+				// the window manager reports the new state before the new bounds, so use the last bounds seen while normal
+				return restoreBounds ?? Widget.Bounds;
 			}
 		}
 

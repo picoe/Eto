@@ -34,6 +34,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object DidBlurBehindWindow_Key = new object();
 		internal static readonly object MonitorKeys_Key = new object();
 		internal static readonly object KeyMonitor_Key = new object();
+		internal static readonly object AllowFullScreenToggle_Key = new object();
 	}
 	
 	public class EtoWindowContent : swc.DockPanel
@@ -146,6 +147,8 @@ namespace Eto.Wpf.Forms
 				}
 			};
 			Control.SizeChanged += Control_SizeChanged;
+			// must be before any WindowStateChanged handler so the state is correct when it is raised
+			Control.StateChanged += Control_StateChanged;
 			// needed to handle Application.Terminating event
 			HandleEvent(Window.ClosingEvent);
 		}
@@ -373,7 +376,11 @@ namespace Eto.Wpf.Forms
 					Control.Closing += Control_Closing;
 					break;
 				case Window.WindowStateChangedEvent:
-					Control.StateChanged += (sender, e) => Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+					Control.StateChanged += (sender, e) =>
+					{
+						if (!changingFullScreen)
+							Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.Activated += (sender, e) => Callback.OnGotFocus(Widget, EventArgs.Empty);
@@ -777,6 +784,9 @@ namespace Eto.Wpf.Forms
 
 		protected virtual void SetResizeMode()
 		{
+			// applied when leaving full screen
+			if (fullScreenWindowStyle != null)
+				return;
 			if (Resizable)
 				Control.ResizeMode = sw.ResizeMode.CanResize;
 			else if (Minimizable)
@@ -996,7 +1006,7 @@ namespace Eto.Wpf.Forms
 				switch (Control.WindowState)
 				{
 					case sw.WindowState.Maximized:
-						return WindowState.Maximized;
+						return fullScreenWindowStyle != null ? WindowState.FullScreen : WindowState.Maximized;
 					case sw.WindowState.Minimized:
 						return WindowState.Minimized;
 					case sw.WindowState.Normal:
@@ -1009,20 +1019,124 @@ namespace Eto.Wpf.Forms
 			{
 				switch (value)
 				{
+					case WindowState.FullScreen:
+						EnterFullScreen();
+						break;
 					case WindowState.Maximized:
-						Control.WindowState = sw.WindowState.Maximized;
+						if (!ExitFullScreen(sw.WindowState.Maximized))
+							Control.WindowState = sw.WindowState.Maximized;
 						break;
 					case WindowState.Minimized:
+						// stays full screen so restoring the window returns to it
 						Control.WindowState = sw.WindowState.Minimized;
 						break;
 					case WindowState.Normal:
-						Control.WindowState = sw.WindowState.Normal;
+						if (!ExitFullScreen(sw.WindowState.Normal))
+							Control.WindowState = sw.WindowState.Normal;
 						break;
 					default:
 						throw new NotSupportedException();
 				}
 				SetSizeToContent();
 			}
+		}
+
+		// the style to restore when leaving full screen, or null when not full screen
+		sw.WindowStyle? fullScreenWindowStyle;
+		sw.WindowState fullScreenPreviousState;
+		bool changingFullScreen;
+
+		public bool AllowFullScreenToggle
+		{
+			get => Widget.Properties.Get<bool>(WpfWindow.AllowFullScreenToggle_Key);
+			set
+			{
+				if (Widget.Properties.TrySet(WpfWindow.AllowFullScreenToggle_Key, value))
+				{
+					if (value)
+						Widget.KeyDown += Widget_KeyDownFullScreen;
+					else
+						Widget.KeyDown -= Widget_KeyDownFullScreen;
+				}
+			}
+		}
+
+		void Widget_KeyDownFullScreen(object sender, Eto.Forms.KeyEventArgs e)
+		{
+			if (e.Handled || e.KeyData != Keys.F11)
+				return;
+			e.Handled = true;
+			if (WindowState == WindowState.FullScreen)
+				ExitFullScreen(fullScreenPreviousState);
+			else
+				EnterFullScreen();
+		}
+
+		void EnterFullScreen()
+		{
+			if (fullScreenWindowStyle != null)
+			{
+				if (Control.WindowState == sw.WindowState.Minimized)
+					Control.WindowState = sw.WindowState.Maximized;
+				return;
+			}
+			fullScreenPreviousState = Control.WindowState == sw.WindowState.Maximized ? sw.WindowState.Maximized : sw.WindowState.Normal;
+			ChangeFullScreen(() =>
+			{
+				// a borderless window only covers the taskbar when it is maximized after removing the border
+				Control.WindowState = sw.WindowState.Normal;
+				fullScreenWindowStyle = Control.WindowStyle;
+				var oldStyle = SaveWindowStyle();
+				Control.ClearValue(sw.Shell.WindowChrome.WindowChromeProperty);
+				RestoreWindowStyle(oldStyle);
+				Control.WindowStyle = sw.WindowStyle.None;
+				// otherwise the resize border hangs off the edges of the screen
+				Control.ResizeMode = sw.ResizeMode.NoResize;
+				Control.WindowState = sw.WindowState.Maximized;
+			});
+		}
+
+		bool ExitFullScreen(sw.WindowState state)
+		{
+			if (fullScreenWindowStyle == null)
+				return false;
+			ChangeFullScreen(() =>
+			{
+				Control.WindowState = sw.WindowState.Normal;
+				RestoreFromFullScreen();
+				Control.WindowState = state;
+			});
+			return true;
+		}
+
+		void RestoreFromFullScreen()
+		{
+			Control.WindowStyle = fullScreenWindowStyle.Value;
+			fullScreenWindowStyle = null;
+			SetResizeMode();
+			SetWindowChrome();
+		}
+
+		void ChangeFullScreen(Action action)
+		{
+			// raise a single state change rather than one for each step
+			changingFullScreen = true;
+			try
+			{
+				action();
+			}
+			finally
+			{
+				changingFullScreen = false;
+			}
+			Callback.OnWindowStateChanged(Widget, EventArgs.Empty);
+		}
+
+		void Control_StateChanged(object sender, EventArgs e)
+		{
+			// e.g. Win+Down un-maximizes the window, so it is no longer full screen
+			if (!changingFullScreen && fullScreenWindowStyle != null && Control.WindowState == sw.WindowState.Normal)
+				RestoreFromFullScreen();
 		}
 
 		public Rectangle RestoreBounds
@@ -1079,7 +1193,7 @@ namespace Eto.Wpf.Forms
 
 		public WindowStyle WindowStyle
 		{
-			get { return Control.WindowStyle.ToEto(); }
+			get { return (fullScreenWindowStyle ?? Control.WindowStyle).ToEto(); }
 			set
 			{
 				if (WindowStyle != value)
@@ -1089,7 +1203,13 @@ namespace Eto.Wpf.Forms
 						Trace.WriteLine("WARNING: Changing window style after window is shown is not supported on this platform");
 						return;
 					}
-						
+					if (fullScreenWindowStyle != null)
+					{
+						// applied when leaving full screen
+						fullScreenWindowStyle = value.ToWpf();
+						return;
+					}
+
 					Control.WindowStyle = value.ToWpf();
 					SetWindowChrome();
 					SetWindowTransparency();
@@ -1128,7 +1248,8 @@ namespace Eto.Wpf.Forms
 
 		void SetWindowChrome()
 		{
-			if (!isSourceInitialized)
+			// applied when leaving full screen
+			if (!isSourceInitialized || fullScreenWindowStyle != null)
 				return;
 			
 			var needsCustomWindowChrome = (Resizable || HasTransparency) && WindowStyle == WindowStyle.None;

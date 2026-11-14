@@ -43,7 +43,7 @@ namespace Eto.Test.Sections.Behaviors
 
 			layout.AddSpace();
 			layout.AddSeparateRow(null, CreateResetButton(), null);
-			layout.AddSeparateRow(null, Resizable(), AutoSize(), Minimizable(), Maximizable(), MovableByWindowBackground(), null);
+			layout.AddSeparateRow(null, Resizable(), AutoSize(), Minimizable(), Maximizable(), AllowFullScreenToggle(), MovableByWindowBackground(), null);
 			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControl(), "DisplayMode", DisplayModeDropDown(), null);
 			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
@@ -95,6 +95,7 @@ namespace Eto.Test.Sections.Behaviors
 			public bool? CanFocus { get; set; }
 			public bool? Minimizable { get; set; }
 			public bool? Maximizable { get; set; }
+			public bool? AllowFullScreenToggle { get; set; }
 			public bool? Closeable { get; set; }
 			public bool? MovableByWindowBackground { get; set; }
 			public bool? ShowInTaskbar { get; set; }
@@ -301,6 +302,14 @@ namespace Eto.Test.Sections.Behaviors
 			maximizableCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
 			maximizableCheckBox.CheckedBinding.BindDataContext((Window w) => w.Maximizable);
 			return maximizableCheckBox;
+		}
+
+		Control AllowFullScreenToggle()
+		{
+			var checkBox = new CheckBox { Text = "AllowFullScreenToggle" };
+			checkBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			checkBox.CheckedBinding.BindDataContext((Window w) => w.AllowFullScreenToggle);
+			return checkBox;
 		}
 
 		Control MovableByWindowBackground()
@@ -599,6 +608,8 @@ namespace Eto.Test.Sections.Behaviors
 				Child.AutoSize = settings.AutoSize ?? false;
 			if (settings.Maximizable != null)
 				Child.Maximizable = settings.Maximizable ?? false;
+			if (settings.AllowFullScreenToggle != null)
+				Child.AllowFullScreenToggle = settings.AllowFullScreenToggle ?? false;
 			if (settings.Minimizable != null)
 				Child.Minimizable = settings.Minimizable ?? false;
 			if (settings.ShowInTaskbar != null)
@@ -722,9 +733,10 @@ namespace Eto.Test.Sections.Behaviors
 			Log.Write(child, "OwnerChanged: {0}", child.Owner);
 		}
 
-		static void child_WindowStateChanged(object sender, EventArgs e)
+		void child_WindowStateChanged(object sender, EventArgs e)
 		{
 			var child = (Window)sender;
+			stateCombo.SelectedValue = child.WindowState;
 			Log.Write(child, "StateChanged: {0}", child.WindowState);
 		}
 
