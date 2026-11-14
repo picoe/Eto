@@ -159,6 +159,7 @@ jobs:
         name: test-mac
         path: |
           artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.dmg
+          artifacts/test/Eto.Test.Mac64/${{ env.BuildConfiguration }}/**/Eto.Test.Mac64.pkg
           artifacts/test/Eto.Test.macOS/${{ env.BuildConfiguration }}/**/Eto.Test.macOS*.pkg
 
     # These are GUI tests that create real windows, so they need a desktop session to run in. The
