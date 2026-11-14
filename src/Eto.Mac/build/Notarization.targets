@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!--
-      Wait for notarization to complete and staple the DMG.
+      Wait for notarization to complete and staple the .dmg and/or .pkg.
       Note that this can make the build take a long time waiting for your app to be notarized.
       -->
     <EnableNotarizationStapler Condition="$(EnableNotarizationStapler) == ''">True</EnableNotarizationStapler>
@@ -28,10 +28,10 @@
     <NotarizationKeychainProfile Condition="$(NotarizationKeychainProfile) == ''">AC_PASSWORD</NotarizationKeychainProfile>
   </PropertyGroup>
 
-  <Target Name="MacNotarize" AfterTargets="MacCodeSignDmg" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(EnableDmgBuild) == 'True'">
+  <Target Name="MacNotarize" AfterTargets="MacCodeSign" DependsOnTargets="$(MacNotarizeDependsOnTargets)" Condition="$(_MacBuildDmg) == 'True' OR $(_MacBuildPkg) == 'True'">
   </Target>
 
-  <Target Name="MacNotarizeDmg" DependsOnTargets="MacBuildDmg">
+  <Target Name="MacNotarizeDmg" DependsOnTargets="MacBuildDmg" Condition="$(_MacBuildDmg) == 'True'">
     <PropertyGroup>
       <_DmgZipPath>$(_MacDmgTempPath)$(DmgName).zip</_DmgZipPath>
 
@@ -54,11 +54,30 @@
     <Delete Files="$(_DmgZipPath)" />
   </Target>
 
-  <Target Name="MacStapleDmg" DependsOnTargets="MacNotarizeDmg" Condition="$(EnableNotarizationStapler) == 'True'">
+  <Target Name="MacStapleDmg" DependsOnTargets="MacNotarizeDmg" Condition="$(EnableNotarizationStapler) == 'True' AND $(_MacBuildDmg) == 'True'">
     <Exec Command='xcrun stapler staple "$(_DmgPath)"' />
 
     <Message Text="Stapled notarization ticket to $(_DmgPath)" Importance="high" />
 
+  </Target>
+
+  <Target Name="MacNotarizePkg" DependsOnTargets="MacBuildPkg" Condition="$(_MacBuildPkg) == 'True'">
+    <PropertyGroup>
+      <_PkgNotarizationParameters>'$(_PkgPath)' --wait</_PkgNotarizationParameters>
+      <_PkgNotarizationParameters Condition="$(NotarizationUserName) != ''">$(_PkgNotarizationParameters) --apple-id "$(NotarizationUserName)"</_PkgNotarizationParameters>
+      <_PkgNotarizationParameters Condition="$(NotarizationPassword) != ''">$(_PkgNotarizationParameters) --password "$(NotarizationPassword)"</_PkgNotarizationParameters>
+      <_PkgNotarizationParameters Condition="$(NotarizationTeamID) != ''">$(_PkgNotarizationParameters) --team-id "$(NotarizationTeamID)"</_PkgNotarizationParameters>
+      <_PkgNotarizationParameters Condition="$(NotarizationKeychainProfile) != ''">$(_PkgNotarizationParameters) --keychain-profile "$(NotarizationKeychainProfile)"</_PkgNotarizationParameters>
+    </PropertyGroup>
+
+    <Message Text="Notarizing $(_PkgPath)" Importance="high" />
+    <Exec Command="xcrun notarytool submit $(_PkgNotarizationParameters)" />
+  </Target>
+
+  <Target Name="MacStaplePkg" DependsOnTargets="MacNotarizePkg" Condition="$(EnableNotarizationStapler) == 'True' AND $(_MacBuildPkg) == 'True'">
+    <Exec Command='xcrun stapler staple "$(_PkgPath)"' />
+
+    <Message Text="Stapled notarization ticket to $(_PkgPath)" Importance="high" />
   </Target>
 
 </Project>
