@@ -56,21 +56,21 @@ jobs:
         path: |
           artifacts/test/*/${{ env.BuildConfiguration }}/**/*
           !artifacts/test/Eto.Test.Mac64/**/*
-          !artifacts/test/Eto.Test.Wpf/**/win-*/**/*
-          !artifacts/test/Eto.Test.Wpf/**/*.msi
-          !artifacts/test/Eto.Test.Wpf/**/*-Setup.exe
-          !artifacts/test/Eto.Test.Wpf/**/*.msix
-          !artifacts/test/Eto.Test.Wpf/**/*.msixbundle
+          !artifacts/test/*/**/win-*/**/*
+          !artifacts/test/*/**/*.msi
+          !artifacts/test/*/**/*-Setup.exe
+          !artifacts/test/*/**/*.msix
+          !artifacts/test/*/**/*.msixbundle
 
     - name: Upload package artifacts
       uses: actions/upload-artifact@v7
       with:
         name: test-win-packages
         path: |
-          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msi
-          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*-Setup.exe
-          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msix
-          artifacts/test/Eto.Test.Wpf/${{ env.BuildConfiguration }}/**/*.msixbundle
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*.msi
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*-Setup.exe
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*.msix
+          artifacts/test/*/${{ env.BuildConfiguration }}/**/*.msixbundle
 
     - name: Upload sample artifacts
       uses: actions/upload-artifact@v7
