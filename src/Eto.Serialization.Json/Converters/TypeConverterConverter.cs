@@ -51,7 +51,7 @@ namespace Eto.Serialization.Json.Converters
 			var converter = GetConverter(objectType, reader.ValueType);
 			if (converter != null)
 			{
-				return converter.ConvertFrom(reader.Value);
+				return converter.ConvertFrom(null, CultureInfo.InvariantCulture, reader.Value);
 			}
 			return reader.Value;
 		}

@@ -33,7 +33,7 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 		[TestCaseSource(nameof(Values))]
 		public void ShouldMatchTypeConverter(Type type, string text)
 		{
-			var expected = sc.TypeDescriptor.GetConverter(type).ConvertFrom(text);
+			var expected = sc.TypeDescriptor.GetConverter(type).ConvertFromInvariantString(text);
 			Assert.That(Convert(type, text), Is.EqualTo(expected));
 		}
 
@@ -43,7 +43,7 @@ namespace Eto.Test.UnitTests.Forms.Xaml
 		[TestCase(typeof(Color), "notacolor")]
 		public void InvalidValuesShouldThrowLikeTypeConverter(Type type, string text)
 		{
-			Assert.Throws<ArgumentException>(() => sc.TypeDescriptor.GetConverter(type).ConvertFrom(text));
+			Assert.Throws<ArgumentException>(() => sc.TypeDescriptor.GetConverter(type).ConvertFromInvariantString(text));
 			var ex = Assert.Throws<TargetInvocationException>(() => Convert(type, text));
 			Assert.That(ex.InnerException, Is.InstanceOf<ArgumentException>());
 		}

@@ -8,11 +8,6 @@ namespace Eto.Drawing;
 class PaddingConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="Padding"/> object
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -21,6 +16,14 @@ class PaddingConverterInternal : sc.TypeConverter
 	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
+	}
+
+	// writes 'left,top,right,bottom' so ConvertFrom can read it back
+	public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if (destinationType == typeof(string) && value is Padding padding)
+			return ConverterHelper.Join(culture, padding.Left, padding.Top, padding.Right, padding.Bottom);
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 
 	/// <summary>
@@ -35,7 +38,8 @@ class PaddingConverterInternal : sc.TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 
 			try
 			{
@@ -43,19 +47,19 @@ class PaddingConverterInternal : sc.TypeConverter
 				{
 					case 1:
 						return new Padding(
-							int.Parse(parts[0])
+							int.Parse(parts[0], culture)
 						);
 					case 2:
 						return new Padding(
-							int.Parse(parts[0]),
-							int.Parse(parts[1])
+							int.Parse(parts[0], culture),
+							int.Parse(parts[1], culture)
 						);
 					case 4:
 						return new Padding(
-							int.Parse(parts[0]),
-							int.Parse(parts[1]),
-							int.Parse(parts[2]),
-							int.Parse(parts[3])
+							int.Parse(parts[0], culture),
+							int.Parse(parts[1], culture),
+							int.Parse(parts[2], culture),
+							int.Parse(parts[3], culture)
 						);
 					default:
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Padding. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));
@@ -79,11 +83,6 @@ class PaddingConverterInternal : sc.TypeConverter
 public class PaddingConverter : TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="Padding"/> object
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -106,7 +105,8 @@ public class PaddingConverter : TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 
 			try
 			{
@@ -114,19 +114,19 @@ public class PaddingConverter : TypeConverter
 				{
 					case 1:
 						return new Padding(
-							int.Parse(parts[0])
+							int.Parse(parts[0], culture)
 						);
 					case 2:
 						return new Padding(
-							int.Parse(parts[0]),
-							int.Parse(parts[1])
+							int.Parse(parts[0], culture),
+							int.Parse(parts[1], culture)
 						);
 					case 4:
 						return new Padding(
-							int.Parse(parts[0]),
-							int.Parse(parts[1]),
-							int.Parse(parts[2]),
-							int.Parse(parts[3])
+							int.Parse(parts[0], culture),
+							int.Parse(parts[1], culture),
+							int.Parse(parts[2], culture),
+							int.Parse(parts[3], culture)
 						);
 					default:
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Padding. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));

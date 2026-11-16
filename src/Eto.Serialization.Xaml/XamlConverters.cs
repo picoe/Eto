@@ -23,7 +23,7 @@ namespace Eto.Serialization.Xaml
 	{
 		static readonly char[] DimensionSplitter = { ',' };
 
-		// matches the converters, which parse with the current culture
+		// invariant, the culture Portable.Xaml passes to the converters, so markup loads the same on every machine
 		static string[] Split(string text, string typeName, string form, params int[] counts)
 		{
 			var parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
@@ -58,42 +58,42 @@ namespace Eto.Serialization.Xaml
 		{
 			const string form = "'size' or 'width, height'";
 			var p = Split(text, nameof(Size), form, 1, 2);
-			return Parse(text, nameof(Size), form, () => p.Length == 1 ? new Size(int.Parse(p[0])) : new Size(int.Parse(p[0]), int.Parse(p[1])));
+			return Parse(text, nameof(Size), form, () => p.Length == 1 ? new Size(int.Parse(p[0], CultureInfo.InvariantCulture)) : new Size(int.Parse(p[0], CultureInfo.InvariantCulture), int.Parse(p[1], CultureInfo.InvariantCulture)));
 		}
 
 		public static SizeF SizeF(string text)
 		{
 			const string form = "'size' or 'width, height'";
 			var p = Split(text, nameof(SizeF), form, 1, 2);
-			return Parse(text, nameof(SizeF), form, () => p.Length == 1 ? new SizeF(float.Parse(p[0])) : new SizeF(float.Parse(p[0]), float.Parse(p[1])));
+			return Parse(text, nameof(SizeF), form, () => p.Length == 1 ? new SizeF(float.Parse(p[0], CultureInfo.InvariantCulture)) : new SizeF(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture)));
 		}
 
 		public static Point Point(string text)
 		{
 			const string form = "'x, y'";
 			var p = Split(text, nameof(Point), form, 2);
-			return Parse(text, nameof(Point), form, () => new Point(int.Parse(p[0]), int.Parse(p[1])));
+			return Parse(text, nameof(Point), form, () => new Point(int.Parse(p[0], CultureInfo.InvariantCulture), int.Parse(p[1], CultureInfo.InvariantCulture)));
 		}
 
 		public static PointF PointF(string text)
 		{
 			const string form = "'x, y'";
 			var p = Split(text, nameof(PointF), form, 2);
-			return Parse(text, nameof(PointF), form, () => new PointF(float.Parse(p[0]), float.Parse(p[1])));
+			return Parse(text, nameof(PointF), form, () => new PointF(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture)));
 		}
 
 		public static Rectangle Rectangle(string text)
 		{
 			const string form = "'x, y, width, height'";
 			var p = Split(text, nameof(Rectangle), form, 4);
-			return Parse(text, nameof(Rectangle), form, () => new Rectangle(int.Parse(p[0]), int.Parse(p[1]), int.Parse(p[2]), int.Parse(p[3])));
+			return Parse(text, nameof(Rectangle), form, () => new Rectangle(int.Parse(p[0], CultureInfo.InvariantCulture), int.Parse(p[1], CultureInfo.InvariantCulture), int.Parse(p[2], CultureInfo.InvariantCulture), int.Parse(p[3], CultureInfo.InvariantCulture)));
 		}
 
 		public static RectangleF RectangleF(string text)
 		{
 			const string form = "'x, y, width, height'";
 			var p = Split(text, nameof(RectangleF), form, 4);
-			return Parse(text, nameof(RectangleF), form, () => new RectangleF(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2]), float.Parse(p[3])));
+			return Parse(text, nameof(RectangleF), form, () => new RectangleF(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture), float.Parse(p[2], CultureInfo.InvariantCulture), float.Parse(p[3], CultureInfo.InvariantCulture)));
 		}
 
 		const string PaddingForm = "'all', 'horizontal, vertical', or 'left, top, right, bottom'";
@@ -103,9 +103,9 @@ namespace Eto.Serialization.Xaml
 			var p = Split(text, nameof(Padding), PaddingForm, 1, 2, 4);
 			return Parse(text, nameof(Padding), PaddingForm, () => p.Length switch
 			{
-				1 => new Padding(int.Parse(p[0])),
-				2 => new Padding(int.Parse(p[0]), int.Parse(p[1])),
-				_ => new Padding(int.Parse(p[0]), int.Parse(p[1]), int.Parse(p[2]), int.Parse(p[3]))
+				1 => new Padding(int.Parse(p[0], CultureInfo.InvariantCulture)),
+				2 => new Padding(int.Parse(p[0], CultureInfo.InvariantCulture), int.Parse(p[1], CultureInfo.InvariantCulture)),
+				_ => new Padding(int.Parse(p[0], CultureInfo.InvariantCulture), int.Parse(p[1], CultureInfo.InvariantCulture), int.Parse(p[2], CultureInfo.InvariantCulture), int.Parse(p[3], CultureInfo.InvariantCulture))
 			});
 		}
 
@@ -114,9 +114,9 @@ namespace Eto.Serialization.Xaml
 			var p = Split(text, nameof(PaddingF), PaddingForm, 1, 2, 4);
 			return Parse(text, nameof(PaddingF), PaddingForm, () => p.Length switch
 			{
-				1 => new PaddingF(float.Parse(p[0])),
-				2 => new PaddingF(float.Parse(p[0]), float.Parse(p[1])),
-				_ => new PaddingF(float.Parse(p[0]), float.Parse(p[1]), float.Parse(p[2]), float.Parse(p[3]))
+				1 => new PaddingF(float.Parse(p[0], CultureInfo.InvariantCulture)),
+				2 => new PaddingF(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture)),
+				_ => new PaddingF(float.Parse(p[0], CultureInfo.InvariantCulture), float.Parse(p[1], CultureInfo.InvariantCulture), float.Parse(p[2], CultureInfo.InvariantCulture), float.Parse(p[3], CultureInfo.InvariantCulture))
 			});
 		}
 
