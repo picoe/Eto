@@ -6,11 +6,6 @@ namespace Eto.Drawing;
 class PaddingFConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if the specified <paramref name="sourceType"/> can be converted to a <see cref="PaddingF"/> object
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -19,6 +14,14 @@ class PaddingFConverterInternal : sc.TypeConverter
 	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
+	}
+
+	// writes 'left,top,right,bottom' so ConvertFrom can read it back
+	public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if (destinationType == typeof(string) && value is PaddingF padding)
+			return ConverterHelper.Join(culture, padding.Left, padding.Top, padding.Right, padding.Bottom);
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 
 	/// <summary>
@@ -33,7 +36,8 @@ class PaddingFConverterInternal : sc.TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 
 			try
 			{
@@ -41,19 +45,19 @@ class PaddingFConverterInternal : sc.TypeConverter
 				{
 					case 1:
 						return new PaddingF(
-							float.Parse(parts[0])
+							float.Parse(parts[0], culture)
 						);
 					case 2:
 						return new PaddingF(
-							float.Parse(parts[0]),
-							float.Parse(parts[1])
+							float.Parse(parts[0], culture),
+							float.Parse(parts[1], culture)
 						);
 					case 4:
 						return new PaddingF(
-							float.Parse(parts[0]),
-							float.Parse(parts[1]),
-							float.Parse(parts[2]),
-							float.Parse(parts[3])
+							float.Parse(parts[0], culture),
+							float.Parse(parts[1], culture),
+							float.Parse(parts[2], culture),
+							float.Parse(parts[3], culture)
 						);
 					default:
 						throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as PaddingF. Should be in the form of 'all', 'horizontal, vertical', or 'left, top, right, bottom'", text));

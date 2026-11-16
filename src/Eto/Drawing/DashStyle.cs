@@ -83,7 +83,7 @@ public sealed class DashStyle : IEquatable<DashStyle>
 			return true;
 		}
 		float offset;
-		if (!float.TryParse(values[0], out offset))
+		if (!float.TryParse(values[0], NumberStyles.Float, CultureInfo.InvariantCulture, out offset))
 			throw new ArgumentOutOfRangeException("value", value);
 		float[] dashes = null;
 		if (values.Length > 1)
@@ -92,7 +92,7 @@ public sealed class DashStyle : IEquatable<DashStyle>
 			for (int i = 0; i < dashes.Length; i++)
 			{
 				float dashValue;
-				if (!float.TryParse(values[i + 1], out dashValue))
+				if (!float.TryParse(values[i + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out dashValue))
 					throw new ArgumentOutOfRangeException("value", value);
 				dashes[i] = dashValue;
 			}

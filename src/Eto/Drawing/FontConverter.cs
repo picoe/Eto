@@ -60,7 +60,7 @@ class FontConverter : sc.TypeConverter
 					if (sizeStr.EndsWith("pt", StringComparison.OrdinalIgnoreCase))
 						sizeStr = sizeStr.Substring(0, sizeStr.Length - 2);
 					float tsize;
-					if (float.TryParse(sizeStr, out tsize))
+					if (float.TryParse(sizeStr, NumberStyles.Float, culture ?? CultureInfo.CurrentCulture, out tsize))
 					{
 						size = tsize;
 						continue;

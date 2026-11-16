@@ -11,11 +11,6 @@ namespace Eto.Drawing;
 class RectangleConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -24,6 +19,14 @@ class RectangleConverterInternal : sc.TypeConverter
 	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
+	}
+
+	// writes the same form ConvertFrom reads, using the given culture
+	public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if (destinationType == typeof(string) && value is Rectangle rect)
+			return ConverterHelper.Join(culture, rect.X, rect.Y, rect.Width, rect.Height);
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 
 	/// <summary>
@@ -38,17 +41,18 @@ class RectangleConverterInternal : sc.TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 			if (parts.Length != 4)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Rectangle. Should be in the form of 'x, y, width, height'", text));
 
 			try
 			{
 				return new Rectangle(
-					int.Parse(parts[0]),
-					int.Parse(parts[1]),
-					int.Parse(parts[2]),
-					int.Parse(parts[3])
+					int.Parse(parts[0], culture),
+					int.Parse(parts[1], culture),
+					int.Parse(parts[2], culture),
+					int.Parse(parts[3], culture)
 				);
 			}
 			catch
@@ -70,11 +74,6 @@ class RectangleConverterInternal : sc.TypeConverter
 [Obsolete("Since 2.5. Use TypeDescriptor.GetConverter instead")]
 public class RectangleConverter : TypeConverter
 {
-	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
 	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
@@ -98,17 +97,18 @@ public class RectangleConverter : TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 			if (parts.Length != 4)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Rectangle. Should be in the form of 'x, y, width, height'", text));
 
 			try
 			{
 				return new Rectangle(
-					int.Parse(parts[0]),
-					int.Parse(parts[1]),
-					int.Parse(parts[2]),
-					int.Parse(parts[3])
+					int.Parse(parts[0], culture),
+					int.Parse(parts[1], culture),
+					int.Parse(parts[2], culture),
+					int.Parse(parts[3], culture)
 				);
 			}
 			catch

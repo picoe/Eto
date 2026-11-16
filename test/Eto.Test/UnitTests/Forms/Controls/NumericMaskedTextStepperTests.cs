@@ -21,6 +21,9 @@ namespace Eto.Test.UnitTests.Forms.Controls
 		// exposes OnStep so tests can step without clicking the native stepper
 		class TestStepper : NumericMaskedTextStepper<T>
 		{
+			// expected text uses '.', and Invoke runs on the UI thread so [SetCulture] wouldn't reach it
+			public TestStepper() => Culture = CultureInfo.InvariantCulture;
+
 			public void PerformStep(StepperDirection direction) => OnStep(new StepperEventArgs(direction));
 		}
 

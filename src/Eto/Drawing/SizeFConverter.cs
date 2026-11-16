@@ -11,11 +11,6 @@ namespace Eto.Drawing;
 class SizeFConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -24,6 +19,14 @@ class SizeFConverterInternal : sc.TypeConverter
 	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
+	}
+
+	// writes the same form ConvertFrom reads, using the given culture
+	public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if (destinationType == typeof(string) && value is SizeF size)
+			return ConverterHelper.Join(culture, size.Width, size.Height);
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 
 	/// <summary>
@@ -38,14 +41,15 @@ class SizeFConverterInternal : sc.TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 
 			if (parts.Length == 1)
 			{
 				try
 				{
 					return new SizeF(
-						float.Parse(parts[0])
+						float.Parse(parts[0], culture)
 					);
 				}
 				catch
@@ -60,8 +64,8 @@ class SizeFConverterInternal : sc.TypeConverter
 			try
 			{
 				return new SizeF(
-					float.Parse(parts[0]),
-					float.Parse(parts[1])
+					float.Parse(parts[0], culture),
+					float.Parse(parts[1], culture)
 				);
 			}
 			catch
@@ -83,11 +87,6 @@ class SizeFConverterInternal : sc.TypeConverter
 [Obsolete("Since 2.5. Use TypeDescriptor.GetConverter instead")]
 public class SizeFConverter : TypeConverter
 {
-	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
 	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
@@ -111,15 +110,16 @@ public class SizeFConverter : TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 			if (parts.Length != 2)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as SizeF. Should be in the form of 'width, height'", text));
 
 			try
 			{
 				return new SizeF(
-					float.Parse(parts[0]),
-					float.Parse(parts[1])
+					float.Parse(parts[0], culture),
+					float.Parse(parts[1], culture)
 				);
 			}
 			catch

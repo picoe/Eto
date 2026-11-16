@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 {
-	[TestFixture]
+	[TestFixture, SetCulture("en-US")]
 	public class NumericMaskedTextProviderTests
 	{
 		[Test]

@@ -28,7 +28,7 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.That(size, Is.EqualTo(new SizeF(value, value)), "#3");
 		}
 
-		static T ConvertFromString<T>(string text) => (T)sc.TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(text);
+		static T ConvertFromString<T>(string text) => (T)sc.TypeDescriptor.GetConverter(typeof(T)).ConvertFromInvariantString(text);
 
 		[TestCase("5", 5, 5)]
 		[TestCase(" 7 ", 7, 7)]
@@ -49,14 +49,12 @@ namespace Eto.Test.UnitTests.Drawing
 			Assert.Throws<ArgumentException>(() => ConvertFromString<Size>(text));
 		}
 
-		// the converters parse with the current culture, so build the text the same way
-		[TestCase(5f, 5f)]
-		[TestCase(1.5f, 1.5f)]
-		[TestCase(3f, 4.25f)]
-		public void SizeFShouldConvertFromString(float width, float height)
+		[TestCase("5", 5f, 5f)]
+		[TestCase("1.5", 1.5f, 1.5f)]
+		[TestCase("3, 4.25", 3f, 4.25f)]
+		public void SizeFShouldConvertFromString(string text, float width, float height)
 		{
-			var text = width == height ? width.ToString() : $"{width}, {height}";
-			Assert.That(ConvertFromString<SizeF>(text), Is.EqualTo(new SizeF(width, height)), text);
+			Assert.That(ConvertFromString<SizeF>(text), Is.EqualTo(new SizeF(width, height)));
 		}
 
 		[TestCase("")]

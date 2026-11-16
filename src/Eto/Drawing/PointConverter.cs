@@ -11,11 +11,6 @@ namespace Eto.Drawing;
 class PointConverterInternal : sc.TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -24,6 +19,14 @@ class PointConverterInternal : sc.TypeConverter
 	public override bool CanConvertFrom(sc.ITypeDescriptorContext context, Type sourceType)
 	{
 		return sourceType == typeof(string);
+	}
+
+	// writes the same form ConvertFrom reads, using the given culture
+	public override object ConvertTo(sc.ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+	{
+		if (destinationType == typeof(string) && value is Point point)
+			return ConverterHelper.Join(culture, point.X, point.Y);
+		return base.ConvertTo(context, culture, value, destinationType);
 	}
 
 	/// <summary>
@@ -38,15 +41,16 @@ class PointConverterInternal : sc.TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 			if (parts.Length != 2)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Point. Should be in the form of 'x, y'", text));
 
 			try
 			{
 				return new Point(
-					int.Parse(parts[0]),
-					int.Parse(parts[1])
+					int.Parse(parts[0], culture),
+					int.Parse(parts[1], culture)
 				);
 			}
 			catch
@@ -70,11 +74,6 @@ class PointConverterInternal : sc.TypeConverter
 public class PointConverter : TypeConverter
 {
 	/// <summary>
-	/// The character to split up the string which will be converted
-	/// </summary>
-	static readonly char[] DimensionSplitter = new char[1] { ',' };
-
-	/// <summary>
 	/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
 	/// </summary>
 	/// <param name="context">Conversion context</param>
@@ -97,15 +96,16 @@ public class PointConverter : TypeConverter
 		string text = value as string;
 		if (text != null)
 		{
-			string[] parts = text.Split(DimensionSplitter, StringSplitOptions.RemoveEmptyEntries);
+			culture ??= CultureInfo.CurrentCulture;
+			string[] parts = ConverterHelper.Split(text, culture);
 			if (parts.Length != 2)
 				throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Cannot parse value '{0}' as Point. Should be in the form of 'x, y'", text));
 
 			try
 			{
 				return new Point(
-					int.Parse(parts[0]),
-					int.Parse(parts[1])
+					int.Parse(parts[0], culture),
+					int.Parse(parts[1], culture)
 				);
 			}
 			catch
