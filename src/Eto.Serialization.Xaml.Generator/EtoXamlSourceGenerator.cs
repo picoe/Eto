@@ -65,6 +65,7 @@ namespace Eto.Serialization.Xaml.Generator
 			options.MethodModifiers = "private";
 			options.Namespaces[string.Empty] = EtoFormsNamespace;
 			options.Namespaces["x"] = XamlLanguage.Xaml2006Namespace;
+			options.Namespaces["d"] = DesignNamespace;
 			options.IgnoredNamespaces.Add(DesignNamespace);
 			globalOptions.TryGetValue("build_property.EtoXamlFieldModifier", out var fieldModifier);
 			options.DefaultFieldModifier = string.IsNullOrWhiteSpace(fieldModifier) ? "private" : fieldModifier.Trim().ToLowerInvariant();
