@@ -170,7 +170,7 @@ namespace Eto.GtkSharp
 		class StyleOverrides
 		{
 			public readonly Gtk.CssProvider Provider = new Gtk.CssProvider();
-			public readonly Dictionary<(GtkStateFlags state, string property), string> Rules = new Dictionary<(GtkStateFlags, string), string>();
+			public readonly Dictionary<(GtkStateFlags state, string selector, string property), string> Rules = new Dictionary<(GtkStateFlags, string, string), string>();
 		}
 
 		static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Gtk.Widget, StyleOverrides> styleOverrides = new System.Runtime.CompilerServices.ConditionalWeakTable<Gtk.Widget, StyleOverrides>();
@@ -195,8 +195,9 @@ namespace Eto.GtkSharp
 		}
 
 		// Applies to this widget only, at the same priority the obsolete gtk_widget_override_* calls used.
-		static void SetStyle(Gtk.Widget widget, GtkStateFlags state, string property, string value)
+		static void SetStyle(Gtk.Widget widget, GtkStateFlags state, string property, string value, string selector = null)
 		{
+			selector = selector ?? ToCssSelector(state);
 			var style = styleOverrides.GetValue(widget, w =>
 			{
 				var overrides = new StyleOverrides();
@@ -204,15 +205,15 @@ namespace Eto.GtkSharp
 				return overrides;
 			});
 			if (value != null)
-				style.Rules[(state, property)] = value;
-			else if (!style.Rules.Remove((state, property)))
+				style.Rules[(state, selector, property)] = value;
+			else if (!style.Rules.Remove((state, selector, property)))
 				return;
 
 			var css = new StringBuilder();
 			// normal state first so the more specific state rules win
-			foreach (var group in style.Rules.GroupBy(r => r.Key.state).OrderBy(r => r.Key))
+			foreach (var group in style.Rules.GroupBy(r => (r.Key.state, r.Key.selector)).OrderBy(r => r.Key.state))
 			{
-				css.Append(ToCssSelector(group.Key)).Append(" {");
+				css.Append(group.Key.selector).Append(" {");
 				foreach (var rule in group)
 					css.Append(' ').Append(rule.Key.property).Append(": ").Append(rule.Value).Append(';');
 				css.AppendLine(" }");
@@ -289,6 +290,12 @@ namespace Eto.GtkSharp
 		{
 			SetStyle(widget, state, "background-color", null);
 			SetStyle(widget, state, "background-image", null);
+		}
+
+		internal static void SetBackground(this Gtk.Widget widget, Color? color, string selector)
+		{
+			SetStyle(widget, GtkStateFlags.Normal, "background-color", color.HasValue ? color.Value.ToRGBA().ToCss() : null, selector);
+			SetStyle(widget, GtkStateFlags.Normal, "background-image", color.HasValue ? "none" : null, selector);
 		}
 
 		public static Color GetBase(this Gtk.Widget widget, GtkStateFlags state = GtkStateFlags.Normal)

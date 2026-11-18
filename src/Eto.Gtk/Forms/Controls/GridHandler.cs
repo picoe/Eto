@@ -33,6 +33,19 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		public override Gtk.Widget ContainerControl => ScrolledWindow;
 
+		protected override void SetBackgroundColor(Color? color)
+		{
+#if GTK3
+			if (GtkVersion.IsAtLeast(3, 16))
+			{
+				// Keep selected-row theme styles; :not() is available starting with GTK 3.16.
+				Control.SetBackground(color, "*:not(:selected)");
+				return;
+			}
+#endif
+			base.SetBackgroundColor(color);
+		}
+
 		public override bool ShouldTranslatePoints => true;
 
 
