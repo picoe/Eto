@@ -16,14 +16,22 @@ namespace Eto.Test.Gtk.UnitTests
 			{
 				using var font = new Font(FontFamilies.Sans, 17, FontStyle.Bold);
 				using var groupBox = new GroupBox { Font = font, TextColor = Colors.Red };
-				foreach (var title in new[] { "Title", "Renamed" })
+				var frame = (g.Frame)groupBox.ControlObject;
+				foreach (var (title, displayed) in new[]
+				{
+					("&Title && _text", "Title & _text"),
+					("Re&named && _text", "Renamed & _text")
+				})
 				{
 					groupBox.Text = title;
+					Assert.That(groupBox.Text, Is.EqualTo(title));
+					Assert.That(((g.Label)frame.LabelWidget).Text, Is.EqualTo(displayed));
 					AssertLabelStyle(groupBox, font, Colors.Red);
 				}
 
 				groupBox.Text = null;
-				Assert.That(((g.Frame)groupBox.ControlObject).LabelWidget, Is.Null);
+				Assert.That(groupBox.Text, Is.Null);
+				Assert.That(frame.LabelWidget, Is.Null);
 				groupBox.TextColor = default(Color);
 				groupBox.Text = "Restored";
 				AssertLabelStyle(groupBox, font, default(Color));
@@ -34,7 +42,7 @@ namespace Eto.Test.Gtk.UnitTests
 		{
 			var label = ((g.Frame)groupBox.ControlObject).LabelWidget;
 			Assert.That(label, Is.Not.Null);
-			var actualFont = label.GetFont();
+			using var actualFont = label.GetFont();
 			var expectedFont = font.ToPango();
 			Assert.Multiple(() =>
 			{
