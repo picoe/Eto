@@ -3,6 +3,7 @@ namespace Eto.GtkSharp.Forms.Controls
 	public class GroupBoxHandler : GtkPanel<Gtk.Frame, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
 		static readonly object TextColor_Key = new object();
+		string text;
 
 		public GroupBoxHandler ()
 		{
@@ -11,14 +12,17 @@ namespace Eto.GtkSharp.Forms.Controls
 
 		protected override Gtk.Widget FontControl => Control.LabelWidget ?? new Gtk.Label();
 
-		public override string Text {
-			get { return Control.Label; }
+		public override string Text
+		{
+			get { return text; }
 			set
 			{
+				text = value;
 				// GTK replaces the label when the title changes, so reapply assigned styles.
 				Control.Label = value;
-				if (Control.LabelWidget is Gtk.Widget label)
+				if (Control.LabelWidget is Gtk.Label label)
 				{
+					label.TextWithMnemonic = value.ToPlatformMnemonic();
 					if (Widget.Properties.ContainsKey(GtkControl.Font_Key))
 						label.SetFont(Font.ToPango());
 					if (Widget.Properties.Get<Color?>(TextColor_Key) is Color color)
