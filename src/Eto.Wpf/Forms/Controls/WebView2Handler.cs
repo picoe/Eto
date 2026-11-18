@@ -592,7 +592,18 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		await Control.EnsureCoreWebView2Async(env);
 	}
 
-	async void InitializeAsync() => await OnInitializeWebView2Async();
+	async void InitializeAsync()
+	{
+		try
+		{
+			await OnInitializeWebView2Async();
+		}
+		catch (Exception ex) when (Widget.IsDisposed || ex.HResult == E_ABORT)
+		{
+			// The control was closed or disposed before initialization finished;
+			// escaping this async void would crash the app on the dispatcher.
+		}
+	}
 
 	protected override void Initialize()
 	{
