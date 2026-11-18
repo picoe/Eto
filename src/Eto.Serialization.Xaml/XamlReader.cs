@@ -372,6 +372,7 @@ namespace Eto.Serialization.Xaml
 
 			readerSettings.AddNamespace(null, EtoFormsNamespace);
 			readerSettings.AddNamespace("x", XamlLanguage.Xaml2006Namespace);
+			readerSettings.AddNamespace("d", DesignNamespace);
 
 			if (!DesignMode && typeof(T).Assembly != typeof(Control).Assembly)
 			{
