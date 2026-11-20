@@ -208,7 +208,21 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 	bool TryParse(string text, out DateTime result)
 	{
-		DateTime parsed = this.value ?? DateTime.Now;
+		// The text is formatted with the culture's calendar (e.g. Thai Buddhist or Persian), so read it back in that calendar too.
+		var calendar = culture.DateTimeFormat.Calendar;
+		var current = this.value ?? DateTime.Now;
+		if (current < calendar.MinSupportedDateTime)
+			current = calendar.MinSupportedDateTime;
+		if (current > calendar.MaxSupportedDateTime)
+			current = calendar.MaxSupportedDateTime;
+
+		var year = calendar.GetYear(current);
+		var month = calendar.GetMonth(current);
+		var day = calendar.GetDayOfMonth(current);
+		var hour = current.Hour;
+		var minute = current.Minute;
+		var second = current.Second;
+		var isShortYear = false;
 		var didParse = false;
 		var hasDesignator = patternInfo.Segments.Any(r => r.Part == DateTimeSegmentPart.Designator);
 		int? hour12 = null;
@@ -220,19 +234,31 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 			var str = text.Substring(segment.Start, segment.Length);
 			if (int.TryParse(str, NumberStyles.Integer, culture, out var intValue))
 			{
-				parsed = segment.Part switch
+				switch (segment.Part)
 				{
-					DateTimeSegmentPart.Year => new DateTime(intValue, parsed.Month, parsed.Day, parsed.Hour, parsed.Minute, parsed.Second),
-					DateTimeSegmentPart.Month => new DateTime(parsed.Year, Math.Min(12, Math.Max(1, intValue)), parsed.Day, parsed.Hour, parsed.Minute, parsed.Second),
-					DateTimeSegmentPart.Day => new DateTime(parsed.Year, parsed.Month, Math.Min(DateTime.DaysInMonth(parsed.Year, parsed.Month), Math.Max(1, intValue)), parsed.Hour, parsed.Minute, parsed.Second),
-					DateTimeSegmentPart.Hour when hasDesignator => parsed,
-					DateTimeSegmentPart.Hour => new DateTime(parsed.Year, parsed.Month, parsed.Day, Math.Min(23, Math.Max(0, intValue)), parsed.Minute, parsed.Second),
-					DateTimeSegmentPart.Minute => new DateTime(parsed.Year, parsed.Month, parsed.Day, parsed.Hour, Math.Min(59, Math.Max(0, intValue)), parsed.Second),
-					DateTimeSegmentPart.Second => new DateTime(parsed.Year, parsed.Month, parsed.Day, parsed.Hour, parsed.Minute, Math.Min(59, Math.Max(0, intValue))),
-					_ => parsed
-				};
-				if (segment.Part == DateTimeSegmentPart.Hour && hasDesignator)
-					hour12 = Math.Min(12, Math.Max(1, intValue));
+					case DateTimeSegmentPart.Year:
+						year = intValue;
+						isShortYear = segment.Length <= 2;
+						break;
+					case DateTimeSegmentPart.Month:
+						month = intValue;
+						break;
+					case DateTimeSegmentPart.Day:
+						day = intValue;
+						break;
+					case DateTimeSegmentPart.Hour when hasDesignator:
+						hour12 = Clamp(intValue, 1, 12);
+						break;
+					case DateTimeSegmentPart.Hour:
+						hour = Clamp(intValue, 0, 23);
+						break;
+					case DateTimeSegmentPart.Minute:
+						minute = Clamp(intValue, 0, 59);
+						break;
+					case DateTimeSegmentPart.Second:
+						second = Clamp(intValue, 0, 59);
+						break;
+				}
 				didParse = true;
 			}
 			else if (segment.Part == DateTimeSegmentPart.Designator && TryParseDesignator(str, culture, out var parsedIsPm))
@@ -250,10 +276,27 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 		if (hour12 != null)
 		{
-			var hour = hour12.Value % 12;
-			if (isPm ?? parsed.Hour >= 12)
-				hour += 12;
-			parsed = new DateTime(parsed.Year, parsed.Month, parsed.Day, hour, parsed.Minute, parsed.Second);
+			var pm = isPm ?? hour >= 12;
+			hour = hour12.Value % 12 + (pm ? 12 : 0);
+		}
+
+		DateTime parsed;
+		try
+		{
+			if (isShortYear)
+				year = calendar.ToFourDigitYear(year);
+
+			// Each part is edited on its own, so the combination may not exist (e.g. April 31, or February 29 in a non-leap year).
+			year = Clamp(year, calendar.GetYear(calendar.MinSupportedDateTime), calendar.GetYear(calendar.MaxSupportedDateTime));
+			month = Clamp(month, 1, calendar.GetMonthsInYear(year));
+			day = Clamp(day, 1, calendar.GetDaysInMonth(year, month));
+			parsed = calendar.ToDateTime(year, month, day, hour, minute, second, 0);
+		}
+		catch (ArgumentOutOfRangeException)
+		{
+			// partially supported years at the edges of the calendar's range
+			result = default;
+			return false;
 		}
 
 		switch (mode)
@@ -277,6 +320,8 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 		return true;
 	}
+
+	static int Clamp(int value, int min, int max) => Math.Min(max, Math.Max(min, value));
 
 	static bool TryParseDesignator(string text, CultureInfo culture, out bool isPm)
 	{
@@ -308,7 +353,8 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	}
 
 	/// <summary>
-	/// Clamps the specified value to the <see cref="MinDate"/> and <see cref="MaxDate"/> range.
+	/// Clamps the specified value to the <see cref="MinDate"/> and <see cref="MaxDate"/> range, and to the range the
+	/// <see cref="Culture"/>'s calendar can display.
 	/// </summary>
 	/// <param name="value">Value to clamp, or <c>null</c>.</param>
 	/// <returns>The clamped value, or <c>null</c> if <paramref name="value"/> is <c>null</c>.</returns>
@@ -316,11 +362,19 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	{
 		if (value == null)
 			return null;
-		if (value.Value < minDate)
-			return minDate;
-		if (value.Value > maxDate)
-			return maxDate;
-		return value;
+		var result = value.Value;
+		if (result < minDate)
+			result = minDate;
+		if (result > maxDate)
+			result = maxDate;
+
+		// Formatting a date outside the calendar's range throws (e.g. DateTime.MinValue with the Persian calendar).
+		var calendar = culture.DateTimeFormat.Calendar;
+		if (result < calendar.MinSupportedDateTime)
+			result = calendar.MinSupportedDateTime;
+		if (result > calendar.MaxSupportedDateTime)
+			result = calendar.MaxSupportedDateTime;
+		return result;
 	}
 
 	/// <summary>
@@ -513,11 +567,33 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 				return false;
 		}
 
-		segments.Add(new DateTimeSegment(maskBuilder.Length, maskToken.Length, part.Value));
+		segments.Add(new DateTimeSegment(GetTextLength(maskBuilder, culture), maskToken.Length, part.Value));
 		formatBuilder.Append(normalizedToken);
 		parseBuilder.Append(parseToken);
 		maskBuilder.Append(maskToken);
 		return true;
+	}
+
+	// Segments index into the text, which has no escape characters and expands the date/time separators for the culture.
+	static int GetTextLength(StringBuilder mask, CultureInfo culture)
+	{
+		var length = 0;
+		for (var i = 0; i < mask.Length; i++)
+		{
+			var ch = mask[i];
+			if (ch == '\\')
+			{
+				i++;
+				length++;
+			}
+			else if (ch == '/')
+				length += culture.DateTimeFormat.DateSeparator.Length;
+			else if (ch == ':')
+				length += culture.DateTimeFormat.TimeSeparator.Length;
+			else
+				length++;
+		}
+		return length;
 	}
 
 	static void AppendLiteral(StringBuilder formatBuilder, StringBuilder parseBuilder, StringBuilder maskBuilder, string literal)
