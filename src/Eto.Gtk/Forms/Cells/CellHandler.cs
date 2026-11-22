@@ -100,7 +100,8 @@ namespace Eto.GtkSharp.Forms.Cells
 			
 			if (renderer is Gtk.CellRendererText textRenderer)
 			{
-				textRenderer.FontDesc = SystemFonts.Default().ToPango();
+				using var font = Column.Control.TreeView.GetFont();
+				textRenderer.FontDesc = font;
 				textRenderer.ForegroundRgba = SystemColors.ControlText.ToRGBA();
 			}
 			
