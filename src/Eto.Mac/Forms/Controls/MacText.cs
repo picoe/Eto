@@ -82,6 +82,18 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		int TextLength => Control.AttributedStringValue.Value?.Length ?? 0;
+
+		// The cached or editor selection can be ahead of the text, e.g. when an input method commits
+		// marked text into the field editor after the field already took the editor's string on losing focus.
+		Range<int> ClampToText(Range<int> range)
+		{
+			var length = TextLength;
+			var start = Math.Max(0, Math.Min(range.Start, length));
+			var end = Math.Max(start - 1, Math.Min(range.End, length - 1));
+			return new Range<int>(start, end);
+		}
+
 		protected virtual bool TextChanging(string oldText, string newText)
 		{
 			return false;
@@ -95,7 +107,11 @@ namespace Eto.Mac.Forms.Controls
 		
 		public int CaretIndex
 		{
-			get { return InitialSelection?.Start ?? (int?)Control.CurrentEditor?.SelectedRange.Location ?? LastSelection?.Start ?? 0; }
+			get
+			{
+				var index = InitialSelection?.Start ?? (int?)Control.CurrentEditor?.SelectedRange.Location ?? LastSelection?.Start ?? 0;
+				return Math.Max(0, Math.Min(index, TextLength));
+			}
 			set
 			{
 				var editor = Control.CurrentEditor;
@@ -115,9 +131,10 @@ namespace Eto.Mac.Forms.Controls
 			get
 			{
 				var editor = Control.CurrentEditor;
-				if (editor == null)
-					return InitialSelection ?? LastSelection ?? new Range<int>(0, -1);
-				return editor.SelectedRange.ToEto();
+				var selection = editor == null
+					? InitialSelection ?? LastSelection ?? new Range<int>(0, -1)
+					: editor.SelectedRange.ToEto();
+				return ClampToText(selection);
 			}
 			set
 			{
