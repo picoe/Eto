@@ -592,7 +592,18 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 		await Control.EnsureCoreWebView2Async(env);
 	}
 
-	async void InitializeAsync() => await OnInitializeWebView2Async();
+	async void InitializeAsync()
+	{
+		try
+		{
+			await OnInitializeWebView2Async();
+		}
+		catch (Exception ex) when (IsInitializationAborted(ex))
+		{
+			// The control was closed or disposed before initialization finished;
+			// escaping this async void would crash the app on the dispatcher.
+		}
+	}
 
 	protected override void Initialize()
 	{
@@ -617,6 +628,15 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	// torn down before EnsureCoreWebView2Async completed.
 	const int E_ABORT = unchecked((int)0x80004004);
 
+	// Removing the control from its window mid-initialization destroys the window WebView2
+	// is being created in, which can fail with errors other than E_ABORT.
+	bool unloadedBeforeReady;
+
+	bool IsInitializationAborted(Exception ex)
+		=> Widget.IsDisposed
+		|| ex?.HResult == E_ABORT
+		|| (unloadedBeforeReady && ex is System.Runtime.InteropServices.COMException);
+
 	void Control_CoreWebView2Ready(object sender, CoreWebView2InitializationCompletedEventArgs e)
 	{
 		if (!e.IsSuccess)
@@ -627,7 +647,7 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 			// allowed to escape this native callback, since it would surface as an
 			// unhandled exception on the dispatcher and crash the application.
 			// https://github.com/MicrosoftEdge/WebView2Feedback/issues/2410
-			if (Widget.IsDisposed || e.InitializationException?.HResult == E_ABORT)
+			if (IsInitializationAborted(e.InitializationException))
 				return;
 
 			throw new WebView2InitializationException("Failed to initialize WebView2", e.InitializationException);
@@ -684,6 +704,9 @@ public class WebView2Handler : BaseHandler, WebView.IHandler
 	public override void OnUnLoad(EventArgs e)
 	{
 		base.OnUnLoad(e);
+
+		if (!webView2Ready)
+			unloadedBeforeReady = true;
 
 		// Fixes crash when shown as a child window and the parent is closed
 		// https://github.com/MicrosoftEdge/WebView2Feedback/issues/1971
