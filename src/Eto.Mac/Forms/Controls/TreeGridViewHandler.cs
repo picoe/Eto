@@ -346,11 +346,9 @@ namespace Eto.Mac.Forms.Controls
 					tableColumn = outlineView.TableColumns()[0];
 
 				var colHandler = h.GetColumn(tableColumn);
-				if (colHandler != null)
-				{
-					var myitem = (EtoTreeItem)item;
+				var myitem = (EtoTreeItem)item;
+				if (colHandler != null && myitem.Item != null)
 					return colHandler.GetObjectValue(myitem.Item);
-				}
 				return null;
 			}
 
@@ -360,9 +358,9 @@ namespace Eto.Mac.Forms.Controls
 				if (h == null)
 					return;
 				var colHandler = h.GetColumn(tableColumn);
-				if (colHandler != null)
+				var myitem = (EtoTreeItem)item;
+				if (colHandler != null && myitem.Item != null)
 				{
-					var myitem = (EtoTreeItem)item;
 					colHandler.SetObjectValue(myitem.Item, theObject);
 
 					h.SetIsEditing(false);
@@ -393,8 +391,13 @@ namespace Eto.Mac.Forms.Controls
 				EtoTreeItem etoItem;
 				if (!items.TryGetValue((int)childIndex, out etoItem))
 				{
-
-					var parentItem = myitem != null ? (ITreeGridStore<ITreeGridItem>)myitem.Item : h.store;
+					var parentItem = myitem != null ? myitem.Item as ITreeGridStore<ITreeGridItem> : h.store;
+					if (parentItem == null || childIndex < 0 || childIndex >= parentItem.Count)
+					{
+						// Rows are fetched lazily, so a store that changed without a reload can have fewer
+						// children than the outline view still thinks it has. Show a blank row until it's reloaded.
+						return new EtoTreeItem();
+					}
 					etoItem = new EtoTreeItem { Item = parentItem[(int)childIndex] };
 					h.cachedItems[etoItem.Item] = etoItem;
 					items.Add((int)childIndex, etoItem);
