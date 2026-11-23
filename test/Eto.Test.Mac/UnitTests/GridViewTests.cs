@@ -170,6 +170,36 @@ namespace Eto.Test.Mac.UnitTests
 		}
 
 		[Test]
+		public void ScrollingAfterStoreShrinksWithoutReloadShouldNotThrow()
+		{
+			var items = new TreeGridItemCollection();
+			for (int i = 0; i < 100; i++)
+				items.Add(new TreeGridItem($"Item {i}"));
+			Shown(form =>
+			{
+				var tree = new TreeGridView { DataStore = items, Size = new Size(200, 200) };
+				tree.Columns.Add(new GridColumn { DataCell = new TextBoxCell(0) });
+				form.Content = tree;
+				return tree;
+			}, tree =>
+			{
+				var handler = (TreeGridViewHandler)tree.Handler;
+				var rowCount = handler.Control.RowCount;
+
+				// the app changes its data and reloads later, e.g. on the next idle
+				while (items.Count > 50)
+					items.RemoveAt(items.Count - 1);
+
+				// scrolling auto-sizes columns from the rows coming into view, which AppKit fetches on demand
+				Assert.DoesNotThrow(() => handler.Control.ScrollRowToVisible(rowCount - 1));
+				Assert.DoesNotThrow(() => tree.GetCellAt(new PointF(10, 10)));
+
+				tree.ReloadData();
+				Assert.That((int)handler.Control.RowCount, Is.EqualTo(50));
+			});
+		}
+
+		[Test]
 		public void ShowGroupsShouldApplyWhenToggled()
 		{
 			TreeGridViewHandler handler = null;
