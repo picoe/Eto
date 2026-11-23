@@ -62,8 +62,20 @@ namespace Eto.CustomControls
 			ResetCollection();
 		}
 
+		bool IsRowMissing(int row)
+		{
+			// the store can shrink without ReloadData being called, leaving rows that no longer exist
+			if (this[row] != null && GetItemAtRow(row) != null)
+				return false;
+			var widget = (Handler as Widget.IHandler)?.Widget;
+			Debug.WriteLine($"TreeGridView: row {row} is past the end of the store ({Store?.GetType()}, ID '{widget?.ID}'). Call ReloadData() after changing the store.");
+			return true;
+		}
+
 		public bool ExpandRow(int row)
 		{
+			if (IsRowMissing(row))
+				return false;
 			var args = new TreeGridViewItemCancelEventArgs(this[row]);
 			OnExpanding(args);
 			if (args.Cancel)
@@ -155,6 +167,8 @@ namespace Eto.CustomControls
 
 		public bool CollapseRow(int row)
 		{
+			if (IsRowMissing(row))
+				return false;
 			var args = new TreeGridViewItemCancelEventArgs(GetItemAtRow(row));
 			OnCollapsing(args);
 			if (args.Cancel)
@@ -383,18 +397,18 @@ namespace Eto.CustomControls
 
 		protected ITreeGridItem GetItemAtRow(int row)
 		{
-			if (Store == null) return null;
+			if (Store == null || row < 0) return null;
 
 			ITreeGridItem item = null;
 			if (sections == null || sections.Count == 0)
-				item = Store[row];
-			if (item == null)
+				item = row < Store.Count ? Store[row] : null;
+			if (item == null && sections != null)
 			{
 				foreach (var section in sections)
 				{
 					if (row <= section.StartRow)
 					{
-						item = Store[row];
+						item = row < Store.Count ? Store[row] : null;
 						break;
 					}
 					if (row <= section.StartRow + section.Count)
@@ -436,6 +450,8 @@ namespace Eto.CustomControls
 			TreeSection childController = null;
 			if (sections == null || sections.Count == 0)
 			{
+				if (row < 0 || row >= Store.Count)
+					return null;
 				children = (ITreeGridStore<ITreeGridItem>)Store[row];
 				childController = new TreeSection { StartRow = row, parent = this };
 				childController.InitializeItems(children);
