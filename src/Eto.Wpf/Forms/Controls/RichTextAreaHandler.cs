@@ -279,10 +279,11 @@ namespace Eto.Wpf.Forms.Controls
 				case RichTextArea.SelectionChangedEvent:
 					Control.SelectionChanged += (sender, e) =>
 					{
-						if (lastSelection != Selection)
+						var selection = Selection;
+						if (lastSelection != selection)
 						{
 							selectionAttributes = null;
-							lastSelection = Selection;
+							lastSelection = selection;
 							Callback.OnSelectionChanged(Widget, EventArgs.Empty);
 						}
 						else if (selectionAttributes != null)
@@ -364,7 +365,10 @@ namespace Eto.Wpf.Forms.Controls
 			get
 			{
 				var sel = Control.Selection;
-				return Eto.Forms.Range.FromLength(sel.Start.GetTextOffset(), sel.GetLength()); // Fully qualified because System.Range was introduced in .NET Core 3.0
+				var start = sel.Start.GetTextOffset();
+				// select all puts the end after the last paragraph, which isn't part of the text
+				var length = sel.End.GetInsertionPosition(swd.LogicalDirection.Backward).GetTextOffset(sel.Start);
+				return Eto.Forms.Range.FromLength(start, length); // Fully qualified because System.Range was introduced in .NET Core 3.0
 			}
 			set
 			{
@@ -993,7 +997,7 @@ namespace Eto.Wpf.Forms.Controls
 			Control.ScrollToHorizontalOffset(rect.Left);
 		}
 
-		public override int TextLength => ContentRange.GetLength();
+		public override int TextLength => Control.Document.ContentEnd.GetInsertionPosition(swd.LogicalDirection.Backward).GetTextOffset();
 
 	}
 
@@ -1013,22 +1017,6 @@ namespace Eto.Wpf.Forms.Controls
 				}
 			}
 		}
-		public static int GetLength(this swd.TextRange range)
-		{
-			var length = 0;
-			var position = range.Start;
-			var end = range.End;
-			while (position != null && position.CompareTo(end) != 0)
-			{
-				position = position.GetNextInsertionPosition(swd.LogicalDirection.Forward);
-				if (position == null)
-					break;
-				length++;
-			}
-
-			return length;
-		}
-
 		public static IEnumerable<swd.Inline> GetInlineElements(this swd.TextRange range)
 		{
 			for (var position = range.Start;
@@ -1127,34 +1115,27 @@ namespace Eto.Wpf.Forms.Controls
 			return sb.ToString();
 		}
 
-		public static int GetTextOffset(this swd.TextPointer position)
+		/// <summary>
+		/// Gets the character offset of this position from <paramref name="from"/>, or from the start of the document when null.
+		/// </summary>
+		public static int GetTextOffset(this swd.TextPointer position, swd.TextPointer from = null)
 		{
-			/*
-			System.Diagnostics.Debug.WriteLine($"Finding text offset");
-			var p = position;
-			while (p != null)
-			{
-				var ctx = p.GetPointerContext(swd.LogicalDirection.Backward);
-				var adj = p.GetAdjacentElement(swd.LogicalDirection.Backward);
-				var len = p.GetTextRunLength(swd.LogicalDirection.Backward);
-				var text = p.GetTextInRun(swd.LogicalDirection.Backward);
-				System.Diagnostics.Debug.WriteLine($"Context: {ctx}, Adjacent: {adj}, Length: {len}, Text: {text}");
-				p = p.GetNextContextPosition(swd.LogicalDirection.Backward);
-			}
-			*/ 
-
+			// Steps over whole runs rather than single characters so it stays fast for long text.
 			var offset = 0;
-			while (position != null)
+			while (position != null && (from == null || position.CompareTo(from) > 0))
 			{
 				var ctx = position.GetPointerContext(swd.LogicalDirection.Backward);
 				if (ctx == swd.TextPointerContext.Text)
 				{
-					offset += position.GetTextRunLength(swd.LogicalDirection.Backward);
+					var count = position.GetTextRunLength(swd.LogicalDirection.Backward);
+					if (from != null)
+						count = Math.Min(count, from.GetOffsetToPosition(position));
+					offset += count;
 				}
 				else if (ctx == swd.TextPointerContext.ElementEnd)
 				{
 					var adj = position.GetAdjacentElement(swd.LogicalDirection.Backward);
-					if (adj is swd.Paragraph)
+					if (adj is swd.Paragraph || adj is swd.LineBreak)
 					{
 						offset++; // newline
 					}
@@ -1168,20 +1149,6 @@ namespace Eto.Wpf.Forms.Controls
 
 		public static swd.TextPointer GetTextPositionAtOffset(this swd.TextPointer position, int characterCount)
 		{
-			/*
-			System.Diagnostics.Debug.WriteLine($"Finding position with {characterCount}");
-			var p = position;
-			while (p != null)
-			{
-				var ctx = p.GetPointerContext(swd.LogicalDirection.Forward);
-				var adj = p.GetAdjacentElement(swd.LogicalDirection.Forward);
-				var len = p.GetTextRunLength(swd.LogicalDirection.Forward);
-				var text = p.GetTextInRun(swd.LogicalDirection.Forward);
-				System.Diagnostics.Debug.WriteLine($"Context: {ctx}, Adjacent: {adj}, Length: {len}, Text: {text}");
-				p = p.GetNextContextPosition(swd.LogicalDirection.Forward);
-			}
-			*/
-
 			while (position != null && characterCount > 0)
 			{
 				var ctx = position.GetPointerContext(swd.LogicalDirection.Forward);
@@ -1196,7 +1163,7 @@ namespace Eto.Wpf.Forms.Controls
 				else if (ctx == swd.TextPointerContext.ElementEnd)
 				{
 					var adj = position.GetAdjacentElement(swd.LogicalDirection.Forward);
-					if (adj is swd.Paragraph)
+					if (adj is swd.Paragraph || adj is swd.LineBreak)
 					{
 						characterCount--; // newline
 					}

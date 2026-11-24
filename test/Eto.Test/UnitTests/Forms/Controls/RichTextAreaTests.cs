@@ -119,6 +119,34 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			Assert.That(richText.Selection, Is.EqualTo(range), "#3.1");
 		}
 
+		[Test]
+		[InvokeOnUI]
+		public void SelectionShouldCountSurrogatePairsAsTwoCharacters()
+		{
+			if (Platform.Instance.IsGtk)
+				Assert.Inconclusive("Gtk offsets count code points, not UTF-16 characters");
+
+			var richText = new RichTextArea();
+			var text = "ab\U0001F600cd ef";
+			richText.Text = text;
+
+			var range = GetRange(text, "b\U0001F600cd");
+			richText.Selection = range;
+			Assert.That(richText.SelectedText, Is.EqualTo("b\U0001F600cd"), "#1");
+			Assert.That(richText.Selection, Is.EqualTo(range), "#2");
+		}
+
+		[Test]
+		[InvokeOnUI]
+		public void SelectAllShouldMatchTextLength()
+		{
+			var richText = new RichTextArea();
+			richText.Text = "Hello\nThere\nThis is some text";
+
+			richText.SelectAll();
+			Assert.That(richText.Selection, Is.EqualTo(Range.FromLength(0, richText.TextLength)));
+		}
+
 		public class FontVariantInfo
 		{
 			public string FamilyName { get; set; }
