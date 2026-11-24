@@ -187,13 +187,21 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			get
 			{
-				return new Point((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset);
+				return new Point((int)FlipHorizontalOffset(scroller.HorizontalOffset), (int)scroller.VerticalOffset);
 			}
 			set
 			{
 				scroller.ScrollToVerticalOffset(value.Y);
-				scroller.ScrollToHorizontalOffset(value.X);
+				scroller.ScrollToHorizontalOffset(FlipHorizontalOffset(value.X));
 			}
+		}
+
+		// WPF measures the offset from the right edge when right-to-left, but ScrollPosition is from the left
+		double FlipHorizontalOffset(double offset)
+		{
+			if (scroller.FlowDirection != sw.FlowDirection.RightToLeft)
+				return offset;
+			return Math.Max(0, scroller.ExtentWidth - scroller.ViewportWidth - offset);
 		}
 
 		internal sw.Size scrollSize = new sw.Size(double.NaN, double.NaN);
@@ -254,7 +262,7 @@ namespace Eto.Wpf.Forms.Controls
 				case Scrollable.ScrollEvent:
 					scroller.ScrollChanged += (sender, e) =>
 					{
-						Callback.OnScroll(Widget, new ScrollEventArgs(new Point((int)e.HorizontalOffset, (int)e.VerticalOffset)));
+						Callback.OnScroll(Widget, new ScrollEventArgs(new Point((int)FlipHorizontalOffset(e.HorizontalOffset), (int)e.VerticalOffset)));
 					};
 					break;
 				default:

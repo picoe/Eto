@@ -145,7 +145,7 @@ namespace Eto.Wpf
 		{
 			var buttons = e.GetEtoButtons(buttonState);
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
-			var location = e.GetPosition(control).ToEto();
+			var location = e.GetPosition(control).FlipForFlowDirection(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
 		}
@@ -160,7 +160,7 @@ namespace Eto.Wpf
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
-			var location = e.GetPosition(control).ToEto();
+			var location = e.GetPosition(control).FlipForFlowDirection(control).ToEto();
 
 			return new MouseEventArgs(buttons, modifiers, location);
 		}
@@ -175,7 +175,7 @@ namespace Eto.Wpf
 			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
 			var modifiers = swi.Keyboard.Modifiers.ToEto();
-			var location = e.GetPosition(control).ToEto();
+			var location = e.GetPosition(control).FlipForFlowDirection(control).ToEto();
 			var delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
 			return new MouseEventArgs(buttons, modifiers, location, delta);
@@ -363,12 +363,26 @@ namespace Eto.Wpf
 			return ((Bitmap)image?.ControlObject).ToWpf(scale, fittingSize);
 		}
 
+		/// <summary>
+		/// Mirrors a point in an element's coordinates when it's right-to-left, so it's measured from the left edge.
+		/// </summary>
+		/// <remarks>
+		/// WPF measures right-to-left elements from the right. Applying this twice returns the original point.
+		/// </remarks>
+		public static sw.Point FlipForFlowDirection(this sw.Point point, sw.IInputElement element)
+		{
+			if (element is sw.FrameworkElement fe && fe.FlowDirection == sw.FlowDirection.RightToLeft)
+				return new sw.Point(fe.ActualWidth - point.X, point.Y);
+			return point;
+		}
+
 		public static swc.Image ToWpfImage(this Image image, float? scale = null, Size? fittingSize = null)
 		{
 			var source = image.ToWpf(scale, fittingSize);
 			if (source == null)
 				return null;
-			var swcImage = new swc.Image { Source = source };
+			// images shouldn't be mirrored in right-to-left
+			var swcImage = new swc.Image { Source = source, FlowDirection = sw.FlowDirection.LeftToRight };
 			if (fittingSize != null)
 			{
 				swcImage.SetMaxSize(fittingSize.Value);

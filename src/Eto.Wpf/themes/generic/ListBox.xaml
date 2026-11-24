@@ -13,6 +13,7 @@
 	<DataTemplate x:Key="EtoListBoxItemTemplate">
 		<StackPanel Orientation="Horizontal" VerticalAlignment="Center">
 			<Image Margin="0,0,2,0"
+				   FlowDirection="LeftToRight"
 				   StretchDirection="DownOnly">
 				<Image.Source>
 					<MultiBinding Converter="{StaticResource ListBoxItemImageConverter}">

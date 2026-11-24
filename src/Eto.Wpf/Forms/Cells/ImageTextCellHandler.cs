@@ -105,7 +105,7 @@ namespace Eto.Wpf.Forms.Cells
 
 			swc.Image CreateImage()
 			{
-				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = ImageMargin };
+				var image = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, Margin = ImageMargin, FlowDirection = sw.FlowDirection.LeftToRight };
 				swm.RenderOptions.SetBitmapScalingMode(image, ScalingMode);
 				image.DataContextChanged += (sender, e) =>
 				{
