@@ -235,7 +235,7 @@ namespace Eto.Wpf.Forms.Controls
 
 		protected override DragEventArgs GetDragEventArgs(sw.DragEventArgs data, object controlObject)
 		{
-			var location = data.GetPosition(Control).ToEto();
+			var location = data.GetPosition(Control).FlipForFlowDirection(Control).ToEto();
 			var cell = Widget.GetCellAt(location);
 			var item = cell.Item;
 			int? childIndex;

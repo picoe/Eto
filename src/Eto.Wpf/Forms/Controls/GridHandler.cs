@@ -1098,7 +1098,8 @@ namespace Eto.Wpf.Forms.Controls
 		
 		internal (GridColumn Column, int ColumnIndex, int RowIndex, GridCellType CellType, object Item) GetCellInfo(PointF location)
 		{
-			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf())?.VisualHit;
+			// the location is physical, but the grid's own coordinates are mirrored in right-to-left
+			var hitTestResult = swm.VisualTreeHelper.HitTest(Control, location.ToWpf().FlipForFlowDirection(Control))?.VisualHit;
 			var cellInfo = GetCellInfoForElement(hitTestResult);
 			var columnIndex = cellInfo.Column != null ? Control.Columns.IndexOf(cellInfo.Column) : -1;
 			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
