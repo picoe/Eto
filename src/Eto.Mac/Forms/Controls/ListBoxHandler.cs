@@ -50,6 +50,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl => scroll;
 
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			Control.ReloadData();
+		}
+
 		public NSScrollView Scroll => scroll;
 
 		public override NSView TextInputControl => Control;

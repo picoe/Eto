@@ -131,6 +131,8 @@ namespace Eto.Mac.Forms.Controls
 				return;
 			// NSTabView can't hide a tab, so only visible pages are added to it.
 			var nativeIndex = Widget.Pages.TakeWhile(r => r != page).Count(r => r.Visible);
+			if (ReverseTabs)
+				nativeIndex = (int)Control.Items.Length - nativeIndex;
 			Control.Insert(item, nativeIndex);
 		}
 
@@ -177,8 +179,57 @@ namespace Eto.Mac.Forms.Controls
 
 		public DockPosition TabPosition
 		{
-			get { return Control.TabViewType.ToEto(); }
-			set { Control.TabViewType = value.ToNS(); }
+			get { return MirrorTabPosition(Control.TabViewType.ToEto()); }
+			set
+			{
+				var reversed = ReverseTabs;
+				Control.TabViewType = MirrorTabPosition(value).ToNS();
+				if (reversed != ReverseTabs)
+					ReorderTabs();
+			}
+		}
+
+		// left/right mean start/end
+		DockPosition MirrorTabPosition(DockPosition position) => IsRightToLeft ? SwapSides(position) : position;
+
+		static DockPosition SwapSides(DockPosition position) => position switch
+		{
+			DockPosition.Left => DockPosition.Right,
+			DockPosition.Right => DockPosition.Left,
+			_ => position
+		};
+
+		// NSTabView doesn't order its tabs by the view's direction, so horizontal tabs are added in reverse
+		bool ReverseTabs => IsRightToLeft && (Control.TabViewType == NSTabViewType.NSTopTabsBezelBorder || Control.TabViewType == NSTabViewType.NSBottomTabsBezelBorder);
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			// keep the same logical position, now on the other side
+			Control.TabViewType = SwapSides(Control.TabViewType.ToEto()).ToNS();
+			ReorderTabs();
+		}
+
+		void ReorderTabs()
+		{
+			var selected = Control.Selected;
+			disableSelectedIndexChanged = true;
+			try
+			{
+				foreach (var tab in Control.Items)
+					Control.Remove(tab);
+				foreach (var page in Widget.Pages)
+				{
+					if (page.Visible)
+						AddItem(page);
+				}
+				if (selected?.TabView != null)
+					Control.Select(selected);
+			}
+			finally
+			{
+				disableSelectedIndexChanged = false;
+			}
 		}
 	}
 }

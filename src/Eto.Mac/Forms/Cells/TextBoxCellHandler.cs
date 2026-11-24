@@ -108,7 +108,6 @@ namespace Eto.Mac.Forms.Cells
 				DrawsBackground = false;
 				Bezeled = false;
 				Bordered = false;
-				Alignment = NSTextAlignment.Right;
 				AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			}
 			public CellView(IntPtr handle) : base(handle) { }
@@ -205,7 +204,7 @@ namespace Eto.Mac.Forms.Cells
 
 			var cell = view.Cell;
 			cell.VerticalAlignment = VerticalAlignment;
-			cell.Alignment = TextAlignment.ToNS();
+			cell.Alignment = TextAlignment.ToNS(IsRightToLeft);
 
 			view.Item = obj;
 			view.Tag = row;

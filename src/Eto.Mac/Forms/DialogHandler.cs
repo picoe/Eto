@@ -270,8 +270,12 @@ namespace Eto.Mac.Forms
 				var ctl = button.GetMacViewHandler();
 				var size = button.GetPreferredSize(availableSize);
 				point.X -= size.Width;
-				ctl.SetAlignmentFrame(new CGRect(point.ToNS(), size.ToNS()));
-				ctl.ContentControl.AutoresizingMask = NSViewResizingMask.MinXMargin;
+				var location = point;
+				// mirror so the buttons run from the left edge
+				if (IsRightToLeft)
+					location.X = availableSize.Width - point.X - size.Width;
+				ctl.SetAlignmentFrame(new CGRect(location.ToNS(), size.ToNS()));
+				ctl.ContentControl.AutoresizingMask = IsRightToLeft ? NSViewResizingMask.MaxXMargin : NSViewResizingMask.MinXMargin;
 
 				point.X -= s_ButtonSpacing;
 			}

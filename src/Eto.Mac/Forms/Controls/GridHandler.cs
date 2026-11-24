@@ -22,6 +22,19 @@ namespace Eto.Mac.Forms.Controls
 
 	static class GridHandler
 	{
+		/// <summary>
+		/// Gives a cell view the table's direction, as cell views don't inherit it.
+		/// </summary>
+		public static NSView WithTableDirection(this NSView view, NSTableView table)
+		{
+			var direction = table.UserInterfaceLayoutDirection;
+			if (view is MacImageTextView imageTextView)
+				imageTextView.SetLayoutDirection(direction);
+			else if (view != null && view.UserInterfaceLayoutDirection != direction)
+				view.UserInterfaceLayoutDirection = direction;
+			return view;
+		}
+
 		public static readonly object ScrolledToRow_Key = new object();
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
@@ -218,6 +231,15 @@ namespace Eto.Mac.Forms.Controls
 		public NSScrollView ScrollView { get; private set; }
 
 		public override NSView ContainerControl { get { return ScrollView; } }
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			foreach (var column in Widget.Columns)
+				(column.Handler as IDataColumnHandler)?.OnLayoutDirectionChanged();
+			// cells read the direction when they're created
+			Control.ReloadData();
+		}
 
 		protected virtual void UpdateColumns()
 		{

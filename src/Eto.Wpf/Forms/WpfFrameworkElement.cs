@@ -1377,6 +1377,10 @@ namespace Eto.Wpf.Forms
 		}
 
 		public bool IsMouseCaptured => ContainerControl.IsMouseCaptured;
+
+		public virtual void SetLayoutDirection(LayoutDirection direction)
+		{
+		}
 		
 		protected virtual swc.ContextMenu GetDefaultContextMenu() => null;
 

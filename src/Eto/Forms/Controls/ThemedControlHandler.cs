@@ -489,10 +489,11 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	}
 
 	/// <inheritdoc />
-	public LayoutDirection LayoutDirection
+	/// <since>2.14</since>
+	public virtual void SetLayoutDirection(LayoutDirection direction)
 	{
-		get => Control.LayoutDirection;
-		set => Control.LayoutDirection = value;
+		// the inner control's visual parent skips this widget, so it can't inherit from it
+		Control.LayoutDirection = direction;
 	}
 
 	/// <inheritdoc />

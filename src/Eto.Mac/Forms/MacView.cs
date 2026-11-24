@@ -140,6 +140,7 @@ namespace Eto.Mac.Forms
 		bool HandlesTextInput { get; }
 		bool UseNSBoxBackgroundColor { get; set; }
 		bool Enabled { get; set; }
+		bool IsRightToLeft { get; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -853,11 +854,6 @@ namespace Eto.Mac.Forms
 				return;
 
 			Widget.VisualParent.GetMacControl()?.InvalidateMeasure();
-		}
-
-		protected override void Initialize()
-		{
-			base.Initialize();
 		}
 
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
@@ -1931,20 +1927,49 @@ namespace Eto.Mac.Forms
 
 		public bool IsMouseCaptured => MacView.CapturedControl == this;
 
-		public LayoutDirection LayoutDirection
+		/// <summary>
+		/// Gets a value indicating the layout of this control is mirrored for right-to-left.
+		/// </summary>
+		public bool IsRightToLeft { get; private set; }
+
+		/// <summary>
+		/// Native views that should get the direction, for handlers that wrap their main view.
+		/// </summary>
+		protected virtual IEnumerable<NSView> LayoutDirectionViews
 		{
-			get => EventControl.UserInterfaceLayoutDirection switch
+			get
 			{
-				NSUserInterfaceLayoutDirection.LeftToRight => LayoutDirection.LeftToRight,
-				NSUserInterfaceLayoutDirection.RightToLeft => LayoutDirection.RightToLeft,
-				_ => LayoutDirection.LeftToRight
-			};
-			set => EventControl.UserInterfaceLayoutDirection = value switch
+				yield return ContainerControl;
+				if (Control is NSView view)
+					yield return view;
+				yield return ContentControl;
+			}
+		}
+
+		public void SetLayoutDirection(LayoutDirection direction)
+		{
+			var wasRightToLeft = IsRightToLeft;
+			IsRightToLeft = direction == LayoutDirection.RightToLeft;
+			var nativeDirection = IsRightToLeft ? NSUserInterfaceLayoutDirection.RightToLeft : NSUserInterfaceLayoutDirection.LeftToRight;
+			foreach (var view in LayoutDirectionViews)
 			{
-				LayoutDirection.LeftToRight => NSUserInterfaceLayoutDirection.LeftToRight,
-				LayoutDirection.RightToLeft => NSUserInterfaceLayoutDirection.RightToLeft,
-				_ => NSUserInterfaceLayoutDirection.LeftToRight,
-			};
+				if (view != null)
+					view.UserInterfaceLayoutDirection = nativeDirection;
+			}
+			if (wasRightToLeft != IsRightToLeft)
+			{
+				MenuControl.Menu?.SetLayoutDirection(IsRightToLeft);
+				OnLayoutDirectionChanged();
+			}
+			InvalidateMeasure();
+			ContainerControl.NeedsLayout = true;
+		}
+
+		/// <summary>
+		/// Called when <see cref="IsRightToLeft"/> changes, to re-apply anything that depends on it such as text alignment.
+		/// </summary>
+		protected virtual void OnLayoutDirectionChanged()
+		{
 		}
 
 		public bool CaptureMouse()
@@ -2082,7 +2107,9 @@ namespace Eto.Mac.Forms
 			set
 			{
 				Widget.Properties.Set(MacView.ContextMenu_Key, value);
-				MenuControl.Menu = (value?.Handler as ContextMenuHandler)?.Control;
+				var menu = (value?.Handler as ContextMenuHandler)?.Control;
+				menu?.SetLayoutDirection(IsRightToLeft);
+				MenuControl.Menu = menu;
 			}
 		}
 #else

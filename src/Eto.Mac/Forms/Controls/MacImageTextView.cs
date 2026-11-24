@@ -20,6 +20,18 @@
             }
         }
 
+        /// <summary>
+        /// Sets the direction, re-positioning the image and text if it changed.
+        /// </summary>
+        public void SetLayoutDirection(NSUserInterfaceLayoutDirection direction)
+        {
+            if (UserInterfaceLayoutDirection == direction)
+                return;
+            UserInterfaceLayoutDirection = direction;
+            SetSizes(Bounds.Size);
+            NeedsDisplay = true;
+        }
+
         void SetSizes(CGSize bounds)
         {
             if (_image == null)

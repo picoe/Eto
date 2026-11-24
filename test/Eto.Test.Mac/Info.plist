@@ -5,7 +5,7 @@
 	<key>CFBundleIconFile</key>
 	<string>EtoIcon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>ca.picoe.Eto.Test.Mac</string>
+	<string>com.yourcompany.Eto.Test.Mac</string>
 	<key>CFBundleName</key>
 	<string>Eto.Test.Mac</string>
 	<key>CFBundleVersion</key>

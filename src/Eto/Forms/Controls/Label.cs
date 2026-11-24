@@ -6,7 +6,7 @@ namespace Eto.Forms;
 public enum TextAlignment
 {
 	/// <summary>
-	/// Text will be aligned to the left
+	/// Text will be aligned to the left, or the right when <see cref="Control.EffectiveLayoutDirection"/> is right-to-left
 	/// </summary>
 	Left,
 	/// <summary>
@@ -14,7 +14,7 @@ public enum TextAlignment
 	/// </summary>
 	Center,
 	/// <summary>
-	/// Text will be aligned to the right
+	/// Text will be aligned to the right, or the left when <see cref="Control.EffectiveLayoutDirection"/> is right-to-left
 	/// </summary>
 	Right
 }

@@ -110,6 +110,8 @@ namespace Eto.Mac.Forms.Cells
 
 		public virtual bool Editable { get; set; }
 
+		protected bool IsRightToLeft => ColumnHandler?.DataViewHandler?.IsRightToLeft == true;
+
 		public virtual NSObject GetObjectValue(object dataItem)
 		{
 			return null;

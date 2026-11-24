@@ -112,8 +112,8 @@ namespace Eto.Mac.Forms.Controls
 			var dividerThickness = splitView.DividerThickness;
 			var newFrame = splitView.Frame;
 
-			var panel1Rect = splitView.Subviews[0].Frame;
-			var panel2Rect = splitView.Subviews[1].Frame;
+			var panel1Rect = Panel1View.Frame;
+			var panel2Rect = Panel2View.Frame;
 
 			bool isSmall = newFrame.Height <= 1 || newFrame.Width <= 1;
 			if (!isSmall && initialPositionSet)
@@ -229,15 +229,16 @@ namespace Eto.Mac.Forms.Controls
 				panel1Rect.Width = panel1Rect.X = panel2Rect.Width = panel2Rect.X = 0;
 			if (newFrame.Height <= 0)
 				panel1Rect.Height = panel1Rect.Y = panel2Rect.Height = panel2Rect.Y = 0;
-				
-			if (splitView.IsVertical && splitView.UserInterfaceLayoutDirection == NSUserInterfaceLayoutDirection.RightToLeft)
+
+			if (IsSwapped)
 			{
-				panel1Rect.X = panel2Rect.Width + dividerThickness;
+				// panel2 is the left subview, so lay them out mirrored
 				panel2Rect.X = 0;
+				panel1Rect.X = (nfloat)Math.Min(panel2Rect.Width + dividerThickness, newFrame.Width);
 			}
 
-			splitView.Subviews[0].Frame = panel1Rect;
-			splitView.Subviews[1].Frame = panel2Rect;
+			Panel1View.Frame = panel1Rect;
+			Panel2View.Frame = panel2Rect;
 			//Console.WriteLine($"Splitter resize: frame: {splitView.Frame.Size}, position: {position}, panel1({panel1?.Visible}): {panel1Rect}, panel2({panel2?.Visible}): {panel2Rect}");
 		}
 
@@ -258,15 +259,20 @@ namespace Eto.Mac.Forms.Controls
 				if (h == null)
 					return proposedPosition;
 				var totalSize = splitView.IsVertical ? splitView.Bounds.Width : splitView.Bounds.Height;
+				// the divider location is from the left, which is the end of panel2 when mirrored
+				var swapped = h.IsSwapped;
+				nfloat Result(nfloat panel1Size) => swapped ? (nfloat)Math.Max(0, totalSize - panel1Size - splitView.DividerThickness) : panel1Size;
+				if (swapped)
+					proposedPosition = totalSize - proposedPosition - splitView.DividerThickness;
 
 				if (h.Panel1?.Visible != true)
-					return 0;
+					return Result(0);
 				
 				if (h.Panel2?.Visible != true)
-					return (nfloat)Math.Max(0, totalSize - splitView.DividerThickness);
+					return Result((nfloat)Math.Max(0, totalSize - splitView.DividerThickness));
 
 				if (!h.Enabled)
-					return h.Position;
+					return Result(h.Position);
 
 				if ((h.Panel1MinimumSize > 0 || h.Panel2MinimumSize > 0))
 				{
@@ -283,10 +289,10 @@ namespace Eto.Mac.Forms.Controls
 				var args = new SplitterPositionChangingEventArgs((int)Math.Round(proposedPosition));
 				h.Callback.OnPositionChanging(h.Widget, args);
 				if (args.Cancel)
-					return h.Position;
+					return Result(h.Position);
 
 
-				return (nfloat)Math.Round(proposedPosition);
+				return Result((nfloat)Math.Round(proposedPosition));
 			}
 			
 			public override void DidResizeSubviews(NSNotification notification)
@@ -294,7 +300,7 @@ namespace Eto.Mac.Forms.Controls
 				var h = Handler;
 				if (h == null)
 					return;
-				var subview = h.Control.Subviews[0];
+				var subview = h.Panel1View;
 				if (subview != null && h.position != null && h.initialPositionSet && h.Widget.Loaded && h.Control.Window != null) // && h.Widget.ParentWindow != null && h.Widget.ParentWindow.Loaded)
 				{
 					if (h.panel1 == null || !h.panel1.Visible || h.panel2 == null || !h.panel2.Visible)
@@ -405,7 +411,7 @@ namespace Eto.Mac.Forms.Controls
 
 		public int Position
 		{
-			get { return position ?? (int)(Control.IsVertical ? Control.Subviews[0].Frame.Width : Control.Subviews[0].Frame.Height); }
+			get { return position ?? (int)(Control.IsVertical ? Panel1View.Frame.Width : Panel1View.Frame.Height); }
 			set
 			{
 				position = value;
@@ -424,6 +430,7 @@ namespace Eto.Mac.Forms.Controls
 			set
 			{
 				Control.IsVertical = value == Orientation.Horizontal;
+				UpdateSubviewOrder();
 				if (Widget.Loaded)
 					UpdatePosition();
 			}
@@ -457,7 +464,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var view = value.GetContainerView() ?? new NSView();
 					view.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-					Control.ReplaceSubviewWith(Control.Subviews[0], view);
+					Control.ReplaceSubviewWith(Panel1View, view);
 					panel1 = value;
 					if (Widget.Loaded)
 						UpdatePosition();
@@ -474,7 +481,7 @@ namespace Eto.Mac.Forms.Controls
 				{
 					var view = value.GetContainerView() ?? new NSView();
 					view.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-					Control.ReplaceSubviewWith(Control.Subviews[1], view);
+					Control.ReplaceSubviewWith(Panel2View, view);
 					panel2 = value;
 					if (Widget.Loaded)
 						UpdatePosition();
@@ -669,6 +676,31 @@ namespace Eto.Mac.Forms.Controls
 		{
 			base.InvalidateMeasure();
 			Control.NeedsLayout = true;
+			UpdatePosition();
+		}
+
+		// NSSplitView always orders its subviews left to right, so panel1 is the right subview when mirrored
+		internal bool IsSwapped { get; private set; }
+
+		internal NSView Panel1View => Control.Subviews[IsSwapped ? 1 : 0];
+
+		internal NSView Panel2View => Control.Subviews[IsSwapped ? 0 : 1];
+
+		void UpdateSubviewOrder()
+		{
+			var swap = Control.IsVertical && IsRightToLeft;
+			if (IsSwapped == swap)
+				return;
+			IsSwapped = swap;
+			var first = Control.Subviews[0];
+			first.RemoveFromSuperview();
+			Control.AddSubview(first);
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			UpdateSubviewOrder();
 			UpdatePosition();
 		}
 

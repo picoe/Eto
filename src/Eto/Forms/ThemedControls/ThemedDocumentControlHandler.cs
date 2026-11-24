@@ -533,18 +533,35 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 		}
 	}
 
+	bool IsRightToLeft => Widget.EffectiveLayoutDirection == LayoutDirection.RightToLeft;
+
+	// tabs are laid out from the start edge, then mirrored when drawing and for mouse input
+	PointF ToLogical(PointF point) => IsRightToLeft ? new PointF(tabDrawable.Width - point.X, point.Y) : point;
+
+	RectangleF ToPhysical(RectangleF rect) => IsRightToLeft ? new RectangleF(tabDrawable.Width - rect.Right, rect.Y, rect.Width, rect.Height) : rect;
+
+	/// <inheritdoc />
+	public override void SetLayoutDirection(LayoutDirection direction)
+	{
+		base.SetLayoutDirection(direction);
+		// the previous button points toward the start
+		tabPrev.Text = IsRightToLeft ? ">" : "<";
+		tabNext.Text = IsRightToLeft ? "<" : ">";
+		tabDrawable.Invalidate();
+	}
+
 	void Drawable_MouseDown(object sender, MouseEventArgs e)
 	{
-		mousePos = e.Location;
+		mousePos = ToLogical(e.Location);
 		if (!Enabled)
 			return;
 
-		if (tabPrev.Rect.Contains(e.Location))
+		if (tabPrev.Rect.Contains(mousePos))
 		{
 			if (selectedIndex > 0)
 				SelectedIndex--;
 		}
-		else if (tabNext.Rect.Contains(e.Location))
+		else if (tabNext.Rect.Contains(mousePos))
 		{
 			if (selectedIndex < pages.Count - 1)
 				SelectedIndex++;
@@ -586,7 +603,7 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 
 	void Drawable_MouseMove(object sender, MouseEventArgs e)
 	{
-		mousePos = e.Location;
+		mousePos = ToLogical(e.Location);
 		if (!Enabled)
 			return;
 		if (AllowReordering && draggingLocation == null && e.Buttons == MouseButtons.Primary)
@@ -750,34 +767,35 @@ public class ThemedDocumentControlHandler : ThemedContainerHandler<TableLayout, 
 			backcolor = TabHoverBackgroundColor;
 		}
 
-		g.FillRectangle(backcolor, tab.Rect);
-		g.DrawText(Font, textcolor, tab.TextRect.Location, tab.Text);
+		g.FillRectangle(backcolor, ToPhysical(tab.Rect));
+		g.DrawText(Font, textcolor, ToPhysical(tab.TextRect).Location, tab.Text);
 
 		if (tab.Image is not null)
 		{
 			g.SaveTransform();
 			g.ImageInterpolation = ImageInterpolation.High;
-			g.DrawImage(tab.Image, tab.ImageRect);
+			g.DrawImage(tab.Image, ToPhysical(tab.ImageRect));
 			g.RestoreTransform();
 		}
 
 		if (tab.HasUnsavedChanges)
 		{
-			g.FillEllipse(UnsavedBackgroundColor, tab.UnsavedRect);
+			g.FillEllipse(UnsavedBackgroundColor, ToPhysical(tab.UnsavedRect));
 		}
 
 		if (tab.Closable)
 		{
 			var closeSelected = IsCloseSelected(tab);
+			var closeRect = ToPhysical(tab.CloseRect);
 
 			var closeBackground = closeSelected ? CloseHighlightBackgroundColor : CloseBackgroundColor;
 			if (closeCornerRadius > 0)
-				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(tab.CloseRect, closeCornerRadius));
+				g.FillPath(closeBackground, GraphicsPath.GetRoundRect(closeRect, closeCornerRadius));
 			else
-				g.FillRectangle(closeBackground, tab.CloseRect);
+				g.FillRectangle(closeBackground, closeRect);
 
-			var closeMargin = (int)tab.CloseRect.Height / 4;
-			var closeForegroundRect = RectangleF.Inset(tab.CloseRect, new PaddingF(closeMargin));
+			var closeMargin = (int)closeRect.Height / 4;
+			var closeForegroundRect = RectangleF.Inset(closeRect, new PaddingF(closeMargin));
 			var closeForeground = Enabled ? closeSelected ? CloseHighlightForegroundColor : CloseForegroundColor : DisabledForegroundColor;
 
 			g.SaveTransform();

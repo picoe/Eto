@@ -266,6 +266,13 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual void SetAttributes() => SetAttributes(false);
 
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			_str.RightToLeft = IsRightToLeft;
+			SetAttributes();
+		}
+
 		void SetAttributes(bool force)
 		{
 			if (Widget.Loaded || force)

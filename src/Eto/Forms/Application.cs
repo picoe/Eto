@@ -731,18 +731,29 @@ public class Application : Widget
 	/// </summary>
 	/// <seealso cref="IsActiveChanged"/>
 	public bool IsActive => Handler.IsActive;
-	
-	
+
 	/// <summary>
-	/// Gets or sets the default layout direction for the user interface of the application.
+	/// Gets or sets the layout direction for all windows that don't set their own <see cref="Control.LayoutDirection"/>.
 	/// </summary>
 	/// <remarks>
-	/// 
+	/// This defaults to the direction of the platform, which can be right-to-left on macOS and Linux depending on the
+	/// user's language. Set to <see cref="Eto.Forms.LayoutDirection.Inherit"/> to go back to the platform default.
+	/// Changing this updates all open windows.
 	/// </remarks>
-	public LayoutDirection DefaultLayoutDirection
+	/// <value>Either <see cref="Eto.Forms.LayoutDirection.LeftToRight"/> or <see cref="Eto.Forms.LayoutDirection.RightToLeft"/>.</value>
+	/// <since>2.14</since>
+	public LayoutDirection LayoutDirection
 	{
-		get => Handler.DefaultLayoutDirection;
-		set => Handler.DefaultLayoutDirection = value;
+		get => Handler.LayoutDirection;
+		set
+		{
+			Handler.LayoutDirection = value;
+			foreach (var window in windows.ToArray())
+			{
+				if (window.LayoutDirection == LayoutDirection.Inherit)
+					window.UpdateLayoutDirection();
+			}
+		}
 	}
 
 	/// <summary>
@@ -992,6 +1003,15 @@ public class Application : Widget
 		/// </summary>
 		/// <since>2.12</since>
 		Theme Theme { get; set; }
-		LayoutDirection DefaultLayoutDirection { get; set; }
+
+		/// <summary>
+		/// Gets or sets the layout direction for the application.
+		/// </summary>
+		/// <remarks>
+		/// The getter should return the platform's default direction until set, and never return Inherit.
+		/// Setting Inherit should restore the platform default.
+		/// </remarks>
+		/// <since>2.14</since>
+		LayoutDirection LayoutDirection { get; set; }
 	}
 }

@@ -10,11 +10,11 @@ public enum DockPosition
 	/// </summary>
 	Top,
 	/// <summary>
-	/// Element is docked to the left of the content.
+	/// Element is docked to the left of the content, or the right when the control is right-to-left.
 	/// </summary>
 	Left,
 	/// <summary>
-	/// Element is docked to the right of the content.
+	/// Element is docked to the right of the content, or the left when the control is right-to-left.
 	/// </summary>
 	Right,
 	/// <summary>

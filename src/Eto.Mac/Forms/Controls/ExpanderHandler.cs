@@ -156,13 +156,18 @@ namespace Eto.Mac.Forms.Controls
 			}
 		}
 
+		protected override IEnumerable<NSView> LayoutDirectionViews => base.LayoutDirectionViews.Concat(new NSView[] { disclosureButton, header, content });
+
 		void PerformLayout()
 		{
 			var size = Control.Frame.Size;
 			var disclosureSize = disclosureButton.Frame.Size;
 			var headerSize = SizeF.Max(disclosureSize.ToEto(), Header?.GetPreferredSize(Size) ?? Size.Empty);
-			disclosureButton.SetFrameOrigin(new CGPoint(0, (nfloat)Math.Round(size.Height - disclosureSize.Height - ((headerSize.Height - disclosureSize.Height) / 2))));
-			header.Frame = new CGRect(disclosureSize.Width, size.Height - headerSize.Height, size.Width - disclosureSize.Width, headerSize.Height);
+			// disclosure button is at the leading edge
+			var rtl = IsRightToLeft;
+			var disclosureX = rtl ? size.Width - disclosureSize.Width : 0;
+			disclosureButton.SetFrameOrigin(new CGPoint(disclosureX, (nfloat)Math.Round(size.Height - disclosureSize.Height - ((headerSize.Height - disclosureSize.Height) / 2))));
+			header.Frame = new CGRect(rtl ? 0 : disclosureSize.Width, size.Height - headerSize.Height, size.Width - disclosureSize.Width, headerSize.Height);
 			if (suspendContentSizing <= 0)
 			{
 				if (Expanded)

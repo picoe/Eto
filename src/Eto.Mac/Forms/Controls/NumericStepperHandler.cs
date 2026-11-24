@@ -44,15 +44,19 @@ namespace Eto.Mac.Forms.Controls
 				var stepperSize = stepper.GetAlignmentRectForFrame(new CGRect(CGPoint.Empty, stepper.FittingSize)).Size;
 				stepperSize.Height = (nfloat)Math.Min(newSize.Height, stepperSize.Height);
 
+				// stepper goes at the trailing edge
+				var rtl = (WeakHandler?.Target as IMacViewHandler)?.IsRightToLeft == true;
 				var stepperFrame = new CGRect();
 				stepperFrame.Size = stepperSize;
-				stepperFrame.X = newSize.Width - stepperFrame.Width;
+				stepperFrame.X = rtl ? 0 : newSize.Width - stepperFrame.Width;
 				stepperFrame.Y = (nfloat)Math.Truncate((newSize.Height - stepperSize.Height) / 2);
 				stepper.Frame = stepper.GetFrameForAlignmentRect(stepperFrame);
 
 				var textFrame = new CGRect();
 				textFrame.Height = newSize.Height;
 				textFrame.Width = newSize.Width - stepperFrame.Width - spacing;
+				if (rtl)
+					textFrame.X = stepperFrame.Width + spacing;
 				text.Frame = textFrame;
 
 
@@ -733,8 +737,27 @@ namespace Eto.Mac.Forms.Controls
 		
 		public TextAlignment TextAlignment
 		{
-			get => TextField.Alignment.ToEto();
-			set => TextField.Alignment = value.ToNS();
+			get => TextField.Alignment.ToEto(IsRightToLeft);
+			set
+			{
+				// the editor must be set too when focused, or it won't take effect
+				var editor = TextField.CurrentEditor;
+				if (editor != null)
+					editor.Alignment = value.ToNS(IsRightToLeft);
+				TextField.Alignment = value.ToNS(IsRightToLeft);
+			}
+		}
+
+		protected override IEnumerable<NSView> LayoutDirectionViews => base.LayoutDirectionViews.Concat(new NSView[] { TextField, Stepper });
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			var editor = TextField.CurrentEditor;
+			if (editor != null)
+				editor.Alignment = editor.Alignment.ToDirection(IsRightToLeft);
+			TextField.Alignment = TextField.Alignment.ToDirection(IsRightToLeft);
+			Control.SetFrameSize(Control.Frame.Size);
 		}
 	}
 }

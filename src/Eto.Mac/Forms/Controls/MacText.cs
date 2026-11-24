@@ -152,15 +152,24 @@ namespace Eto.Mac.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get { return Control.Alignment.ToEto(); }
+			get { return Control.Alignment.ToEto(IsRightToLeft); }
 			set
 			{
 				// need to set current editor first when the control has focus, otherwise it won't be reflected for some reason after it loses focus.
 				var editor = Control.CurrentEditor;
 				if (editor != null)
-					editor.Alignment = value.ToNS();
-				Control.Alignment = value.ToNS();
+					editor.Alignment = value.ToNS(IsRightToLeft);
+				Control.Alignment = value.ToNS(IsRightToLeft);
 			}
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			// base re-applies the control's alignment
+			var editor = Control.CurrentEditor;
+			if (editor != null)
+				editor.Alignment = editor.Alignment.ToDirection(IsRightToLeft);
 		}
 
 		public AutoSelectMode AutoSelectMode

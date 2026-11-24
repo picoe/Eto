@@ -142,9 +142,13 @@ public class ThemedTextStepperHandler : ThemedControlHandler<TableLayout, TextSt
 	{
 		get
 		{
-			// the stepper sits to the right of the text box
+			// the stepper sits at the trailing edge of the text box
 			var inset = TextBox.TextInset;
-			inset.Right += Math.Max(0, Control.Width - TextBox.Width);
+			var stepperWidth = Math.Max(0, Control.Width - TextBox.Width);
+			if (Widget.EffectiveLayoutDirection == LayoutDirection.RightToLeft)
+				inset.Left += stepperWidth;
+			else
+				inset.Right += stepperWidth;
 			return inset;
 		}
 	}

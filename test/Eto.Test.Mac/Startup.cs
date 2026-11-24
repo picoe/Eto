@@ -8,9 +8,6 @@ namespace Eto.Test.Mac
 	{
 		static void Main(string[] args)
 		{
-			// NSUserDefaults.StandardUserDefaults[new NSString("AppleLanguage")] = new NSString("AR");
-			// NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(true), new NSString("NSForceRightToLeftWritingDirection"));
-			// NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(true), new NSString("AppleTextDirection"));
 			AddStyles();
 #if DEBUG
 			HotReloadService.Initialize();
@@ -26,7 +23,7 @@ namespace Eto.Test.Mac
 			var app = new TestApplication(platform);
 			app.AsyncInvoke(() => Log.Write(null, $"Startup: {stopwatch.Elapsed}"));
 			app.TestAssemblies.Add(typeof(Startup).Assembly);
-			
+
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
 
@@ -43,8 +40,6 @@ namespace Eto.Test.Mac
 
 			Style.Add<ApplicationHandler>("application", handler =>
 				{
-					
-					// handler.Control.UserInterfaceLayoutDirection = NSUserInterfaceLayoutDirection.RightToLeft;
 					handler.EnableFullScreen();
 				});
 

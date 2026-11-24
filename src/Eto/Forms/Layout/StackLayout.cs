@@ -6,7 +6,7 @@ namespace Eto.Forms;
 public enum HorizontalAlignment
 {
 	/// <summary>
-	/// Controls are aligned to the left of the container.
+	/// Controls are aligned to the left of the container, or the right when it is right-to-left.
 	/// </summary>
 	Left,
 	/// <summary>
@@ -14,7 +14,7 @@ public enum HorizontalAlignment
 	/// </summary>
 	Center,
 	/// <summary>
-	/// Controls are aligned to the right of the container.
+	/// Controls are aligned to the right of the container, or the left when it is right-to-left.
 	/// </summary>
 	Right,
 	/// <summary>

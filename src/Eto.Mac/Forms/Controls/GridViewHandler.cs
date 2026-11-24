@@ -397,7 +397,7 @@ namespace Eto.Mac.Forms.Controls
 					{
 						// Cell views are reused and can outlive the grid, so they must not keep the handler alive.
 						var weakHandler = handler;
-						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => (weakHandler?.Target as GridViewHandler)?.GetItem(r));
+						return cellHandler.GetViewForItem(tableView, tableColumn, (int)row, null, (obj, r) => (weakHandler?.Target as GridViewHandler)?.GetItem(r)).WithTableDirection(tableView);
 					}
 				}
 

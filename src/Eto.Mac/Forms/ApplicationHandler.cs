@@ -401,43 +401,15 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		public LayoutDirection DefaultLayoutDirection
+		LayoutDirection? _layoutDirection;
+		public LayoutDirection LayoutDirection
 		{
-			get => NSApplication.SharedApplication.UserInterfaceLayoutDirection switch
-			{
-				NSApplicationLayoutDirection.LeftToRight => LayoutDirection.LeftToRight,
-				NSApplicationLayoutDirection.RightToLeft => LayoutDirection.RightToLeft,
-				_ => LayoutDirection.LeftToRight
-			};
+			get => _layoutDirection ?? ((int)Control.UserInterfaceLayoutDirection == (int)NSUserInterfaceLayoutDirection.RightToLeft ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight);
 			set
 			{
-				var rtl = value == LayoutDirection.RightToLeft;
-				// NSUserDefaults.StandardUserDefaults.RegisterDefaults(NSDictionary.FromObjectsAndKeys(
-				// 	new NSObject[] { NSNumber.FromBoolean(rtl), NSNumber.FromBoolean(rtl) },
-				// 	new NSObject[] { new NSString("NSForceRightToLeftWritingDirection"), new NSString("AppleTextDirection") }
-				// ));
-				// Environment.SetEnvironmentVariable("NSForceRightToLeftWritingDirection", "YES");
-				// Environment.SetEnvironmentVariable("AppleTextDirection", "YES");
-				// Control.WillTerminate -= ResetRtlPreference;
-				if (rtl)
-				{
-					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("NSForceRightToLeftWritingDirection"));
-					NSUserDefaults.StandardUserDefaults.SetValueForKey(NSNumber.FromBoolean(rtl), new NSString("AppleTextDirection"));
-				}
-				else
-				{
-					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
-					NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
-				}
-				NSUserDefaults.StandardUserDefaults.Synchronize();
+				_layoutDirection = value == LayoutDirection.Inherit ? null : value;
+				Control.MainMenu?.SetLayoutDirection(LayoutDirection == LayoutDirection.RightToLeft);
 			}
-		}
-
-		internal static void ResetRtlPreference()
-		{
-			// don't actually save these
-			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("NSForceRightToLeftWritingDirection"));
-			NSUserDefaults.StandardUserDefaults.RemoveObject(new NSString("AppleTextDirection"));
 		}
 	}
 }

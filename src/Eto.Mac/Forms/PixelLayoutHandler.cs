@@ -53,7 +53,7 @@ namespace Eto.Mac.Forms
 			foreach (var item in Widget.Controls)
 			{
 				var frameSize = item.GetPreferredSize(availableSize);
-				size = SizeF.Max(size, frameSize + new SizeF(item.Location));
+				size = SizeF.Max(size, frameSize + new SizeF(PixelLayout.GetLocation(item)));
 			}
 			NaturalSize = size;
 			return size;
@@ -70,6 +70,8 @@ namespace Eto.Mac.Forms
 			{
 				origin.Y = Control.Frame.Height - origin.Y - preferredSize.Height;
 			}
+			if (IsRightToLeft)
+				origin.X = Control.Frame.Width - origin.X - preferredSize.Width;
 
 			macView.SetAlignmentFrame(new CGRect(origin, preferredSize.ToNS()));
 		}
@@ -89,6 +91,13 @@ namespace Eto.Mac.Forms
 				var macView = control.GetMacViewHandler();
 				if (macView == null)
 					continue;
+
+				if (IsRightToLeft)
+				{
+					// positions are from the right edge, so they move when the width changes
+					SetPosition(control, PixelLayout.GetLocation(control));
+					continue;
+				}
 
 				var preferredSize = control.GetPreferredSize(SizeF.PositiveInfinity);
 				macView.SetAlignmentFrameSize(preferredSize.ToNS());

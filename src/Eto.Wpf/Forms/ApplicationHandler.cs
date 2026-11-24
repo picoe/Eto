@@ -322,6 +322,13 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		get { return Keys.Alt; }
 	}
 
+	LayoutDirection _layoutDirection = LayoutDirection.LeftToRight;
+	public LayoutDirection LayoutDirection
+	{
+		get => _layoutDirection;
+		set => _layoutDirection = value == LayoutDirection.Inherit ? LayoutDirection.LeftToRight : value;
+	}
+
 	Theme _currentTheme;
 	public Theme Theme
 	{

@@ -9,6 +9,7 @@ namespace Eto.Mac.Forms.Controls
 		static readonly object ExpandContentWidth_Key = new object();
 		static readonly object ExpandContentHeight_Key = new object();
 		Point scrollPosition;
+		bool scrollPositionSet;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -255,6 +256,19 @@ namespace Eto.Mac.Forms.Controls
 					size.Height = clientSize.Height;
 			}
 
+			if (IsRightToLeft)
+			{
+				// fill the width so narrow content can sit at the right
+				if (size.Width < clientSize.Width)
+					size.Width = clientSize.Width;
+				// start scrolled to the leading (right) edge, unless the position was set
+				else if (!scrollPositionSet)
+				{
+					scrollPosition.X = (int)Math.Max(0, size.Width - clientSize.Width);
+					scrollPositionSet = true;
+				}
+			}
+
 			ContentControl.SetFrameSize(size.ToNS());
 			SetPosition(scrollPosition, true);
 		}
@@ -283,6 +297,8 @@ namespace Eto.Mac.Forms.Controls
 				size.Height = (float)Math.Max(clientSize.Height, size.Height);
 
 			var clientFrame = new CGRect(new CGPoint(padding.Left, (nfloat)(padding.Bottom + clientSize.Height - size.Height)), size.ToNS());
+			if (IsRightToLeft)
+				clientFrame.X = ContentControl.Frame.Width - clientFrame.X - clientFrame.Width;
 
 			ctl.Frame = clientFrame;
 		}
@@ -313,6 +329,7 @@ namespace Eto.Mac.Forms.Controls
 			}
 			set
 			{
+				scrollPositionSet = true;
 				SetPosition(value, false);
 			}
 		}

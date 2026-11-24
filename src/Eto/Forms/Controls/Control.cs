@@ -1,21 +1,6 @@
 namespace Eto.Forms;
 
 /// <summary>
-/// Specifies the layout direction of the user interface.
-/// </summary>
-public enum LayoutDirection
-{
-	/// <summary>
-	/// Indicates the user interface should be laid out from left to right
-	/// </summary>
-	LeftToRight,
-	/// <summary>
-	/// Indicates the user interface should be laid out from right to left
-	/// </summary>
-	RightToLeft
-}
-
-/// <summary>
 /// Base for all visual UI elements
 /// </summary>
 /// <remarks>
@@ -615,6 +600,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// <param name="e">Event arguments</param>
 	protected virtual void OnPreLoad(EventArgs e)
 	{
+		UpdateLayoutDirection();
 		Properties.TriggerEvent(PreLoadKey, this, e);
 		Handler.OnPreLoad(e);
 
@@ -1016,17 +1002,94 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// Releases the mouse capture after a call to <see cref="CaptureMouse"/>.
 	/// </summary>
 	public void ReleaseMouseCapture() => Handler.ReleaseMouseCapture();
-	
+
+	static readonly object LayoutDirection_Key = new object();
+	static readonly object AppliedLayoutDirection_Key = new object();
+	static readonly object EffectiveLayoutDirectionChanged_Key = new object();
+
 	/// <summary>
-	/// Gets or sets the layout direction for this control explicitly.
+	/// Gets or sets the layout direction of this control and its children.
 	/// </summary>
 	/// <remarks>
-	/// The default layout direction of a control is based on the <see cref="Application.LayoutDirection"/>.
+	/// When <see cref="Eto.Forms.LayoutDirection.Inherit"/> (the default), the control uses the direction of its parent,
+	/// and a window uses <see cref="Application.LayoutDirection"/>.
+	/// Use <see cref="EffectiveLayoutDirection"/> to get the direction currently in effect.
 	/// </remarks>
+	/// <since>2.14</since>
 	public LayoutDirection LayoutDirection
 	{
-		get => Handler.LayoutDirection;
-		set => Handler.LayoutDirection = value;
+		get => Properties.Get<LayoutDirection>(LayoutDirection_Key);
+		set
+		{
+			if (Properties.TrySet(LayoutDirection_Key, value))
+				UpdateLayoutDirection();
+		}
+	}
+
+	/// <summary>
+	/// Gets the layout direction currently in effect for this control, taking <see cref="LayoutDirection"/> of this control and its parents into account.
+	/// </summary>
+	/// <remarks>
+	/// Custom drawn controls can use this to mirror what they draw, as drawing is not mirrored automatically.
+	/// </remarks>
+	/// <value>Either <see cref="Eto.Forms.LayoutDirection.LeftToRight"/> or <see cref="Eto.Forms.LayoutDirection.RightToLeft"/>.</value>
+	/// <since>2.14</since>
+	public LayoutDirection EffectiveLayoutDirection
+	{
+		get
+		{
+			var control = this;
+			while (control != null)
+			{
+				var direction = control.LayoutDirection;
+				if (direction != LayoutDirection.Inherit)
+					return direction;
+				control = control.VisualParent;
+			}
+			var appDirection = Application.Instance?.LayoutDirection ?? LayoutDirection.Inherit;
+			return appDirection == LayoutDirection.Inherit ? LayoutDirection.LeftToRight : appDirection;
+		}
+	}
+
+	/// <summary>
+	/// Occurs when the <see cref="EffectiveLayoutDirection"/> of this control changes.
+	/// </summary>
+	/// <since>2.14</since>
+	public event EventHandler<EventArgs> EffectiveLayoutDirectionChanged
+	{
+		add => Properties.AddEvent(EffectiveLayoutDirectionChanged_Key, value);
+		remove => Properties.RemoveEvent(EffectiveLayoutDirectionChanged_Key, value);
+	}
+
+	/// <summary>
+	/// Raises the <see cref="EffectiveLayoutDirectionChanged"/> event.
+	/// </summary>
+	/// <param name="e">Event arguments</param>
+	/// <since>2.14</since>
+	protected virtual void OnEffectiveLayoutDirectionChanged(EventArgs e)
+	{
+		Properties.TriggerEvent(EffectiveLayoutDirectionChanged_Key, this, e);
+	}
+
+	/// <summary>
+	/// Applies the effective layout direction to the handler if it changed, then to the children that inherit it.
+	/// </summary>
+	internal void UpdateLayoutDirection()
+	{
+		var direction = EffectiveLayoutDirection;
+		// first application always goes to the handler, as the native default may differ
+		if (Properties.TryGetValue(AppliedLayoutDirection_Key, out var applied) && (LayoutDirection)applied == direction)
+			return;
+		Properties[AppliedLayoutDirection_Key] = direction;
+		Handler.SetLayoutDirection(direction);
+		if (applied != null)
+			OnEffectiveLayoutDirectionChanged(EventArgs.Empty);
+
+		foreach (var child in VisualControls)
+		{
+			if (child.LayoutDirection == LayoutDirection.Inherit)
+				child.UpdateLayoutDirection();
+		}
 	}
 
 	/// <summary>
@@ -1117,6 +1180,8 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 			if (Properties.TrySet(VisualParent_Key, value))
 			{
 				Handler.SetParent(old, value);
+				if (Loaded)
+					UpdateLayoutDirection();
 			}
 		}
 	}
@@ -2261,7 +2326,16 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 		/// or it can be captured explicitly via <see cref="CaptureMouse"/>.
 		/// </remarks>
 		bool IsMouseCaptured { get; }
-		LayoutDirection LayoutDirection { get; set; }
+
+		/// <summary>
+		/// Applies the effective layout direction to the native control(s), mirroring their layout for right-to-left.
+		/// </summary>
+		/// <remarks>
+		/// This is called before the control is loaded and whenever its effective direction changes.
+		/// </remarks>
+		/// <param name="direction">Direction to apply, either LeftToRight or RightToLeft.</param>
+		/// <since>2.14</since>
+		void SetLayoutDirection(LayoutDirection direction);
 
 		/// <summary>
 		/// Captures all mouse events to this control.

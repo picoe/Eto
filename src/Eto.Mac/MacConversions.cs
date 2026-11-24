@@ -402,6 +402,10 @@ namespace Eto.Mac
 			return nsimage;
 		}
 
+		// not in all bindings; leading/trailing follow the view's layout direction
+		const NSCellImagePosition ImageLeading = (NSCellImagePosition)7;
+		const NSCellImagePosition ImageTrailing = (NSCellImagePosition)8;
+
 		public static NSCellImagePosition ToNS(this ButtonImagePosition value)
 		{
 			switch (value)
@@ -411,9 +415,9 @@ namespace Eto.Mac
 				case ButtonImagePosition.Overlay:
 					return NSCellImagePosition.ImageOverlaps;
 				case ButtonImagePosition.Left:
-					return NSCellImagePosition.ImageLeft;
+					return ImageLeading;
 				case ButtonImagePosition.Right:
-					return NSCellImagePosition.ImageRight;
+					return ImageTrailing;
 				case ButtonImagePosition.Above:
 					return NSCellImagePosition.ImageAbove;
 				default:
@@ -430,8 +434,10 @@ namespace Eto.Mac
 				case NSCellImagePosition.ImageOverlaps:
 					return ButtonImagePosition.Overlay;
 				case NSCellImagePosition.ImageLeft:
+				case ImageLeading:
 					return ButtonImagePosition.Left;
 				case NSCellImagePosition.ImageRight:
+				case ImageTrailing:
 					return ButtonImagePosition.Right;
 				case NSCellImagePosition.ImageAbove:
 					return ButtonImagePosition.Above;
@@ -566,39 +572,46 @@ namespace Eto.Mac
 			}
 		}
 
-		public static TextAlignment ToEto(this NSTextAlignment align)
+		/// <summary>
+		/// Converts to Eto, treating left/right as start/end when <paramref name="rightToLeft"/> is true.
+		/// </summary>
+		public static TextAlignment ToEto(this NSTextAlignment align, bool rightToLeft)
 		{
 			switch (align)
 			{
-				default:
 				case NSTextAlignment.Left:
-					return TextAlignment.Left;
+					return rightToLeft ? TextAlignment.Right : TextAlignment.Left;
 				case NSTextAlignment.Right:
-					return TextAlignment.Right;
+					return rightToLeft ? TextAlignment.Left : TextAlignment.Right;
 				case NSTextAlignment.Center:
 					return TextAlignment.Center;
+				default:
+					// natural/justified start at the leading edge
+					return TextAlignment.Left;
 			}
 		}
 
-		public static NSTextAlignment ToNS(this TextAlignment align, NSUserInterfaceLayoutDirection? direction = null)
+		/// <summary>
+		/// Re-encodes an alignment that was set for the opposite direction, so it keeps its start/end meaning.
+		/// </summary>
+		public static NSTextAlignment ToDirection(this NSTextAlignment align, bool rightToLeft) => align.ToEto(!rightToLeft).ToNS(rightToLeft);
+
+		/// <summary>
+		/// Converts to AppKit, treating left/right as start/end when <paramref name="rightToLeft"/> is true.
+		/// </summary>
+		public static NSTextAlignment ToNS(this TextAlignment align, bool rightToLeft)
 		{
-			var dir = direction ?? (NSUserInterfaceLayoutDirection)NSApplication.SharedApplication.UserInterfaceLayoutDirection;
-			if (dir == NSUserInterfaceLayoutDirection.RightToLeft)
-				return align switch
-				{
-					TextAlignment.Left => NSTextAlignment.Right,
-					TextAlignment.Right => NSTextAlignment.Left,
-					TextAlignment.Center => NSTextAlignment.Center,
-					_ => throw new NotSupportedException()
-				};
-			else
-				return align switch
-				{
-					TextAlignment.Left => NSTextAlignment.Left,
-					TextAlignment.Right => NSTextAlignment.Right,
-					TextAlignment.Center => NSTextAlignment.Center,
-					_ => throw new NotSupportedException()
-				};
+			switch (align)
+			{
+				case TextAlignment.Left:
+					return rightToLeft ? NSTextAlignment.Right : NSTextAlignment.Left;
+				case TextAlignment.Right:
+					return rightToLeft ? NSTextAlignment.Left : NSTextAlignment.Right;
+				case TextAlignment.Center:
+					return NSTextAlignment.Center;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 
 		public static Font ToEto(this NSFont font)

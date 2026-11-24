@@ -1151,6 +1151,10 @@ namespace Eto.WinForms.Forms
 		public void UpdateLayout() => ContainerControl.PerformLayout();
 
 		public bool IsMouseCaptured => ContainerControl.Capture;
+
+		public virtual void SetLayoutDirection(LayoutDirection direction)
+		{
+		}
 		public bool CaptureMouse()
 		{
 			ContainerControl.Capture = true;

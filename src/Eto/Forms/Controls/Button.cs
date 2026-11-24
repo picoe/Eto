@@ -6,12 +6,12 @@ namespace Eto.Forms;
 public enum ButtonImagePosition
 {
 	/// <summary>
-	/// Positions the image to the left of the text.
+	/// Positions the image to the left of the text, or the right when the button is right-to-left.
 	/// </summary>
 	Left,
 
 	/// <summary>
-	/// Positions the image to the right of the text.
+	/// Positions the image to the right of the text, or the left when the button is right-to-left.
 	/// </summary>
 	Right,
 

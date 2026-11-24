@@ -372,6 +372,23 @@ namespace Eto.GtkSharp.Forms
 			Callback.OnThemeChanged(Widget, EventArgs.Empty);
 		}
 
+		Gtk.TextDirection? _systemDirection;
+		public LayoutDirection LayoutDirection
+		{
+			get => Gtk.Widget.DefaultDirection == Gtk.TextDirection.Rtl ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight;
+			set
+			{
+				// gtk picks the default from the locale at init; remember it so Inherit can restore it
+				_systemDirection ??= Gtk.Widget.DefaultDirection;
+				Gtk.Widget.DefaultDirection = value switch
+				{
+					LayoutDirection.LeftToRight => Gtk.TextDirection.Ltr,
+					LayoutDirection.RightToLeft => Gtk.TextDirection.Rtl,
+					_ => _systemDirection.Value
+				};
+			}
+		}
+
 		public Theme Theme
 		{
 			get => _currentTheme ??= (Platform.Instance.CreateShared<Themes.IHandler>() as ThemesHandler)?.System;
