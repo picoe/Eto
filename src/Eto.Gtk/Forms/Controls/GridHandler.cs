@@ -343,7 +343,11 @@ namespace Eto.GtkSharp.Forms.Controls
 				if (ReferenceEquals(h.Control.ExpanderColumn, clickedColumn))
 				{
 					var cellArea = h.Control.GetCellArea(path, clickedColumn);
-					if (loc.X < cellArea.Left && loc.X >= cellArea.Left - 18) // how do we get the size of the expander?
+					// the expander is on the right when mirrored
+					var onExpander = h.Control.Direction == Gtk.TextDirection.Rtl
+						? loc.X >= cellArea.Right && loc.X < cellArea.Right + 18
+						: loc.X < cellArea.Left && loc.X >= cellArea.Left - 18;
+					if (onExpander) // how do we get the size of the expander?
 					{
 						// clicked on the expander, don't fire the CellClick event
 						return;

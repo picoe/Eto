@@ -109,6 +109,20 @@ namespace Eto.GtkSharp.Forms
             get => _handler?.Target as IGtkControl;
             set => _handler = new WeakReference(value);
         }
+
+        protected override void OnSizeAllocated(Gdk.Rectangle allocation)
+        {
+            base.OnSizeAllocated(allocation);
+            if (Direction != Gtk.TextDirection.Rtl)
+                return;
+            // Gtk.Fixed doesn't mirror, so positions are measured from the right edge here
+            foreach (var child in Children)
+            {
+                var childAllocation = child.Allocation;
+                childAllocation.X = allocation.X + allocation.Width - (childAllocation.X - allocation.X) - childAllocation.Width;
+                child.SizeAllocate(childAllocation);
+            }
+        }
         
 #if GTK3        
         protected override void OnGetPreferredWidth(out int minimum_width, out int natural_width)
