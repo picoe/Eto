@@ -229,10 +229,10 @@ public class Application : Widget
 	/// <remarks>
 	/// When you set this to your main application form, it will get standard platform behaviour applied, such as
 	/// quitting the application when it is closed (on windows, linux), or showing the main form on OS X when clicking
-	/// the application icon if it has been hidden/closed.
-	/// 
+	/// the application icon if it has been hidden/closed.  Use <see cref="QuitMode"/> to change this.
+	///
 	/// Setting this is optional, however you must then manually call <see cref="Quit"/> when you want your application
-	/// to quit in that case.
+	/// to quit in that case, unless <see cref="QuitMode"/> is <see cref="Eto.Forms.QuitMode.LastWindowClosed"/>.
 	/// </remarks>
 	/// <value>The main form for your application.</value>
 	public Form MainForm
@@ -266,6 +266,131 @@ public class Application : Widget
 	/// </summary>
 	/// <value>The enumeration of open windows.</value>
 	public IEnumerable<Window> Windows => windows;
+
+	/// <summary>
+	/// Gets or sets when the application quits on its own as windows are closed.
+	/// </summary>
+	/// <remarks>
+	/// This has no effect when the application is attached to a native application via <see cref="Attach"/>.
+	/// </remarks>
+	public QuitMode QuitMode { get; set; }
+
+	bool isAttached;
+	// inside Quit(), or a quit the platform asked for itself (e.g. Cmd+Q)
+	bool isQuitting;
+	// Terminating was approved for the quit in progress, so don't ask again
+	bool quitApproved;
+	// the main form's Closing was raised while asking whether to quit
+	bool mainFormAsked;
+	// closing this window was approved to quit, so quit once it has closed
+	Window quitWhenClosed;
+
+	QuitMode EffectiveQuitMode => QuitMode != QuitMode.Default ? QuitMode
+		: Platform.IsMac ? QuitMode.Explicit
+		: QuitMode.MainFormClosed;
+
+	static bool KeepsAppOpen(Window window) =>
+		(window.Visible || window.WindowState == WindowState.Minimized) && window is not FloatingForm;
+
+	static bool IsOwnedBy(Window window, Window owner)
+	{
+		for (var current = window.Owner; current != null; current = current.Owner)
+		{
+			if (ReferenceEquals(current, owner))
+				return true;
+		}
+		return false;
+	}
+
+	bool QuitsWhenClosing(Window window)
+	{
+		switch (EffectiveQuitMode)
+		{
+			case QuitMode.MainFormClosed:
+				return ReferenceEquals(window, MainForm);
+			case QuitMode.LastWindowClosed:
+				// windows it owns close along with it, so they don't keep the app open
+				return KeepsAppOpen(window)
+					&& !windows.Any(r => !ReferenceEquals(r, window) && KeepsAppOpen(r) && !IsOwnedBy(r, window));
+			default:
+				return false;
+		}
+	}
+
+	internal void OnWindowClosing(Window window, CancelEventArgs e)
+	{
+		if (isAttached)
+			return;
+		// it's closing again, so the close that was approved to quit didn't go through
+		if (ReferenceEquals(window, quitWhenClosed))
+			quitWhenClosed = null;
+
+		if (isQuitting)
+		{
+			// ApproveQuit closes the main form first, so its Closing can cancel along with Terminating
+			if (ReferenceEquals(window, MainForm) && !quitApproved)
+			{
+				mainFormAsked = true;
+				if (!e.Cancel)
+					RaiseTerminating(e);
+				quitApproved = !e.Cancel;
+			}
+			return;
+		}
+
+		if (e.Cancel || quitApproved || quitWhenClosed != null || !QuitsWhenClosing(window))
+			return;
+		RaiseTerminating(e);
+		if (!e.Cancel)
+			quitWhenClosed = window;
+	}
+
+	internal void OnWindowClosed(Window window)
+	{
+		if (!ReferenceEquals(window, quitWhenClosed))
+			return;
+		quitWhenClosed = null;
+		// let the platform finish closing the window before tearing down the run loop
+		AsyncInvoke(() => QuitInternal(approved: true));
+	}
+
+	// Called by the platform before it quits, from Quit() or on its own (e.g. Cmd+Q).
+	void ApproveQuit(CancelEventArgs e)
+	{
+		if (quitApproved || quitWhenClosed != null)
+			return;
+		var wasQuitting = isQuitting;
+		isQuitting = true;
+		try
+		{
+			var mainForm = MainForm;
+			mainFormAsked = false;
+			if (mainForm != null && windows.Contains(mainForm))
+				mainForm.Close();
+			// a main form that is already closing doesn't raise Closing again
+			if (mainFormAsked)
+				e.Cancel = !quitApproved;
+			else
+			{
+				RaiseTerminating(e);
+				quitApproved = !e.Cancel;
+			}
+		}
+		finally
+		{
+			isQuitting = wasQuitting;
+		}
+
+		// the platform keeps quitting after this returns (e.g. closing each window as the session ends), so stay approved until it's done
+		if (!wasQuitting && quitApproved)
+			AsyncInvoke(() => quitApproved = false);
+	}
+
+	void RaiseTerminating(CancelEventArgs e)
+	{
+		using (Platform.Context)
+			OnTerminating(e);
+	}
 
 	/// <summary>
 	/// Gets or sets the name of your application
@@ -443,6 +568,7 @@ public class Application : Widget
 	/// <param name="context">Context of the application</param>
 	public virtual Application Attach(object context = null)
 	{
+		isAttached = true;
 		Handler.Attach(context);
 		return this;
 	}
@@ -536,7 +662,25 @@ public class Application : Widget
 	/// <remarks>
 	/// This will call the <see cref="Terminating"/> event before terminating the application.
 	/// </remarks>
-	public void Quit() => Handler.Quit();
+	public void Quit() => QuitInternal(approved: false);
+
+	void QuitInternal(bool approved)
+	{
+		if (isQuitting)
+			return;
+		isQuitting = true;
+		quitApproved = approved;
+		try
+		{
+			// the platform asks whether to quit via Callback.OnTerminating, then tears down
+			Handler.Quit();
+		}
+		finally
+		{
+			isQuitting = false;
+			quitApproved = false;
+		}
+	}
 
 	/// <summary>
 	/// Gets a value indicating whether this <see cref="Eto.Forms.Application"/> supports the <see cref="Quit"/> operation.
@@ -639,8 +783,9 @@ public class Application : Widget
 		/// </summary>
 		void OnInitialized(Application widget, EventArgs e);
 		/// <summary>
-		/// Raises the terminating event.
+		/// Asks whether to quit before the platform does, closing the main form first and then raising the terminating event.
 		/// </summary>
+		/// <remarks>Sets <c>e.Cancel</c> when the quit should not go ahead.</remarks>
 		void OnTerminating(Application widget, CancelEventArgs e);
 
 		/// <summary>
@@ -679,13 +824,10 @@ public class Application : Widget
 				widget.OnInitialized(e);
 		}
 		/// <summary>
-		/// Raises the terminating event.
+		/// Asks whether to quit before the platform does, closing the main form first and then raising the terminating event.
 		/// </summary>
-		public void OnTerminating(Application widget, CancelEventArgs e)
-		{
-			using (widget.Platform.Context)
-				widget.OnTerminating(e);
-		}
+		/// <remarks>Sets <c>e.Cancel</c> when the quit should not go ahead.</remarks>
+		public void OnTerminating(Application widget, CancelEventArgs e) => widget.ApproveQuit(e);
 
 		/// <summary>
 		/// Raises the unhandled exception event.

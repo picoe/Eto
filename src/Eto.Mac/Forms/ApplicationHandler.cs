@@ -110,9 +110,13 @@ namespace Eto.Mac.Forms
 			}
 		}
 
+		// the main form is really closed when quitting, rather than hidden
+		internal bool IsTerminating { get; set; }
+
 		public bool ShouldCloseForm(Window window, bool wasClosed)
 		{
-			if (ReferenceEquals(window, Widget.MainForm))
+			// only the platform default keeps the main form around to show again from the dock
+			if (ReferenceEquals(window, Widget.MainForm) && Widget.QuitMode == QuitMode.Default && !IsTerminating)
 			{
 				if (AllowClosingMainForm && wasClosed)
 					Widget.MainForm = null;

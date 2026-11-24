@@ -149,8 +149,6 @@ namespace Eto.Wpf.Forms
 			Control.SizeChanged += Control_SizeChanged;
 			// must be before any WindowStateChanged handler so the state is correct when it is raised
 			Control.StateChanged += Control_StateChanged;
-			// needed to handle Application.Terminating event
-			HandleEvent(Window.ClosingEvent);
 		}
 
 		protected virtual void OnSourceInitialized()
@@ -430,28 +428,7 @@ namespace Eto.Wpf.Forms
 			IsClosing = true;
 			var args = new CancelEventArgs { Cancel = e.Cancel };
 			Callback.OnClosing(Widget, args);
-			bool willShutDown = false;
-			if (sw.Application.Current.Dispatcher == Dispatcher.CurrentDispatcher)
-			{
-				willShutDown =
-					(
-						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnLastWindowClose
-						&& sw.Application.Current.Windows.Count == 1
-					)
-					|| (
-						sw.Application.Current.ShutdownMode == sw.ShutdownMode.OnMainWindowClose
-						&& sw.Application.Current.MainWindow == Control
-					);
-			}
-
-			if (!args.Cancel && willShutDown)
-			{
-				// last window closing, so call OnTerminating to let the app abort terminating
-				var app = ((ApplicationHandler)Application.Instance.Handler);
-				app.Callback.OnTerminating(app.Widget, args);
-			}
 			e.Cancel = args.Cancel;
-			IsApplicationClosing = !e.Cancel && willShutDown;
 			IsClosing = !e.Cancel;
 			if (!e.Cancel)
 			{
@@ -473,8 +450,6 @@ namespace Eto.Wpf.Forms
 				LastPixelSize = LogicalPixelSize;
 			}
 		}
-
-		static bool IsApplicationClosing { get; set; }
 
 		public override void OnLoad(EventArgs e)
 		{
@@ -594,17 +569,9 @@ namespace Eto.Wpf.Forms
 
 		public void Close()
 		{
-			if (!IsApplicationClosing)
-			{
-				// prevent crash if we call this more than once..
-				if (!IsClosing)
-				{
-					Control.Close();
-				}
-			}
-			else
-				Visible = false;
-
+			// prevent crash if we call this more than once..
+			if (!IsClosing)
+				Control.Close();
 		}
 
 		public MenuBar Menu

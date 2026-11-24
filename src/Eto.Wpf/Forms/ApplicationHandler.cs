@@ -268,24 +268,28 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 
 	public void Quit()
 	{
-		// Clean up system theme change listener
-		try
-		{
-			SystemEvents.UserPreferenceChanged -= OnSystemThemeChanged;
-		}
-		catch
-		{
-			// Ignore any errors during cleanup
-		}
+		var args = new CancelEventArgs();
+		Callback.OnTerminating(Widget, args);
+		if (args.Cancel)
+			return;
 
 		bool cancel = false;
-		foreach (sw.Window window in Control.Windows)
+		foreach (sw.Window window in Control.Windows.OfType<sw.Window>().ToList())
 		{
 			window.Close();
 			cancel |= window.IsVisible;
 		}
 		if (!cancel)
 		{
+			// Clean up system theme change listener
+			try
+			{
+				SystemEvents.UserPreferenceChanged -= OnSystemThemeChanged;
+			}
+			catch
+			{
+				// Ignore any errors during cleanup
+			}
 			Control.Shutdown();
 			_shutdown = true;
 		}
@@ -426,15 +430,9 @@ public class ApplicationHandler : WidgetHandler<sw.Application, Application, App
 		{
 			if (_shutdown)
 				return;
-			if (Widget.MainForm != null)
-			{
-				Control.ShutdownMode = sw.ShutdownMode.OnMainWindowClose;
-				Control.Run((sw.Window)Widget.MainForm.ControlObject);
-			}
-			else
-			{
-				Control.Run();
-			}
+			// Eto decides when to quit, see Application.QuitMode
+			Control.ShutdownMode = sw.ShutdownMode.OnExplicitShutdown;
+			Control.Run();
 		}
 	}
 
