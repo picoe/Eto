@@ -334,12 +334,7 @@ namespace Eto.GtkSharp.Forms
 		public void Quit()
 		{
 			var args = new CancelEventArgs();
-			var mainForm = Widget.MainForm != null ? Widget.MainForm.Handler as IGtkWindow : null;
-			if (mainForm != null)
-				args.Cancel = !mainForm.CloseWindow(ce => Callback.OnTerminating(Widget, ce));
-			else
-				Callback.OnTerminating(Widget, args);
-
+			Callback.OnTerminating(Widget, args);
 			if (!args.Cancel)
 			{
 				GLib.ExceptionManager.UnhandledException -= OnUnhandledException;

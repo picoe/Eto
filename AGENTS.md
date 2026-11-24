@@ -236,9 +236,9 @@ values over branching on the appearance, and note that `MacVersion.IsUsingGlass`
 Handler interfaces have no default implementations (core targets `netstandard2.0`), so a new member
 must be implemented in **every** registered backend or the build breaks. For a given widget, find
 them via `grep -rn "<Widget>.IHandler" src/ --include="*.cs"` — note `Eto.iOS`/`Eto.WinUI` often have
-theirs commented out in `Platform.cs` and so need nothing. On macOS/Linux you can only compile
-`Eto`, `Eto.Gtk` and `Eto.Mac`; `Eto.Wpf`/`Eto.WinForms` need Windows (net48 also needs the targeting
-pack) and `Eto.Android` needs the android workload — so those edits go in unverified by compile.
+theirs commented out in `Platform.cs` and so need nothing. `Eto.Wpf`/`Eto.WinForms` compile on Linux too
+(`dotnet build src/Eto.Wpf/Eto.Wpf.csproj`), though they can only run on Windows; `Eto.Android` needs the
+android workload.
 
 Note this is a binary-breaking change for any third-party handler implementation.
 

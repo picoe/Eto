@@ -304,7 +304,8 @@ public abstract class Window : Panel
 	/// </summary>
 	protected Window()
 	{
-		// always hooked so OnClosed can raise OnUnLoad, even with no Closed subscribers
+		// always hooked so OnClosed can raise OnUnLoad, and so Application.QuitMode sees every close
+		HandleEvent(ClosingEvent);
 		HandleEvent(ClosedEvent);
 	}
 
@@ -315,7 +316,8 @@ public abstract class Window : Panel
 	protected Window(IHandler handler)
 		: base(handler)
 	{
-		// always hooked so OnClosed can raise OnUnLoad, even with no Closed subscribers
+		// always hooked so OnClosed can raise OnUnLoad, and so Application.QuitMode sees every close
+		HandleEvent(ClosingEvent);
 		HandleEvent(ClosedEvent);
 	}
 
@@ -789,6 +791,7 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnClosed(e);
+			Application.Instance?.OnWindowClosed(widget);
 		}
 		/// <summary>
 		/// Raises the closing event.
@@ -797,6 +800,8 @@ public abstract class Window : Panel
 		{
 			using (widget.Platform.Context)
 				widget.OnClosing(e);
+			// after the window's own handlers, so they can cancel first or open another window
+			Application.Instance?.OnWindowClosing(widget, e);
 		}
 		/// <summary>
 		/// Raises the location changed event.

@@ -18,6 +18,8 @@ namespace Eto.Test
 		
 		public string LastTheme { get; set; }
 
+		public QuitMode QuitMode { get; set; }
+
 		bool _GridViewSection_SaveColumnDisplayIndexes;
 		public bool GridViewSection_SaveColumnDisplayIndexes
 		{

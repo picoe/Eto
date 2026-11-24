@@ -49,6 +49,8 @@ namespace Eto.Test
 
 		protected override void OnInitialized(EventArgs e)
 		{
+			QuitMode = Settings.QuitMode;
+
 			if (Platform.Supports<Themes.IHandler>() && !string.IsNullOrEmpty(Settings.LastTheme))
 				Theme = Themes.AllThemes.FirstOrDefault(t => t.Name == Settings.LastTheme) ?? Themes.System;
 
