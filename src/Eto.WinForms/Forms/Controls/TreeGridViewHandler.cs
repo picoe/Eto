@@ -413,9 +413,12 @@ namespace Eto.WinForms.Forms.Controls
 		public TreeGridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			// the native grid can have a filler column after the last Eto column
+			var columnIndex = result.ColumnIndex < Widget.Columns.Count ? result.ColumnIndex : -1;
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			var type = columnIndex == result.ColumnIndex ? result.Type.ToEto() : GridCellType.None;
 			var item = GetItemAtRow(result.RowIndex);
-			return new TreeGridCell(column, result.ColumnIndex, result.Type.ToEto(), item);
+			return new TreeGridCell(column, columnIndex, type, item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

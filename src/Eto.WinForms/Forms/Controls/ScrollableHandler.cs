@@ -114,6 +114,12 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			base.OnLayoutDirectionChanged();
 			Control.Padding = Control.Padding.SwapSides();
+			// start again from the leading edge
+			scrollPositionSet = false;
+			Control.AutoScrollPosition = new sd.Point(0, -Control.AutoScrollPosition.Y);
+			if (!IsRightToLeft)
+				content.Left = Control.Padding.Left;
+			Control.PerformLayout();
 		}
 
 		protected override void ResumeControl(bool performLayout = true)
