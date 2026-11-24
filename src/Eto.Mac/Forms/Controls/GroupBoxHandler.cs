@@ -7,6 +7,7 @@ namespace Eto.Mac.Forms.Controls
 	public class GroupBoxHandler : MacPanel<NSBox, GroupBox, GroupBox.ICallback>, GroupBox.IHandler
 	{
 		SizeF? _borderSize;
+		readonly MacMnemonicString _text = new();
 		
 		/// <summary>
 		/// Use a separate class so it doesn't get event methods added
@@ -91,11 +92,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public virtual string Text
 		{
-			get { return Control.Title; }
+			get { return _text.Text ?? string.Empty; }
 			set 
 			{
-				Control.Title = value ?? string.Empty;
-				Control.TitlePosition = string.IsNullOrEmpty(value) ? NSTitlePosition.NoTitle : NSTitlePosition.AtTop;
+				_text.Text = value;
+				Control.Title = _text.AttributedString.Value;
+				Control.TitlePosition = string.IsNullOrEmpty(Control.Title) ? NSTitlePosition.NoTitle : NSTitlePosition.AtTop;
 				InvalidateMeasure();
 			}
 		}

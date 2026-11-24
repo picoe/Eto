@@ -21,6 +21,10 @@ public class GroupBox : Panel
 	/// <summary>
 	/// Gets or sets the title text.
 	/// </summary>
+	/// <remarks>
+	/// On desktop platforms, use an ampersand (&amp;) to mark a mnemonic character, or two ampersands (&amp;&amp;) to display a literal ampersand.
+	/// Mnemonic activation depends on the platform.
+	/// </remarks>
 	/// <value>The title text.</value>
 	public string Text
 	{
