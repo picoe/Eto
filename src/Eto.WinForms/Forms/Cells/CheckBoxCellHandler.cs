@@ -26,6 +26,35 @@ namespace Eto.WinForms.Forms.Cells
 				base.Paint(graphics, clipBounds, cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}
 
+			// Base hit-tests the toggle against the un-indented cell, so shift it to where Paint draws it.
+			protected override sd.Rectangle GetContentBounds(sd.Graphics graphics, swf.DataGridViewCellStyle cellStyle, int rowIndex)
+			{
+				var bounds = base.GetContentBounds(graphics, cellStyle, rowIndex);
+				var offset = Handler.GetRowOffset(rowIndex);
+				if (offset > 0 && !bounds.IsEmpty)
+				{
+					// right-to-left mirrors the alignment
+					var rtl = DataGridView?.RightToLeft == swf.RightToLeft.Yes;
+					switch (cellStyle.Alignment)
+					{
+						case swf.DataGridViewContentAlignment.TopLeft:
+						case swf.DataGridViewContentAlignment.MiddleLeft:
+						case swf.DataGridViewContentAlignment.BottomLeft:
+							bounds.X += rtl ? 0 : offset;
+							break;
+						case swf.DataGridViewContentAlignment.TopRight:
+						case swf.DataGridViewContentAlignment.MiddleRight:
+						case swf.DataGridViewContentAlignment.BottomRight:
+							bounds.X += rtl ? offset : 0;
+							break;
+						default:
+							bounds.X += offset / 2;
+							break;
+					}
+				}
+				return bounds;
+			}
+
 			protected override void OnMouseClick(swf.DataGridViewCellMouseEventArgs e)
 			{
 				if (!Handler.MouseClick(e, e.RowIndex))
