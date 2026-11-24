@@ -13,35 +13,58 @@ namespace Eto.Test.UnitTests.Forms
 		}
 
 		/// <summary>
-		/// Builds the same content LTR and RTL side by side and checks each probe's RTL bounds mirror its LTR bounds.
+		/// Builds the same content LTR and RTL side by side and checks each probe's RTL bounds mirror its LTR bounds,
+		/// both for content shown in RTL and for content switched to RTL (and back) after it was shown.
 		/// </summary>
 		static void AssertMirrored(Func<Control[], Control> create, int probeCount, Action<Control, Control> extraCheck = null)
 		{
-			Panel ltrHost = null, rtlHost = null;
-			Control[] ltrProbes = null, rtlProbes = null;
-			Control ltrContent = null, rtlContent = null;
-			Shown(form =>
+			Panel ltrHost = null, rtlHost = null, changedHost = null;
+			Control[] ltrProbes = null, rtlProbes = null, changedProbes = null;
+			Control ltrContent = null, rtlContent = null, changedContent = null;
+			ShownAsync(form =>
 			{
-				ltrProbes = Enumerable.Range(0, probeCount).Select(i => (Control)Probe()).ToArray();
-				rtlProbes = Enumerable.Range(0, probeCount).Select(i => (Control)Probe()).ToArray();
+				Control[] CreateProbes() => Enumerable.Range(0, probeCount).Select(i => (Control)Probe()).ToArray();
+				ltrProbes = CreateProbes();
+				rtlProbes = CreateProbes();
+				changedProbes = CreateProbes();
 				ltrContent = create(ltrProbes);
 				rtlContent = create(rtlProbes);
+				changedContent = create(changedProbes);
 				ltrHost = new Panel { LayoutDirection = LayoutDirection.LeftToRight, Size = new Size(300, 120), Content = ltrContent };
 				rtlHost = new Panel { LayoutDirection = LayoutDirection.RightToLeft, Size = new Size(300, 120), Content = rtlContent };
-				form.Content = new TableLayout(new TableRow(ltrHost), new TableRow(rtlHost));
-			}, () =>
+				changedHost = new Panel { LayoutDirection = LayoutDirection.LeftToRight, Size = new Size(300, 120), Content = changedContent };
+				form.Content = new TableLayout(new TableRow(ltrHost), new TableRow(rtlHost), new TableRow(changedHost));
+			}, async () =>
 			{
-				Assert.That(rtlHost.Width, Is.EqualTo(ltrHost.Width), "Hosts should be the same width");
-				var width = ltrHost.Width;
+				void Check(string name, Panel host, Control[] probes, Control content)
+				{
+					Assert.That(host.Width, Is.EqualTo(ltrHost.Width), $"{name}: hosts should be the same width");
+					var width = ltrHost.Width;
+					for (int i = 0; i < probeCount; i++)
+					{
+						var ltr = BoundsIn(ltrProbes[i], ltrHost);
+						var rtl = BoundsIn(probes[i], host);
+						Assert.That(rtl.Width, Is.EqualTo(ltr.Width).Within(1), $"{name}: probe {i} width");
+						Assert.That(rtl.Y, Is.EqualTo(ltr.Y).Within(1), $"{name}: probe {i} y");
+						Assert.That(rtl.X, Is.EqualTo(width - ltr.Right).Within(1), $"{name}: probe {i} x should be mirrored (ltr: {ltr}, rtl: {rtl}, width: {width})");
+					}
+					extraCheck?.Invoke(ltrContent, content);
+				}
+				Check("Shown in right-to-left", rtlHost, rtlProbes, rtlContent);
+
+				changedHost.LayoutDirection = LayoutDirection.RightToLeft;
+				await Task.Delay(200);
+				Check("Changed to right-to-left", changedHost, changedProbes, changedContent);
+
+				changedHost.LayoutDirection = LayoutDirection.LeftToRight;
+				await Task.Delay(200);
 				for (int i = 0; i < probeCount; i++)
 				{
 					var ltr = BoundsIn(ltrProbes[i], ltrHost);
-					var rtl = BoundsIn(rtlProbes[i], rtlHost);
-					Assert.That(rtl.Width, Is.EqualTo(ltr.Width).Within(1), $"Probe {i} width");
-					Assert.That(rtl.Y, Is.EqualTo(ltr.Y).Within(1), $"Probe {i} y");
-					Assert.That(rtl.X, Is.EqualTo(width - ltr.Right).Within(1), $"Probe {i} x should be mirrored (ltr: {ltr}, rtl: {rtl}, width: {width})");
+					var changed = BoundsIn(changedProbes[i], changedHost);
+					Assert.That(changed.X, Is.EqualTo(ltr.X).Within(1), $"Changed back to left-to-right: probe {i} x (ltr: {ltr}, changed: {changed})");
+					Assert.That(changed.Width, Is.EqualTo(ltr.Width).Within(1), $"Changed back to left-to-right: probe {i} width");
 				}
-				extraCheck?.Invoke(ltrContent, rtlContent);
 			});
 		}
 
@@ -360,5 +383,121 @@ namespace Eto.Test.UnitTests.Forms
 
 		static void SetTextAlignment(Control control, TextAlignment alignment) => control.GetType().GetProperty(nameof(TextBox.TextAlignment)).SetValue(control, alignment);
 		static TextAlignment GetTextAlignment(Control control) => (TextAlignment)control.GetType().GetProperty(nameof(TextBox.TextAlignment)).GetValue(control);
+
+		static readonly int[] ColumnsLeftToRight = { 0, 1, 2 };
+		static readonly int[] ColumnsRightToLeft = { 2, 1, 0 };
+
+		static readonly Size GridHostSize = new Size(300, 150);
+
+		static Grid CreateGrid(bool tree)
+		{
+			Grid grid;
+			if (tree)
+			{
+				var items = new TreeGridItemCollection();
+				for (int i = 0; i < 30; i++)
+					items.Add(new TreeGridItem("A", "B", "C"));
+				grid = new TreeGridView { DataStore = items };
+			}
+			else
+				grid = new GridView { DataStore = Enumerable.Range(0, 30).Select(i => new object[] { "A", "B", "C" }).ToList() };
+			for (int i = 0; i < 3; i++)
+				grid.Columns.Add(new GridColumn { HeaderText = $"Column {i}", Width = 60, AutoSize = false, DataCell = new TextBoxCell(i) });
+			return grid;
+		}
+
+		/// <summary>
+		/// Hit-tests across a data row to find the order the columns appear in, from left to right.
+		/// </summary>
+		static int[] ColumnOrder(Grid grid)
+		{
+			var order = new List<int>();
+			var y = grid.Height - 20;
+			for (int x = 0; x < grid.Width; x += 4)
+			{
+				var location = new PointF(x, y);
+				var column = grid is TreeGridView tree ? tree.GetCellAt(location)?.Column : ((GridView)grid).GetCellAt(location)?.Column;
+				if (column == null)
+					continue;
+				var index = grid.Columns.IndexOf(column);
+				if (order.Count == 0 || order[order.Count - 1] != index)
+					order.Add(index);
+			}
+			return order.ToArray();
+		}
+
+		/// <summary>
+		/// Waits for the grid to lay out its columns (GTK does so after the window is shown), then checks their order.
+		/// </summary>
+		static async Task AssertColumnOrder(Grid grid, LayoutDirection direction, string message)
+		{
+			var expected = direction == LayoutDirection.RightToLeft ? ColumnsRightToLeft : ColumnsLeftToRight;
+			var order = ColumnOrder(grid);
+			for (int i = 0; i < 20 && !order.SequenceEqual(expected); i++)
+			{
+				await Task.Delay(100);
+				order = ColumnOrder(grid);
+			}
+			Assert.That(order, Is.EqualTo(expected), message);
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void GridColumnsShouldBeReversedInRightToLeft(bool tree)
+		{
+			Grid ltrGrid = null, rtlGrid = null;
+			ShownAsync(form =>
+			{
+				ltrGrid = CreateGrid(tree);
+				rtlGrid = CreateGrid(tree);
+				form.Content = new TableLayout(
+					new Panel { LayoutDirection = LayoutDirection.LeftToRight, Size = GridHostSize, Content = ltrGrid },
+					new Panel { LayoutDirection = LayoutDirection.RightToLeft, Size = GridHostSize, Content = rtlGrid }
+				);
+			}, async () =>
+			{
+				await AssertColumnOrder(ltrGrid, LayoutDirection.LeftToRight, "Left-to-right");
+				await AssertColumnOrder(rtlGrid, LayoutDirection.RightToLeft, "Right-to-left");
+			});
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void GridColumnsShouldReverseWhenInheritedDirectionChanges(bool tree)
+		{
+			Panel host = null;
+			Grid grid = null;
+			ShownAsync(form =>
+			{
+				grid = CreateGrid(tree);
+				host = new Panel { LayoutDirection = LayoutDirection.LeftToRight, Size = GridHostSize, Content = grid };
+				// WinForms doesn't size the window to a sized panel that is its direct content
+				form.Content = new TableLayout(host);
+			}, async () =>
+			{
+				await AssertColumnOrder(grid, LayoutDirection.LeftToRight, "Initial");
+
+				host.LayoutDirection = LayoutDirection.RightToLeft;
+				await AssertColumnOrder(grid, LayoutDirection.RightToLeft, "After changing the parent to right-to-left");
+
+				host.LayoutDirection = LayoutDirection.LeftToRight;
+				await AssertColumnOrder(grid, LayoutDirection.LeftToRight, "After changing the parent back to left-to-right");
+
+				var app = Application.Instance;
+				var initial = app.LayoutDirection;
+				var other = initial == LayoutDirection.RightToLeft ? LayoutDirection.LeftToRight : LayoutDirection.RightToLeft;
+				host.LayoutDirection = LayoutDirection.Inherit;
+				try
+				{
+					app.LayoutDirection = other;
+					await AssertColumnOrder(grid, other, "After changing the application direction");
+				}
+				finally
+				{
+					app.LayoutDirection = LayoutDirection.Inherit;
+				}
+				await AssertColumnOrder(grid, initial, "After restoring the application direction");
+			});
+		}
 	}
 }
