@@ -75,6 +75,7 @@ namespace Eto.WinForms.Forms.Controls
 					return;
 
 				var bounds = e.Bounds;
+				var rightToLeft = RightToLeft == swf.RightToLeft.Yes;
 				var item = Items[e.Index];
 				var text = handler.Widget.ItemTextBinding?.GetValue(item) ?? string.Empty;
 				var image = handler.Widget.ItemImageBinding?.GetValue(item).ToSD(new Size(bounds.Width, bounds.Height - ItemPadding * 2));
@@ -83,13 +84,18 @@ namespace Eto.WinForms.Forms.Controls
 					// just in case, make image fit in our bounds
 					var imageHeight = bounds.Height - ItemPadding * 2;
 					var imageWidth = imageHeight * image.Width / image.Height;
-					e.Graphics.DrawImage(image, bounds.X + ItemPadding, bounds.Y + ItemPadding, imageWidth, imageHeight);
-					bounds.X += imageWidth + ItemPadding * 2;
+					// the image is at the leading edge
+					var imageX = rightToLeft ? bounds.Right - ItemPadding - imageWidth : bounds.X + ItemPadding;
+					e.Graphics.DrawImage(image, imageX, bounds.Y + ItemPadding, imageWidth, imageHeight);
+					if (!rightToLeft)
+						bounds.X += imageWidth + ItemPadding * 2;
+					bounds.Width -= imageWidth + ItemPadding * 2;
 				}
 				var stringSize = swf.TextRenderer.MeasureText(e.Graphics, text, e.Font);
 				bounds.Y += Math.Max(0, (bounds.Height - stringSize.Height) / 2);
 				var foreColor = e.State.HasFlag(swf.DrawItemState.Selected) ? sd.SystemColors.HighlightText : ForeColor;
-				swf.TextRenderer.DrawText(e.Graphics, text, e.Font, bounds, foreColor, swf.TextFormatFlags.Left);
+				var textFormat = rightToLeft ? swf.TextFormatFlags.Right | swf.TextFormatFlags.RightToLeft : swf.TextFormatFlags.Left;
+				swf.TextRenderer.DrawText(e.Graphics, text, e.Font, bounds, foreColor, textFormat);
 			}
 		}
 

@@ -131,8 +131,14 @@ namespace Eto.WinForms.Forms
 
 		public Padding Padding
 		{
-			get { return Control.Padding.ToEto(); }
-			set { Control.Padding = value.ToSWF(); }
+			get { return Control.Padding.ToEto(IsRightToLeft); }
+			set { Control.Padding = value.ToSWF(IsRightToLeft); }
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			Control.Padding = Control.Padding.SwapSides();
 		}
 
 		void SetScale(Control control, int x, int y)

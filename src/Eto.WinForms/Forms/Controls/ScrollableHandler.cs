@@ -41,6 +41,27 @@ namespace Eto.WinForms.Forms.Controls
 			{
 				UpdateScrollSize();
 				base.OnLayout(levent);
+				if (Handler.IsRightToLeft)
+					PositionContentRightToLeft();
+			}
+
+			void PositionContentRightToLeft()
+			{
+				var content = Handler.content;
+				// native right padding is the logical start when right-to-left
+				var available = ClientSize.Width - Padding.Horizontal;
+				if (content.Width < available)
+				{
+					var left = ClientSize.Width - Padding.Right - content.Width;
+					if (content.Left != left)
+						content.Left = left;
+				}
+				else if (!Handler.scrollPositionSet && content.Width > 0)
+				{
+					// start scrolled to the leading (right) edge
+					Handler.scrollPositionSet = true;
+					AutoScrollPosition = new sd.Point(content.Width + Padding.Horizontal - ClientSize.Width, -AutoScrollPosition.Y);
+				}
 			}
 
 			void UpdateScrollSize()
@@ -85,8 +106,14 @@ namespace Eto.WinForms.Forms.Controls
     
 		public override Padding Padding
 		{
-			get { return Control.Padding.ToEto(); }
-			set { Control.Padding = value.ToSWF(); }
+			get { return Control.Padding.ToEto(IsRightToLeft); }
+			set { Control.Padding = value.ToSWF(IsRightToLeft); }
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			Control.Padding = Control.Padding.SwapSides();
 		}
 
 		protected override void ResumeControl(bool performLayout = true)
@@ -148,6 +175,8 @@ namespace Eto.WinForms.Forms.Controls
                 }
             }
         }
+
+		bool scrollPositionSet;
 
 		public ScrollableHandler()
 		{
@@ -226,6 +255,7 @@ namespace Eto.WinForms.Forms.Controls
 			get { return new Point(-Control.AutoScrollPosition.X, -Control.AutoScrollPosition.Y); }
 			set
 			{
+				scrollPositionSet = true;
 				Control.AutoScrollPosition = value.ToSD();
 			}
 		}
