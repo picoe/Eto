@@ -401,15 +401,9 @@ namespace Eto.Mac.Forms
 			}
 		}
 
-		LayoutDirection? _layoutDirection;
-		public LayoutDirection LayoutDirection
-		{
-			get => _layoutDirection ?? ((int)Control.UserInterfaceLayoutDirection == (int)NSUserInterfaceLayoutDirection.RightToLeft ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight);
-			set
-			{
-				_layoutDirection = value == LayoutDirection.Inherit ? null : value;
-				Control.MainMenu?.SetLayoutDirection(LayoutDirection == LayoutDirection.RightToLeft);
-			}
-		}
+		// the binding's enum types differ, so compare the raw values
+		public LayoutDirection SystemLayoutDirection => (int)Control.UserInterfaceLayoutDirection == (int)NSUserInterfaceLayoutDirection.RightToLeft ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight;
+
+		public void SetLayoutDirection(LayoutDirection direction) => Control.MainMenu?.SetLayoutDirection(direction == LayoutDirection.RightToLeft);
 	}
 }

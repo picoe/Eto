@@ -7,21 +7,20 @@ namespace Eto.Test.Sections.Layouts
 		{
 			var sample = new Panel { Content = CreateSample() };
 
+			var effective = new Label();
+			void UpdateEffective() => effective.Text = $"Effective: {sample.EffectiveLayoutDirection} (application: {Application.Instance.EffectiveLayoutDirection})";
+			sample.EffectiveLayoutDirectionChanged += (sender, e) => UpdateEffective();
+			UpdateEffective();
+
 			var appDirection = new EnumDropDown<LayoutDirection> { SelectedValue = Application.Instance.LayoutDirection };
 			appDirection.SelectedValueChanged += (sender, e) =>
 			{
 				Application.Instance.LayoutDirection = appDirection.SelectedValue;
-				// Inherit resolves to the platform default
-				appDirection.SelectedValue = Application.Instance.LayoutDirection;
+				UpdateEffective();
 			};
 
 			var sampleDirection = new EnumDropDown<LayoutDirection>();
 			sampleDirection.SelectedValueBinding.Bind(sample, s => s.LayoutDirection);
-
-			var effective = new Label();
-			void UpdateEffective() => effective.Text = $"Effective: {sample.EffectiveLayoutDirection}";
-			sample.EffectiveLayoutDirectionChanged += (sender, e) => UpdateEffective();
-			UpdateEffective();
 
 			Content = new TableLayout
 			{

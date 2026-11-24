@@ -75,8 +75,9 @@ namespace Eto.Test.UnitTests.Forms
 			{
 				var panel = new Panel();
 				Assert.That(panel.LayoutDirection, Is.EqualTo(LayoutDirection.Inherit));
-				Assert.That(panel.EffectiveLayoutDirection, Is.EqualTo(Application.Instance.LayoutDirection));
-				Assert.That(Application.Instance.LayoutDirection, Is.Not.EqualTo(LayoutDirection.Inherit));
+				Assert.That(panel.EffectiveLayoutDirection, Is.EqualTo(Application.Instance.EffectiveLayoutDirection));
+				Assert.That(Application.Instance.LayoutDirection, Is.EqualTo(LayoutDirection.Inherit), "Application should follow the system by default");
+				Assert.That(Application.Instance.EffectiveLayoutDirection, Is.Not.EqualTo(LayoutDirection.Inherit));
 			});
 		}
 
@@ -177,13 +178,14 @@ namespace Eto.Test.UnitTests.Forms
 			}, () =>
 			{
 				var app = Application.Instance;
-				var initial = app.LayoutDirection;
+				var initial = app.EffectiveLayoutDirection;
 				var other = initial == LayoutDirection.RightToLeft ? LayoutDirection.LeftToRight : LayoutDirection.RightToLeft;
 				child.EffectiveLayoutDirectionChanged += (sender, e) => changed++;
 				try
 				{
 					app.LayoutDirection = other;
 					Assert.That(app.LayoutDirection, Is.EqualTo(other));
+					Assert.That(app.EffectiveLayoutDirection, Is.EqualTo(other));
 					Assert.That(child.EffectiveLayoutDirection, Is.EqualTo(other));
 					Assert.That(changed, Is.EqualTo(1));
 				}
@@ -191,7 +193,8 @@ namespace Eto.Test.UnitTests.Forms
 				{
 					app.LayoutDirection = LayoutDirection.Inherit;
 				}
-				Assert.That(app.LayoutDirection, Is.EqualTo(initial), "Setting Inherit should restore the platform default");
+				Assert.That(app.LayoutDirection, Is.EqualTo(LayoutDirection.Inherit), "Inherit should be kept rather than resolved");
+				Assert.That(app.EffectiveLayoutDirection, Is.EqualTo(initial), "Inherit should restore the system direction");
 				Assert.That(child.EffectiveLayoutDirection, Is.EqualTo(initial));
 				Assert.That(changed, Is.EqualTo(2));
 			});
@@ -484,7 +487,7 @@ namespace Eto.Test.UnitTests.Forms
 				await AssertColumnOrder(grid, LayoutDirection.LeftToRight, "After changing the parent back to left-to-right");
 
 				var app = Application.Instance;
-				var initial = app.LayoutDirection;
+				var initial = app.EffectiveLayoutDirection;
 				var other = initial == LayoutDirection.RightToLeft ? LayoutDirection.LeftToRight : LayoutDirection.RightToLeft;
 				host.LayoutDirection = LayoutDirection.Inherit;
 				try

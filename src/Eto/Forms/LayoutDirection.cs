@@ -13,7 +13,7 @@ namespace Eto.Forms;
 public enum LayoutDirection
 {
 	/// <summary>
-	/// Uses the direction of the parent control, or <see cref="Application.LayoutDirection"/> for a window.
+	/// Uses the direction of the parent control, the application for a window, or the system for the application.
 	/// </summary>
 	Inherit,
 	/// <summary>

@@ -310,11 +310,10 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
-		LayoutDirection _layoutDirection = LayoutDirection.LeftToRight;
-		public LayoutDirection LayoutDirection
+		public LayoutDirection SystemLayoutDirection => LayoutDirection.LeftToRight;
+
+		public void SetLayoutDirection(LayoutDirection direction)
 		{
-			get => _layoutDirection;
-			set => _layoutDirection = value == LayoutDirection.Inherit ? LayoutDirection.LeftToRight : value;
 		}
 
 #if NET9_0_OR_GREATER

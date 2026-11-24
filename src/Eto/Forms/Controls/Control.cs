@@ -1012,7 +1012,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 	/// </summary>
 	/// <remarks>
 	/// When <see cref="Eto.Forms.LayoutDirection.Inherit"/> (the default), the control uses the direction of its parent,
-	/// and a window uses <see cref="Application.LayoutDirection"/>.
+	/// and a window uses <see cref="Application.EffectiveLayoutDirection"/>.
 	/// Use <see cref="EffectiveLayoutDirection"/> to get the direction currently in effect.
 	/// </remarks>
 	/// <since>2.14</since>
@@ -1046,8 +1046,7 @@ public partial class Control : BindableWidget, IMouseInputSource, IKeyboardInput
 					return direction;
 				control = control.VisualParent;
 			}
-			var appDirection = Application.Instance?.LayoutDirection ?? LayoutDirection.Inherit;
-			return appDirection == LayoutDirection.Inherit ? LayoutDirection.LeftToRight : appDirection;
+			return Application.Instance?.EffectiveLayoutDirection ?? LayoutDirection.LeftToRight;
 		}
 	}
 
