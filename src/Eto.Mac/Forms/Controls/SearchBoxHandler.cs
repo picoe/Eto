@@ -30,6 +30,13 @@ namespace Eto.Mac.Forms.Controls
 				Cell.UsesSingleLineMode = true;
 			}
 			
+			public override void DidAddSubview(NSView subview)
+			{
+				base.DidAddSubview(subview);
+				// the modern search field lays out its icon and clear button in an inner view that doesn't inherit the direction
+				subview.UserInterfaceLayoutDirection = UserInterfaceLayoutDirection;
+			}
+
 			[Export("textViewDidChangeSelection:")]
 			public void TextViewDidChangeSelection(NSNotification notification)
 			{
@@ -106,6 +113,15 @@ namespace Eto.Mac.Forms.Controls
 			if (!cancelRect.Contains(e.Location))
 				return base.SelectAllOnMouseDown(e);
 			return false;
+		}
+
+		protected override IEnumerable<NSView> LayoutDirectionViews => base.LayoutDirectionViews.Concat(Control.Subviews);
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			foreach (var view in Control.Subviews)
+				view.NeedsLayout = true;
 		}
 
 		public bool ReadOnly
