@@ -237,8 +237,37 @@ namespace Eto.Mac.Forms.Controls
 			base.OnLayoutDirectionChanged();
 			foreach (var column in Widget.Columns)
 				(column.Handler as IDataColumnHandler)?.OnLayoutDirectionChanged();
+			if (Control.HeaderView != null)
+			{
+				Control.HeaderView.UserInterfaceLayoutDirection = Control.UserInterfaceLayoutDirection;
+				Control.HeaderView.NeedsDisplay = true;
+			}
+			InvalidateColumnPositions();
 			// cells read the direction when they're created
 			Control.ReloadData();
+		}
+
+		bool isInvalidatingColumnPositions;
+
+		/// <summary>
+		/// Makes the table re-position its columns, as it caches them and doesn't on a direction change or tile.
+		/// </summary>
+		void InvalidateColumnPositions()
+		{
+			var column = Control.TableColumns().FirstOrDefault();
+			if (column == null)
+				return;
+			isInvalidatingColumnPositions = true;
+			try
+			{
+				var width = column.Width;
+				column.Width = width < column.MaxWidth ? width + 1 : width - 1;
+				column.Width = width;
+			}
+			finally
+			{
+				isInvalidatingColumnPositions = false;
+			}
 		}
 
 		protected virtual void UpdateColumns()
@@ -895,6 +924,8 @@ namespace Eto.Mac.Forms.Controls
 
 		protected void ColumnDidResize(NSNotification notification)
 		{
+			if (isInvalidatingColumnPositions)
+				return;
 			var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
 			var colHandler = GetColumn(column);
 			if (colHandler == null)

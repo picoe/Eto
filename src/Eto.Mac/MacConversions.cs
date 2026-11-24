@@ -402,12 +402,12 @@ namespace Eto.Mac
 			return nsimage;
 		}
 
-		// not in all bindings; leading/trailing follow the view's layout direction
-		const NSCellImagePosition ImageLeading = (NSCellImagePosition)7;
-		const NSCellImagePosition ImageTrailing = (NSCellImagePosition)8;
-
-		public static NSCellImagePosition ToNS(this ButtonImagePosition value)
+		/// <summary>
+		/// Converts to a native image position, with Left/Right meaning start/end when <paramref name="rtl"/> is true.
+		/// </summary>
+		public static NSCellImagePosition ToNS(this ButtonImagePosition value, bool rtl = false)
 		{
+			// explicit sides rather than ImageLeading/ImageTrailing, which some SDKs' buttons don't mirror
 			switch (value)
 			{
 				case ButtonImagePosition.Below:
@@ -415,9 +415,9 @@ namespace Eto.Mac
 				case ButtonImagePosition.Overlay:
 					return NSCellImagePosition.ImageOverlaps;
 				case ButtonImagePosition.Left:
-					return ImageLeading;
+					return rtl ? NSCellImagePosition.ImageRight : NSCellImagePosition.ImageLeft;
 				case ButtonImagePosition.Right:
-					return ImageTrailing;
+					return rtl ? NSCellImagePosition.ImageLeft : NSCellImagePosition.ImageRight;
 				case ButtonImagePosition.Above:
 					return NSCellImagePosition.ImageAbove;
 				default:
@@ -434,10 +434,8 @@ namespace Eto.Mac
 				case NSCellImagePosition.ImageOverlaps:
 					return ButtonImagePosition.Overlay;
 				case NSCellImagePosition.ImageLeft:
-				case ImageLeading:
 					return ButtonImagePosition.Left;
 				case NSCellImagePosition.ImageRight:
-				case ImageTrailing:
 					return ButtonImagePosition.Right;
 				case NSCellImagePosition.ImageAbove:
 					return ButtonImagePosition.Above;

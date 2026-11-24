@@ -285,7 +285,7 @@ namespace Eto.Mac.Forms.Controls
 
 		protected virtual void SetImagePosition()
 		{
-			var position = ImagePosition.ToNS();
+			var position = ImagePosition.ToNS(IsRightToLeft);
 			if (string.IsNullOrEmpty(Text) &&
 			    (
 			        position == NSCellImagePosition.ImageAbove
@@ -295,6 +295,12 @@ namespace Eto.Mac.Forms.Controls
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
 			SetBezel(GetAlignmentFrame().Size.ToEtoSize());
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			SetImagePosition();
 		}
 
 		public ButtonImagePosition ImagePosition

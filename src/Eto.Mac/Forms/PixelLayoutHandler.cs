@@ -76,6 +76,13 @@ namespace Eto.Mac.Forms
 			macView.SetAlignmentFrame(new CGRect(origin, preferredSize.ToNS()));
 		}
 
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			foreach (var control in Widget.Controls)
+				SetPosition(control, PixelLayout.GetLocation(control));
+		}
+
 		public override void InvalidateMeasure()
 		{
 			base.InvalidateMeasure();

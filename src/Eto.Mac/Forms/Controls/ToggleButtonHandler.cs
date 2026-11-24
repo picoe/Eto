@@ -19,7 +19,7 @@ namespace Eto.Mac.Forms.Controls
 		{
 			if (UserPreferredSize.Width == -1)
 			{
-				var position = ImagePosition.ToNS();
+				var position = ImagePosition.ToNS(IsRightToLeft);
 				if (string.IsNullOrEmpty(Text))
 					position = NSCellImagePosition.ImageOnly;
 				Control.ImagePosition = position;

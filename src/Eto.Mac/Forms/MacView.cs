@@ -1951,12 +1951,17 @@ namespace Eto.Mac.Forms
 			var wasRightToLeft = IsRightToLeft;
 			IsRightToLeft = direction == LayoutDirection.RightToLeft;
 			var nativeDirection = IsRightToLeft ? NSUserInterfaceLayoutDirection.RightToLeft : NSUserInterfaceLayoutDirection.LeftToRight;
+			var changed = wasRightToLeft != IsRightToLeft;
 			foreach (var view in LayoutDirectionViews)
 			{
-				if (view != null)
-					view.UserInterfaceLayoutDirection = nativeDirection;
+				if (view == null)
+					continue;
+				view.UserInterfaceLayoutDirection = nativeDirection;
+				// some views (e.g. NSProgressIndicator) don't redraw when only their direction changes
+				if (changed)
+					view.NeedsDisplay = true;
 			}
-			if (wasRightToLeft != IsRightToLeft)
+			if (changed)
 			{
 				MenuControl.Menu?.SetLayoutDirection(IsRightToLeft);
 				OnLayoutDirectionChanged();
