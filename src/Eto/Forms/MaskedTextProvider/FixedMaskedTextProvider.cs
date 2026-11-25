@@ -317,6 +317,10 @@ public class FixedMaskedTextProvider : IMaskedTextProvider
 		get { return handler.EditPositions; }
 	}
 
+#if !NET
+	IEnumerable<Range<int>> IMaskedTextProvider.EditableRanges => MaskedTextEditableRanges.FromEditPositions(EditPositions);
+#endif
+
 	/// <summary>
 	/// Gets a value indicating the mask is empty with no characters filled out.
 	/// </summary>

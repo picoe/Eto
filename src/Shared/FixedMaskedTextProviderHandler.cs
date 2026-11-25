@@ -190,6 +190,30 @@
 			}
 		}
 
+		// each run of adjacent edit positions is one range; always implemented, as some platforms build against
+		// Eto's netstandard2.0 assembly, where the interface has no default
+		System.Collections.Generic.IEnumerable<Range<int>> IMaskedTextProvider.EditableRanges
+		{
+			get
+			{
+				int? start = null;
+				var end = 0;
+				foreach (var position in EditPositions)
+				{
+					if (start != null && position == end + 1)
+					{
+						end = position;
+						continue;
+					}
+					if (start != null)
+						yield return new Range<int>(start.Value, end);
+					start = end = position;
+				}
+				if (start != null)
+					yield return new Range<int>(start.Value, end);
+			}
+		}
+
 		public bool IsEmpty
 		{
 			get { return Provider.AssignedEditPositionCount == 0; }

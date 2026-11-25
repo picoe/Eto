@@ -92,6 +92,62 @@ public interface IMaskedTextProvider
 	/// </remarks>
 	/// <since>2.12</since>
 	void CommitText();
+
+#if NET
+	// The default lets existing providers compile unchanged.
+
+	/// <summary>
+	/// Gets each part's range of edit positions, in order with an inclusive end, which are selected together.
+	/// </summary>
+	/// <remarks>
+	/// By default each run of adjacent <see cref="EditPositions"/> is one part. Override this when adjacent positions
+	/// belong to separate parts, such as an AM/PM designator directly followed by the hour.
+	/// </remarks>
+	/// <since>2.14</since>
+	IEnumerable<Range<int>> EditableRanges => MaskedTextEditableRanges.FromEditPositions(EditPositions);
+#else
+	/// <summary>
+	/// Gets each part's range of edit positions, in order with an inclusive end, which are selected together.
+	/// </summary>
+	/// <remarks>
+	/// Usually each run of adjacent <see cref="EditPositions"/> is one part, but adjacent positions can belong to
+	/// separate parts, such as an AM/PM designator directly followed by the hour.
+	/// </remarks>
+	/// <since>2.14</since>
+	IEnumerable<Range<int>> EditableRanges { get; }
+#endif
+}
+
+static class MaskedTextEditableRanges
+{
+	// each run of adjacent positions is one range
+	public static IEnumerable<Range<int>> FromEditPositions(IEnumerable<int> editPositions)
+	{
+		if (editPositions == null)
+			yield break;
+
+		var started = false;
+		var start = 0;
+		var end = 0;
+		foreach (var position in editPositions.OrderBy(r => r))
+		{
+			if (!started)
+			{
+				start = end = position;
+				started = true;
+			}
+			else if (position == end + 1)
+				end = position;
+			else
+			{
+				yield return new Range<int>(start, end);
+				start = end = position;
+			}
+		}
+
+		if (started)
+			yield return new Range<int>(start, end);
+	}
 }
 
 /// <summary>
