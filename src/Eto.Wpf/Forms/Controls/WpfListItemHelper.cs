@@ -63,6 +63,7 @@ namespace Eto.Wpf.Forms.Controls
 		{
 			Binding = binding;
 			SetValue(swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
+			SetValue(sw.FrameworkElement.FlowDirectionProperty, sw.FlowDirection.LeftToRight);
 			SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(0, 0, 2, 0));
 			SetBinding(swc.Image.SourceProperty, new sw.Data.Binding { Converter = this });
 		}

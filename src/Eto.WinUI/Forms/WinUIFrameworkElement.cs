@@ -106,6 +106,11 @@ public abstract partial class WinUIFrameworkElement<TControl, TWidget, TCallback
 	}
 	public bool IsMouseCaptured { get; }
 
+	public virtual void SetLayoutDirection(LayoutDirection direction)
+	{
+		ContainerControl.FlowDirection = direction == LayoutDirection.RightToLeft ? mux.FlowDirection.RightToLeft : mux.FlowDirection.LeftToRight;
+	}
+
 	public bool CaptureMouse()
 	{
 		throw new NotImplementedException();

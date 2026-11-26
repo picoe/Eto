@@ -7,6 +7,21 @@ namespace Eto.WinForms
 {
 	public static partial class WinConversions
 	{
+		/// <summary>
+		/// Swaps the left and right padding, as WinForms doesn't mirror padding for right-to-left.
+		/// </summary>
+		public static swf.Padding SwapSides(this swf.Padding padding) => new swf.Padding(padding.Right, padding.Top, padding.Left, padding.Bottom);
+
+		/// <summary>
+		/// Converts padding where left/right mean start/end to native padding.
+		/// </summary>
+		public static swf.Padding ToSWF(this Padding padding, bool rightToLeft) => rightToLeft ? padding.ToSWF().SwapSides() : padding.ToSWF();
+
+		/// <summary>
+		/// Converts native padding to padding where left/right mean start/end.
+		/// </summary>
+		public static Padding ToEto(this swf.Padding padding, bool rightToLeft) => (rightToLeft ? padding.SwapSides() : padding).ToEto();
+
 
 		public static DialogResult ToEto(this swf.DialogResult result)
 		{

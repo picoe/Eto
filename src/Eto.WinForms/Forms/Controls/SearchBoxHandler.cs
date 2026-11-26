@@ -71,6 +71,15 @@ namespace Eto.WinForms.Forms.Controls
 			UpdateClearButton();
 		}
 
+		protected override void OnRightToLeftChanged(EventArgs e)
+		{
+			base.OnRightToLeftChanged(e);
+			// the search image is at the leading edge
+			var rightToLeft = RightToLeft == swf.RightToLeft.Yes;
+			clearSearchButton.Dock = rightToLeft ? swf.DockStyle.Left : swf.DockStyle.Right;
+			searchImage.Dock = rightToLeft ? swf.DockStyle.Right : swf.DockStyle.Left;
+		}
+
 		private void UpdateClearButton()
 		{
 			var showClearButton = !string.IsNullOrEmpty(Text);

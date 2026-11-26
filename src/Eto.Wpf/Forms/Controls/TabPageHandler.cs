@@ -27,7 +27,7 @@ namespace Eto.Wpf.Forms.Controls
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			// Shrink oversized images to fit the tab but never enlarge them, otherwise
 			// Left/Right placement blows small icons up to the full control height.
-			headerImage = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly };
+			headerImage = new swc.Image { StretchDirection = swc.StretchDirection.DownOnly, FlowDirection = sw.FlowDirection.LeftToRight };
 			headerText = new swc.TextBlock();
 			headerText.VerticalAlignment = sw.VerticalAlignment.Center;
 			header.Children.Add(headerImage);

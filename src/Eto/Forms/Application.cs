@@ -732,6 +732,50 @@ public class Application : Widget
 	/// <seealso cref="IsActiveChanged"/>
 	public bool IsActive => Handler.IsActive;
 
+	static readonly object LayoutDirection_Key = new object();
+
+	/// <summary>
+	/// Gets or sets the layout direction for all windows that don't set their own <see cref="Control.LayoutDirection"/>.
+	/// </summary>
+	/// <remarks>
+	/// When <see cref="Eto.Forms.LayoutDirection.Inherit"/> (the default), the direction of the system is used,
+	/// which can be right-to-left on macOS and Linux depending on the user's language.
+	/// Use <see cref="EffectiveLayoutDirection"/> to get the direction currently in effect.
+	/// Changing this updates all open windows.
+	/// </remarks>
+	/// <since>2.14</since>
+	public LayoutDirection LayoutDirection
+	{
+		get => Properties.Get<LayoutDirection>(LayoutDirection_Key);
+		set
+		{
+			if (!Properties.TrySet(LayoutDirection_Key, value))
+				return;
+			Handler.SetLayoutDirection(EffectiveLayoutDirection);
+			foreach (var window in windows.ToArray())
+			{
+				if (window.LayoutDirection == LayoutDirection.Inherit)
+					window.UpdateLayoutDirection();
+			}
+		}
+	}
+
+	/// <summary>
+	/// Gets the layout direction currently in effect for the application, from <see cref="LayoutDirection"/> or the system.
+	/// </summary>
+	/// <value>Either <see cref="Eto.Forms.LayoutDirection.LeftToRight"/> or <see cref="Eto.Forms.LayoutDirection.RightToLeft"/>.</value>
+	/// <since>2.14</since>
+	public LayoutDirection EffectiveLayoutDirection
+	{
+		get
+		{
+			var direction = LayoutDirection;
+			if (direction == LayoutDirection.Inherit)
+				direction = Handler.SystemLayoutDirection;
+			return direction == LayoutDirection.RightToLeft ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight;
+		}
+	}
+
 	/// <summary>
 	/// Advanced. Runs an iteration of the main UI loop when you are blocking the UI thread with logic.
 	/// </summary>
@@ -979,5 +1023,21 @@ public class Application : Widget
 		/// </summary>
 		/// <since>2.12</since>
 		Theme Theme { get; set; }
+
+		/// <summary>
+		/// Gets the layout direction of the system, such as from the user's language.
+		/// </summary>
+		/// <since>2.14</since>
+		LayoutDirection SystemLayoutDirection { get; }
+
+		/// <summary>
+		/// Applies the layout direction in effect for the application to anything not owned by a window, such as the main menu.
+		/// </summary>
+		/// <remarks>
+		/// Called when <see cref="Application.LayoutDirection"/> changes. Windows are updated separately.
+		/// </remarks>
+		/// <param name="direction">Either LeftToRight or RightToLeft.</param>
+		/// <since>2.14</since>
+		void SetLayoutDirection(LayoutDirection direction);
 	}
 }

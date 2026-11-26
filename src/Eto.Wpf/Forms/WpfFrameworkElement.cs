@@ -857,7 +857,7 @@ namespace Eto.Wpf.Forms
 
 			Control source = WpfFrameworkElement.DragSourceControl;
 
-			var location = data.GetPosition(Control).ToEto();
+			var location = data.GetPosition(Control).FlipForFlowDirection(Control).ToEto();
 			var modifiers = Keys.None;
 			if (data.KeyStates.HasFlag(sw.DragDropKeyStates.AltKey))
 				modifiers |= Keys.Alt;
@@ -994,7 +994,7 @@ namespace Eto.Wpf.Forms
 
 				// MouseButtons.None is passed as the user may not have released the button yet,
 				// so it isn't mistakenly taken as a mouse click.
-				var location = e.GetPosition(ContainerControl).ToEto();
+				var location = e.GetPosition(ContainerControl).FlipForFlowDirection(ContainerControl).ToEto();
 				var args = new MouseEventArgs(MouseButtons.None, swi.Keyboard.Modifiers.ToEto(), location);
 				Callback.OnMouseUp(Widget, args);
 			}
@@ -1182,16 +1182,16 @@ namespace Eto.Wpf.Forms
 
 				// WPF does not take into account the location of the element in the form..
 				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
-				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0).FlipForFlowDirection(ContainerControl), rootVisual).FlipForFlowDirection(rootVisual).ToEto();
 				point -= (location * logicalPixelSize) - (location * systemDpi);
 
-				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf()).FlipForFlowDirection(ContainerControl)).ToEto();
 
 				point = point * systemDpi / logicalPixelSize;
 			}
 			else
 			{
-				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf())).ToEto();
+				point = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointFromScreen(point.ToWpf()).FlipForFlowDirection(ContainerControl)).ToEto();
 			}
 			return point;
 
@@ -1214,16 +1214,16 @@ namespace Eto.Wpf.Forms
 				var systemDpi = Win32.SystemDpi;
 				point = point / systemDpi * logicalPixelSize;
 
-				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf().FlipForFlowDirection(ContainerControl))).ToEto();
 
 				// WPF does not take into account the location of the element in the form..
 				var rootVisual = ContainerControl.GetVisualParents().OfType<sw.UIElement>().Last();
-				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0), rootVisual).ToEto();
+				var location = ContainerControl.TranslatePoint(new sw.Point(0, 0).FlipForFlowDirection(ContainerControl), rootVisual).FlipForFlowDirection(rootVisual).ToEto();
 				pt += (location * logicalPixelSize) - (location * systemDpi);
 			}
 			else
 			{
-				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf())).ToEto();
+				pt = Win32.ExecuteInDpiAwarenessContext(() => ContainerControl.PointToScreen(point.ToWpf().FlipForFlowDirection(ContainerControl))).ToEto();
 			}
 
 			return Point.Truncate(pt).ScreenToLogical(SwfScreen);
@@ -1235,7 +1235,9 @@ namespace Eto.Wpf.Forms
 			{
 				if (Widget.VisualParent == null)
 					return Point.Empty;
-				return Control.TranslatePoint(new sw.Point(0, 0), Widget.VisualParent.GetContainerControl()).ToEtoPoint();
+				// use the physical top left, measured from the parent's left edge
+				var parent = Widget.VisualParent.GetContainerControl();
+				return Control.TranslatePoint(new sw.Point(0, 0).FlipForFlowDirection(Control), parent).FlipForFlowDirection(parent).ToEtoPoint();
 			}
 		}
 
@@ -1377,6 +1379,16 @@ namespace Eto.Wpf.Forms
 		}
 
 		public bool IsMouseCaptured => ContainerControl.IsMouseCaptured;
+
+		public virtual void SetLayoutDirection(LayoutDirection direction)
+		{
+			// WPF passes the direction on to the control's own elements
+			var flowDirection = direction == LayoutDirection.RightToLeft ? sw.FlowDirection.RightToLeft : sw.FlowDirection.LeftToRight;
+			// images shouldn't be mirrored
+			if (ContainerControl is swc.Image)
+				flowDirection = sw.FlowDirection.LeftToRight;
+			ContainerControl.FlowDirection = flowDirection;
+		}
 		
 		protected virtual swc.ContextMenu GetDefaultContextMenu() => null;
 

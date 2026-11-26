@@ -296,7 +296,7 @@ namespace Eto.Mac.Forms.Controls
 					if (colHandler?.DataCell?.Handler is ICellHandler cellHandler)
 					{
 						var row = (int)outlineView.RowForItem(item);
-						return cellHandler.GetViewForItem(outlineView, tableColumn, row, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null);
+						return cellHandler.GetViewForItem(outlineView, tableColumn, row, item, (obj, row) => obj != null ? ((EtoTreeItem)obj).Item : null).WithTableDirection(outlineView);
 					}
 				}
 				return outlineView.MakeView(tableColumn?.Identifier ?? string.Empty, this);

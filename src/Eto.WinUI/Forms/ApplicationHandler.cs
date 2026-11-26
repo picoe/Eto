@@ -92,4 +92,11 @@ public class ApplicationHandler : WidgetHandler<mux.Application, Application, Ap
 	}
 	
 	public Theme Theme { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+	public LayoutDirection SystemLayoutDirection => LayoutDirection.LeftToRight;
+
+	public void SetLayoutDirection(LayoutDirection direction)
+	{
+	}
+
 }

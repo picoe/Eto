@@ -1547,6 +1547,51 @@ namespace Eto.GtkSharp.Forms
 			ContainerControl.Toplevel?.SizeAllocate(ContainerControl.Toplevel.Allocation);
 		}
 
+		Gtk.TextDirection? _textDirection;
+
+		/// <summary>
+		/// Gets a value indicating the layout of this control is mirrored for right-to-left.
+		/// </summary>
+		public bool IsRightToLeft => ContainerControl.Direction == Gtk.TextDirection.Rtl;
+
+		public virtual void SetLayoutDirection(LayoutDirection direction)
+		{
+			var textDirection = direction == LayoutDirection.RightToLeft ? Gtk.TextDirection.Rtl : Gtk.TextDirection.Ltr;
+			// widgets with no direction follow the default, which also updates them when it changes
+			if (textDirection == Gtk.Widget.DefaultDirection)
+				textDirection = Gtk.TextDirection.None;
+			if (_textDirection == null && textDirection == Gtk.TextDirection.None)
+				return;
+			_textDirection = textDirection;
+			ReapplyLayoutDirection();
+		}
+
+		/// <summary>
+		/// Applies the direction to all of this control's widgets, for use after creating new ones.
+		/// </summary>
+		/// <remarks>
+		/// GTK doesn't pass a widget's direction on to its children, so each one needs it.
+		/// </remarks>
+		protected void ReapplyLayoutDirection()
+		{
+			if (_textDirection == null)
+				return;
+			// child controls apply their own direction
+			var childWidgets = new HashSet<IntPtr>(Widget.VisualControls.Select(r => r.GetContainerWidget()?.Handle ?? IntPtr.Zero));
+			ApplyDirection(ContainerControl, _textDirection.Value, childWidgets);
+			if (!ReferenceEquals(Control, ContainerControl) && Control is Gtk.Widget control)
+				ApplyDirection(control, _textDirection.Value, childWidgets);
+		}
+
+		static void ApplyDirection(Gtk.Widget widget, Gtk.TextDirection direction, HashSet<IntPtr> skip)
+		{
+			if (widget == null || skip.Contains(widget.Handle))
+				return;
+			widget.Direction = direction;
+			if (widget is Gtk.Container container)
+				container.Forall(child => ApplyDirection(child, direction, skip));
+		}
+
 		public bool IsMouseCaptured
 		{
 			get => Widget.Properties.Get(GtkControl.IsMouseCaptured_Key, false) || EventControl.HasGrab;

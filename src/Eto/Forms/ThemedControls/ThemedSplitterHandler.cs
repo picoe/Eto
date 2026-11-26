@@ -30,8 +30,17 @@ public class ThemedSplitterHandler : ThemedContainerHandler<TableLayout, Splitte
 		if (e.Buttons != MouseButtons.Primary)
 			return;
 		e.Handled = true;
-		Position = (int)Math.Round((Orientation == Orientation.Horizontal
-			? e.Location.X + splitter.Location.X : e.Location.Y + splitter.Location.Y) - swidth*0.5);
+		float location;
+		if (Orientation == Orientation.Horizontal)
+		{
+			location = e.Location.X + splitter.Location.X;
+			// mouse locations are from the left, but panel1 is on the right
+			if (Widget.EffectiveLayoutDirection == LayoutDirection.RightToLeft)
+				location = Widget.Width - location;
+		}
+		else
+			location = e.Location.Y + splitter.Location.Y;
+		Position = (int)Math.Round(location - swidth * 0.5);
 	}
 
 	void UpdateLayout(bool positionOnly = false)

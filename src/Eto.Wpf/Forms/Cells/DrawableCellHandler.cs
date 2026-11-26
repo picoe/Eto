@@ -12,6 +12,12 @@ namespace Eto.Wpf.Forms.Cells
 
 		public class EtoCanvas : swc.Canvas
 		{
+			public EtoCanvas()
+			{
+				// drawing isn't mirrored in right-to-left
+				FlowDirection = sw.FlowDirection.LeftToRight;
+			}
+
 			public Column Column { get; set; }
 
 			public bool IsSelected { get; set; }

@@ -47,13 +47,21 @@ namespace Eto.WinForms.Forms.Cells
 		{
 		}
 
+		/// <summary>
+		/// Gets a value indicating the grid is right-to-left, so offsets such as indents are from the right edge.
+		/// </summary>
+		protected bool IsRightToLeft => Column?.DataGridView?.RightToLeft == swf.RightToLeft.Yes;
+
 		protected void PositionEditingControl (int row, ref sd.Rectangle cellClip, ref sd.Rectangle cellBounds, int customOffset = 0)
 		{
 			var val = GetRowOffset (row) + customOffset;
 			if (val > 0) {
-				cellBounds.X += val;
+				if (!IsRightToLeft)
+				{
+					cellBounds.X += val;
+					cellClip.X += val;
+				}
 				cellBounds.Width -= val;
-				cellClip.X += val;
 				cellClip.Width -= val;
 			}
 		}
@@ -64,7 +72,8 @@ namespace Eto.WinForms.Forms.Cells
 				CellConfig.Paint (graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 
 				var offset = CellConfig.GetRowOffset (rowIndex);
-				cellBounds.X += offset;
+				if (!IsRightToLeft)
+					cellBounds.X += offset;
 				cellBounds.Width -= offset;
 			}
 		}

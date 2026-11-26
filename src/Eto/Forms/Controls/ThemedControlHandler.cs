@@ -489,6 +489,14 @@ public class ThemedControlHandler<TControl, TWidget, TCallback> : WidgetHandler<
 	}
 
 	/// <inheritdoc />
+	/// <since>2.14</since>
+	public virtual void SetLayoutDirection(LayoutDirection direction)
+	{
+		// the inner control's visual parent skips this widget, so it can't inherit from it
+		Control.LayoutDirection = direction;
+	}
+
+	/// <inheritdoc />
 	public bool CaptureMouse() => Control.CaptureMouse();
 	/// <inheritdoc />
 	public void ReleaseMouseCapture() => Control.ReleaseMouseCapture();

@@ -102,7 +102,7 @@ namespace Eto.Mac.Forms.Cells
 				{
 					Wraps = false,
 					Scrollable = true,
-					UsesSingleLineMode = false // true prevents proper vertical alignment 
+					UsesSingleLineMode = false, // true prevents proper vertical alignment 
 				};
 				Selectable = false;
 				DrawsBackground = false;
@@ -204,7 +204,7 @@ namespace Eto.Mac.Forms.Cells
 
 			var cell = view.Cell;
 			cell.VerticalAlignment = VerticalAlignment;
-			cell.Alignment = TextAlignment.ToNS();
+			cell.Alignment = TextAlignment.ToNS(IsRightToLeft);
 
 			view.Item = obj;
 			view.Tag = row;

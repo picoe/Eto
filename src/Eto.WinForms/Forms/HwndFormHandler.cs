@@ -926,6 +926,11 @@ namespace Eto.WinForms.Forms
 		public void UpdateLayout() => throw new NotImplementedException();
 
 		public bool IsMouseCaptured => throw new NotImplementedException();
+
+		// the native window is owned by the caller, so leave its direction alone
+		public void SetLayoutDirection(LayoutDirection direction)
+		{
+		}
 		public bool CaptureMouse() => throw new NotImplementedException();
 		public void ReleaseMouseCapture() => throw new NotImplementedException();
 		public void AddGesture(Gesture item) { }

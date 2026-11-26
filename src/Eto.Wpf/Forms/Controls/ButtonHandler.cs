@@ -183,7 +183,7 @@ namespace Eto.Wpf.Forms.Controls
 				{
 					if (ImagePart == null && value != null)
 					{
-						ImagePart = new swc.Image { Source = Image.ToWpf(ParentScale) };
+						ImagePart = new swc.Image { Source = Image.ToWpf(ParentScale), FlowDirection = sw.FlowDirection.LeftToRight };
 						CreateContent();
 					}
 					else if (ImagePart != null && value == null)

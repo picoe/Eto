@@ -219,13 +219,17 @@ namespace Eto.WinForms.Forms.Controls
 					case WrapMode.Character:
 						break;
 				}
+				// left/right mean start/end
+				var rightToLeft = RightToLeft == swf.RightToLeft.Yes;
+				if (rightToLeft)
+					textFormat |= swf.TextFormatFlags.RightToLeft;
 				switch (TextAlignment)
 				{
 					case TextAlignment.Left:
-						textFormat |= swf.TextFormatFlags.Left;
+						textFormat |= rightToLeft ? swf.TextFormatFlags.Right : swf.TextFormatFlags.Left;
 						break;
 					case TextAlignment.Right:
-						textFormat |= swf.TextFormatFlags.Right;
+						textFormat |= rightToLeft ? swf.TextFormatFlags.Left : swf.TextFormatFlags.Right;
 						break;
 					case TextAlignment.Center:
 						textFormat |= swf.TextFormatFlags.HorizontalCenter;
@@ -255,6 +259,13 @@ namespace Eto.WinForms.Forms.Controls
 						break;
 				}
 				ClearSize();
+			}
+
+			protected override void OnRightToLeftChanged(EventArgs e)
+			{
+				base.OnRightToLeftChanged(e);
+				SetStringFormat();
+				Invalidate();
 			}
 
 			protected override void OnPaint(swf.PaintEventArgs e)

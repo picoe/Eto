@@ -132,10 +132,31 @@ namespace Eto.Mac.Forms.Controls
 		
 		public TextAlignment Alignment
 		{
-			get => _paragraphStyle?.Alignment.ToEto() ?? TextAlignment.Left;
+			get => _alignment;
 			set
 			{
-				ParagraphStyle.Alignment = value.ToNS();
+				_alignment = value;
+				ParagraphStyle.Alignment = value.ToNS(_rightToLeft);
+				_str = null;
+			}
+		}
+
+		TextAlignment _alignment;
+		bool _rightToLeft;
+
+		/// <summary>
+		/// Gets or sets whether <see cref="Alignment"/> left/right means start/end for right-to-left.
+		/// </summary>
+		public bool RightToLeft
+		{
+			get => _rightToLeft;
+			set
+			{
+				if (_rightToLeft == value)
+					return;
+				_rightToLeft = value;
+				// natural alignment follows the app's language rather than the view, so always be explicit
+				ParagraphStyle.Alignment = _alignment.ToNS(value);
 				_str = null;
 			}
 		}

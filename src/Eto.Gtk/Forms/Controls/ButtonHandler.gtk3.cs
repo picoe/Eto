@@ -166,6 +166,7 @@ namespace Eto.GtkSharp.Forms.Controls
 				child.Show();
 				Control.Child = child;
 			}
+			ReapplyLayoutDirection();
 
 			Control.QueueResize();
 		}

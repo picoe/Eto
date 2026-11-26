@@ -26,6 +26,12 @@ namespace Eto.Wpf.CustomControls
 	public class MultiSizeImage : Image, IEtoWpfControl
 	{
 		Brush background;
+
+		public MultiSizeImage()
+		{
+			// images shouldn't be mirrored in right-to-left
+			FlowDirection = System.Windows.FlowDirection.LeftToRight;
+		}
 		bool useSmallestSpace;
 
 		public Brush Background

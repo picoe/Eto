@@ -19,6 +19,18 @@ namespace Eto.Mac
 			return rect;
 		}
 
+		static readonly IntPtr selSetUserInterfaceLayoutDirection = Selector.GetHandle("setUserInterfaceLayoutDirection:");
+
+		// not bound in monomac; also applies to submenus as they don't inherit it
+		public static void SetLayoutDirection(this NSMenu menu, bool rightToLeft)
+		{
+			if (menu == null)
+				return;
+			Messaging.void_objc_msgSend_IntPtr(menu.Handle, selSetUserInterfaceLayoutDirection, (IntPtr)(rightToLeft ? NSUserInterfaceLayoutDirection.RightToLeft : NSUserInterfaceLayoutDirection.LeftToRight));
+			for (nint i = 0; i < menu.Count; i++)
+				menu.ItemAt(i)?.Submenu?.SetLayoutDirection(rightToLeft);
+		}
+
 		static readonly IntPtr selNextEventMatchingMask = Selector.GetHandle("nextEventMatchingMask:untilDate:inMode:dequeue:");
 
 

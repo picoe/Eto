@@ -74,8 +74,14 @@ namespace Eto.WinForms.Forms
 
 		public virtual Padding Padding
 		{
-			get { return ContainerContentControl.Padding.ToEto(); }
-			set { ContainerContentControl.Padding = value.ToSWF(); }
+			get { return ContainerContentControl.Padding.ToEto(IsRightToLeft); }
+			set { ContainerContentControl.Padding = value.ToSWF(IsRightToLeft); }
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			ContainerContentControl.Padding = ContainerContentControl.Padding.SwapSides();
 		}
 
 		public Control Content

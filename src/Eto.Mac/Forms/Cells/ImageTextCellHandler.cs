@@ -241,7 +241,7 @@ namespace Eto.Mac.Forms.Cells
 
 			var cell = view.TextCell;
 			cell.VerticalAlignment = VerticalAlignment;
-			cell.Alignment = TextAlignment.ToNS();
+			cell.Alignment = TextAlignment.ToNS(IsRightToLeft);
 
 			view.Tag = row;
 			view.Item = obj;

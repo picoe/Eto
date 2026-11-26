@@ -94,10 +94,13 @@ namespace Eto.WinForms.Forms.Cells
 				{
 					var iconSize = DataGridView.LogicalToDeviceUnits(IconSize);
 					var iconPadding = DataGridView.LogicalToDeviceUnits(IconPadding);
+					// the icon is at the leading edge
+					var rightToLeft = DataGridView.RightToLeft == swf.RightToLeft.Yes;
+					var iconAreaX = rightToLeft ? cellBounds.Right - iconSize - iconPadding * 2 : cellBounds.X;
 					if (paintParts.HasFlag(swf.DataGridViewPaintParts.Background))
 						using (var b = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 						{
-							graphics.FillRectangle(b, new sd.Rectangle(cellBounds.X, cellBounds.Y, iconSize + iconPadding * 2, cellBounds.Height));
+							graphics.FillRectangle(b, new sd.Rectangle(iconAreaX, cellBounds.Y, iconSize + iconPadding * 2, cellBounds.Height));
 						}
 					
 					var container = graphics.BeginContainer();
@@ -106,9 +109,10 @@ namespace Eto.WinForms.Forms.Cells
 						using (var background = new sd.SolidBrush(cellState.HasFlag(swf.DataGridViewElementStates.Selected) ? cellStyle.SelectionBackColor : cellStyle.BackColor))
 							graphics.FillRectangle(background, cellBounds);
 					graphics.InterpolationMode = InterpolationMode;
-					graphics.DrawImage(img, new sd.Rectangle(cellBounds.X + iconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(iconSize, cellBounds.Height)) / 2, iconSize, iconSize));
+					graphics.DrawImage(img, new sd.Rectangle(iconAreaX + iconPadding, cellBounds.Y + (cellBounds.Height - Math.Min(iconSize, cellBounds.Height)) / 2, iconSize, iconSize));
 					graphics.EndContainer(container);
-					cellBounds.X += iconSize + iconPadding * 2;
+					if (!rightToLeft)
+						cellBounds.X += iconSize + iconPadding * 2;
 					cellBounds.Width -= iconSize + iconPadding * 2;
 				}
 				base.Paint(graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);

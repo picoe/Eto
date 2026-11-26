@@ -140,6 +140,7 @@ namespace Eto.Mac.Forms
 		bool HandlesTextInput { get; }
 		bool UseNSBoxBackgroundColor { get; set; }
 		bool Enabled { get; set; }
+		bool IsRightToLeft { get; }
 
 		DragEventArgs GetDragEventArgs(NSDraggingInfo info, object customControl);
 
@@ -1926,6 +1927,56 @@ namespace Eto.Mac.Forms
 
 		public bool IsMouseCaptured => MacView.CapturedControl == this;
 
+		/// <summary>
+		/// Gets a value indicating the layout of this control is mirrored for right-to-left.
+		/// </summary>
+		public bool IsRightToLeft { get; private set; }
+
+		/// <summary>
+		/// Native views that should get the direction, for handlers that wrap their main view.
+		/// </summary>
+		protected virtual IEnumerable<NSView> LayoutDirectionViews
+		{
+			get
+			{
+				yield return ContainerControl;
+				if (Control is NSView view)
+					yield return view;
+				yield return ContentControl;
+			}
+		}
+
+		public void SetLayoutDirection(LayoutDirection direction)
+		{
+			var wasRightToLeft = IsRightToLeft;
+			IsRightToLeft = direction == LayoutDirection.RightToLeft;
+			var nativeDirection = IsRightToLeft ? NSUserInterfaceLayoutDirection.RightToLeft : NSUserInterfaceLayoutDirection.LeftToRight;
+			var changed = wasRightToLeft != IsRightToLeft;
+			foreach (var view in LayoutDirectionViews)
+			{
+				if (view == null)
+					continue;
+				view.UserInterfaceLayoutDirection = nativeDirection;
+				// some views (e.g. NSProgressIndicator) don't redraw when only their direction changes
+				if (changed)
+					view.NeedsDisplay = true;
+			}
+			if (changed)
+			{
+				MenuControl.Menu?.SetLayoutDirection(IsRightToLeft);
+				OnLayoutDirectionChanged();
+			}
+			InvalidateMeasure();
+			ContainerControl.NeedsLayout = true;
+		}
+
+		/// <summary>
+		/// Called when <see cref="IsRightToLeft"/> changes, to re-apply anything that depends on it such as text alignment.
+		/// </summary>
+		protected virtual void OnLayoutDirectionChanged()
+		{
+		}
+
 		public bool CaptureMouse()
 		{
 			if (!Widget.Loaded || !Widget.Visible)
@@ -2061,7 +2112,9 @@ namespace Eto.Mac.Forms
 			set
 			{
 				Widget.Properties.Set(MacView.ContextMenu_Key, value);
-				MenuControl.Menu = (value?.Handler as ContextMenuHandler)?.Control;
+				var menu = (value?.Handler as ContextMenuHandler)?.Control;
+				menu?.SetLayoutDirection(IsRightToLeft);
+				MenuControl.Menu = menu;
 			}
 		}
 #else

@@ -12,6 +12,12 @@ namespace Eto.Wpf.Forms.Menu
 		public ContextMenuHandler()
 		{
 			Control = new swc.ContextMenu();
+			// a context menu isn't in the visual tree, so it doesn't inherit the direction of its target
+			Control.Opened += (sender, e) =>
+			{
+				if (Control.PlacementTarget is sw.FrameworkElement target)
+					Control.FlowDirection = target.FlowDirection;
+			};
 		}
 		
 		public ContextMenuHandler(swc.ContextMenu control)

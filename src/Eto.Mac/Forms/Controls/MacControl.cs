@@ -15,6 +15,13 @@ namespace Eto.Mac.Forms.Controls
 	{
 		public override NSView ContainerControl { get { return Control; } }
 
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			// natural alignment follows the app's language, not the view, so make it explicit
+			Control.Alignment = Control.Alignment.ToDirection(IsRightToLeft);
+		}
+
 		protected override bool ControlEnabled
 		{
 			get => Control.Enabled;

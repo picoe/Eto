@@ -11,6 +11,8 @@ namespace Eto.Mac.Forms.Controls
 
 		NSTableView Table { get; }
 
+		bool IsRightToLeft { get; }
+
 		object GetItem(int row);
 
 		int RowCount { get; }
@@ -46,6 +48,8 @@ namespace Eto.Mac.Forms.Controls
 	{
 		NSTableColumn Control { get; }
 		void Setup(IDataViewHandler handler, int column);
+
+		void OnLayoutDirectionChanged();
 		NSObject GetObjectValue(object dataItem);
 		void SetObjectValue(object dataItem, NSObject val);
 		new GridColumn Widget { get; }
@@ -148,8 +152,9 @@ namespace Eto.Mac.Forms.Controls
 						cellWidth = Control.Width;
 					else if (isOutlineColumn)
 					{
-						// gets the proper indent for the current row
-						cellWidth += outlineView.GetCellFrame(displayIndex, i).X - columnRect.X;
+						// gets the proper indent for the current row, which is on the right when mirrored
+						var cellFrame = outlineView.GetCellFrame(displayIndex, i);
+						cellWidth += IsRightToLeft ? columnRect.Right - cellFrame.Right : cellFrame.X - columnRect.X;
 					}
 					width = (nfloat)Math.Max(width, cellWidth);
 				}
@@ -341,8 +346,18 @@ namespace Eto.Mac.Forms.Controls
 		}
 		public TextAlignment HeaderTextAlignment
 		{
-			get => Control.HeaderCell.Alignment.ToEto();
-			set => Control.HeaderCell.Alignment = value.ToNS();
+			get => Control.HeaderCell.Alignment.ToEto(IsRightToLeft);
+			set => Control.HeaderCell.Alignment = value.ToNS(IsRightToLeft);
+		}
+
+		bool IsRightToLeft => DataViewHandler?.IsRightToLeft == true;
+
+		/// <summary>
+		/// Re-applies direction dependent settings after the grid's direction changes.
+		/// </summary>
+		public void OnLayoutDirectionChanged()
+		{
+			Control.HeaderCell.Alignment = Control.HeaderCell.Alignment.ToDirection(IsRightToLeft);
 		}
 		public int MinWidth
 		{

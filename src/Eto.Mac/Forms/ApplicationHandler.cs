@@ -400,5 +400,10 @@ namespace Eto.Mac.Forms
 				Control.Appearance = ThemeHandler.GetControl(value);
 			}
 		}
+
+		// the binding's enum types differ, so compare the raw values
+		public LayoutDirection SystemLayoutDirection => (int)Control.UserInterfaceLayoutDirection == (int)NSUserInterfaceLayoutDirection.RightToLeft ? LayoutDirection.RightToLeft : LayoutDirection.LeftToRight;
+
+		public void SetLayoutDirection(LayoutDirection direction) => Control.MainMenu?.SetLayoutDirection(direction == LayoutDirection.RightToLeft);
 	}
 }

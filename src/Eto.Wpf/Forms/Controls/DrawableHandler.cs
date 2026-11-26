@@ -594,6 +594,12 @@ namespace Eto.Wpf.Forms.Controls
 			}
 		}
 
+		public override void SetLayoutDirection(LayoutDirection direction)
+		{
+			// drawing and mouse locations aren't mirrored; child controls get their direction explicitly
+			ContainerControl.FlowDirection = sw.FlowDirection.LeftToRight;
+		}
+
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			this.content = content;

@@ -22,6 +22,19 @@ namespace Eto.Mac.Forms.Controls
 
 	static class GridHandler
 	{
+		/// <summary>
+		/// Gives a cell view the table's direction, as cell views don't inherit it.
+		/// </summary>
+		public static NSView WithTableDirection(this NSView view, NSTableView table)
+		{
+			var direction = table.UserInterfaceLayoutDirection;
+			if (view is MacImageTextView imageTextView)
+				imageTextView.SetLayoutDirection(direction);
+			else if (view != null && view.UserInterfaceLayoutDirection != direction)
+				view.UserInterfaceLayoutDirection = direction;
+			return view;
+		}
+
 		public static readonly object ScrolledToRow_Key = new object();
 		public static readonly object IsEditing_Key = new object();
 		public static readonly object IsMouseDragging_Key = new object();
@@ -218,6 +231,44 @@ namespace Eto.Mac.Forms.Controls
 		public NSScrollView ScrollView { get; private set; }
 
 		public override NSView ContainerControl { get { return ScrollView; } }
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			foreach (var column in Widget.Columns)
+				(column.Handler as IDataColumnHandler)?.OnLayoutDirectionChanged();
+			if (Control.HeaderView != null)
+			{
+				Control.HeaderView.UserInterfaceLayoutDirection = Control.UserInterfaceLayoutDirection;
+				Control.HeaderView.NeedsDisplay = true;
+			}
+			InvalidateColumnPositions();
+			// cells read the direction when they're created
+			Control.ReloadData();
+		}
+
+		bool isInvalidatingColumnPositions;
+
+		/// <summary>
+		/// Makes the table re-position its columns, as it caches them and doesn't on a direction change or tile.
+		/// </summary>
+		void InvalidateColumnPositions()
+		{
+			var column = Control.TableColumns().FirstOrDefault();
+			if (column == null)
+				return;
+			isInvalidatingColumnPositions = true;
+			try
+			{
+				var width = column.Width;
+				column.Width = width < column.MaxWidth ? width + 1 : width - 1;
+				column.Width = width;
+			}
+			finally
+			{
+				isInvalidatingColumnPositions = false;
+			}
+		}
 
 		protected virtual void UpdateColumns()
 		{
@@ -873,6 +924,8 @@ namespace Eto.Mac.Forms.Controls
 
 		protected void ColumnDidResize(NSNotification notification)
 		{
+			if (isInvalidatingColumnPositions)
+				return;
 			var column = notification.UserInfo["NSTableColumn"] as NSTableColumn;
 			var colHandler = GetColumn(column);
 			if (colHandler == null)

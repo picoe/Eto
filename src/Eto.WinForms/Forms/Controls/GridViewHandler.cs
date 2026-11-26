@@ -149,9 +149,12 @@ namespace Eto.WinForms.Forms.Controls
 		public GridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			// the native grid can have a filler column after the last Eto column
+			var columnIndex = result.ColumnIndex < Widget.Columns.Count ? result.ColumnIndex : -1;
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			var type = columnIndex == result.ColumnIndex ? result.Type.ToEto() : GridCellType.None;
 			var item = GetItemAtRow(result.RowIndex);
-			return new GridCell(column, result.ColumnIndex, result.RowIndex, result.Type.ToEto(), item);
+			return new GridCell(column, columnIndex, result.RowIndex, type, item);
 		}
 
 		public GridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as GridViewDragInfo;

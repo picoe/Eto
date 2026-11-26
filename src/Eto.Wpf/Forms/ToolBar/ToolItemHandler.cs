@@ -83,7 +83,7 @@ namespace Eto.Wpf.Forms.ToolBar
 
 		protected virtual sw.FrameworkElement CreateContent(sw.FrameworkElement extra = null)
 		{
-			swcImage = new swc.Image();
+			swcImage = new swc.Image { FlowDirection = sw.FlowDirection.LeftToRight };
 			swcImage.Visibility = sw.Visibility.Collapsed;
 			label = new swc.TextBlock();
 			label.VerticalAlignment = sw.VerticalAlignment.Center;

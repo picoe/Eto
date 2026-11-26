@@ -19,7 +19,7 @@ public struct Padding : IEquatable<Padding>
 	}
 
 	/// <summary>
-	/// Gets or sets the padding on the left
+	/// Gets or sets the padding on the left, or the right when used by a right-to-left control
 	/// </summary>
 	public int Left
 	{
@@ -28,7 +28,7 @@ public struct Padding : IEquatable<Padding>
 	}
 
 	/// <summary>
-	/// Gets or sets the padding on the right
+	/// Gets or sets the padding on the right, or the left when used by a right-to-left control
 	/// </summary>
 	public int Right
 	{

@@ -166,12 +166,16 @@ namespace Eto.Mac.Forms.Controls
 			return CGSize.Empty;
 		}
 
+		bool IsRightToLeft(NSView view = null) => (view ?? ControlView)?.UserInterfaceLayoutDirection == NSUserInterfaceLayoutDirection.RightToLeft;
+
 		CGRect AdjustBoundsForImage(CGRect bounds)
 		{
 			var imageSize = GetImageSize(bounds);
 			if (imageSize.Width > 0)
 			{
-				bounds.X += imageSize.Width;
+				// image is at the leading edge
+				if (!IsRightToLeft())
+					bounds.X += imageSize.Width;
 				bounds.Width -= imageSize.Width;
 			}
 			return bounds;
@@ -213,6 +217,8 @@ namespace Eto.Mac.Forms.Controls
 		public override void DrawInteriorWithFrame(CGRect cellFrame, NSView inView)
 		{
 			var frame = cellFrame;
+			var rtl = IsRightToLeft(inView);
+			Alignment = rtl ? NSTextAlignment.Right : NSTextAlignment.Left;
 			var data = ObjectValue as MacImageData;
 			if (data != null)
 			{
@@ -230,10 +236,11 @@ namespace Eto.Mac.Forms.Controls
 						if (DrawsBackground && !Highlighted)
 						{
 							BackgroundColor.SetFill();
-							g.FillRect(new CGRect(frame.X, frame.Y, newWidth + ImagePadding, frame.Height));
+							var backgroundX = rtl ? frame.Right - newWidth - ImagePadding : frame.X;
+							g.FillRect(new CGRect(backgroundX, frame.Y, newWidth + ImagePadding, frame.Height));
 						}
 
-						var imageRect = new CGRect(frame.X, frame.Y, newWidth, newHeight);
+						var imageRect = new CGRect(rtl ? frame.Right - newWidth : frame.X, frame.Y, newWidth, newHeight);
 						imageRect.Y += (frame.Height - newHeight) / 2;
 
 						const float alpha = 1; //Enabled ? 1 : (nfloat)0.5;
@@ -242,7 +249,8 @@ namespace Eto.Mac.Forms.Controls
 
 						data.Image.Draw(imageRect, new CGRect(CGPoint.Empty, data.Image.Size), NSCompositingOperation.SourceOver, alpha, true, null);
 						frame.Width -= newWidth + ImagePadding;
-						frame.X += newWidth + ImagePadding;
+						if (!rtl)
+							frame.X += newWidth + ImagePadding;
 					}
 				}
 			}

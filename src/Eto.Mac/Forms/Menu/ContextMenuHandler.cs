@@ -122,6 +122,8 @@ namespace Eto.Mac.Forms.Menu
 		{
 			var view = relativeTo?.GetContainerView();
 			MacView.CancelMouseTracking();
+			var direction = relativeTo?.EffectiveLayoutDirection ?? Application.Instance.EffectiveLayoutDirection;
+			Control.SetLayoutDirection(direction == LayoutDirection.RightToLeft);
 
 			if (location != null || view == null)
 			{

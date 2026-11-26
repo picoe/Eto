@@ -1151,6 +1151,53 @@ namespace Eto.WinForms.Forms
 		public void UpdateLayout() => ContainerControl.PerformLayout();
 
 		public bool IsMouseCaptured => ContainerControl.Capture;
+
+		/// <summary>
+		/// Gets a value indicating the layout of this control is mirrored for right-to-left.
+		/// </summary>
+		public bool IsRightToLeft { get; private set; }
+
+		public virtual void SetLayoutDirection(LayoutDirection direction)
+		{
+			var rightToLeft = direction == LayoutDirection.RightToLeft;
+			ContainerControl.RightToLeft = rightToLeft ? swf.RightToLeft.Yes : swf.RightToLeft.No;
+			SetRightToLeftLayout(Control as swf.Control, rightToLeft);
+			if (rightToLeft != IsRightToLeft)
+			{
+				IsRightToLeft = rightToLeft;
+				OnLayoutDirectionChanged();
+			}
+		}
+
+		// these only mirror their layout (tab order, fill direction, title bar) with RightToLeftLayout
+		static void SetRightToLeftLayout(swf.Control control, bool value)
+		{
+			switch (control)
+			{
+				case swf.Form form:
+					form.RightToLeftLayout = value;
+					break;
+				case swf.TabControl tabControl:
+					tabControl.RightToLeftLayout = value;
+					break;
+				case swf.TreeView treeView:
+					treeView.RightToLeftLayout = value;
+					break;
+				case swf.ProgressBar progressBar:
+					progressBar.RightToLeftLayout = value;
+					break;
+				case swf.MonthCalendar calendar:
+					calendar.RightToLeftLayout = value;
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Called when <see cref="IsRightToLeft"/> changes, to mirror anything WinForms doesn't, such as padding.
+		/// </summary>
+		protected virtual void OnLayoutDirectionChanged()
+		{
+		}
 		public bool CaptureMouse()
 		{
 			ContainerControl.Capture = true;

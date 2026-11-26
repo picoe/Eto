@@ -111,10 +111,13 @@ namespace Eto.WinForms.Forms.Controls
 				var etoitem = item as EtoComboBoxItem;
 				var image = etoitem?.Image;
 
+				// the image is at the leading edge
+				var rightToLeft = RightToLeft == swf.RightToLeft.Yes;
 				if (image != null)
 				{
-					e.Graphics.DrawImage(image.ToSD(new Size(16, 16)), bounds.X, bounds.Y, 16, 16);
-					bounds.X += 18;
+					e.Graphics.DrawImage(image.ToSD(new Size(16, 16)), rightToLeft ? bounds.Right - 16 : bounds.X, bounds.Y, 16, 16);
+					if (!rightToLeft)
+						bounds.X += 18;
 					bounds.Width -= 18;
 				}
 
@@ -129,7 +132,8 @@ namespace Eto.WinForms.Forms.Controls
 				}
 
 				// Determine the forecolor based on whether or not the item is selected    
-				swf.TextRenderer.DrawText(e.Graphics, text, font, bounds, ForeColor, swf.TextFormatFlags.Left);
+				var textFormat = rightToLeft ? swf.TextFormatFlags.Right | swf.TextFormatFlags.RightToLeft : swf.TextFormatFlags.Left;
+				swf.TextRenderer.DrawText(e.Graphics, text, font, bounds, ForeColor, textFormat);
 			}
 
 			e.DrawFocusRectangle();

@@ -310,6 +310,12 @@ namespace Eto.WinForms.Forms
 			}
 		}
 
+		public LayoutDirection SystemLayoutDirection => LayoutDirection.LeftToRight;
+
+		public void SetLayoutDirection(LayoutDirection direction)
+		{
+		}
+
 #if NET9_0_OR_GREATER
 		Theme _theme;
 		public Theme Theme

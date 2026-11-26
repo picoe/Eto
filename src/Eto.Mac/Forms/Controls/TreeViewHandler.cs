@@ -291,6 +291,12 @@ namespace Eto.Mac.Forms.Controls
 
 		public override NSView ContainerControl => Scroll;
 
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			Control.ReloadData();
+		}
+
 		protected override NSOutlineView CreateControl() => new EtoOutlineView();
 
 		static readonly SizeF MinimumNaturalSize = new SizeF(100, 100);

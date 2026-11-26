@@ -126,7 +126,12 @@ namespace Eto.Mac.Forms
 		/// Gets the frame where the content should be placed in the ContentControl.
 		/// </summary>
 		/// <value>The content frame.</value>
-		protected virtual CGRect ContentFrame => ContentControl.Bounds.WithPadding(Padding);
+		protected virtual CGRect ContentFrame => ContentControl.Bounds.WithPadding(DirectionalPadding);
+
+		/// <summary>
+		/// Gets the padding with left/right swapped when right-to-left, as they mean start/end.
+		/// </summary>
+		protected Padding DirectionalPadding => IsRightToLeft ? new Padding(Padding.Right, Padding.Top, Padding.Left, Padding.Bottom) : Padding;
 
 		/// <summary>
 		/// Performs the content layout, should be called from NSView.Layout() only, such as with the MacPanelView.

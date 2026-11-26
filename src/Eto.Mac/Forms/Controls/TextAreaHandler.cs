@@ -435,8 +435,14 @@ namespace Eto.Mac.Forms.Controls
 
 		public TextAlignment TextAlignment
 		{
-			get { return Control.Alignment.ToEto(); }
-			set { Control.Alignment = value.ToNS(); }
+			get { return Control.Alignment.ToEto(IsRightToLeft); }
+			set { Control.Alignment = value.ToNS(IsRightToLeft); }
+		}
+
+		protected override void OnLayoutDirectionChanged()
+		{
+			base.OnLayoutDirectionChanged();
+			Control.Alignment = Control.Alignment.ToDirection(IsRightToLeft);
 		}
 
 		public bool SpellCheck

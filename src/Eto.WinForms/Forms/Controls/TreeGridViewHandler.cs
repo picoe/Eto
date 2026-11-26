@@ -202,6 +202,15 @@ namespace Eto.WinForms.Forms.Controls
 				treeRect.X += node.Level * LogicalToDeviceUnits(INDENT_WIDTH);
 				treeRect.Width = LogicalToDeviceUnits(16);
 
+				// the tree is drawn left to right, then mirrored around the cell when right-to-left
+				var rightToLeft = IsRightToLeft;
+				var state = rightToLeft ? graphics.Save() : null;
+				if (rightToLeft)
+				{
+					graphics.TranslateTransform(2 * cellBounds.X + cellBounds.Width, 0);
+					graphics.ScaleTransform(-1, 1);
+				}
+
 				if (ClassicStyle && ClassicGridLines)
 				{
 					// Draw grid lines - for classic style
@@ -281,12 +290,20 @@ namespace Eto.WinForms.Forms.Controls
 					{
 						EnsureGlyphRenderers();
 						var size = LogicalToDeviceUnits(16);
-						if (controller.IsExpanded(rowIndex))
-							openRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - size / 2, size, size));
-						else
+						var renderer = controller.IsExpanded(rowIndex) ? openRenderer : closedRenderer;
+						var glyphRect = new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - size / 2, size, size);
+						if (rightToLeft)
 						{
-							closedRenderer.DrawBackground(graphics, new sd.Rectangle(treeRect.X, treeRect.Y + (treeRect.Height / 2) - size / 2, size, size));
+							// theme renderers ignore the transform, so draw to a bitmap that the transform mirrors
+							using (var bitmap = new sd.Bitmap(size, size))
+							{
+								using (var bitmapGraphics = sd.Graphics.FromImage(bitmap))
+									renderer.DrawBackground(bitmapGraphics, new sd.Rectangle(0, 0, size, size));
+								graphics.DrawImage(bitmap, glyphRect);
+							}
 						}
+						else
+							renderer.DrawBackground(graphics, glyphRect);
 					}
 					else
 					{
@@ -308,6 +325,8 @@ namespace Eto.WinForms.Forms.Controls
 						graphics.DrawLine(sd.SystemPens.ControlDarkDark, glyphRect.Left, midy, glyphRect.Right, midy);
 					}
 				}
+				if (state != null)
+					graphics.Restore(state);
 			}
 		}
 
@@ -324,7 +343,9 @@ namespace Eto.WinForms.Forms.Controls
 			if (rowIndex >= 0 && object.ReferenceEquals(column.Widget, this.Widget.Columns[0]))
 			{
 				var offset = LogicalToDeviceUnits(INDENT_WIDTH + controller.LevelAtRow(rowIndex) * INDENT_WIDTH);
-				if (e.X < offset && e.X >= offset - LogicalToDeviceUnits(INDENT_WIDTH))
+				// the glyph is measured from the right edge of the cell when right-to-left
+				var x = IsRightToLeft ? column.Control.Width - e.X : e.X;
+				if (x < offset && x >= offset - LogicalToDeviceUnits(INDENT_WIDTH))
 				{
 					if (controller.IsExpanded(rowIndex))
 						controller.CollapseRow(rowIndex);
@@ -392,9 +413,12 @@ namespace Eto.WinForms.Forms.Controls
 		public TreeGridCell GetCellAt(PointF location)
 		{
 			var result = Control.HitTest((int)location.X, (int)location.Y);
-			var column = result.ColumnIndex != -1 ? Widget.Columns[result.ColumnIndex] : null;
+			// the native grid can have a filler column after the last Eto column
+			var columnIndex = result.ColumnIndex < Widget.Columns.Count ? result.ColumnIndex : -1;
+			var column = columnIndex != -1 ? Widget.Columns[columnIndex] : null;
+			var type = columnIndex == result.ColumnIndex ? result.Type.ToEto() : GridCellType.None;
 			var item = GetItemAtRow(result.RowIndex);
-			return new TreeGridCell(column, result.ColumnIndex, result.Type.ToEto(), item);
+			return new TreeGridCell(column, columnIndex, type, item);
 		}
 
 		public TreeGridViewDragInfo GetDragInfo(DragEventArgs args) => args.ControlObject as TreeGridViewDragInfo;

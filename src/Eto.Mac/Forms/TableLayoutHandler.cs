@@ -276,6 +276,7 @@ namespace Eto.Mac.Forms
 #endif
 
 			float starty = Padding.Top;
+			var rtl = IsRightToLeft;
 			for (int y = 0; y < final_heights.Length; y++)
 			{
 				float startx = Padding.Left;
@@ -290,6 +291,8 @@ namespace Eto.Mac.Forms
 						frame.Width = final_widths[x];
 						frame.Height = final_heights[y];
 						frame.X = (nfloat)Math.Round(Math.Max(0, startx));
+						if (rtl)
+							frame.X = controlSize.Width - frame.X - frame.Width;
 						frame.Y = (nfloat)Math.Round(flipped ? starty : controlSize.Height - starty - frame.Height);
 						if (frame != oldframe)
 							macView.SetAlignmentFrame(frame);

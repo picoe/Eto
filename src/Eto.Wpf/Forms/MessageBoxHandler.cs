@@ -29,8 +29,10 @@ namespace Eto.Wpf.Forms
 				var defaultButton = Convert(DefaultButton, Buttons);
 				var icon = Convert(Type);
 				var caption = Caption ?? parentWindow?.Title;
-				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
-				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				var direction = parent?.EffectiveLayoutDirection ?? Application.Instance.EffectiveLayoutDirection;
+				var options = direction == LayoutDirection.RightToLeft ? sw.MessageBoxOptions.RtlReading | sw.MessageBoxOptions.RightAlign : sw.MessageBoxOptions.None;
+				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton, options);
+				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton, options);
 				WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 				return Convert(result);
 			}
