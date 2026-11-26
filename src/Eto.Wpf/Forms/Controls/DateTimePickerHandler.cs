@@ -67,6 +67,7 @@ namespace Eto.Wpf.Forms.Controls
 		swc.Decorator _comboEditHost;
 		swc.Calendar _calendar;
 		DateTimeMaskedTextStepper _stepper;
+		CultureInfo _culture;
 		int _suppress;
 
 		protected override sw.Size DefaultSize => new sw.Size(_mode == DateTimePickerMode.DateTime ? 180 : _mode == DateTimePickerMode.Time ? 100 : 120, double.NaN);
@@ -123,6 +124,7 @@ namespace Eto.Wpf.Forms.Controls
 			}
 
 			_calendar = new EtoCalendar { SelectionMode = swc.CalendarSelectionMode.SingleDate };
+			ApplyCalendarCulture();
 			_calendar.SelectedDatesChanged += Calendar_SelectedDatesChanged;
 
 			_comboEditHost = new swc.Decorator { Child = _stepper.ToNative(true) };
@@ -287,6 +289,28 @@ namespace Eto.Wpf.Forms.Controls
 				BuildPresentation();
 				Value = current;
 			}
+		}
+
+		public CultureInfo Culture
+		{
+			get => _stepper.Culture;
+			set
+			{
+				_culture = value;
+				_stepper.Culture = value;
+				ApplyCalendarCulture();
+			}
+		}
+
+		void ApplyCalendarCulture()
+		{
+			if (_calendar == null)
+				return;
+			// the calendar takes its month and day names from its language
+			if (_culture != null)
+				_calendar.Language = sw.Markup.XmlLanguage.GetLanguage(_culture.IetfLanguageTag);
+			else
+				_calendar.ClearValue(sw.FrameworkElement.LanguageProperty);
 		}
 
 		public bool ShowBorder

@@ -7,6 +7,8 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout { DefaultSpacing = new Size(5, 5), Padding = new Padding(10) };
 
+			layout.AddSeparateRow("Culture", CultureSelector(), null);
+
 			layout.BeginVertical();
 			layout.AddRow("Default", AutoSize(Default()), "Default with Value", AutoSize(DefaultWithValue()), null);
 			layout.AddRow("Date", AutoSize(DateControl()), "Date with Value", AutoSize(DateControlWithValue()));
@@ -23,6 +25,26 @@ namespace Eto.Test.Sections.Controls
 		}
 		
 		Control AutoSize(Control control) => TableLayout.AutoSized(control);
+
+		Control CultureSelector()
+		{
+			var cultureDropDown = new CultureDropDown();
+			cultureDropDown.SelectedValueChanged += (sender, e) =>
+			{
+				foreach (var picker in Children.OfType<DateTimePicker>())
+				{
+					try
+					{
+						picker.Culture = cultureDropDown.SelectedValue;
+					}
+					catch (Exception ex)
+					{
+						Log.Write(picker, "Setting Culture failed: {0}", ex.Message);
+					}
+				}
+			};
+			return cultureDropDown;
+		}
 
 		Control TestProperties()
 		{

@@ -16,7 +16,7 @@ namespace Eto.WinForms.Forms.Controls
 			};
 		}
 
-		public override Size? GetDefaultSize(Size availableSize) => new Size(200, 23);
+		public override Size? GetDefaultSize(Size availableSize) => new Size(Math.Max(200, Control.PreferredWidth), 23);
 
 		public bool ShowBorder
 		{
@@ -24,40 +24,54 @@ namespace Eto.WinForms.Forms.Controls
 			set { Control.ShowBorder = value; }
 		}
 
+		DateTimePickerMode mode;
+		CultureInfo culture;
+
 		public DateTimePickerMode Mode
 		{
-			get
-			{
-				switch (Control.Format)
-				{
-					case swf.DateTimePickerFormat.Long:
-						return DateTimePickerMode.DateTime;
-					case swf.DateTimePickerFormat.Short:
-						return DateTimePickerMode.Date;
-					case swf.DateTimePickerFormat.Time:
-						return DateTimePickerMode.Time;
-					default:
-						throw new NotImplementedException();
-				}
-			}
+			get => mode;
 			set
 			{
-				switch (value)
-				{
-					case DateTimePickerMode.DateTime:
-						Control.Format = swf.DateTimePickerFormat.Custom;
-						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
-						Control.CustomFormat = format.ShortDatePattern + " " + format.LongTimePattern;
-						break;
-					case DateTimePickerMode.Date:
-						Control.Format = swf.DateTimePickerFormat.Short;
-						break;
-					case DateTimePickerMode.Time:
-						Control.Format = swf.DateTimePickerFormat.Time;
-						break;
-					default:
-						throw new NotImplementedException();
-				}
+				mode = value;
+				SetFormat();
+			}
+		}
+
+		public CultureInfo Culture
+		{
+			get => culture ?? CultureInfo.CurrentCulture;
+			set
+			{
+				culture = value;
+				SetFormat();
+			}
+		}
+
+		void SetFormat()
+		{
+			// the control draws its own text with the culture; only its drop-down calendar follows the system
+			Control.Culture = culture;
+			switch (mode)
+			{
+				case DateTimePickerMode.DateTime:
+					Control.Format = swf.DateTimePickerFormat.Custom;
+					var format = Culture.DateTimeFormat;
+					Control.CustomFormat = format.ShortDatePattern + " " + format.LongTimePattern;
+					break;
+				case DateTimePickerMode.Date:
+					Control.Format = swf.DateTimePickerFormat.Short;
+					break;
+				case DateTimePickerMode.Time:
+					Control.Format = swf.DateTimePickerFormat.Time;
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+			// the text can be a different width (the constructor sets the mode before there's a widget)
+			if (Widget != null)
+			{
+				ClearCachedDefaultSize();
+				SetMinimumSize(true);
 			}
 		}
 

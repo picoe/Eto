@@ -69,6 +69,20 @@ public class DateTimeMaskedTextStepper : MaskedTextStepper<DateTime?>
 	}
 
 	/// <summary>
+	/// Gets or sets the culture used for the format and separators, or <see langword="null"/> to use <see cref="CultureInfo.CurrentCulture"/>.
+	/// </summary>
+	/// <since>2.14</since>
+	public CultureInfo Culture
+	{
+		get => provider.Culture;
+		set
+		{
+			provider.Culture = value;
+			UpdateText();
+		}
+	}
+
+	/// <summary>
 	/// Gets or sets the visible date/time editing mode.
 	/// </summary>
 	public DateTimePickerMode Mode

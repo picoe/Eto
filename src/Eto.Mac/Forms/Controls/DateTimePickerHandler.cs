@@ -160,6 +160,7 @@ namespace Eto.Mac.Forms.Controls
 					default:
 						throw new NotSupportedException();
 				}
+				InvalidateMeasure();
 			}
 		}
 
@@ -192,6 +193,32 @@ namespace Eto.Mac.Forms.Controls
 					Control.ValidateProposedDateValue += HandleValidateProposedDateValue;
 					Callback.OnValueChanged(Widget, EventArgs.Empty);
 				}
+			}
+		}
+
+		CultureInfo culture;
+
+		public CultureInfo Culture
+		{
+			get => culture ?? CultureInfo.CurrentCulture;
+			set
+			{
+				culture = value;
+				if (value == null)
+				{
+					Control.Locale = NSLocale.CurrentLocale;
+					Control.Calendar = NSCalendar.CurrentCalendar;
+				}
+				else
+				{
+					// locale identifiers use underscores, e.g. ar_SA
+					var locale = new NSLocale(value.Name.Replace('-', '_'));
+					Control.Locale = locale;
+					// the picker keeps the calendar it was given, so switch to the locale's own (e.g. Islamic for ar_SA)
+					Control.Calendar = locale.Calendar ?? NSCalendar.CurrentCalendar;
+				}
+				// the text can be a different width
+				InvalidateMeasure();
 			}
 		}
 

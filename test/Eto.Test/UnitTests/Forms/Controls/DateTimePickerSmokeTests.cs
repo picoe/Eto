@@ -51,6 +51,35 @@ namespace Eto.Test.UnitTests.Forms.Controls
 			});
 		}
 
+		[TestCase("ar-SA", DateTimePickerMode.Date)]
+		[TestCase("ar-SA", DateTimePickerMode.DateTime)]
+		[TestCase("ar-EG", DateTimePickerMode.Date)]
+		[TestCase("de-DE", DateTimePickerMode.DateTime)]
+		[TestCase("th-TH", DateTimePickerMode.Date)]
+		[TestCase("it", DateTimePickerMode.Date)]
+		[TestCase("ar", DateTimePickerMode.Date)]
+		public void ChangingCultureShouldPreserveValue(string cultureName, DateTimePickerMode mode)
+		{
+			var value = new DateTime(2021, 7, 8, 9, 15, 0);
+			var culture = CultureInfo.GetCultureInfo(cultureName);
+			Shown(form =>
+			{
+				var picker = new DateTimePicker { Mode = mode, Value = value };
+				form.Content = picker;
+				return picker;
+			},
+			picker =>
+			{
+				picker.Culture = culture;
+				Assert.That(picker.Culture, Is.EqualTo(culture), "#1");
+				Assert.That(picker.Value?.Date, Is.EqualTo(value.Date), "#2");
+
+				picker.Culture = null;
+				Assert.That(picker.Culture, Is.EqualTo(CultureInfo.CurrentCulture), "#3");
+				Assert.That(picker.Value?.Date, Is.EqualTo(value.Date), "#4");
+			});
+		}
+
 		[Test]
 		public void ValueShouldClampToMinMax()
 		{

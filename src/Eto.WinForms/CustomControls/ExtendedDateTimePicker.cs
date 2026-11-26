@@ -28,7 +28,7 @@ namespace Eto.WinForms.CustomControls
 			public int Start { get; set; }
 			public int End { get { return Start + Width; } }
 			public string StaticText { get; set; }
-			public bool IsUpdatable { get { return Def != null; } }
+			public bool IsUpdatable { get { return Def?.Update != null; } }
 			public int Width { get; set; }
 		}
 
@@ -48,19 +48,54 @@ namespace Eto.WinForms.CustomControls
 		{
 			public char Char { get; set; }
 			public Func<DateTime, int, DateTime> Update { get; set; }
-			public Func<string, string> MaxWidth { get; set; }
+			public Func<string, DateTimeFormatInfo, IEnumerable<string>> MaxWidth { get; set; }
 		}
+
+		static IEnumerable<string> Digits(int count) => new[] { new string('9', count) };
 
 		static readonly SegmentDef[] defs =
 		{
-			new SegmentDef { Char = 'y', Update = (d,i) => d.AddYears(i), MaxWidth = s => new string('9', s.Length) },
-			new SegmentDef { Char = 'M', Update = (d,i) => d.AddMonths(i), MaxWidth = s => "99" },
-			new SegmentDef { Char = 'd', Update = (d,i) => d.AddDays(i), MaxWidth = s => "99" },
-			new SegmentDef { Char = 'h', Update = (d,i) => d.AddHours(i), MaxWidth = s => "99" },
-			new SegmentDef { Char = 'm', Update = (d,i) => d.AddMinutes(i), MaxWidth = s => "99" },
-			new SegmentDef { Char = 's', Update = (d,i) => d.AddSeconds(i), MaxWidth = s => "99" },
-			new SegmentDef { Char = 't', Update = (d,i) => d.AddHours(d.Hour > 12 ? -12 : 12), MaxWidth = s => CultureInfo.CurrentCulture.DateTimeFormat.AMDesignator }
+			new SegmentDef { Char = 'y', Update = (d,i) => d.AddYears(i), MaxWidth = (s, f) => Digits(Math.Max(2, s.Length)) },
+			new SegmentDef { Char = 'M', Update = (d,i) => d.AddMonths(i), MaxWidth = (s, f) => s.Length == 3 ? f.AbbreviatedMonthNames : s.Length > 3 ? f.MonthNames : Digits(2) },
+			new SegmentDef { Char = 'd', Update = (d,i) => d.AddDays(i), MaxWidth = (s, f) => s.Length == 3 ? f.AbbreviatedDayNames : s.Length > 3 ? f.DayNames : Digits(2) },
+			new SegmentDef { Char = 'h', Update = (d,i) => d.AddHours(i), MaxWidth = (s, f) => Digits(2) },
+			new SegmentDef { Char = 'H', Update = (d,i) => d.AddHours(i), MaxWidth = (s, f) => Digits(2) },
+			new SegmentDef { Char = 'm', Update = (d,i) => d.AddMinutes(i), MaxWidth = (s, f) => Digits(2) },
+			new SegmentDef { Char = 's', Update = (d,i) => d.AddSeconds(i), MaxWidth = (s, f) => Digits(2) },
+			new SegmentDef { Char = 't', Update = (d,i) => d.AddHours(d.Hour >= 12 ? -12 : 12), MaxWidth = (s, f) => new[] { f.AMDesignator, f.PMDesignator } },
+			// the era is shown but can't be stepped
+			new SegmentDef { Char = 'g', MaxWidth = (s, f) => f.Calendar.Eras.Select(f.GetEraName) }
 		};
+
+		CultureInfo culture;
+
+		/// <summary>
+		/// Gets or sets the culture to show the date and time in, or null to use the current culture.
+		/// </summary>
+		public CultureInfo Culture
+		{
+			get => culture ?? CultureInfo.CurrentCulture;
+			set
+			{
+				culture = value;
+				UpdateSegments();
+				Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the custom format, using the same format as <see cref="DateTime.ToString(string)"/>.
+		/// </summary>
+		public new string CustomFormat
+		{
+			get => base.CustomFormat;
+			set
+			{
+				base.CustomFormat = value;
+				UpdateSegments();
+				Invalidate();
+			}
+		}
 
 		protected override void OnFormatChanged(EventArgs e)
 		{
@@ -75,12 +110,38 @@ namespace Eto.WinForms.CustomControls
 				case swf.DateTimePickerFormat.Custom:
 					return CustomFormat;
 				case swf.DateTimePickerFormat.Long:
-					return CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
+					return Culture.DateTimeFormat.LongDatePattern;
 				case swf.DateTimePickerFormat.Time:
-					return CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;
+					return Culture.DateTimeFormat.ShortTimePattern;
 				default:
 				case swf.DateTimePickerFormat.Short:
-					return CultureInfo.CurrentCulture.DateTimeFormat.ShortDatePattern;
+					return Culture.DateTimeFormat.ShortDatePattern;
+			}
+		}
+
+		/// <summary>
+		/// Gets the width needed to show all of the text along with the check box and calendar button.
+		/// </summary>
+		public int PreferredWidth
+		{
+			get
+			{
+				if (segments.Count == 0)
+					UpdateSegments();
+				var textWidth = segments.Count > 0 ? segments[segments.Count - 1].End : 0;
+				// left margin and calendar button, as laid out in OnPaint, plus a little room
+				var width = 2 + textWidth + img.Width + 14 + 2;
+				if (ShowCheckBox)
+				{
+					// measure against the screen, as CreateGraphics() would create the handle while laying out
+					using (var g = sd.Graphics.FromHwnd(IntPtr.Zero))
+					{
+						var checkSize = swf.CheckBoxRenderer.GetGlyphSize(g, swf.VisualStyles.CheckBoxState.UncheckedNormal);
+						var checkOffset = (ClientSize.Height - checkSize.Height) / 2;
+						width += checkSize.Width + checkOffset + 1;
+					}
+				}
+				return width;
 			}
 		}
 
@@ -93,7 +154,17 @@ namespace Eto.WinForms.CustomControls
 			if (format == null)
 				return;
 
+			var formatInfo = Culture.DateTimeFormat;
 			var pixelPos = 0;
+			void AddStatic(string text)
+			{
+				if (string.IsNullOrEmpty(text))
+					return;
+				var strSize = swf.TextRenderer.MeasureText(text, Font, sd.Size.Empty, RenderTextFormat);
+				segments.Add(new Segment { Start = pixelPos, Width = strSize.Width, StaticText = text });
+				pixelPos += strSize.Width;
+			}
+
 			var pos = 0;
 			while (pos < format.Length)
 			{
@@ -104,34 +175,36 @@ namespace Eto.WinForms.CustomControls
 					var endPos = pos;
 					while (endPos < format.Length - 1 && format[endPos + 1] == ch)
 						endPos++;
-					var str = def.MaxWidth(format.Substring(pos, (endPos - pos + 1)));
-					var strSize = swf.TextRenderer.MeasureText(str, Font, sd.Size.Empty, RenderTextFormat);
-					var segment = new Segment
-					{
-						Start = pixelPos,
-						Width = strSize.Width,
-						Format = format.Substring(pos, endPos - pos + 1),
-						Def = def
-					};
-					segments.Add(segment);
-					pos = endPos;
-					pixelPos += segment.Width;
+					var token = format.Substring(pos, endPos - pos + 1);
+					var width = def.MaxWidth(token, formatInfo)
+						.Where(r => !string.IsNullOrEmpty(r))
+						.Select(r => swf.TextRenderer.MeasureText(r, Font, sd.Size.Empty, RenderTextFormat).Width)
+						.DefaultIfEmpty(0)
+						.Max();
+					segments.Add(new Segment { Start = pixelPos, Width = width, Format = token, Def = def });
+					pixelPos += width;
+					pos = endPos + 1;
+				}
+				else if (ch == '\'' || ch == '"')
+				{
+					// quoted literal text
+					var endPos = format.IndexOf(ch, pos + 1);
+					if (endPos < 0)
+						endPos = format.Length;
+					AddStatic(format.Substring(pos + 1, endPos - pos - 1));
+					pos = endPos + 1;
+				}
+				else if (ch == '\\' && pos + 1 < format.Length)
+				{
+					AddStatic(format[pos + 1].ToString());
+					pos += 2;
 				}
 				else
 				{
-					var strSize = swf.TextRenderer.MeasureText(ch.ToString(CultureInfo.InvariantCulture), Font, sd.Size.Empty, RenderTextFormat);
-					var segment = new Segment
-					{
-						Start = pixelPos,
-						Width = strSize.Width,
-						StaticText = ch.ToString(CultureInfo.InvariantCulture)
-					};
-					segments.Add(segment);
-					pixelPos += segment.Width;
+					AddStatic(ch == '/' ? formatInfo.DateSeparator : ch == ':' ? formatInfo.TimeSeparator : ch.ToString());
+					pos++;
 				}
-				pos++;
 			}
-
 		}
 
 		protected override void OnKeyDown(swf.KeyEventArgs e)
@@ -167,7 +240,9 @@ namespace Eto.WinForms.CustomControls
 					if (selectedSegment >= 0 && selectedSegment < segments.Count)
 					{
 						var seg = segments[selectedSegment];
-						Value = seg.Def.Update(Value, key == swf.Keys.Up ? 1 : -1);
+						// clicking can select a part that can't be stepped, such as a literal or the era
+						if (seg.IsUpdatable)
+							Value = seg.Def.Update(Value, key == swf.Keys.Up ? 1 : -1);
 					}
 
 				}
@@ -290,7 +365,7 @@ namespace Eto.WinForms.CustomControls
 				var textColor = foreColor;
 				if (segment.Def != null)
 				{
-					var s = Value.ToString(" " + segment.Format);
+					var s = Value.ToString(" " + segment.Format, Culture);
 					str = s.Substring(1);
 					if (Focused && currentSegment == selectedSegment)
 					{

@@ -8,6 +8,7 @@ namespace Eto.GtkSharp.CustomControls
 		private DateComboBoxDialog dlg;
 		DateTimePickerMode mode = DateTimePickerMode.DateTime;
 		bool settingValue;
+		CultureInfo culture;
 
 		public event EventHandler DateChanged;
 
@@ -50,6 +51,23 @@ namespace Eto.GtkSharp.CustomControls
 
 		public bool AllowInvalidDates { get; set; }
 
+		public CultureInfo Culture
+		{
+			get => culture ?? CultureInfo.CurrentCulture;
+			set
+			{
+				culture = value;
+				SetValue();
+			}
+		}
+
+		string Format => Mode switch
+		{
+			DateTimePickerMode.Date => "d",
+			DateTimePickerMode.Time => "t",
+			_ => "G"
+		};
+
 		void SetValue()
 		{
 			// the text may not hold the full value (e.g. only the time), so don't parse it back
@@ -72,18 +90,7 @@ namespace Eto.GtkSharp.CustomControls
 			}
 			else
 			{
-				switch (Mode)
-				{
-					case DateTimePickerMode.DateTime:
-						Entry.Text = selectedDate.Value.ToString();
-						break;
-					case DateTimePickerMode.Date:
-						Entry.Text = selectedDate.Value.ToShortDateString();
-						break;
-					case DateTimePickerMode.Time:
-						Entry.Text = selectedDate.Value.ToShortTimeString();
-						break;
-				}
+				Entry.Text = selectedDate.Value.ToString(Format, Culture);
 			}
 		}
 
@@ -205,7 +212,9 @@ namespace Eto.GtkSharp.CustomControls
 				return true;
 			}
 			DateTime date;
-			if (DateTime.TryParse(Entry.Text, CultureInfo.CurrentCulture, DateTimeStyles.None, out date))
+			// some cultures' text can only be read back with the exact format it was shown in (e.g. ar-SA)
+			if (DateTime.TryParseExact(Entry.Text, Format, Culture, DateTimeStyles.None, out date)
+				|| DateTime.TryParse(Entry.Text, Culture, DateTimeStyles.None, out date))
 			{
 				if (date >= MinDate && date <= MaxDate)
 				{
