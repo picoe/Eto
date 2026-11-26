@@ -266,6 +266,36 @@ namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(15, 30, 0)));
 		}
 
+		[TestCase("h:mm tt", "", "")] // e.g. mi with some ICU versions
+		[TestCase("h:mm tt", "X", "X")]
+		[TestCase("h:mm", "AM", "PM")]
+		public void TimeShouldUse24HoursWhenTwelveHourTimeCannotShowAmOrPm(string pattern, string am, string pm)
+		{
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = pattern;
+			culture.DateTimeFormat.AMDesignator = am;
+			culture.DateTimeFormat.PMDesignator = pm;
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("15:30"), "#1");
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(15, 30, 0)), "#2");
+		}
+
+		[Test]
+		public void QuotedHourLiteralShouldNotCountAsTwelveHourTime()
+		{
+			// fr-CA's "HH 'h' mm" is a 24-hour time with a literal "h"
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = "HH 'h' mm";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("15 h 30"));
+		}
+
 		[Test]
 		public void TimeShouldUse24HoursWhenDesignatorsCannotBeMasked()
 		{

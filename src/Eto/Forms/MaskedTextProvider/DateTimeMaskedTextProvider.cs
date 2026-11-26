@@ -102,7 +102,18 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 		// Some scripts' combining marks (e.g. Devanagari vowel signs) can't be held by a mask at all, so when the
 		// time's words or AM/PM designators use them, fall back to a 24-hour time.
-		if (!IsMaskable(shortTimePattern) || (shortTimePattern.Contains('t') && !(IsMaskable(amDesignator) && IsMaskable(pmDesignator))))
+		var hasDesignator = HasToken(shortTimePattern, 't');
+		var unmaskable = !IsMaskable(shortTimePattern) || (hasDesignator && !(IsMaskable(amDesignator) && IsMaskable(pmDesignator)));
+
+		// A 12-hour time can't tell AM from PM without designators that differ, which some ICU versions give
+		// (e.g. mi with empty designators), so it falls back too.
+		var ambiguous = HasToken(shortTimePattern, 'h')
+			&& (!hasDesignator
+				|| string.IsNullOrWhiteSpace(amDesignator)
+				|| string.IsNullOrWhiteSpace(pmDesignator)
+				|| string.Equals(amDesignator.Trim(), pmDesignator.Trim(), StringComparison.OrdinalIgnoreCase));
+
+		if (unmaskable || ambiguous)
 			shortTimePattern = "HH:mm";
 
 		if (dateSeparator == format.DateSeparator
@@ -124,6 +135,25 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	}
 
 	static string CleanForMask(string text) => FixedMaskedTextProvider.NormalizeWhitespace(RemoveFormatCharacters(text));
+
+	// whether the pattern uses the format character, ignoring quoted or escaped literals (e.g. fr-CA's "HH 'h' mm")
+	static bool HasToken(string pattern, char token)
+	{
+		for (var i = 0; i < pattern.Length; i++)
+		{
+			var ch = pattern[i];
+			if (ch == '\'' || ch == '"')
+			{
+				var end = pattern.IndexOf(ch, i + 1);
+				i = end < 0 ? pattern.Length : end;
+			}
+			else if (ch == '\\')
+				i++;
+			else if (ch == token)
+				return true;
+		}
+		return false;
+	}
 
 	// matches the characters a mask accepts as literals or input
 	static bool IsMaskable(string text) => text == null || text.All(ch => char.IsLetterOrDigit(ch) || char.IsPunctuation(ch) || char.IsSymbol(ch) || ch == ' ');
