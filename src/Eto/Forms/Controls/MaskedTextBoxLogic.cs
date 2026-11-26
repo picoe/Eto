@@ -498,34 +498,5 @@ class MaskedTextBoxLogic
 		return false;
 	}
 
-	IEnumerable<Range<int>> GetEditableRanges()
-	{
-		if (_provider?.EditPositions == null)
-			yield break;
-
-		var started = false;
-		var start = 0;
-		var end = 0;
-
-		foreach (var position in _provider.EditPositions.OrderBy(r => r))
-		{
-			if (!started)
-			{
-				start = end = position;
-				started = true;
-			}
-			else if (position == end + 1)
-			{
-				end = position;
-			}
-			else
-			{
-				yield return new Range<int>(start, end);
-				start = end = position;
-			}
-		}
-
-		if (started)
-			yield return new Range<int>(start, end);
-	}
+	IEnumerable<Range<int>> GetEditableRanges() => _provider?.EditableRanges ?? Enumerable.Empty<Range<int>>();
 }

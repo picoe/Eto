@@ -185,6 +185,173 @@ namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 		}
 
 		[Test]
+		public void ValueShouldRoundTripWithBidiMarksAndEraInDatePattern()
+		{
+			// ICU's Arabic cultures put right-to-left marks around the separators and may end with the era,
+			// e.g. ar-SA's "d‏/M‏/yyyy g". A mask can't hold the marks, so they're left out.
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.DateSeparator = "‏/";
+			culture.DateTimeFormat.ShortDatePattern = "d‏/M‏/yyyy g";
+			var era = culture.DateTimeFormat.GetEraName(1);
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Date, culture);
+			provider.Value = new DateTime(2026, 6, 21);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("21/06/2026 " + era), "#1");
+			Assert.That(provider.Value, Is.EqualTo(new DateTime(2026, 6, 21)), "#2");
+
+			provider.Text = "04/07/2025 " + era;
+			Assert.That(provider.Value, Is.EqualTo(new DateTime(2025, 7, 4)), "#3");
+		}
+
+		[TestCase(3, "a. m.  03:30")]
+		[TestCase(15, "p.m. x 03:30")]
+		public void ValueShouldRoundTripWithPunctuatedDesignatorsOfDifferentLengths(int hour, string expectedText)
+		{
+			// e.g. es-US's "a. m.", with the designator first so a shorter one would shift the time after it
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = "tt h:mm";
+			culture.DateTimeFormat.AMDesignator = "a. m.";
+			culture.DateTimeFormat.PMDesignator = "p.m. x";
+			var value = DateTime.Today + new TimeSpan(hour, 30, 0);
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = value;
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo(expectedText), "#1");
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(value.TimeOfDay), "#2");
+		}
+
+		[Test]
+		public void EditableRangesShouldSeparateDesignatorFromAdjacentHour()
+		{
+			// e.g. zh-Hant-HK's "tth:mm", where the edit positions of the designator and hour run together
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = "tth:mm";
+			culture.DateTimeFormat.AMDesignator = "上午";
+			culture.DateTimeFormat.PMDesignator = "下午";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+
+			Assert.That(provider.EditableRanges, Is.EqualTo(new[] { new Range<int>(0, 1), new Range<int>(2, 3), new Range<int>(5, 6) }));
+		}
+
+		[Test]
+		public void StepAtStartOfHourShouldNotStepAdjacentDesignator()
+		{
+			// with "tth:mm" the caret at the start of the hour is also just after the designator
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = "tth:mm";
+			culture.DateTimeFormat.AMDesignator = "上午";
+			culture.DateTimeFormat.PMDesignator = "下午";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(7, 12, 0);
+
+			var stepped = provider.GetStepValue(2, 1, out var segmentStart);
+
+			Assert.That(stepped.TimeOfDay, Is.EqualTo(new TimeSpan(8, 12, 0)), "#1");
+			Assert.That(segmentStart, Is.EqualTo(2), "#2");
+		}
+
+		[Test]
+		public void PmShouldRoundTripWhenAmDesignatorIsItsPrefix()
+		{
+			// e.g. ak on macOS, where AM is "AN" and PM is "ANW"
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.AMDesignator = "AN";
+			culture.DateTimeFormat.PMDesignator = "ANW";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(15, 30, 0)));
+		}
+
+		[TestCase("h:mm tt", "", "")] // e.g. mi with some ICU versions
+		[TestCase("h:mm tt", "X", "X")]
+		[TestCase("h:mm", "AM", "PM")]
+		public void TimeShouldUse24HoursWhenTwelveHourTimeCannotShowAmOrPm(string pattern, string am, string pm)
+		{
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = pattern;
+			culture.DateTimeFormat.AMDesignator = am;
+			culture.DateTimeFormat.PMDesignator = pm;
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("15:30"), "#1");
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(15, 30, 0)), "#2");
+		}
+
+		[Test]
+		public void QuotedHourLiteralShouldNotCountAsTwelveHourTime()
+		{
+			// fr-CA's "HH 'h' mm" is a 24-hour time with a literal "h"
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.ShortTimePattern = "HH 'h' mm";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("15 h 30"));
+		}
+
+		[Test]
+		public void TimeShouldUse24HoursWhenDesignatorsCannotBeMasked()
+		{
+			// a mask can't hold combining marks, such as the Devanagari vowel signs in some cultures' designators
+			var culture = (CultureInfo)EnUS.Clone();
+			culture.DateTimeFormat.AMDesignator = "पूर्व";
+			culture.DateTimeFormat.PMDesignator = "अपर";
+			var provider = new DateTimeMaskedTextProvider(DateTimePickerMode.Time, culture);
+			provider.Value = DateTime.Today + new TimeSpan(15, 30, 0);
+			provider.CommitText();
+
+			Assert.That(provider.Text, Is.EqualTo("15:30"), "#1");
+			Assert.That(provider.Value?.TimeOfDay, Is.EqualTo(new TimeSpan(15, 30, 0)), "#2");
+		}
+
+		[TestCase(DateTimePickerMode.Date)]
+		[TestCase(DateTimePickerMode.Time)]
+		[TestCase(DateTimePickerMode.DateTime)]
+		public void ValueShouldRoundTripInEveryCulture(DateTimePickerMode mode)
+		{
+			var failures = new List<string>();
+			foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
+			{
+				// both AM and PM, as they can differ in length
+				foreach (var value in new[] { new DateTime(2026, 11, 25, 3, 30, 0), new DateTime(2026, 11, 25, 15, 30, 0) })
+				{
+					try
+					{
+						var provider = new DateTimeMaskedTextProvider(mode, culture);
+						provider.Value = value;
+						provider.CommitText();
+
+						// typing the text back in should give the same value
+						var typed = new DateTimeMaskedTextProvider(mode, culture) { Value = new DateTime(2000, 1, 1, 12, 0, 0) };
+						typed.Text = provider.Text;
+
+						if (!IsSameForMode(provider.Value, value, mode) || !IsSameForMode(typed.Value, value, mode))
+							failures.Add($"{culture.Name}: '{provider.Text}' -> {provider.Value}, typed -> {typed.Value}");
+					}
+					catch (Exception ex)
+					{
+						failures.Add($"{culture.Name}: {ex.Message}");
+					}
+				}
+			}
+			Assert.That(failures, Is.Empty);
+		}
+
+		static bool IsSameForMode(DateTime? actual, DateTime expected, DateTimePickerMode mode) => mode switch
+		{
+			DateTimePickerMode.Date => actual?.Date == expected.Date,
+			DateTimePickerMode.Time => actual?.TimeOfDay == expected.TimeOfDay,
+			_ => actual == expected
+		};
+
+		[Test]
 		public void ValueOutsideCalendarRangeShouldClampToCalendar()
 		{
 			var culture = CultureInfo.GetCultureInfo("fa-IR");
@@ -201,6 +368,11 @@ namespace Eto.Test.UnitTests.Forms.MaskedTextProvider
 		[TestCase("th-TH")]
 		[TestCase("fa-IR")]
 		[TestCase("en-US")]
+		[TestCase("ar-SA")]
+		[TestCase("ar-EG")]
+		[TestCase("ps-AF")]
+		[TestCase("ar")] // neutral cultures, which the mask swaps for a specific culture with different separators
+		[TestCase("it")]
 		public void ValueShouldRoundTripInCultureCalendar(string cultureName)
 		{
 			// the text is shown in the culture's calendar, so it has to be read back in it, every day of a leap cycle

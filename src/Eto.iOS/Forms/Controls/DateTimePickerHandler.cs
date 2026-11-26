@@ -59,11 +59,13 @@ namespace Eto.iOS.Forms.Controls
 			picker.MinimumDate = MinDate == DateTime.MinValue ? (NSDate)null : (NSDate)MinDate.ToUniversalTime();
 			picker.MaximumDate = MaxDate == DateTime.MaxValue ? (NSDate)null : (NSDate)MaxDate.ToUniversalTime();
 			picker.Date = (NSDate)(Value ?? DateTime.Now).ToUniversalTime();
+			// locale identifiers use underscores, e.g. ar_SA
+			picker.Locale = culture != null ? new NSLocale(culture.Name.Replace('-', '_')) : NSLocale.CurrentLocale;
 		}
 
 		protected override string GetTextValue()
 		{
-			return Value != null ? Value.Value.ToString(GetFormat()) : null;
+			return Value != null ? Value.Value.ToString(GetFormat(), Culture) : null;
 		}
 
 		protected override IEnumerable<UIBarButtonItem> CreateCustomButtons()
@@ -100,6 +102,18 @@ namespace Eto.iOS.Forms.Controls
 		public DateTime MaxDate { get; set; }
 
 		public DateTimePickerMode Mode { get; set; }
+
+		CultureInfo culture;
+
+		public CultureInfo Culture
+		{
+			get => culture ?? CultureInfo.CurrentCulture;
+			set
+			{
+				culture = value;
+				UpdateText();
+			}
+		}
 
 		public Color TextColor
 		{

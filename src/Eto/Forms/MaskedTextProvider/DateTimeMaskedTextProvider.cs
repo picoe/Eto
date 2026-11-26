@@ -71,6 +71,7 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	DateTimePatternInfo patternInfo;
 	char promptChar = '_';
 	CultureInfo culture;
+	CultureInfo maskCulture;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="DateTimeMaskedTextProvider"/> class.
@@ -81,13 +82,94 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	{
 		this.mode = mode;
 		this.culture = culture ?? CultureInfo.CurrentCulture;
-		patternInfo = CreatePatternInfo(mode, this.culture);
+		maskCulture = CreateMaskCulture(this.culture);
+		patternInfo = CreatePatternInfo(mode, maskCulture);
 		inner = CreateInner();
 	}
 
+	// A mask can't contain invisible formatting characters or whitespace other than a regular space, nor can they be
+	// typed or set as its text, so clean them out of everything the text is built from, e.g. the right-to-left marks
+	// ICU's Arabic cultures put around the date separator.
+	static CultureInfo CreateMaskCulture(CultureInfo culture)
+	{
+		var format = culture.DateTimeFormat;
+		var dateSeparator = CleanForMask(format.DateSeparator);
+		var timeSeparator = CleanForMask(format.TimeSeparator);
+		var shortDatePattern = CleanForMask(format.ShortDatePattern);
+		var shortTimePattern = CleanForMask(format.ShortTimePattern);
+		var amDesignator = CleanForMask(format.AMDesignator);
+		var pmDesignator = CleanForMask(format.PMDesignator);
+
+		// Some scripts' combining marks (e.g. Devanagari vowel signs) can't be held by a mask at all, so when the
+		// time's words or AM/PM designators use them, fall back to a 24-hour time.
+		var hasDesignator = HasToken(shortTimePattern, 't');
+		var unmaskable = !IsMaskable(shortTimePattern) || (hasDesignator && !(IsMaskable(amDesignator) && IsMaskable(pmDesignator)));
+
+		// A 12-hour time can't tell AM from PM without designators that differ, which some ICU versions give
+		// (e.g. mi with empty designators), so it falls back too.
+		var ambiguous = HasToken(shortTimePattern, 'h')
+			&& (!hasDesignator
+				|| string.IsNullOrWhiteSpace(amDesignator)
+				|| string.IsNullOrWhiteSpace(pmDesignator)
+				|| string.Equals(amDesignator.Trim(), pmDesignator.Trim(), StringComparison.OrdinalIgnoreCase));
+
+		if (unmaskable || ambiguous)
+			shortTimePattern = "HH:mm";
+
+		if (dateSeparator == format.DateSeparator
+			&& timeSeparator == format.TimeSeparator
+			&& shortDatePattern == format.ShortDatePattern
+			&& shortTimePattern == format.ShortTimePattern
+			&& amDesignator == format.AMDesignator
+			&& pmDesignator == format.PMDesignator)
+			return culture;
+
+		var maskCulture = (CultureInfo)culture.Clone();
+		maskCulture.DateTimeFormat.DateSeparator = dateSeparator;
+		maskCulture.DateTimeFormat.TimeSeparator = timeSeparator;
+		maskCulture.DateTimeFormat.ShortDatePattern = shortDatePattern;
+		maskCulture.DateTimeFormat.ShortTimePattern = shortTimePattern;
+		maskCulture.DateTimeFormat.AMDesignator = amDesignator;
+		maskCulture.DateTimeFormat.PMDesignator = pmDesignator;
+		return maskCulture;
+	}
+
+	static string CleanForMask(string text) => FixedMaskedTextProvider.NormalizeWhitespace(RemoveFormatCharacters(text));
+
+	// whether the pattern uses the format character, ignoring quoted or escaped literals (e.g. fr-CA's "HH 'h' mm")
+	static bool HasToken(string pattern, char token)
+	{
+		for (var i = 0; i < pattern.Length; i++)
+		{
+			var ch = pattern[i];
+			if (ch == '\'' || ch == '"')
+			{
+				var end = pattern.IndexOf(ch, i + 1);
+				i = end < 0 ? pattern.Length : end;
+			}
+			else if (ch == '\\')
+				i++;
+			else if (ch == token)
+				return true;
+		}
+		return false;
+	}
+
+	// matches the characters a mask accepts as literals or input
+	static bool IsMaskable(string text) => text == null || text.All(ch => char.IsLetterOrDigit(ch) || char.IsPunctuation(ch) || char.IsSymbol(ch) || ch == ' ');
+
+	static string RemoveFormatCharacters(string text)
+	{
+		if (string.IsNullOrEmpty(text) || !text.Any(IsFormatCharacter))
+			return text;
+		return new string(text.Where(ch => !IsFormatCharacter(ch)).ToArray());
+	}
+
+	static bool IsFormatCharacter(char ch) => char.GetUnicodeCategory(ch) == UnicodeCategory.Format;
+
 	FixedMaskedTextProvider CreateInner()
 	{
-		return new FixedMaskedTextProvider(patternInfo.Mask, culture)
+		return new FixedMaskedTextProvider(patternInfo.Mask, maskCulture)
 		{
 			PromptChar = promptChar
 		};
@@ -109,7 +191,8 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 		set
 		{
 			culture = value ?? CultureInfo.CurrentCulture;
-			patternInfo = CreatePatternInfo(mode, culture);
+			maskCulture = CreateMaskCulture(culture);
+			patternInfo = CreatePatternInfo(mode, maskCulture);
 			RecreateProvider();
 		}
 	}
@@ -125,7 +208,7 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 			if (mode == value)
 				return;
 			mode = value;
-			patternInfo = CreatePatternInfo(mode, culture);
+			patternInfo = CreatePatternInfo(mode, maskCulture);
 			RecreateProvider();
 		}
 	}
@@ -203,13 +286,25 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 	{
 		if (value == null)
 			return string.Empty;
-		return value.Value.ToString(patternInfo.Format, culture);
+		var text = value.Value.ToString(patternInfo.Format, maskCulture);
+
+		// pad a designator shorter than its slots so the parts after it stay where the mask expects them
+		foreach (var segment in patternInfo.Segments)
+		{
+			if (segment.Part != DateTimeSegmentPart.Designator)
+				continue;
+			var designator = value.Value.Hour < 12 ? maskCulture.DateTimeFormat.AMDesignator : maskCulture.DateTimeFormat.PMDesignator;
+			var length = Math.Min(designator?.Length ?? 0, segment.Length);
+			if (length < segment.Length && segment.Start + length <= text.Length)
+				text = text.Insert(segment.Start + length, new string(' ', segment.Length - length));
+		}
+		return text;
 	}
 
 	bool TryParse(string text, out DateTime result)
 	{
 		// The text is formatted with the culture's calendar (e.g. Thai Buddhist or Persian), so read it back in that calendar too.
-		var calendar = culture.DateTimeFormat.Calendar;
+		var calendar = maskCulture.DateTimeFormat.Calendar;
 		var current = this.value ?? DateTime.Now;
 		if (current < calendar.MinSupportedDateTime)
 			current = calendar.MinSupportedDateTime;
@@ -229,10 +324,11 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 		bool? isPm = null;
 		foreach (var segment in patternInfo.Segments)
 		{
-			if (segment.Start + segment.Length > text.Length)
+			// a designator at the end can be cut short when its last slots are empty
+			if (segment.Start + segment.Length > text.Length && (segment.Part != DateTimeSegmentPart.Designator || segment.Start >= text.Length))
 				break;
-			var str = text.Substring(segment.Start, segment.Length);
-			if (int.TryParse(str, NumberStyles.Integer, culture, out var intValue))
+			var str = text.Substring(segment.Start, Math.Min(segment.Length, text.Length - segment.Start));
+			if (int.TryParse(str, NumberStyles.Integer, maskCulture, out var intValue))
 			{
 				switch (segment.Part)
 				{
@@ -261,7 +357,7 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 				}
 				didParse = true;
 			}
-			else if (segment.Part == DateTimeSegmentPart.Designator && TryParseDesignator(str, culture, out var parsedIsPm))
+			else if (segment.Part == DateTimeSegmentPart.Designator && TryParseDesignator(str, maskCulture, out var parsedIsPm))
 			{
 				isPm = parsedIsPm;
 				didParse = true;
@@ -328,27 +424,32 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 		var designator = text.Trim();
 		if (designator.Length > 0)
 		{
-			if (IsDesignatorMatch(designator, culture.DateTimeFormat.AMDesignator))
+			// one designator can start with the other (e.g. ak's "AN" and "ANW"), so an exact match wins
+			foreach (var exact in new[] { true, false })
 			{
-				isPm = false;
-				return true;
-			}
-			if (IsDesignatorMatch(designator, culture.DateTimeFormat.PMDesignator))
-			{
-				isPm = true;
-				return true;
+				if (IsDesignatorMatch(designator, culture.DateTimeFormat.AMDesignator, exact))
+				{
+					isPm = false;
+					return true;
+				}
+				if (IsDesignatorMatch(designator, culture.DateTimeFormat.PMDesignator, exact))
+				{
+					isPm = true;
+					return true;
+				}
 			}
 		}
 		isPm = false;
 		return false;
 	}
 
-	static bool IsDesignatorMatch(string text, string designator)
+	static bool IsDesignatorMatch(string text, string designator, bool exact)
 	{
 		if (string.IsNullOrEmpty(designator))
 			return false;
-		return designator.Equals(text, StringComparison.CurrentCultureIgnoreCase)
-			|| designator.StartsWith(text, StringComparison.CurrentCultureIgnoreCase)
+		if (exact)
+			return designator.Equals(text, StringComparison.CurrentCultureIgnoreCase);
+		return designator.StartsWith(text, StringComparison.CurrentCultureIgnoreCase)
 			|| text.StartsWith(designator, StringComparison.CurrentCultureIgnoreCase);
 	}
 
@@ -369,7 +470,7 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 			result = maxDate;
 
 		// Formatting a date outside the calendar's range throws (e.g. DateTime.MinValue with the Persian calendar).
-		var calendar = culture.DateTimeFormat.Calendar;
+		var calendar = maskCulture.DateTimeFormat.Calendar;
 		if (result < calendar.MinSupportedDateTime)
 			result = calendar.MinSupportedDateTime;
 		if (result > calendar.MaxSupportedDateTime)
@@ -411,9 +512,16 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 	DateTimeSegment? GetSegmentForCaret(int caretIndex)
 	{
+		// a segment the caret is in wins over one it's just after, as segments can be adjacent (e.g. "tth:mm")
 		foreach (var segment in patternInfo.Segments)
 		{
-			if (segment.Contains(caretIndex) || caretIndex == segment.Start + segment.Length)
+			if (segment.Contains(caretIndex))
+				return segment;
+		}
+
+		foreach (var segment in patternInfo.Segments)
+		{
+			if (caretIndex == segment.Start + segment.Length)
 				return segment;
 		}
 
@@ -471,13 +579,13 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 				var start = ++i;
 				while (i < format.Length && format[i] != quote)
 					i++;
-				AppendLiteral(formatBuilder, parseBuilder, maskBuilder, format.Substring(start, i - start));
+				AppendLiteral(culture, formatBuilder, parseBuilder, maskBuilder, format.Substring(start, i - start));
 				continue;
 			}
 
 			if (ch == '\\' && i + 1 < format.Length)
 			{
-				AppendLiteral(formatBuilder, parseBuilder, maskBuilder, format[++i].ToString());
+				AppendLiteral(culture, formatBuilder, parseBuilder, maskBuilder, format[++i].ToString());
 				continue;
 			}
 
@@ -490,14 +598,26 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 					i++;
 				}
 
+				if (ch == 'g')
+				{
+					// The era can't be edited, so show it as text when the calendar only has one, otherwise leave it out.
+					var calendar = culture.DateTimeFormat.Calendar;
+					if (calendar.Eras.Length == 1)
+					{
+						var eraName = CleanForMask(culture.DateTimeFormat.GetEraName(calendar.Eras[0]));
+						AppendLiteral(culture, formatBuilder, parseBuilder, maskBuilder, eraName);
+					}
+					continue;
+				}
+
 				if (TryAppendToken(ch, tokenLength, culture, formatBuilder, parseBuilder, maskBuilder, segments))
 					continue;
 
-				AppendLiteral(formatBuilder, parseBuilder, maskBuilder, new string(ch, tokenLength));
+				AppendLiteral(culture, formatBuilder, parseBuilder, maskBuilder, new string(ch, tokenLength));
 				continue;
 			}
 
-			AppendLiteral(formatBuilder, parseBuilder, maskBuilder, ch.ToString());
+			AppendLiteral(culture, formatBuilder, parseBuilder, maskBuilder, ch.ToString());
 		}
 
 		return new DateTimePatternInfo(formatBuilder.ToString(), parseBuilder.ToString(), maskBuilder.ToString(), segments.ToArray());
@@ -556,9 +676,12 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 				break;
 			case 't':
 			{
-				var designatorLength = Math.Max(1, Math.Max(culture.DateTimeFormat.AMDesignator?.Length ?? 0, culture.DateTimeFormat.PMDesignator?.Length ?? 0));
+				// "t" shows only the first character of the designator
+				var designatorLength = tokenLength == 1 ? 1 : Math.Max(1, Math.Max(culture.DateTimeFormat.AMDesignator?.Length ?? 0, culture.DateTimeFormat.PMDesignator?.Length ?? 0));
 				normalizedToken = tokenLength == 1 ? "t" : "tt";
-				maskToken = new string('L', designatorLength);
+				// designators can have punctuation and spaces (e.g. "p.m." or "a. m."), and the shorter of AM and PM
+				// leaves the rest of the slots empty
+				maskToken = new string('C', designatorLength);
 				parseToken = "t";
 				part = DateTimeSegmentPart.Designator;
 				break;
@@ -567,52 +690,37 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 				return false;
 		}
 
-		segments.Add(new DateTimeSegment(GetTextLength(maskBuilder, culture), maskToken.Length, part.Value));
+		segments.Add(new DateTimeSegment(GetTextLength(maskBuilder), maskToken.Length, part.Value));
 		formatBuilder.Append(normalizedToken);
 		parseBuilder.Append(parseToken);
 		maskBuilder.Append(maskToken);
 		return true;
 	}
 
-	// Segments index into the text, which has no escape characters and expands the date/time separators for the culture.
-	static int GetTextLength(StringBuilder mask, CultureInfo culture)
+	// Segments index into the text, which has no escape characters.
+	static int GetTextLength(StringBuilder mask)
 	{
 		var length = 0;
 		for (var i = 0; i < mask.Length; i++)
 		{
-			var ch = mask[i];
-			if (ch == '\\')
-			{
+			if (mask[i] == '\\')
 				i++;
-				length++;
-			}
-			else if (ch == '/')
-				length += culture.DateTimeFormat.DateSeparator.Length;
-			else if (ch == ':')
-				length += culture.DateTimeFormat.TimeSeparator.Length;
-			else
-				length++;
+			length++;
 		}
 		return length;
 	}
 
-	static void AppendLiteral(StringBuilder formatBuilder, StringBuilder parseBuilder, StringBuilder maskBuilder, string literal)
+	static void AppendLiteral(CultureInfo culture, StringBuilder formatBuilder, StringBuilder parseBuilder, StringBuilder maskBuilder, string literal)
 	{
 		foreach (var ch in literal)
 		{
-			if (ch == '/')
+			if (ch == '/' || ch == ':')
 			{
-				formatBuilder.Append('/');
-				parseBuilder.Append('/');
-				maskBuilder.Append('/');
-				continue;
-			}
-
-			if (ch == ':')
-			{
-				formatBuilder.Append(':');
-				parseBuilder.Append(':');
-				maskBuilder.Append(':');
+				// The mask's own culture can differ from ours (a neutral culture is swapped for a specific one), so
+				// write our separator into the mask instead of letting it expand '/' or ':' itself.
+				formatBuilder.Append(ch);
+				parseBuilder.Append(ch);
+				AppendMaskLiteral(maskBuilder, ch == '/' ? culture.DateTimeFormat.DateSeparator : culture.DateTimeFormat.TimeSeparator);
 				continue;
 			}
 
@@ -623,7 +731,14 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 			}
 			formatBuilder.Append(ch);
 			parseBuilder.Append(ch);
+			AppendMaskLiteral(maskBuilder, ch.ToString());
+		}
+	}
 
+	static void AppendMaskLiteral(StringBuilder maskBuilder, string literal)
+	{
+		foreach (var ch in literal)
+		{
 			if (IsMaskLiteralEscapeRequired(ch))
 				maskBuilder.Append('\\');
 			maskBuilder.Append(ch);
@@ -637,7 +752,7 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 	static bool IsMaskLiteralEscapeRequired(char ch)
 	{
-		return ch is '0' or '9' or '#' or 'L' or '?' or '&' or 'C' or 'A' or 'a' or '.' or ',' or '$' or '<' or '>' or '|' or '\\';
+		return ch is '0' or '9' or '#' or 'L' or '?' or '&' or 'C' or 'A' or 'a' or '.' or ',' or ':' or '/' or '$' or '<' or '>' or '|' or '\\';
 	}
 
 	/// <inheritdoc/>
@@ -667,6 +782,10 @@ public class DateTimeMaskedTextProvider : IMaskedTextProvider<DateTime?>
 
 	/// <inheritdoc/>
 	public IEnumerable<int> EditPositions => inner.EditPositions;
+
+	/// <inheritdoc/>
+	/// <since>2.14</since>
+	public IEnumerable<Range<int>> EditableRanges => patternInfo.Segments.Select(r => new Range<int>(r.Start, r.Start + r.Length - 1));
 
 	/// <inheritdoc/>
 	public bool IsEmpty => inner.IsEmpty;

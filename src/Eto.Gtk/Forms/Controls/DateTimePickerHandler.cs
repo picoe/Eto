@@ -65,6 +65,12 @@ namespace Eto.GtkSharp.Forms.Controls
 			set { Control.Mode = value; }
 		}
 
+		public CultureInfo Culture
+		{
+			get => Control.Culture;
+			set => Control.Culture = value;
+		}
+
 		public Color TextColor
 		{
 			get { return Control.Entry.GetTextColor(); }

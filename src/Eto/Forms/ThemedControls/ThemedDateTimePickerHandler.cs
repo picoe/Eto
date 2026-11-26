@@ -91,6 +91,14 @@ public class ThemedDateTimePickerHandler : ThemedControlHandler<DateTimeMaskedTe
 	}
 
 	/// <inheritdoc/>
+	/// <since>2.14</since>
+	public CultureInfo Culture
+	{
+		get => Control.Culture;
+		set => Control.Culture = value;
+	}
+
+	/// <inheritdoc/>
 	public Color TextColor
 	{
 		get => Control.TextColor;

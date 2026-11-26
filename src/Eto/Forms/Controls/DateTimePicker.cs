@@ -108,6 +108,19 @@ public class DateTimePicker : CommonControl
 		set { Handler.Mode = value; }
 	}
 
+	/// <summary>
+	/// Gets or sets the culture used to show the date and time, or <see langword="null"/> to use <see cref="CultureInfo.CurrentCulture"/>.
+	/// </summary>
+	/// <remarks>
+	/// On WinForms the drop-down calendar always uses the system's region.
+	/// </remarks>
+	/// <since>2.14</since>
+	public CultureInfo Culture
+	{
+		get => Handler.Culture;
+		set => Handler.Culture = value;
+	}
+
 	/// <inheritdoc cref="TextControl.TextColor"/>
 	public Color TextColor
 	{
@@ -176,6 +189,10 @@ public class DateTimePicker : CommonControl
 
 		/// <inheritdoc cref="DateTimePicker.Mode"/>
 		DateTimePickerMode Mode { get; set; }
+
+		/// <inheritdoc cref="DateTimePicker.Culture"/>
+		/// <since>2.14</since>
+		CultureInfo Culture { get; set; }
 
 		/// <inheritdoc cref="DateTimePicker.TextColor"/>
 		Color TextColor { get; set; }
