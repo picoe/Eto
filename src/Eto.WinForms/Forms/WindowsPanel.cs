@@ -74,8 +74,8 @@ namespace Eto.WinForms.Forms
 
 		public virtual Padding Padding
 		{
-			get { return ContainerContentControl.Padding.ToEto(); }
-			set { ContainerContentControl.Padding = value.ToSWF(); }
+			get { return ContainerContentControl.DeviceUnitsToLogical(ContainerContentControl.Padding); }
+			set { ContainerContentControl.Padding = ContainerContentControl.LogicalToDeviceUnits(value); }
 		}
 
 		public Control Content
