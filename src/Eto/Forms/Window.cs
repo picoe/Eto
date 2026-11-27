@@ -604,6 +604,21 @@ public abstract class Window : Panel
 	}
 
 	/// <summary>
+	/// Gets or sets a value indicating whether the system draws a shadow around this window.
+	/// </summary>
+	/// <remarks>
+	/// Defaults to the platform's usual look: <c>true</c> for windows with a border, and for borderless windows on macOS only.
+	/// Turn it off for a borderless window that draws its own shape and shadow on a transparent background.
+	/// Support varies: macOS honours it for any window, Windows can only add a shadow to borderless opaque windows, and other platforms ignore it.
+	/// </remarks>
+	/// <since>2.14</since>
+	public bool ShowShadow
+	{
+		get => Handler.ShowShadow;
+		set => Handler.ShowShadow = value;
+	}
+
+	/// <summary>
 	/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Window"/> is above all other windows.
 	/// </summary>
 	/// <remarks>
@@ -1002,6 +1017,12 @@ public abstract class Window : Panel
 		/// </remarks>
 		/// <value><c>true</c> if the window will show in taskbar; otherwise, <c>false</c>.</value>
 		bool ShowInTaskbar { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the system draws a shadow around this window.
+		/// </summary>
+		/// <since>2.14</since>
+		bool ShowShadow { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Eto.Forms.Window"/> is above all other windows.

@@ -44,10 +44,10 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSpace();
 			layout.AddSeparateRow(null, CreateResetButton(), null);
 			layout.AddSeparateRow(null, Resizable(), AutoSize(), Minimizable(), Maximizable(), AllowFullScreenToggle(), MovableByWindowBackground(), null);
-			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
+			layout.AddSeparateRow(null, ShowInTaskBar(), CloseableCheckBox(), TopMost(), ShowShadow(), VisibleCheckbox(), CreateShowActivatedCheckbox(), CreateCanFocus(), null);
 			layout.AddSeparateRow(null, "Type", CreateTypeControl(), "DisplayMode", DisplayModeDropDown(), null);
-			layout.AddSeparateRow(null, "Window Style", WindowStyle(), null);
-			layout.AddSeparateRow(null, "BackgroundColor", CreateBackgroundColorControl(), "Opacity", CreateOpacityControl(), null);
+			layout.AddSeparateRow(null, WindowStyle(), null);
+			layout.AddSeparateRow(null, CreateBackgroundColorControl(), "Opacity", CreateOpacityControl(), null);
 			layout.AddSeparateRow(null, "Window State", WindowState(), null);
 			layout.AddSeparateRow(null, CreateMenuBarControls(), null);
 			layout.AddSeparateRow(null, CreateInitialLocationControls(), null);
@@ -101,6 +101,7 @@ namespace Eto.Test.Sections.Behaviors
 			public bool? ShowInTaskbar { get; set; }
 			public bool? ShowActivated { get; set; }
 			public bool? Topmost { get; set; }
+			public bool? ShowShadow { get; set; }
 			public bool SetOwner { get; set; }
 			public WindowStyle WindowStyle { get; set; }
 			public WindowType WindowType { get; set; }
@@ -216,7 +217,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control WindowStyle()
 		{
-			var enableStyle = new CheckBox { Checked = false };
+			var enableStyle = new CheckBox { Checked = false, Text = "Window Style" };
 			styleCombo = new EnumRadioButtonList<WindowStyle>();
 			styleCombo.SelectedValueBinding.BindDataContext((SettingsWindow w) => w.WindowStyle);
 
@@ -239,7 +240,7 @@ namespace Eto.Test.Sections.Behaviors
 			var enabledBindingElseTrue = enabledBinding.Convert<bool?>(r => r ?? true, r => r);
 			var enabledBindingCanToggle = enabledBinding.Convert<bool?>(r => r != null);
 
-			var enableBackgroundColor = new CheckBox { Checked = false };
+			var enableBackgroundColor = new CheckBox { Checked = false, Text = "Background Color" };
 			enableBackgroundColor.CheckedBinding.BindDataContext(enabledBindingElseTrue);
 			enableBackgroundColor.BindDataContext(c => c.Enabled, enabledBindingCanToggle);
 			
@@ -358,6 +359,14 @@ namespace Eto.Test.Sections.Behaviors
 			topMostCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
 			topMostCheckBox.CheckedBinding.BindDataContext((Window w) => w.Topmost);
 			return topMostCheckBox;
+		}
+
+		Control ShowShadow()
+		{
+			var showShadowCheckBox = new CheckBox { Text = "Show Shadow" };
+			showShadowCheckBox.BindDataContext(c => c.ThreeState, (SettingsWindow w) => w.ThreeState);
+			showShadowCheckBox.CheckedBinding.BindDataContext((Window w) => w.ShowShadow);
+			return showShadowCheckBox;
 		}
 
 		Control VisibleCheckbox()
@@ -602,6 +611,8 @@ namespace Eto.Test.Sections.Behaviors
 			Child.WindowState = stateCombo.SelectedValue;
 			if (settings.Topmost != null)
 				Child.Topmost = settings.Topmost ?? false;
+			if (settings.ShowShadow != null)
+				Child.ShowShadow = settings.ShowShadow ?? false;
 			if (settings.Resizable != null)
 				Child.Resizable = settings.Resizable ?? false;
 			if (settings.AutoSize != null)

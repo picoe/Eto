@@ -35,6 +35,7 @@ namespace Eto.Wpf.Forms
 		internal static readonly object MonitorKeys_Key = new object();
 		internal static readonly object KeyMonitor_Key = new object();
 		internal static readonly object AllowFullScreenToggle_Key = new object();
+		internal static readonly object ShowShadow_Key = new object();
 	}
 	
 	public class EtoWindowContent : swc.DockPanel
@@ -773,6 +774,17 @@ namespace Eto.Wpf.Forms
 			get { return Control.ShowInTaskbar; }
 			set { Control.ShowInTaskbar = value; }
 		}
+
+		// windows can't drop the shadow from a bordered window, only add one to a borderless opaque window
+		public bool ShowShadow
+		{
+			get => Widget.Properties.Get<bool?>(WpfWindow.ShowShadow_Key) ?? WindowStyle != WindowStyle.None;
+			set
+			{
+				if (Widget.Properties.TrySet<bool?>(WpfWindow.ShowShadow_Key, value))
+					SetWindowChrome();
+			}
+		}
 		
 		public virtual bool Topmost
 		{
@@ -1219,12 +1231,15 @@ namespace Eto.Wpf.Forms
 			if (!isSourceInitialized || fullScreenWindowStyle != null)
 				return;
 			
-			var needsCustomWindowChrome = (Resizable || HasTransparency) && WindowStyle == WindowStyle.None;
+			// non-zero enables DWM NC rendering/shadow for borderless opaque windows
+			var wantsShadow = ShowShadow && !Control.AllowsTransparency;
+			var glassFrameThickness = Control.AllowsTransparency ? sw.Shell.WindowChrome.GlassFrameCompleteThickness : wantsShadow ? new sw.Thickness(1) : default;
+			var needsCustomWindowChrome = (Resizable || HasTransparency || wantsShadow) && WindowStyle == WindowStyle.None;
 
 			var currentWindowChrome = sw.Shell.WindowChrome.GetWindowChrome(Control);
-			if (currentWindowChrome != null && WindowStyle == WindowStyle.None)
+			if (currentWindowChrome != null && WindowStyle == WindowStyle.None && currentWindowChrome.GlassFrameThickness == glassFrameThickness)
 			{
-				// keep window chrome if it is already set, unless WindowStyle is different
+				// keep window chrome if it is already set, unless WindowStyle or the shadow is different
 				// E.g. turning off Resizable makes the background opaque if we remove the WindowChrome
 				return;
 			}
@@ -1240,9 +1255,7 @@ namespace Eto.Wpf.Forms
 					CaptionHeight = 0,
 					// CornerRadius = new sw.CornerRadius(0),
 					// ResizeBorderThickness = Resizable ? new sw.Thickness(4) : new sw.Thickness(0),
-					// non-zero enables DWM NC rendering/shadow for borderless opaque windows
-					// GlassFrameThickness = wantsShadow ? new sw.Thickness(1) : default
-					GlassFrameThickness = Control.AllowsTransparency ? sw.Shell.WindowChrome.GlassFrameCompleteThickness : default,
+					GlassFrameThickness = glassFrameThickness,
 					ResizeBorderThickness = Resizable ? new sw.Thickness(4) : new sw.Thickness(0)
 				};
 				sw.Shell.WindowChrome.SetWindowChrome(Control, windowChrome);

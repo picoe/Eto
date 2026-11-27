@@ -783,6 +783,12 @@ namespace Eto.Mac.Forms
 		// windows show in the taskbar/Dock unless explicitly told not to.
 		public bool ShowInTaskbar { get; set; } = true;
 
+		public bool ShowShadow
+		{
+			get => Control.HasShadow;
+			set => Control.HasShadow = value;
+		}
+
 		public bool Closeable
 		{
 			get { return Control.StyleMask.HasFlag(NSWindowStyle.Closable); }

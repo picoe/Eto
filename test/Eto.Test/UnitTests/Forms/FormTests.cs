@@ -123,6 +123,26 @@ public class FormTests : WindowTests<Form>
 		});
 	}
 
+	[Test]
+	public void ShowShadowShouldBeOnForBorderedWindowsAndKeepItsValue() => Async(async () =>
+	{
+		var form = new Form { ClientSize = new Size(200, 200) };
+		try
+		{
+			Assert.That(form.ShowShadow, Is.True, "A window with a border should have a shadow by default");
+			form.ShowShadow = false;
+			form.Show();
+			await WaitUntil(() => form.Loaded);
+			Assert.That(form.ShowShadow, Is.False, "Should keep the value set before it was shown");
+			form.ShowShadow = true;
+			Assert.That(form.ShowShadow, Is.True, "Should change while shown");
+		}
+		finally
+		{
+			form.Close();
+		}
+	});
+
 	class KeyForm : Form
 	{
 		public bool SendKey(Keys key)

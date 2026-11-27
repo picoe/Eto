@@ -66,6 +66,7 @@ namespace Eto.GtkSharp.Forms
 		internal static readonly object Minimizable_Key = new object();
 		internal static readonly object Maximizable_Key = new object();
 		internal static readonly object AllowFullScreenToggle_Key = new object();
+		internal static readonly object ShowShadow_Key = new object();
 	}
 
 	public abstract class GtkWindow<TControl, TWidget, TCallback> : GtkPanel<TControl, TWidget, TCallback>, Window.IHandler, IGtkWindow
@@ -248,6 +249,13 @@ namespace Eto.GtkSharp.Forms
 		{
 			get { return !Control.SkipTaskbarHint; }
 			set { Control.SkipTaskbarHint = !value; }
+		}
+
+		// the window manager or compositor decides on shadows, so this is only remembered
+		public bool ShowShadow
+		{
+			get => Widget.Properties.Get<bool?>(GtkWindow.ShowShadow_Key) ?? WindowStyle != WindowStyle.None;
+			set => Widget.Properties.Set<bool?>(GtkWindow.ShowShadow_Key, value);
 		}
 
 		public bool Closeable
