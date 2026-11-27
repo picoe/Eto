@@ -148,6 +148,12 @@ namespace Eto.Android.Forms
 			set;
 		}
 
+		public bool ShowShadow
+		{
+			get;
+			set;
+		}
+
 		public bool Topmost
 		{
 			get;

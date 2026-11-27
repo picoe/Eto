@@ -7,6 +7,38 @@ namespace Eto.WinForms.Forms
 	{
 		public CustomWndProcDelegate CustomWndProcHandler;
 		const int WM_ACTIVATEAPP = 0x1C;
+		const int CS_DROPSHADOW = 0x20000;
+
+		bool dropShadow;
+
+		/// <summary>
+		/// Gets or sets a value indicating that a borderless form gets a drop shadow.
+		/// </summary>
+		public bool DropShadow
+		{
+			get => dropShadow;
+			set
+			{
+				if (dropShadow == value)
+					return;
+				dropShadow = value;
+				// the shadow is a class style, so it only changes with a new window
+				if (IsHandleCreated)
+					RecreateHandle();
+			}
+		}
+
+		protected override swf.CreateParams CreateParams
+		{
+			get
+			{
+				var createParams = base.CreateParams;
+				// bordered windows already get a shadow from DWM
+				if (dropShadow && FormBorderStyle == swf.FormBorderStyle.None)
+					createParams.ClassStyle |= CS_DROPSHADOW;
+				return createParams;
+			}
+		}
 		protected override void WndProc(ref swf.Message m)
 		{
 			if (CustomWndProcHandler == null) WndProcImpl(ref m);

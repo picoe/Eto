@@ -34,6 +34,7 @@ public class WinUIWindow<TControl, TWidget, TCallback> : WinUIPanel<TControl, TW
 	public bool Minimizable { get; set; }
 	public bool Closeable { get; set; }
 	public bool ShowInTaskbar { get; set; }
+	public bool ShowShadow { get; set; } = true;
 	public bool Topmost { get; set; }
 	public WindowState WindowState { get; set; }
 	public Rectangle RestoreBounds { get; }

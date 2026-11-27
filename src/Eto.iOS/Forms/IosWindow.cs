@@ -185,6 +185,8 @@ namespace Eto.iOS.Forms
 
 		public bool ShowInTaskbar { get { return false; } set { } }
 
+		public bool ShowShadow { get { return false; } set { } }
+
 		public bool Topmost { get { return false; } set { } }
 
 		public WindowState WindowState { get; set; }

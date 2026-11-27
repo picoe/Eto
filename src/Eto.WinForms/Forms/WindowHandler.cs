@@ -529,6 +529,20 @@ namespace Eto.WinForms.Forms
 			set { Control.ShowInTaskbar = value; }
 		}
 
+		bool? showShadow;
+
+		// windows can't drop the shadow from a bordered window, only add one to a borderless window
+		public bool ShowShadow
+		{
+			get => showShadow ?? WindowStyle != WindowStyle.None;
+			set
+			{
+				showShadow = value;
+				if (Control is EtoFormBase form)
+					form.DropShadow = value;
+			}
+		}
+
 		public virtual bool Topmost
 		{
 			get { return Control.TopMost; }
