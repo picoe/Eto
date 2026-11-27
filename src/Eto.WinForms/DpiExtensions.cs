@@ -61,6 +61,29 @@ static class DpiExtensions
 #endif
 	}
 
+	// rounded rather than ceiling so a padding read back gives the value that was set
+	public static swf.Padding LogicalToDeviceUnits(this swf.Control control, Padding padding)
+	{
+#if NET9_0_OR_GREATER
+		var scale = (control?.DeviceDpi ?? 96) / 96.0;
+		int Scale(int value) => (int)Math.Round(value * scale);
+		return new swf.Padding(Scale(padding.Left), Scale(padding.Top), Scale(padding.Right), Scale(padding.Bottom));
+#else
+		return padding.ToSWF();
+#endif
+	}
+
+	public static Padding DeviceUnitsToLogical(this swf.Control control, swf.Padding padding)
+	{
+#if NET9_0_OR_GREATER
+		var scale = 96.0 / (control?.DeviceDpi ?? 96);
+		int Scale(int value) => (int)Math.Round(value * scale);
+		return new Padding(Scale(padding.Left), Scale(padding.Top), Scale(padding.Right), Scale(padding.Bottom));
+#else
+		return padding.ToEto();
+#endif
+	}
+
 #if !NET9_0_OR_GREATER
 	public static sd.Size LogicalToDeviceUnits(this swf.Control control, sd.Size size)
 	{

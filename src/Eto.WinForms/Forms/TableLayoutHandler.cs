@@ -122,17 +122,18 @@ namespace Eto.WinForms.Forms
 		swf.Padding GetMargin(int x, int y)
 		{
 			var margin = new swf.Padding();
-			if (x > 0) margin.Left = (int)Math.Floor(spacing.Width / 2.0);
-			if (x < columnScale.Length - 1) margin.Right = (int)Math.Ceiling(spacing.Width / 2.0);
-			if (y > 0) margin.Top = (int)Math.Floor(spacing.Height / 2.0);
-			if (y < rowScale.Length - 1) margin.Bottom = (int)Math.Ceiling(spacing.Height / 2.0);
+			var device = Control.LogicalToDeviceUnits(new Padding(spacing.Width, spacing.Height, 0, 0));
+			if (x > 0) margin.Left = (int)Math.Floor(device.Left / 2.0);
+			if (x < columnScale.Length - 1) margin.Right = (int)Math.Ceiling(device.Left / 2.0);
+			if (y > 0) margin.Top = (int)Math.Floor(device.Top / 2.0);
+			if (y < rowScale.Length - 1) margin.Bottom = (int)Math.Ceiling(device.Top / 2.0);
 			return margin;
 		}
 
 		public Padding Padding
 		{
-			get { return Control.Padding.ToEto(); }
-			set { Control.Padding = value.ToSWF(); }
+			get { return Control.DeviceUnitsToLogical(Control.Padding); }
+			set { Control.Padding = Control.LogicalToDeviceUnits(value); }
 		}
 
 		void SetScale(Control control, int x, int y)

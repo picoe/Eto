@@ -85,8 +85,8 @@ namespace Eto.WinForms.Forms.Controls
     
 		public override Padding Padding
 		{
-			get { return Control.Padding.ToEto(); }
-			set { Control.Padding = value.ToSWF(); }
+			get { return Control.DeviceUnitsToLogical(Control.Padding); }
+			set { Control.Padding = Control.LogicalToDeviceUnits(value); }
 		}
 
 		protected override void ResumeControl(bool performLayout = true)
