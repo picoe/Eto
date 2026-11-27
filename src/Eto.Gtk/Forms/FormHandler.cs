@@ -31,7 +31,12 @@ namespace Eto.GtkSharp.Forms
 			Control.Realize();
 			Callback.OnLoadComplete(Widget, EventArgs.Empty);
 			if (ShowActivated || !Control.AcceptFocus)
+			{
 				Control.Show();
+				// window managers don't focus some windows when they're mapped, e.g. utility windows like undecorated forms
+				if (ShowActivated && Control.AcceptFocus)
+					Control.Present();
+			}
 			else
 			{
 				Control.AcceptFocus = false;
