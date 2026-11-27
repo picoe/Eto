@@ -206,6 +206,7 @@ namespace Eto.Wpf
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
 			p.Add<OpenWithDialog.IHandler>(() => new OpenWithDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
+			p.Add<Popover.IHandler>(() => new ThemedPopoverHandler());
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 			if (Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialog.IsPlatformSupported)
 				p.Add<SelectFolderDialog.IHandler>(() => new VistaSelectFolderDialogHandler());

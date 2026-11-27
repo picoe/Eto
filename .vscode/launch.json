@@ -47,6 +47,21 @@
 			"justMyCode": false,
 		},
 		{
+			"name": "Eto.Test.Gtk - X11",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-gtk",
+			"program": "${workspaceFolder}/artifacts/test/Eto.Test.Gtk/${config:var.configuration}/net10.0/Eto.Test.Gtk.dll",
+			"args": [],
+			"env": {
+				"GDK_BACKEND": "x11"
+			},
+			"console": "internalConsole",
+			"stopAtEntry": false,
+			"internalConsoleOptions": "openOnSessionStart",
+			"justMyCode": false,
+		},
+		{
 			"name": "Eto.Test.Gtk - mono",
 			"type": "mono",
 			"request": "launch",

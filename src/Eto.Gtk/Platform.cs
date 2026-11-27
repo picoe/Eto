@@ -242,6 +242,11 @@ namespace Eto.GtkSharp
 			p.Add<OpenFileDialog.IHandler>(() => new OpenFileDialogHandler());
 			p.Add<ColorDialog.IHandler>(() => new ColorDialogHandler());
 			p.Add<PixelLayout.IHandler>(() => new PixelLayoutHandler());
+#if GTK3
+			p.Add<Popover.IHandler>(() => new PopoverHandler());
+#else
+			p.Add<Popover.IHandler>(() => new ThemedPopoverHandler());
+#endif
 			p.Add<SaveFileDialog.IHandler>(() => new SaveFileDialogHandler());
 			p.Add<SelectFolderDialog.IHandler>(() => new SelectFolderDialogHandler());
 			p.Add<FontDialog.IHandler>(() => new FontDialogHandler());
