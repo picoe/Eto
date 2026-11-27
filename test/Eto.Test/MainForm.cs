@@ -473,7 +473,13 @@ namespace Eto.Test
 		{
 			base.OnClosed(e);
 			Log.Write(this, "Closed");
+			IsClosed = true;
 		}
+
+		/// <summary>
+		/// Gets a value indicating the form has closed, so its event log can no longer be written to.
+		/// </summary>
+		public bool IsClosed { get; private set; }
 
 		protected override void OnLogicalPixelSizeChanged(EventArgs e)
 		{
