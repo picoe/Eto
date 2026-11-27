@@ -50,12 +50,16 @@ namespace Eto.WinForms.Drawing
 		public void AddBezier(PointF start, PointF control1, PointF control2, PointF end)
 		{
 			Control.AddBezier(start.ToSD(), control1.ToSD(), control2.ToSD(), end.ToSD());
+			position = end.ToSD();
 		}
 
 		public void AddPath(IGraphicsPath path, bool connect = false)
 		{
 			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
+			{
 				Control.AddPath(path.ToSD(), connect);
+				position = Control.GetLastPoint();
+			}
 		}
 
 		public void Transform(IMatrix matrix)
@@ -100,6 +104,7 @@ namespace Eto.WinForms.Drawing
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.AddArc(x, y, width, height, startAngle, sweepAngle);
+			position = Control.GetLastPoint();
 		}
 
 		public void AddRectangle(float x, float y, float width, float height)
