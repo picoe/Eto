@@ -6,11 +6,23 @@ namespace Eto.WinForms.Forms.Controls
 
 		class EtoTrackBar : swf.TrackBar
 		{
+			public SliderHandler Handler { get; set; }
+
 			protected override void OnCreateControl()
 			{
 				SetStyle(swf.ControlStyles.SupportsTransparentBackColor, true);
-				if (Parent != null)
-					BackColor = Parent.BackColor;
+				if (Handler?.BackgroundColorSet != true)
+				{
+					// a see-through trackbar draws in the light style in dark mode, so use the nearest solid color
+					for (var parent = Parent; parent != null; parent = parent.Parent)
+					{
+						if (parent.BackColor.A == 255)
+						{
+							BackColor = parent.BackColor;
+							break;
+						}
+					}
+				}
 
 				base.OnCreateControl();
 			}
@@ -20,6 +32,7 @@ namespace Eto.WinForms.Forms.Controls
 		{
 			this.Control = new EtoTrackBar
 			{
+				Handler = this,
 				TickStyle = System.Windows.Forms.TickStyle.BottomRight,
 				Maximum = 100,
 				AutoSize = true
