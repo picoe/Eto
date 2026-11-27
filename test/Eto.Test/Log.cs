@@ -17,6 +17,12 @@ namespace Eto.Test
 			sb.Append("\n");
 
 			var form = Application.Instance?.MainForm as MainForm;
+			if (form?.IsClosed == true)
+			{
+				// other windows can still raise events while the app shuts down
+				Debug.WriteLine(sb.ToString());
+				return;
+			}
 			var eventLog = form?.EventLog;
 			if (eventLog != null)
 			{
